@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import preservedCsv from '../artifacts/dashboard-before-persistence.csv?raw';
+import preservedCsv from './fixtures/dashboard-before-persistence.csv?raw';
 import {F,STRIDE} from '../src/sim/model';
 import {TelemetryStore,telemetryCsv,type TelemetryInput} from '../src/sim/telemetry';
 import {parseTelemetryCsv,prependTelemetryCsv} from '../src/sim/telemetryCsvImport';
