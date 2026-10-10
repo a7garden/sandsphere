@@ -6,6 +6,8 @@
 - 실제 앱 브라우저 검증: 에뮬레이터 Alice 로그인 → `Alice의 행성` 생성 → 클라우드 저장 성공 → 로그아웃 시 빈 비회원 화면 → Bob 로그인 시 빈 계정 → Alice 재로그인 시 자신의 행성 복원.
 - Cloudflare `wrangler deploy --dry-run`이 정적 자산과 Custom Domain 설정을 정상적으로 처리했다.
 
-실제 운영 Google OAuth, Firebase 프로젝트·버킷 CORS, Gitea runner의 운영 secret 연결, Cloudflare 도메인 HTTPS 배포는 운영 계정 연결 뒤 검증해야 한다. 로컬/에뮬레이터 성공을 운영 배포 성공으로 간주하지 않는다.
+2026-10-10 운영 연결: `sandsphere-app`의 서울 Firestore와 이메일·Google 로그인 설정을 활성화했다. Cloudflare 계정과 활성 `sandsphere.app` 도메인을 확인했다. 전용 Gitea runner에 Firebase·Cloudflare 인증을 연결하고 공개 Web App 설정을 secrets로 등록했다. 실제 HTTPS 앱의 로그인·저장·복원 검증은 배포 후 확인한다.
+
+format 2 저장 추가 검증: Firestore 분할 조각의 사용자 격리, 변경·목록 조회·크기 초과 거부, 현재/이전 revision 삭제 거부, 동시 작성 충돌, 512 KiB보다 큰 실제 압축 저장본 왕복, 세 번째 저장 후 첫 번째 revision 정리. 에뮬레이터 테스트 5개 통과.
 
 검증 화면: `artifacts/account-cloud-save.jpg`.

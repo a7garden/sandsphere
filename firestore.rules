@@ -1,14 +1,36 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function revision(v) {
+      return v is map && v.keys().hasOnly(['revision', 'parts', 'bytes'])
+        && v.revision is string && v.revision.matches('^[a-zA-Z0-9_-]{1,80}$')
+        && v.parts is int && v.parts > 0 && v.parts <= 40
+        && v.bytes is int && v.bytes > 0 && v.bytes <= 20971520
+        && v.bytes > (v.parts - 1) * 524288 && v.bytes <= v.parts * 524288;
+    }
     match /users/{uid}/saves/current {
-      allow get: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['revision', 'format', 'savedAt'])
-        && request.resource.data.format == 1
-        && request.resource.data.revision is string
-        && request.resource.data.revision.matches('^[a-zA-Z0-9_-]{1,80}$')
+      allow get: if owner(uid);
+      allow create, update: if owner(uid)
+        && request.resource.data.keys().hasOnly(['revision', 'format', 'savedAt', 'parts', 'bytes', 'previous'])
+        && request.resource.data.format == 2
+        && revision({'revision': request.resource.data.revision, 'parts': request.resource.data.parts, 'bytes': request.resource.data.bytes})
+        && (request.resource.data.previous == null || revision(request.resource.data.previous))
         && request.resource.data.savedAt is number && request.resource.data.savedAt >= 0;
+    }
+    match /users/{uid}/revisions/{rev}/parts/{part} {
+      function retained() {
+        let pointer = /databases/$(database)/documents/users/$(uid)/saves/current;
+        return exists(pointer) && (get(pointer).data.revision == rev
+          || (get(pointer).data.get('previous', null) != null && get(pointer).data.previous.revision == rev));
+      }
+      allow get: if owner(uid);
+      allow create: if owner(uid) && rev.matches('^[a-zA-Z0-9_-]{1,80}$')
+        && part.matches('^[0-3][0-9]$')
+        && request.resource.data.keys().hasOnly(['bytes'])
+        && request.resource.data.bytes is bytes
+        && request.resource.data.bytes.size() > 0 && request.resource.data.bytes.size() <= 524288;
+      allow delete: if owner(uid) && !retained();
     }
   }
 }

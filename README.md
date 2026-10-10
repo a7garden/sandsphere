@@ -1,6 +1,6 @@
 # Sandsphere
 
-로그인·사용자별 클라우드 저장과 Gitea → Cloudflare 운영 릴리즈 설정을 추가했습니다. 계정은 Firebase Authentication, 게임 저장은 개인별 Cloud Storage 압축본과 Firestore revision을 사용합니다. 운영 계정 연결 절차와 `sandsphere.app` 배포 흐름은 [운영 문서](docs/OPERATIONS.md), 검증 범위는 [계정 저장 검증](docs/ACCOUNT_VALIDATION.md)에 정리했습니다. 기존 비회원 게임은 별도 슬롯에 보존됩니다.
+로그인·사용자별 클라우드 저장과 Gitea → Cloudflare 운영 릴리즈 설정을 추가했습니다. 계정은 Firebase Authentication, 게임 저장은 개인별 Firestore 압축 저장본과 revision을 사용합니다. 운영 계정 연결 절차와 `sandsphere.app` 배포 흐름은 [운영 문서](docs/OPERATIONS.md), 검증 범위는 [계정 저장 검증](docs/ACCOUNT_VALIDATION.md)에 정리했습니다. 기존 비회원 게임은 별도 슬롯에 보존됩니다.
 
 Babylon.js로 만든 구형 행성 물질 실험 프로토타입입니다. 행성의 주재료·태양과의 거리·초기 대기·중력을 정하고, 물질을 추가하며 변화를 관측합니다.
 

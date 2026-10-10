@@ -45,9 +45,11 @@ jobs:
           GITEA_REPOSITORY: ${{ gitea.repository }}
           GITEA_RELEASE_ID: ${{ gitea.event.release.id }}
         run: node scripts/upload-release.mjs
-      - name: Deploy the Gitea release to Cloudflare
+      - name: Deploy Firebase security rules and indexes
         run: node scripts/deploy-firebase.mjs
       - name: Deploy sandsphere.app
-        run: npm run deploy
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then unset CLOUDFLARE_API_TOKEN; fi
+          npm run deploy
       - name: Verify sandsphere.app serves this release
         run: node scripts/verify-deployment.mjs

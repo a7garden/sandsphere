@@ -1,5 +1,6 @@
 {
-  "firestore": {"rules": "firestore.rules"},
+  "auth": {"providers": {"emailPassword": true, "googleSignIn": {"oAuthBrandDisplayName": "Sandsphere", "supportEmail": "a7garden@gmail.com"}}},
+  "firestore": {"rules": "firestore.rules", "indexes": "firestore.indexes.json"},
   "storage": {"rules": "storage.rules"},
   "emulators": {
     "auth": {"host": "127.0.0.1", "port": 9099},
