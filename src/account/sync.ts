@@ -9,8 +9,8 @@ export class SaveConflict extends Error {
 export function chooseSave(local:SystemSave|null,remote:RemoteSave|null,checkpoint:SyncCheckpoint|null){
   if(!local)return remote?'remote':'empty';
   if(!remote)return checkpoint?.revision?'conflict':'local';
-  if(checkpoint?.revision===remote.revision)return local.savedAt>checkpoint.syncedAt?'local':'remote';
-  if(checkpoint&&local.savedAt<=checkpoint.syncedAt)return 'remote';
+  if(checkpoint?.revision===remote.revision)return local.savedAt!==checkpoint.syncedAt?'local':'remote';
+  if(checkpoint&&local.savedAt===checkpoint.syncedAt)return 'remote';
   return 'conflict';
 }
 export function saveScope(uid:string|null,testing=false){

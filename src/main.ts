@@ -57,6 +57,8 @@ let cloud:FirebaseSaveStore|null=null,checkpoint:SyncCheckpoint|null=null,remote
 let cloudReady=false,cloudConflict=false,cloudMessage='',cloudLastAttempt=0,cloudTask:Promise<void>|null=null;
 let accountPanel:AccountPanel|undefined;
 let replacingSession=false;
+let persistenceStamp=0;
+function persistenceTime(){return persistenceStamp=Math.max(Date.now(),persistenceStamp+1);}
 const resumeKey='sandsphere-resume'+(testing?'-test':'');
 const app=document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML=`<div class="app">
@@ -308,7 +310,7 @@ function capture():Snapshot {
 }
 function captureSystem():SystemSave {
   const snapshot=capture(),collected=snapshotSurface(solver.state,commands,view.deposits(),activeCommands).collected;
-  return {version:2,progress:structuredClone(progress),activeId,planets:planets.map(p=>p.id===activeId?{...p,snapshot}:structuredClone(p)),stock:Object.fromEntries(PRODUCTS.map(id=>[id,stock[id]+collected[id]])) as typeof stock,savedAt:Date.now()};
+  return {version:2,progress:structuredClone(progress),activeId,planets:planets.map(p=>p.id===activeId?{...p,snapshot}:structuredClone(p)),stock:Object.fromEntries(PRODUCTS.map(id=>[id,stock[id]+collected[id]])) as typeof stock,savedAt:persistenceTime()};
 }
 function capturePersistedSystem(journal=false):SystemSave {
  const system=prepareSystemSave(captureSystem(),grid.count);
@@ -761,6 +763,7 @@ async function boot() {
     }catch(error){cloudMessage='클라우드에 연결하지 못했습니다. 이 기기의 저장본으로 진행하며 지금 저장에서 다시 시도할 수 있습니다.';console.warn('Cloud restore unavailable.',error);}
   }
   if(system){
+    persistenceStamp=Math.max(persistenceStamp,system.savedAt);
     if(system.version===1)await saveSnapshot(system,systemSlot+'-v02-backup');
     progress=system.progress??freshProgress();
     planets=system.planets;activeId=system.activeId;stock={...emptyStock(),...system.stock};if(system.version===1)stock.plant+=8;

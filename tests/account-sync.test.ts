@@ -19,6 +19,10 @@ describe('account save boundaries',()=>{
   expect(chooseSave(local,remote,{revision:'old',syncedAt:100})).toBe('remote');
   expect(chooseSave(local,remote,null)).toBe('conflict');
   expect(chooseSave(local,remote,{revision:'new',syncedAt:99})).toBe('local');
+  // A local edit remains dirty even when this device's clock is behind the
+  // timestamp in a previously downloaded save.
+  expect(chooseSave(local,remote,{revision:'new',syncedAt:1000})).toBe('local');
+  expect(chooseSave(local,remote,{revision:'old',syncedAt:1000})).toBe('conflict');
   expect(chooseSave(null,remote,null)).toBe('remote');
   expect(chooseSave(local,null,{revision:'old',syncedAt:100})).toBe('conflict');
  });
