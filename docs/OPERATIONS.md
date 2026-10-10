@@ -39,7 +39,7 @@ Gitea 저장소 secrets:
 
 Actions의 내장 `GITEA_TOKEN`은 릴리즈 첨부에 사용한다. Mac mini에 이 저장소만 대상으로 하는 `sandsphere-mini` runner(3.0.2, label `sandsphere-macos:host`)를 등록했다. launchd `com.a7.sandsphere.runner`, 바이너리·등록 정보는 `~/Tools/sandsphere-runner`, 코드 작업 경로는 `~/Workspace/Projects/sandsphere-ci`다. Node 24.21.0 기본 런타임을 공식 SHA256으로 확인했다. Node·Java 작업용 버전은 setup actions에서 준비한다. 검증 워크플로에는 운영 secrets를 제공하지 않는다. runner는 본인의 비공개 저장소 코드만 실행하며 호스트 실행 모드이므로 다른 저장소나 신뢰하지 않는 PR을 등록하지 않는다. mini의 로컬 `http://127.0.0.1:9101/healthz`로 상태를 확인할 수 있다.
 
-배포는 `v0.4.1` 같은 **정식 Gitea 릴리즈 발행**으로 시작한다. draft/prerelease와 일반 push는 운영 배포를 시작하지 않는다. 테스트 → 보안 규칙 에뮬레이터 검증 → Firebase 운영 설정 검증 → 태그에 해당하는 빌드 → 압축 빌드와 SHA256 릴리즈 첨부 → Firebase 규칙·인덱스 배포 → Cloudflare 배포 → 도메인의 `release.json` 태그·커밋 검증 순서다. Firebase 설정이 없거나 demo/emulator 설정이면 운영 빌드를 차단한다.
+배포는 `v0.4.2` 같은 **정식 Gitea 릴리즈 발행**으로 시작한다. draft/prerelease와 일반 push는 운영 배포를 시작하지 않는다. 테스트 → 보안 규칙 에뮬레이터 검증 → Firebase 운영 설정 검증 → 태그에 해당하는 빌드 → 압축 빌드와 SHA256 릴리즈 첨부 → Firebase 규칙·인덱스 배포 → Cloudflare 배포 → 도메인의 `release.json` 태그·커밋 검증 순서다. Firebase 설정이 없거나 demo/emulator 설정이면 운영 빌드를 차단한다.
 
 보안 규칙 배포와 정적 사이트 배포는 서로 다른 서비스의 작업으로 원자적이지 않다. 이번 규칙은 현재 저장 구조만 추가하므로 기존 규칙 변경 시 먼저 이전 앱과의 호환성을 검토한다. 배포 실패는 Gitea Actions 결과에서 확인한다. Cloudflare로의 직접 개발 배포를 운영 릴리즈 흐름 대신 사용하지 않는다.
 

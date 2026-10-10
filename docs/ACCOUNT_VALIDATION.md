@@ -11,3 +11,9 @@
 format 2 저장 추가 검증: Firestore 분할 조각의 사용자 격리, 변경·목록 조회·크기 초과 거부, 현재/이전 revision 삭제 거부, 동시 작성 충돌, 512 KiB보다 큰 실제 압축 저장본 왕복, 세 번째 저장 후 첫 번째 revision 정리. 에뮬레이터 테스트 5개 통과.
 
 검증 화면: `artifacts/account-cloud-save.jpg`.
+
+운영 검증 추가: `https://sandsphere.app`에서 HTTPS 200과 배포 태그·커밋을 확인했다. 임시 검증 계정으로 운영 Firebase SDK 로그인 → 실제 Firestore 저장 → 다른 UID 접근 거부 → 로그아웃·재로그인 후 원본 복원을 통과했다(`tests/account-live.test.ts`, 명시적 opt-in). 일반 CI에서는 이 운영 테스트를 건너뛴다.
+
+브라우저 범위: 배포한 앱의 초기 화면과 계정 UI는 확인했다. Codex 내장 브라우저에서 Google API의 로그인 POST가 CORS preflight 성공 뒤 `ERR_ABORTED`로 중단되었고, 일반 Chrome 제어는 연결되지 않았다. 따라서 운영 UI의 로그인 완료는 이 도구로 확인하지 못했다. 운영 API 저장·복원 성공과 UI에서의 Google 로그인 완료를 구분한다. Google provider 활성화, 허용 도메인, 인증 handler HTTPS 200은 확인했다.
+
+최초 배포 직후 Mac mini의 시스템 DNS가 새 도메인의 음성 캐시를 유지해 마지막 상태 검증이 실패했다. 검증 스크립트는 시스템 IPv4 조회 실패 시 Cloudflare 공개 DNS로 조회하고 동일 호스트의 TLS 인증서를 검증한다. 시스템 DNS 설정은 변경하지 않는다.
