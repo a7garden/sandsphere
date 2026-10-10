@@ -1,0 +1,33 @@
+{
+  "phase": {
+    "capMaxIntensity": 0.8581657409667969,
+    "rainVertices": 648,
+    "ready": true,
+    "snowVertices": 630,
+    "stateUnchanged": true,
+    "surface": {
+      "enabled": true,
+      "highlightedCells": 642,
+      "intensityRange": [
+        0.8581657231432712,
+        0.8581657231432712
+      ],
+      "rainCells": 337,
+      "snowCells": 305,
+      "visible": true
+    }
+  },
+  "regression": {
+    "clearZero": true,
+    "globeReached": true,
+    "hiddenClearZero": true,
+    "passed": true,
+    "pausedRetained": true,
+    "rainVertices": 648,
+    "ready": true,
+    "sameCanvas": true,
+    "sectionReached": true,
+    "snowVertices": 630,
+    "stateUnchanged": true
+  }
+}

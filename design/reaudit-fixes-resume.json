@@ -1,0 +1,29 @@
+{
+  "normal": {
+    "cpuBootExact": true,
+    "gpuBootExact": true,
+    "gpuStepNonnegative": true,
+    "gpuStepSavedExact": true,
+    "cpuRebootExact": true,
+    "pagehideLocalExact": true,
+    "resumedTime": 123.03333333333332,
+    "cells": 2562,
+    "planets": 2,
+    "stock": {
+      "carnivore": 0,
+      "ceramic": 0,
+      "glass": 2,
+      "herbivore": 0,
+      "ice": 0,
+      "iron": 0,
+      "plant": 0
+    }
+  },
+  "legacy": {
+    "accepted": true,
+    "recoveredExpectedFloat32": true,
+    "time": 123,
+    "canonicalDiskNonnegative": true
+  },
+  "passed": true
+}

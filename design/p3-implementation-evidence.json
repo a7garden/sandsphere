@@ -1,0 +1,176 @@
+{
+  "generatedAt": "2026-10-10T02:48:16.692Z",
+  "backend": "CPU",
+  "sourceSha256": {
+    "src/sim/model.ts": "1e7f508002fc50527c02b46ba0cbe609d3cfe308214e6b485ae966b4d1ab91ab",
+    "src/sim/sphere.ts": "8fe5eae607caefb3ee81885509ab8d317418a8bfb5c80e675dc80b0615c30c4a",
+    "src/sim/ecology.ts": "2ed950feae284b8a22ca3c5a133075108586e8eb75ce757a5a863eb059c9bf0b",
+    "src/sim/gases.ts": "76c54899b838683ee798ac3719dbe871bac2a3e9605b6802ae186d047662e209",
+    "src/sim/clouds.ts": "6fca0a2decb2d670f811564bf5b0321ced86353130589379f33117a66eb7a5e8",
+    "src/sim/physics.wgsl": "f41d17b100e1de401069dcb4f9e241484814247d9775924e8693e73c8e7eb08b",
+    "src/sim/progress.ts": "962f2fa6186707ad8ea6c9dbbb7ca684e445fe1c290cf0222ddfa8865b34a895",
+    "src/sim/system.ts": "2fd43e983732e03a0368e5c0daffd014b5a0db61930e31e15ff6ff8d16c04b9f",
+    "src/sim/session.ts": "325eb49b328dfcf153177708dde9f72642336db0a2601b3199135716a633697d",
+    "src/sim/gpu.ts": "efec3ddc86ff6b9f74b2b27d449d8b9af3c48d0bcd44523f68c8e521c9288d5c",
+    "src/render/planet.ts": "e6e9a9ec0c34de9b8a93dcd2fa794d67629075198a858210638770db15cc2713",
+    "src/render/precipitationLayer.ts": "96ce4958b1f5841dc434e749bcb160ca24cb9765e815dc6430522adfae704a58",
+    "src/main.ts": "561e265b2456e1d2ccdc33d3edb95a2eeadda2ec0f4a125f8f2f9d6ad392672a",
+    "src/sim/climate.ts": "3282662244bd06fae9bc582a4487630f13221fe606737b5ade82c0f3ba5f5483",
+    "src/sim/atmosphere.ts": "1b129b12943397c0c5cb59a36eab192ace6279a35ff64819e4a045fffa9dd263",
+    "src/sim/materialPhysics.ts": "d327ff296164ca4be81a7b43ca02f8824466c9400233e701b0d8b772191122f8",
+    "src/sim/waterPhysics.ts": "65c83403a56a9cc48bfb0c8ec1f2cd1d033876ec08b4c6b827c5e74d776e1078",
+    "src/ui/inspector.ts": "bd63cd0a2bcae43e04c6cf080e4ad64d5428e61a4f69e906731c3e69dcf4635e",
+    "src/ui/depthProfile.ts": "6c0288ebd4403e3edb10e15764a482a7d8daa3a139cc30f7b359a6317f01baa3",
+    "src/render/sectionGeometry.ts": "17706de706bd02230d8703fc3e927e627c5b27a1d0cd6398251178a761b6897b",
+    "src/render/sky.ts": "f8ff77ce4e0393e815766ec621e4cc24a3f63ca54673423859816e5048e16eb0",
+    "tests/p3-science.test.ts": "73bb837deb4064d30008607440e5ba8554914707a70a427c4022123b949d228d",
+    "tests/atmosphere.test.ts": "d79c9c7021474dd5b5b8ac2863e52f934ced971ca23d8bfebd49a0ee216a37e1",
+    "tests/section-lab.ts": "339647a959b7534acb6bdb08902690677ef661f1906fb4591cd49375b4155faf",
+    "tests/section-lab.html": "fe78b207e22a8e28e29818c2ede0389e25cd31d45d855da773340cd1c1406bc7"
+  },
+  "tests": "\n> sandsphere@0.1.0 test\n> vitest run\n\n\n RUN  v5.0.3 /Users/garden/Workspace/Projects/sandsphere\n\n\n Test Files  23 passed (23)\n      Tests  145 passed (145)\n   Start at  11:48:05\n   Duration  5.45s (tests 77%, transform 17%, import 6%)\n\n",
+  "build": "\n> sandsphere@0.1.0 build\n> tsc --noEmit && vite build\n\nvite v8.3.4 building client environment for production...\ntransforming...\n✓ 748 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                                                1.77 kB │ gzip:   0.70 kB\ndist/assets/space-grotesk-latin-600-normal-DjKNqYRj.woff2     13.28 kB\ndist/assets/space-grotesk-latin-500-normal-lFbtlQH6.woff2     13.31 kB\ndist/assets/space-grotesk-latin-400-normal-CJ-V5oYT.woff2     13.38 kB\ndist/assets/space-grotesk-latin-600-normal-BflQw4A9.woff      16.88 kB\ndist/assets/space-grotesk-latin-500-normal-CNSSEhBt.woff      16.98 kB\ndist/assets/space-grotesk-latin-400-normal-BnQMeOim.woff      17.00 kB\ndist/assets/index-DhyUm72L.css                               104.79 kB │ gzip:  19.07 kB\ndist/assets/abstractAudioBus-Dq14oFoa.js                       0.11 kB │ gzip:   0.13 kB\ndist/assets/logDepthDeclaration-3gXGtHbI.js                    0.27 kB │ gzip:   0.22 kB\ndist/assets/logDepthDeclaration-DYYUVTrx.js                    0.28 kB │ gzip:   0.22 kB\ndist/assets/logDepthVertex-D5IUM6qd.js                         0.30 kB │ gzip:   0.24 kB\ndist/assets/logDepthVertex-DSD5XdGw.js                         0.37 kB │ gzip:   0.26 kB\ndist/assets/precisionDate-CfCevjl-.js                          0.39 kB │ gzip:   0.23 kB\ndist/assets/typeStore-RqCBAJcv.js                              0.44 kB │ gzip:   0.27 kB\ndist/assets/postprocess.vertex-DJCmMhI8.js                     0.46 kB │ gzip:   0.30 kB\ndist/assets/shaderStore-D-XQlhUT.js                            0.46 kB │ gzip:   0.17 kB\ndist/assets/rgbdDecode.fragment-Cdz2Tveq.js                    0.52 kB │ gzip:   0.34 kB\ndist/assets/postprocess.vertex-CmVXXq2T.js                     0.58 kB │ gzip:   0.35 kB\ndist/assets/rgbdDecode.fragment-CDoy_arw.js                    0.65 kB │ gzip:   0.39 kB\ndist/assets/math.scalar.functions-lnL7TJ7T.js                  0.76 kB │ gzip:   0.41 kB\ndist/assets/color.fragment-SH3AKoaS.js                         0.87 kB │ gzip:   0.42 kB\ndist/assets/webAudioMainBus-BMdualJI.js                        0.91 kB │ gzip:   0.41 kB\ndist/assets/mesh.vertexData.functions-CD4JOR2q.js              0.93 kB │ gzip:   0.48 kB\ndist/assets/color.fragment-DVaYbzXa.js                         0.98 kB │ gzip:   0.45 kB\ndist/assets/ddsTextureLoader-BGTY9Z-g.js                       1.25 kB │ gzip:   0.62 kB\ndist/assets/halfFloat-Ce77JD5z.js                              1.29 kB │ gzip:   0.60 kB\ndist/assets/color.vertex-l1t_hndQ.js                           1.42 kB │ gzip:   0.64 kB\ndist/assets/color.vertex-vzQMDxIO.js                           1.45 kB │ gzip:   0.63 kB\ndist/assets/abstractSoundSource-DMsHM3rc.js                    1.48 kB │ gzip:   0.48 kB\ndist/assets/fogVertex-x0NJgB5y.js                              1.49 kB │ gzip:   0.44 kB\ndist/assets/mainUVVaryingDeclaration-BkUves4C.js               1.75 kB │ gzip:   0.59 kB\ndist/assets/fogVertex-B7dQhgq9.js                              1.80 kB │ gzip:   0.50 kB\ndist/assets/logger-CuBYPcDK.js                                 1.88 kB │ gzip:   0.82 kB\ndist/assets/mainUVVaryingDeclaration-Bn-mAjvV.js               1.94 kB │ gzip:   0.77 kB\ndist/assets/fogFragment-WPqtYpyX.js                            2.20 kB │ gzip:   0.70 kB\ndist/assets/webAudioBus-CAuP396j.js                            2.27 kB │ gzip:   0.74 kB\ndist/assets/hdrTextureLoader-BQVwkxK1.js                       2.31 kB │ gzip:   1.13 kB\ndist/assets/webAudioSoundSource-Avb4Rdyc.js                    2.32 kB │ gzip:   0.82 kB\ndist/assets/fogFragment-NFgubt9V.js                            2.43 kB │ gzip:   0.76 kB\ndist/assets/iesTextureLoader-3O5bSkSd.js                       2.47 kB │ gzip:   1.07 kB\ndist/assets/webRequest-dqz0dHXK.js                             2.94 kB │ gzip:   1.06 kB\ndist/assets/abstractSoundInstance-DkIb7WBL.js                  3.06 kB │ gzip:   0.89 kB\ndist/assets/observable.pure-B5E8yEYx.js                        3.20 kB │ gzip:   1.10 kB\ndist/assets/tgaTextureLoader-CqhhocF6.js                       3.40 kB │ gzip:   1.35 kB\ndist/assets/cubemapToSphericalPolynomial-XOigf0fX.js           3.70 kB │ gzip:   1.63 kB\ndist/assets/vertexColorMixing-CeF6hIt3.js                      4.32 kB │ gzip:   0.98 kB\ndist/assets/particles.fragment-DhS5kLk7.js                     5.87 kB │ gzip:   1.69 kB\ndist/assets/particles.fragment-Ch9i2b6j.js                     6.12 kB │ gzip:   1.77 kB\ndist/assets/meshBlendTagFragmentOutput-CzziWpin.js             6.63 kB │ gzip:   2.36 kB\ndist/assets/helperFunctions-gEnZbjN3.js                        6.81 kB │ gzip:   2.31 kB\ndist/assets/dds.pure-2JlLZ027.js                               6.93 kB │ gzip:   2.54 kB\ndist/assets/particles.vertex-CBPvll5N.js                       7.14 kB │ gzip:   1.81 kB\ndist/assets/basisTextureLoader-C9WAZ87m.js                     8.15 kB │ gzip:   3.18 kB\ndist/assets/webAudioStreamingSound-Cr7qlI0m.js                 8.38 kB │ gzip:   2.43 kB\ndist/assets/webAudioBaseSubGraph-CuZ4yYj_.js                   8.46 kB │ gzip:   2.10 kB\ndist/assets/particles.vertex-CXBkuinE.js                       8.51 kB │ gzip:   1.95 kB\ndist/assets/vertexColorMixing-B-QfZ7Di.js                      8.96 kB │ gzip:   1.82 kB\ndist/assets/webAudioStaticSound-D0llZtfa.js                    9.36 kB │ gzip:   2.55 kB\ndist/assets/logDepthFragment-Cr-Stg0k.js                       9.50 kB │ gzip:   2.92 kB\ndist/assets/math.color.pure-anOydqGM.js                       12.50 kB │ gzip:   2.97 kB\ndist/assets/exrTextureLoader-AvtVnwYU.js                      13.13 kB │ gzip:   4.83 kB\ndist/assets/spatialWebAudio-D4KQ2w90.js                       14.10 kB │ gzip:   3.22 kB\ndist/assets/ktxTextureLoader-C2yQXxOL.js                      16.37 kB │ gzip:   4.79 kB\ndist/assets/guid-CxX3q4DM.js                                  17.33 kB │ gzip:   5.98 kB\ndist/assets/default.vertex-BAFqd2n4.js                        19.51 kB │ gzip:   4.33 kB\ndist/assets/tools.pure-BztHInWZ.js                            22.56 kB │ gzip:   7.75 kB\ndist/assets/baseTexture.pure-CYGjrvG4.js                      31.86 kB │ gzip:   8.68 kB\ndist/assets/envTextureLoader-C32HlaWC.js                      32.03 kB │ gzip:   9.04 kB\ndist/assets/default.vertex-BJeY-HAd.js                        37.86 kB │ gzip:   6.23 kB\ndist/assets/math.vector.pure-6ByuvoqV.js                      65.02 kB │ gzip:  15.94 kB\ndist/assets/default.fragment-d5D0K39A.js                     101.14 kB │ gzip:  20.03 kB\ndist/assets/default.fragment-CsDbzmz4.js                     108.06 kB │ gzip:  20.27 kB\ndist/assets/index-CQzjXZMw.js                              1,774.18 kB │ gzip: 452.78 kB\n\n✓ built in 270ms\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n",
+  "thermalSpatial": [
+    {
+      "cells": 42,
+      "seconds": 10,
+      "conductionDecay": 0.005232711264834711,
+      "energyResidual": 0.001647106390009867,
+      "energyResidualRelative": 5.647583353939909e-8
+    },
+    {
+      "cells": 162,
+      "seconds": 10,
+      "conductionDecay": 0.005426183245250127,
+      "energyResidual": -0.0020689601224148646,
+      "energyResidualRelative": 1.8391933738273353e-8
+    },
+    {
+      "cells": 642,
+      "seconds": 10,
+      "conductionDecay": 0.005475228671236287,
+      "energyResidual": 0.00031013775151222944,
+      "energyResidualRelative": 6.956806004766825e-10
+    },
+    {
+      "cells": 2562,
+      "seconds": 10,
+      "conductionDecay": 0.005485449336379511,
+      "energyResidual": 0.08152914815582335,
+      "energyResidualRelative": 4.582727851350069e-8
+    }
+  ],
+  "loss": {
+    "seconds": 10,
+    "initialMass": 474.600000500679,
+    "remainingMass": 375.01979264616966,
+    "escaped": 99.58020785450935,
+    "massResidual": 0,
+    "energyResidual": 0.000005382327799452469,
+    "initialAtmosphere": {
+      "mass": 138.60000050067902,
+      "temperature": 20.000000000000057,
+      "molarMass": 0.016691419255048575,
+      "pressure": 0.11000000039736431,
+      "scaleHeightKm": 1488.5444585708246,
+      "heightKm": null,
+      "displayHeightKm": 250,
+      "boundaryKind": "unbounded",
+      "heightLimited": true,
+      "minimumBinding": 0.6456995850377902,
+      "escapeRegime": "weak-binding",
+      "profileValid": false,
+      "species": [
+        {
+          "id": "vapor",
+          "mass": 0,
+          "fraction": 0
+        },
+        {
+          "id": "nitrogen",
+          "mass": 12.600000500679016,
+          "fraction": 0.05416583869756633
+        },
+        {
+          "id": "methane",
+          "mass": 126,
+          "fraction": 0.9458341613024341
+        },
+        {
+          "id": "carbonDioxide",
+          "mass": 0,
+          "fraction": 0
+        }
+      ],
+      "color": [
+        0.6848335651646817,
+        0.5864999006437082,
+        0.8878333664520978
+      ]
+    },
+    "finalAtmosphere": {
+      "mass": 39.01979264616966,
+      "temperature": 19.99999999999966,
+      "molarMass": 0.016871255525175755,
+      "pressure": 0.030968089401721955,
+      "scaleHeightKm": 1472.677572852187,
+      "heightKm": null,
+      "displayHeightKm": 250,
+      "boundaryKind": "unbounded",
+      "heightLimited": true,
+      "minimumBinding": 0.6456995850377902,
+      "escapeRegime": "weak-binding",
+      "profileValid": false,
+      "species": [
+        {
+          "id": "vapor",
+          "mass": 0,
+          "fraction": 0
+        },
+        {
+          "id": "nitrogen",
+          "mass": 4.4827713668346405,
+          "fraction": 0.06918849930463239
+        },
+        {
+          "id": "methane",
+          "mass": 34.53702127933502,
+          "fraction": 0.9308115006953676
+        },
+        {
+          "id": "carbonDioxide",
+          "mass": 0,
+          "fraction": 0
+        }
+      ],
+      "color": [
+        0.6806272201947029,
+        0.5883026199165559,
+        0.8872324600278148
+      ]
+    }
+  },
+  "pressureLevels": [
+    {
+      "scaleHeightKm": 8.8,
+      "heightKm": 42.23718039080339,
+      "displayHeightKm": 42.23718039080339,
+      "heightLimited": false,
+      "kind": "finite"
+    },
+    {
+      "scaleHeightKm": 100,
+      "heightKm": 853.626591524195,
+      "displayHeightKm": 250,
+      "heightLimited": true,
+      "kind": "finite"
+    },
+    {
+      "scaleHeightKm": 300,
+      "heightKm": null,
+      "displayHeightKm": 250,
+      "heightLimited": true,
+      "kind": "unbounded"
+    }
+  ]
+}

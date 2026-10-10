@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{uid}/saves/{file} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null && request.auth.uid == uid && resource == null
+        && request.resource != null
+        && file.matches('^[a-zA-Z0-9_-]{1,80}\\.json\\.gz$')
+        && request.resource.size > 0 && request.resource.size <= 20 * 1024 * 1024
+        && request.resource.contentType == 'application/gzip';
+      // Revisions are immutable and cannot be listed by clients.
+    }
+  }
+}

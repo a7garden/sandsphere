@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-09",
+  "existingCode": false,
+  "framework": "Babylon.js + TypeScript + Vite",
+  "audience": "물질과 자연현상을 실험하는 샌드박스 플레이어",
+  "use": "구형 행성에 물질을 붓고 반응을 관측",
+  "tone": "minimal, tactile, quiet",
+  "preserve": ["구형 행성", "흰색 또는 검은색 배경", "둥근 입자", "연속된 표면"]
+}

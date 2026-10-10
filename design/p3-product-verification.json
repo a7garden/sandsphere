@@ -1,0 +1,299 @@
+{
+  "actualCellTemperature": 18.36703109741211,
+  "readings": {
+    "binding": "0.64",
+    "environment": "-0.0191 kJ",
+    "escapedEnergy": "-0.0418 kJ",
+    "escapedMass": "0.00103 kg",
+    "height": "0.0 km",
+    "note": "0.01atm 이하의 기체는 외곽선을 표시하지 않습니다.",
+    "regime": "약한 결합 · 가속 손실 근사",
+    "target": "17.7°C",
+    "temperature": "18.4"
+  },
+  "stats": {
+    "activeId": "planet-0b9c8482-e7c0-48e9-a3e5-4e51aa62e3e4",
+    "atmosphere": {
+      "boundaryKind": "hidden",
+      "color": [
+        0.7,
+        0.58,
+        0.89
+      ],
+      "displayHeightKm": 0,
+      "escapeRegime": "weak-binding",
+      "heightKm": 0,
+      "heightLimited": false,
+      "mass": 610.4422809630632,
+      "minimumBinding": 0.6382030887397724,
+      "molarMass": 0.016043,
+      "pressure": 0.007942262307612063,
+      "profileValid": false,
+      "scaleHeightKm": 1519.9204677023226,
+      "species": [
+        {
+          "fraction": 0,
+          "id": "vapor",
+          "mass": 0
+        },
+        {
+          "fraction": 0,
+          "id": "nitrogen",
+          "mass": 0
+        },
+        {
+          "fraction": 1,
+          "id": "methane",
+          "mass": 610.4422809630632
+        },
+        {
+          "fraction": 0,
+          "id": "carbonDioxide",
+          "mass": 0
+        }
+      ],
+      "temperature": 14.550932281042208
+    },
+    "atmosphereOptics": {
+      "color": [
+        0.14328903096448956,
+        0.6696395582504667,
+        0.9371615212224268
+      ],
+      "haze": 0.0032182299065455777,
+      "opacity": 0.0015922994859152387
+    },
+    "axisTilt": 23.5,
+    "backend": "WebGPU",
+    "camera": [
+      -1.0271551266426595,
+      1.5707963314666549,
+      20.037667511821017
+    ],
+    "cloudCells": 0,
+    "cloudMass": 0,
+    "discoveries": [
+      "atmosphere"
+    ],
+    "effects": {
+      "atmosphereRadii": [
+        0
+      ],
+      "cloudBanks": 0,
+      "cloudFamilies": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "cloudOpacity": 0.84,
+      "cloudPieces": 0,
+      "cloudStyle": "faceted",
+      "cloudVolumeMass": 0,
+      "escape": 0,
+      "flatClouds": true,
+      "gas": 0,
+      "grains": 0,
+      "grainsByMaterial": {
+        "carnivore": 0,
+        "ceramic": 0,
+        "clay": 0,
+        "glass": 0,
+        "herbivore": 0,
+        "ice": 0,
+        "iron": 0,
+        "plant": 0,
+        "salt": 0,
+        "sand": 0,
+        "soil": 0,
+        "water": 0
+      },
+      "heat": 0,
+      "layers": {
+        "atmosphere": true,
+        "clouds": true
+      },
+      "precipitationLayer": {
+        "enabled": false,
+        "highlightedCells": 0,
+        "intensityRange": [
+          0,
+          0
+        ],
+        "rainCells": 0,
+        "snowCells": 0,
+        "visible": false
+      },
+      "rain": 0,
+      "renderTiles": 2562,
+      "section": {
+        "amount": 1,
+        "cells": 104,
+        "clip": {
+          "customShaders": 8,
+          "halfWidth": 0.22000000000000064,
+          "normal": [
+            -0.22203404572086563,
+            0.9086923156622,
+            0.35352391432163854
+          ]
+        },
+        "enabled": true,
+        "triangles": 960,
+        "visible": true
+      },
+      "snow": 0,
+      "steam": 0
+    },
+    "enthalpy": 1314986.4821513337,
+    "environment": {
+      "ambient": 18,
+      "gravity": 0.01,
+      "orbitAngle": 2.7280851291035666,
+      "orbitDistance": 1,
+      "rotationRate": 0.05235987755982988,
+      "sun": [
+        -0.42016834797502833,
+        0.36514132195049326,
+        -0.8307408587304357
+      ],
+      "sunlight": 1
+    },
+    "escaped": 2463.9578406512737,
+    "impactEnergy": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "inFlightMass": 0,
+    "lastSavedAt": 1791600503443,
+    "lastStepEnergy": [
+      -719.6296905178315,
+      0,
+      -84.91583517193794,
+      0
+    ],
+    "mass": 21106.442280963063,
+    "observation": {
+      "cell": 0,
+      "pinned": false,
+      "selecting": false
+    },
+    "overview": false,
+    "paused": true,
+    "planets": [
+      {
+        "id": "planet-74af6709-5b30-4cd5-acbb-bedf8160f53e",
+        "mass": 21264.60003054142,
+        "name": "행성 01",
+        "paused": true,
+        "time": 11.433333333333303
+      },
+      {
+        "id": "planet-0b9c8482-e7c0-48e9-a3e5-4e51aa62e3e4",
+        "mass": 21106.442280963063,
+        "name": "행성 02",
+        "paused": true,
+        "time": 12.5333333333333
+      }
+    ],
+    "primary": "rock",
+    "progress": {
+      "completed": [],
+      "meteorCount": 0
+    },
+    "rainingCells": 0,
+    "removed": 0,
+    "renderRotation": {
+      "displayAngle": 0.6562437987498271,
+      "frozen": false,
+      "physicalAngle": 0.6562437987498687,
+      "sunPosition": [
+        -27.47151156500434,
+        2.015054789694659e-13,
+        -12.054710794284228
+      ]
+    },
+    "renderer": "WebGPUEngine",
+    "snowingCells": 0,
+    "spinAngle": 0.6562437987498687,
+    "spinPeriod": 120,
+    "spinning": true,
+    "stock": {
+      "carnivore": 0,
+      "ceramic": 0,
+      "glass": 0,
+      "herbivore": 0,
+      "ice": 0,
+      "iron": 0,
+      "plant": 8
+    },
+    "sun": [
+      -0.9157170521668268,
+      0,
+      -0.4018236931427726
+    ],
+    "supplied": 0,
+    "tidallyLocked": false,
+    "time": 12.5333333333333,
+    "tool": "observe",
+    "totals": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      37306.08648109436,
+      0,
+      0,
+      0,
+      20496,
+      0,
+      610.4422809630632,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "transferredIn": 0,
+    "transferredOut": 0
+  },
+  "temperatureReadoutError": 0.032968902587889204,
+  "verifiedAt": "2026-10-10T02:49:19.642Z",
+  "sourceSha256": {
+    "src/sim/model.ts": "1e7f508002fc50527c02b46ba0cbe609d3cfe308214e6b485ae966b4d1ab91ab",
+    "src/sim/sphere.ts": "8fe5eae607caefb3ee81885509ab8d317418a8bfb5c80e675dc80b0615c30c4a",
+    "src/sim/ecology.ts": "2ed950feae284b8a22ca3c5a133075108586e8eb75ce757a5a863eb059c9bf0b",
+    "src/sim/gases.ts": "76c54899b838683ee798ac3719dbe871bac2a3e9605b6802ae186d047662e209",
+    "src/sim/clouds.ts": "6fca0a2decb2d670f811564bf5b0321ced86353130589379f33117a66eb7a5e8",
+    "src/sim/physics.wgsl": "f41d17b100e1de401069dcb4f9e241484814247d9775924e8693e73c8e7eb08b",
+    "src/sim/progress.ts": "962f2fa6186707ad8ea6c9dbbb7ca684e445fe1c290cf0222ddfa8865b34a895",
+    "src/sim/system.ts": "2fd43e983732e03a0368e5c0daffd014b5a0db61930e31e15ff6ff8d16c04b9f",
+    "src/sim/session.ts": "325eb49b328dfcf153177708dde9f72642336db0a2601b3199135716a633697d",
+    "src/sim/gpu.ts": "efec3ddc86ff6b9f74b2b27d449d8b9af3c48d0bcd44523f68c8e521c9288d5c",
+    "src/render/planet.ts": "e6e9a9ec0c34de9b8a93dcd2fa794d67629075198a858210638770db15cc2713",
+    "src/render/precipitationLayer.ts": "96ce4958b1f5841dc434e749bcb160ca24cb9765e815dc6430522adfae704a58",
+    "src/main.ts": "561e265b2456e1d2ccdc33d3edb95a2eeadda2ec0f4a125f8f2f9d6ad392672a",
+    "src/sim/climate.ts": "3282662244bd06fae9bc582a4487630f13221fe606737b5ade82c0f3ba5f5483",
+    "src/sim/atmosphere.ts": "1b129b12943397c0c5cb59a36eab192ace6279a35ff64819e4a045fffa9dd263",
+    "src/sim/materialPhysics.ts": "d327ff296164ca4be81a7b43ca02f8824466c9400233e701b0d8b772191122f8",
+    "src/sim/waterPhysics.ts": "65c83403a56a9cc48bfb0c8ec1f2cd1d033876ec08b4c6b827c5e74d776e1078",
+    "src/ui/inspector.ts": "bd63cd0a2bcae43e04c6cf080e4ad64d5428e61a4f69e906731c3e69dcf4635e",
+    "src/ui/depthProfile.ts": "6c0288ebd4403e3edb10e15764a482a7d8daa3a139cc30f7b359a6317f01baa3",
+    "src/render/sectionGeometry.ts": "17706de706bd02230d8703fc3e927e627c5b27a1d0cd6398251178a761b6897b",
+    "src/render/sky.ts": "f8ff77ce4e0393e815766ec621e4cc24a3f63ca54673423859816e5048e16eb0",
+    "tests/p3-science.test.ts": "73bb837deb4064d30008607440e5ba8554914707a70a427c4022123b949d228d",
+    "tests/atmosphere.test.ts": "d79c9c7021474dd5b5b8ac2863e52f934ced971ca23d8bfebd49a0ee216a37e1",
+    "tests/section-lab.ts": "339647a959b7534acb6bdb08902690677ef661f1906fb4591cd49375b4155faf",
+    "tests/section-lab.html": "fe78b207e22a8e28e29818c2ede0389e25cd31d45d855da773340cd1c1406bc7"
+  }
+}

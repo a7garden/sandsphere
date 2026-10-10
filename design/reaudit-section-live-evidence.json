@@ -1,0 +1,256 @@
+{
+  "after": {
+    "atmosphere": {
+      "boundaryKind": "unbounded",
+      "color": [
+        0.6844509469650161,
+        0.5866638798721311,
+        0.8877787067092837
+      ],
+      "displayHeightKm": 250,
+      "escapeRegime": "weak-binding",
+      "heightKm": null,
+      "heightLimited": true,
+      "mass": 1791.6595573425293,
+      "minimumBinding": 0.3347095329725355,
+      "molarMass": 0.016707777549577578,
+      "pressure": 0.09302489913512613,
+      "profileValid": false,
+      "scaleHeightKm": 1961.405008423994,
+      "species": [
+        {
+          "fraction": 0,
+          "id": "vapor",
+          "mass": 0
+        },
+        {
+          "fraction": 0.05553233226778594,
+          "id": "nitrogen",
+          "mass": 166.82373642921448
+        },
+        {
+          "fraction": 0.9444676677322086,
+          "id": "methane",
+          "mass": 1624.8358209133148
+        },
+        {
+          "fraction": 0,
+          "id": "carbonDioxide",
+          "mass": 0
+        }
+      ],
+      "temperature": 113.50246799036472
+    },
+    "energy": 2983689.7179352455,
+    "latestEnergy": [
+      -1814.6310722004623,
+      0,
+      -2022.420384764671,
+      0
+    ],
+    "latestEscape": 7.915728390216827,
+    "mass": 6927.659557342529,
+    "paused": false,
+    "pick": {},
+    "poured": 0,
+    "ready": true,
+    "time": 1.2666666666666673,
+    "visual": {
+      "atmosphereRadii": [
+        7.503431127690474
+      ],
+      "cloudBanks": 0,
+      "cloudFamilies": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "cloudOpacity": 0.84,
+      "cloudPieces": 0,
+      "cloudStyle": "faceted",
+      "cloudVolumeMass": 0,
+      "escape": 275,
+      "flatClouds": true,
+      "gas": 0,
+      "grains": 0,
+      "grainsByMaterial": {
+        "carnivore": 0,
+        "ceramic": 0,
+        "clay": 0,
+        "glass": 0,
+        "herbivore": 0,
+        "ice": 0,
+        "iron": 0,
+        "plant": 0,
+        "salt": 0,
+        "sand": 0,
+        "soil": 0,
+        "water": 0
+      },
+      "heat": 0,
+      "layers": {
+        "atmosphere": true,
+        "clouds": true
+      },
+      "precipitationLayer": {
+        "enabled": false,
+        "highlightedCells": 0,
+        "intensityRange": [
+          0,
+          0
+        ],
+        "rainCells": 0,
+        "snowCells": 0,
+        "visible": false
+      },
+      "rain": 0,
+      "renderTiles": 642,
+      "section": {
+        "amount": 1,
+        "cells": 52,
+        "clip": {
+          "customShaders": 8,
+          "halfWidth": 0.22000000000000064,
+          "normal": [
+            0.736685215797135,
+            0.4999999975403687,
+            0.4552964916244801
+          ]
+        },
+        "enabled": true,
+        "triangles": 471,
+        "visible": true
+      },
+      "snow": 0,
+      "steam": 0
+    }
+  },
+  "initial": {
+    "atmosphere": {
+      "boundaryKind": "unbounded",
+      "color": [
+        0.6847541267875759,
+        0.5865339456624673,
+        0.8878220181125107
+      ],
+      "displayHeightKm": 250,
+      "escapeRegime": "weak-binding",
+      "heightKm": null,
+      "heightLimited": true,
+      "mass": 2045.1113856434824,
+      "minimumBinding": 0.33118416759385416,
+      "molarMass": 0.01669481552937831,
+      "pressure": 0.1061843917779586,
+      "profileValid": false,
+      "scaleHeightKm": 1977.9129456543812,
+      "species": [
+        {
+          "fraction": 0,
+          "id": "vapor",
+          "mass": 0
+        },
+        {
+          "fraction": 0.05444954718722848,
+          "id": "nitrogen",
+          "mass": 186.85500651597977
+        },
+        {
+          "fraction": 0.9455504528127714,
+          "id": "methane",
+          "mass": 1858.2563791275024
+        },
+        {
+          "fraction": 0,
+          "id": "carbonDioxide",
+          "mass": 0
+        }
+      ],
+      "temperature": 116.45419098263665
+    },
+    "energy": 3104343.581340283,
+    "latestEnergy": [
+      -1854.8492781218863,
+      0,
+      -2374.208790242672,
+      0
+    ],
+    "latestEscape": 9.043831557035446,
+    "mass": 7181.111385643482,
+    "paused": false,
+    "pick": {},
+    "poured": 0,
+    "ready": true,
+    "time": 0.26666666666666666,
+    "visual": {
+      "atmosphereRadii": [
+        7.503431127690474
+      ],
+      "cloudBanks": 0,
+      "cloudFamilies": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "cloudOpacity": 0.84,
+      "cloudPieces": 0,
+      "cloudStyle": "faceted",
+      "cloudVolumeMass": 0,
+      "escape": 205,
+      "flatClouds": true,
+      "gas": 0,
+      "grains": 0,
+      "grainsByMaterial": {
+        "carnivore": 0,
+        "ceramic": 0,
+        "clay": 0,
+        "glass": 0,
+        "herbivore": 0,
+        "ice": 0,
+        "iron": 0,
+        "plant": 0,
+        "salt": 0,
+        "sand": 0,
+        "soil": 0,
+        "water": 0
+      },
+      "heat": 0,
+      "layers": {
+        "atmosphere": true,
+        "clouds": true
+      },
+      "precipitationLayer": {
+        "enabled": false,
+        "highlightedCells": 0,
+        "intensityRange": [
+          0,
+          0
+        ],
+        "rainCells": 0,
+        "snowCells": 0,
+        "visible": false
+      },
+      "rain": 0,
+      "renderTiles": 642,
+      "section": {
+        "amount": 1,
+        "cells": 52,
+        "clip": {
+          "customShaders": 8,
+          "halfWidth": 0.22000000000000064,
+          "normal": [
+            0.736685215797135,
+            0.4999999975403687,
+            0.4552964916244801
+          ]
+        },
+        "enabled": true,
+        "triangles": 471,
+        "visible": true
+      },
+      "snow": 0,
+      "steam": 0
+    }
+  }
+}

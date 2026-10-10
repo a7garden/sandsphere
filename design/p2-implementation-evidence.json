@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-10-10T02:27:38.544Z",
+  "backend": "CPU + real browser WebGPU",
+  "sourceSha256": {
+    "src/sim/model.ts": "d67f531343f413e7fcbf7764143d4e0e5939b87bcd51c6f8e6a27b450a98d652",
+    "src/sim/sphere.ts": "8fe5eae607caefb3ee81885509ab8d317418a8bfb5c80e675dc80b0615c30c4a",
+    "src/sim/ecology.ts": "2ed950feae284b8a22ca3c5a133075108586e8eb75ce757a5a863eb059c9bf0b",
+    "src/sim/gases.ts": "c7ab8c5c183d73d1a3db73a13f7e2af8db14e7e65294f16cc51912a708667f62",
+    "src/sim/clouds.ts": "6fca0a2decb2d670f811564bf5b0321ced86353130589379f33117a66eb7a5e8",
+    "src/sim/physics.wgsl": "e528bfc7cf4e90caf1d96e054d4962792f5adb490fd9afe78996566093dedf0f",
+    "src/sim/progress.ts": "962f2fa6186707ad8ea6c9dbbb7ca684e445fe1c290cf0222ddfa8865b34a895",
+    "src/sim/system.ts": "2fd43e983732e03a0368e5c0daffd014b5a0db61930e31e15ff6ff8d16c04b9f",
+    "src/sim/session.ts": "325eb49b328dfcf153177708dde9f72642336db0a2601b3199135716a633697d",
+    "src/sim/gpu.ts": "efec3ddc86ff6b9f74b2b27d449d8b9af3c48d0bcd44523f68c8e521c9288d5c",
+    "src/render/planet.ts": "04bdaa1dccc0d95fcf12f20d5ef595976ccbd4c0ecce4f22064bc2dd704ed7a5",
+    "src/render/precipitationLayer.ts": "96ce4958b1f5841dc434e749bcb160ca24cb9765e815dc6430522adfae704a58",
+    "src/main.ts": "386219cb83ba0f58c4ac755684615def9737073a5f27a6613233f5e61f586645",
+    "src/sim/waterPhysics.ts": "65c83403a56a9cc48bfb0c8ec1f2cd1d033876ec08b4c6b827c5e74d776e1078",
+    "src/sim/materialPhysics.ts": "d327ff296164ca4be81a7b43ca02f8824466c9400233e701b0d8b772191122f8",
+    "src/sim/atmosphere.ts": "f7a3d278fdbd8d567401df890d718d5adc779ff52c297a10dd80928c8d6353ae",
+    "src/sim/meteor.ts": "5a3f3856c29e7ed906ef66faddfc55cd176042ba46d73f93c1ca8d2cf6d0d164",
+    "src/sim/clock.ts": "2b5e79aa95975a1d1237b40fd251d97e5e80f3a893dc34081a40863c0faa9a03",
+    "src/ui/content.ts": "7ea247b08e0f8035a6f4581682394d747ee8d49605915cb18722c7f5385e83ae",
+    "src/ui/inspector.ts": "54737b678f9abef409514f4032b921412d488bfdda9e1c919109a827309be835",
+    "src/ui/observatory.ts": "6c12fb8cacc43b5b2a45591fea903d89d35792de744ef66df76ba907ccda0ec4",
+    "src/ui/depthProfile.ts": "6bc5922b92a3376a272f887e8cf2632b07e9c353b19a0929d5de1b1d4f62a0d4",
+    "src/render/sectionGeometry.ts": "17706de706bd02230d8703fc3e927e627c5b27a1d0cd6398251178a761b6897b",
+    "src/render/sectionView.ts": "804285283302be4cb91ea90664a6417b34c169e321e8951d2d98a3354f70218d",
+    "src/render/sectionCamera.ts": "21316b50a39fed5461a217c61342f1da4bbf4c677fbb6ef9cfb34821269ebf47",
+    "src/render/sectionClip.ts": "850a0c63dce7313fbe1555a706a7c82a0920ac66feb6a9f073268009456a36ab",
+    "tests/atmosphere.test.ts": "369376648acd8b30e5d1f0d23d29b20ae85698f683653b75dadd0ef98716cc34",
+    "tests/clouds.test.ts": "fda34aa0cf80d82c14a99870704fa44ba3975841b136a55cf40790117f0c8e4b",
+    "tests/depth-profile.test.ts": "bd58c5a7f9482fd700c468f9f1e8855e4f99f097a5c9d367e309b93c6c516d6e",
+    "tests/ecology-meteor.test.ts": "bcfe6c4075421cf1d31e790fd7877de209e491113d910f71612ee0f19fbabce7",
+    "tests/observation-point.test.ts": "ade0389e93a2ce44f2dc08fe88f324821ae35e79f7c09bdba925527665e04f12",
+    "tests/orbit-angles.test.ts": "888ba7b90cdea324699f820ac02f29dd7d42961c5ef20e31abf86d1d41495a32",
+    "tests/p2-science.test.ts": "6db6cf1d96e405e986b5a6a6fa3c47839cb6e4c8ab69fd896e1001403e2ba59e",
+    "tests/physics.test.ts": "6603805aec256dd79e5acc138ca7719bf27dcb4cbc37dc0a96fe8b5c9429aca2",
+    "tests/precipitation-layer.test.ts": "cec5d2ca3ab83b2f01a362dede9606b38c9e78130be45fbadb9df5d0a14f97ad",
+    "tests/render-budget.test.ts": "6f435134567d910cd3f43f5031d4dbcfce71d923182e9fbb94eda9606b7161fc",
+    "tests/render-cells.test.ts": "3f47325f45f4db64898e40ac3fefcb2dc47d02fe691f810f610f7e947ad01801",
+    "tests/render-chunks.test.ts": "8426b740e0cb7686f76c5b3811468d741097550932ac9919587b5e0f56a07b11",
+    "tests/render-lab.ts": "de337697ee5ebea90c0d56409f6826ef62353e8bde77e6483dd236b5d99dc16f",
+    "tests/render-physics.test.ts": "c47475b1ed9e5abf43cdf086aa4d46d5f9e3d7cf107dc885f03a841d247a88ba",
+    "tests/rotation-frame.test.ts": "5030aec91eeb91926a2a1a88aa5e854e03ebbceb237c128d98dde28ab9e7a29b",
+    "tests/scene-marker.test.ts": "b675a28b4712e18fc8b036ff0247a4f06f580391e153759717e4ab50a544de4f",
+    "tests/science-contract.test.ts": "fb7c6b38f7ee59bf9dc4a30a31eb05f9cb31bf947d5e25939d740e80a54fa9cb",
+    "tests/section-lab.html": "f5c1a6298f8ca4aa7362723a6bdd480508082ea7aaabf366f250e1d8595390dd",
+    "tests/section-lab.ts": "51b98999dc52155e27bf1bd06405d9551e73c0c4f763bb8493eac7e06df7cfa9",
+    "tests/section.test.ts": "134f0ef7c652580d338020f53e7bc5bc87d80a66dbbde2cfab4552bcf56f9b81",
+    "tests/session.test.ts": "448dc8a5c81c362feb994630a74d96df7ba5a4517712ac2e7f8782727d51daa0",
+    "tests/spin-period.test.ts": "cf68498b724ed2e86a9e2f316495bd02f52485993c408f33de668a416a76ebde",
+    "tests/surface.test.ts": "d21c69d46deb353b7bc46b55e70a835a1e5ce520ff891819e910ad07eb4675e1",
+    "tests/system.test.ts": "9abe7c9414dc48e56b3a73aaa4f57fbf910a0ce8ee99c09af1944a6b1379bf29",
+    "tests/timestep.test.ts": "50ea64bda4e72fa4767a1392fc815a5d7288d5793b5ad5961e8fb376a6064ff1"
+  },
+  "validation": {
+    "tests": {
+      "command": "npm test",
+      "passed": true,
+      "files": 22,
+      "count": 134,
+      "log": "\n> sandsphere@0.1.0 test\n> vitest run\n\n\n RUN  v5.0.3 /Users/garden/Workspace/Projects/sandsphere\n\n\n Test Files  22 passed (22)\n      Tests  134 passed (134)\n   Start at  11:23:05\n   Duration  4.13s (tests 64%, transform 30%, import 6%, worker 1%)\n\n  Transform  transforming modules took 3.58s · 30% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
+    },
+    "build": {
+      "command": "npm run build",
+      "passed": true,
+      "warning": "Existing bundle exceeds 500 kB after minification"
+    },
+    "timestep": {
+      "duration": 2,
+      "referenceDt": 0.008333333333333333,
+      "coarseDt": 0.03333333333333333,
+      "fineDt": 0.016666666666666666,
+      "coarseError": {
+        "massRelative": 0.00012400300682556482,
+        "temperatureMean": 0.0006919588361467634
+      },
+      "fineError": {
+        "massRelative": 0.00004130644701506325,
+        "temperatureMean": 0.0002254304431733631
+      }
+    },
+    "spatial": [
+      {
+        "cells": 42,
+        "decay": 0.008374181126106328
+      },
+      {
+        "cells": 162,
+        "decay": 0.008681388697881043
+      },
+      {
+        "cells": 642,
+        "decay": 0.008758668103366674
+      },
+      {
+        "cells": 2562,
+        "decay": 0.008775140722613428
+      }
+    ],
+    "gpu": {
+      "path": "design/p2-gpu-verification.json",
+      "passed": true,
+      "scenarios": 17
+    },
+    "section": {
+      "path": "design/p2-section-verification.json",
+      "changedSlots": 0,
+      "timeUnchanged": true,
+      "massUnchanged": true,
+      "enthalpyUnchanged": true
+    }
+  }
+}

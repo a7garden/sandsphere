@@ -1,0 +1,290 @@
+[
+  {
+    "controls": [
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 34,
+          "right": 78,
+          "top": 258,
+          "width": 44,
+          "x": 34,
+          "y": 258
+        },
+        "text": "회전",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 80,
+          "right": 124,
+          "top": 258,
+          "width": 44,
+          "x": 80,
+          "y": 258
+        },
+        "text": "이동",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 134,
+          "right": 198.6796875,
+          "top": 258,
+          "width": 64.6796875,
+          "x": 134,
+          "y": 258
+        },
+        "text": "표면 확대",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 200.6796875,
+          "right": 244.6796875,
+          "top": 258,
+          "width": 44,
+          "x": 200.6796875,
+          "y": 258
+        },
+        "text": "전체",
+        "visible": true
+      }
+    ],
+    "documentWidth": 320,
+    "scene": {
+      "bottom": 609,
+      "height": 420,
+      "left": 15,
+      "right": 305,
+      "top": 189,
+      "width": 290,
+      "x": 15,
+      "y": 189
+    },
+    "width": 320
+  },
+  {
+    "controls": [
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 34,
+          "right": 78,
+          "top": 258,
+          "width": 44,
+          "x": 34,
+          "y": 258
+        },
+        "text": "회전",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 80,
+          "right": 124,
+          "top": 258,
+          "width": 44,
+          "x": 80,
+          "y": 258
+        },
+        "text": "이동",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 134,
+          "right": 198.6796875,
+          "top": 258,
+          "width": 64.6796875,
+          "x": 134,
+          "y": 258
+        },
+        "text": "표면 확대",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 200.6796875,
+          "right": 244.6796875,
+          "top": 258,
+          "width": 44,
+          "x": 200.6796875,
+          "y": 258
+        },
+        "text": "전체",
+        "visible": true
+      }
+    ],
+    "documentWidth": 375,
+    "scene": {
+      "bottom": 599,
+      "height": 410,
+      "left": 15,
+      "right": 360,
+      "top": 189,
+      "width": 345,
+      "x": 15,
+      "y": 189
+    },
+    "width": 375
+  },
+  {
+    "controls": [
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 34,
+          "right": 78,
+          "top": 258,
+          "width": 44,
+          "x": 34,
+          "y": 258
+        },
+        "text": "회전",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 80,
+          "right": 124,
+          "top": 258,
+          "width": 44,
+          "x": 80,
+          "y": 258
+        },
+        "text": "이동",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 134,
+          "right": 198.6796875,
+          "top": 258,
+          "width": 64.6796875,
+          "x": 134,
+          "y": 258
+        },
+        "text": "표면 확대",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 200.6796875,
+          "right": 244.6796875,
+          "top": 258,
+          "width": 44,
+          "x": 200.6796875,
+          "y": 258
+        },
+        "text": "전체",
+        "visible": true
+      }
+    ],
+    "documentWidth": 414,
+    "scene": {
+      "bottom": 599,
+      "height": 410,
+      "left": 15,
+      "right": 399,
+      "top": 189,
+      "width": 384,
+      "x": 15,
+      "y": 189
+    },
+    "width": 414
+  },
+  {
+    "controls": [
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 40,
+          "right": 84,
+          "top": 258,
+          "width": 44,
+          "x": 40,
+          "y": 258
+        },
+        "text": "회전",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 86,
+          "right": 130,
+          "top": 258,
+          "width": 44,
+          "x": 86,
+          "y": 258
+        },
+        "text": "이동",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 140,
+          "right": 204.6796875,
+          "top": 258,
+          "width": 64.6796875,
+          "x": 140,
+          "y": 258
+        },
+        "text": "표면 확대",
+        "visible": true
+      },
+      {
+        "rect": {
+          "bottom": 302,
+          "height": 44,
+          "left": 206.6796875,
+          "right": 250.6796875,
+          "top": 258,
+          "width": 44,
+          "x": 206.6796875,
+          "y": 258
+        },
+        "text": "전체",
+        "visible": true
+      }
+    ],
+    "documentWidth": 768,
+    "scene": {
+      "bottom": 599,
+      "height": 410,
+      "left": 21,
+      "right": 747,
+      "top": 189,
+      "width": 726,
+      "x": 21,
+      "y": 189
+    },
+    "width": 768
+  }
+]

@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/saves/current {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['revision', 'format', 'savedAt'])
+        && request.resource.data.format == 1
+        && request.resource.data.revision is string
+        && request.resource.data.revision.matches('^[a-zA-Z0-9_-]{1,80}$')
+        && request.resource.data.savedAt is number && request.resource.data.savedAt >= 0;
+    }
+  }
+}

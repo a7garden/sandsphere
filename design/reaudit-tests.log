@@ -1,0 +1,13 @@
+
+> sandsphere@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /Users/garden/Workspace/Projects/sandsphere
+
+
+ Test Files  24 passed (24)
+      Tests  148 passed (148)
+   Start at  12:11:35
+   Duration  5.29s (tests 83%, transform 12%, import 5%, worker 1%)
+

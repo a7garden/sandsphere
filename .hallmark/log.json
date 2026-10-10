@@ -1,0 +1,310 @@
+[
+  {
+    "date": "2026-10-09",
+    "macrostructure": "Workbench",
+    "theme": "Cobalt",
+    "enrichment": "native Babylon.js scene",
+    "brief": "Sandsphere · 구형 행성 물질 실험 프로토타입",
+    "nav": "N9",
+    "footer": "Ft2"
+  },
+  {
+    "date": "2026-10-09",
+    "scope": "0.2 visual and mouse interaction revision",
+    "preserved": [
+      "Babylon.js scene",
+      "sphere surface simulation",
+      "material palette",
+      "research sources"
+    ],
+    "changes": [
+      "mouse-first unified pour and right-drag rotation",
+      "mouse zoom and directional controls",
+      "automatic session resume",
+      "independent space background and UI theme",
+      "visible sun and self-rotation",
+      "material stream and splash",
+      "heat, evaporation and ice effects",
+      "new discovery notifications",
+      "rain, cold and warm events"
+    ],
+    "verification": {
+      "responsiveWidths": [
+        320,
+        375,
+        414,
+        768
+      ],
+      "horizontalOverflow": false,
+      "mouseGameplay": [
+        "sand",
+        "water",
+        "clay",
+        "salt",
+        "ceramic",
+        "molten silica",
+        "glass",
+        "ice",
+        "rain",
+        "cold",
+        "warm",
+        "erase"
+      ],
+      "persistence": "mass, pause, spin, sun and active event restored",
+      "testsPassed": 12,
+      "build": "passed",
+      "gpuCpuMaxError": 2.47955322265625e-05,
+      "evidence": "artifacts/verification.json"
+    },
+    "critique": {
+      "philosophy": 4,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 5,
+      "variety": 4
+    },
+    "limitation": "Two-finger gestures implemented; in-app browser cannot automate touch events."
+  },
+  {
+    "date": "2026-10-09",
+    "scope": "Material atmosphere, planet creation, gravity and natural condensation",
+    "preserved": [
+      "Workbench layout",
+      "native Babylon.js scene",
+      "mouse-only primary controls",
+      "existing material reactions",
+      "existing user save slot"
+    ],
+    "changes": [
+      "one atmospheric pressure contour based on gas stock, molecular mass, temperature and gravity",
+      "nitrogen, methane and carbon dioxide inventories and supply",
+      "planet creation with main material, solar distance, atmosphere and gravity",
+      "fixed solar direction and editable rotation axis and period",
+      "solid and gas escape with mass ledger",
+      "removed manual rain, cold and warm events",
+      "visible clouds and drops driven by actual internal condensation"
+    ],
+    "verification": {
+      "responsiveWidths": [
+        320,
+        375,
+        414,
+        768
+      ],
+      "horizontalOverflow": false,
+      "mouseGameplay": [
+        "ice planet creation",
+        "low-gravity sand escape",
+        "methane supply",
+        "heat-driven evaporation and regional condensation",
+        "low-gravity methane escape"
+      ],
+      "persistence": "primary material, distance, gravity, mass, pause, axis, period, spin and escaped mass restored",
+      "fallback": "WebGL renderer and CPU solver restored the saved low-gravity planet",
+      "testsPassed": 22,
+      "build": "passed",
+      "gpuCpuMaxError": 3.814697265625e-05,
+      "evidence": "artifacts/atmosphere-verification.json"
+    },
+    "critique": {
+      "philosophy": 4,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 5,
+      "variety": 4
+    },
+    "limitations": [
+      "No vegetation, soil ecology, atmospheric circulation or ocean heat transport.",
+      "Pressure outline and escape are documented game approximations.",
+      "Touch automation unavailable; mouse interactions tested."
+    ]
+  },
+  {
+    "date": "2026-10-09",
+    "scope": "Persistent water clouds, independent atmosphere/cloud layers and particle redesign",
+    "preserved": [
+      "Workbench layout and tokens",
+      "Mouse-only primary controls",
+      "Existing material reactions",
+      "Existing user world and rotation settings"
+    ],
+    "changes": [
+      "Conserved cloud water/ice and simplified upper-air transport",
+      "Condensation, re-evaporation, rain/snow thresholds and cloud solar shading",
+      "Cloud volume driven by material stock",
+      "Composition/pressure-dependent atmosphere extinction with separate methane absorption/haze proxy",
+      "Independent persistent display toggles; hidden layers continue simulating",
+      "Fine precipitation strokes, small angular grains, clay clumps, salt crystals and near-surface water jet",
+      "Thin steam/gas/escape tracers and cloud discovery notification",
+      "Version 2 snapshots with exact legacy 16-field cell expansion",
+      "Atmosphere renders with camera inside its outer shell"
+    ],
+    "verification": {
+      "testsPassed": 31,
+      "build": "passed",
+      "responsiveWidths": [
+        320,
+        375,
+        414,
+        768
+      ],
+      "horizontalOverflow": false,
+      "layers": "All four display combinations keep mass and cloud stock unchanged; hidden cloud simulation continues.",
+      "persistence": "Cloud stock, world settings, pause and layer choices restore.",
+      "fallback": "WebGL and CPU restore the cloud world.",
+      "mouseGameplay": [
+        "Water planet heating and cloud/rain formation",
+        "Water, sand, clay and salt pouring",
+        "Methane atmosphere creation at 4x initial gas stock",
+        "Near-camera atmosphere at 0.5g"
+      ],
+      "gpuCpuMaxError": 5.14984130859375e-05,
+      "evidence": "artifacts/clouds-verification.json",
+      "finalUserScreenshot": "artifacts/clouds-final-user-world.png"
+    },
+    "critique": {
+      "philosophy": 4,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 5,
+      "variety": 4
+    },
+    "limitations": [
+      "One representative water-cloud layer with prescribed winds and shared thermal column.",
+      "Methane haze is an optical proxy; methane cloud/rain and photochemistry are not simulated.",
+      "Mouse-tested; touch automation unavailable."
+    ]
+  },
+  {
+    "date": "2026-10-09",
+    "task": "Sandsphere 0.2 simulation and visual redesign",
+    "structure": "Existing Workbench retained, larger scene, expandable environment, wide view and solar-system dialog",
+    "decisions": [
+      "Material names, small colour dots and supply counts; no pictorial material catalog",
+      "Domain-warped water normals, hydraulic coastline reconstruction, two-level render mesh",
+      "Rounded falling grains merge into the continuous surface",
+      "Finite product collection and interplanetary use",
+      "Conservative persistence and device-loss handoff"
+    ],
+    "validation": {
+      "date": "2026-10-09",
+      "tests": {
+        "passed": 45,
+        "files": 7,
+        "command": "npm test"
+      },
+      "build": {
+        "passed": true,
+        "command": "npm run build",
+        "warning": "Babylon entry bundle remains above 500 kB"
+      },
+      "gpuCpu": {
+        "supported": true,
+        "maxError": 5.7220458984375e-05,
+        "cpuMass": 29719.30291009284,
+        "gpuMass": 29719.30262266109,
+        "cpuEscaped": 35.50450417669283,
+        "gpuEscaped": 35.50479162028515,
+        "cpuRain": 0.024448520111036487,
+        "gpuRain": 0.02444842152272031,
+        "inputs": "20 x 0.1 s, gases, clouds, mineral products and collection command"
+      },
+      "browser": {
+        "qaOrigin": "http://localhost:5173/?test=1",
+        "userOriginPreserved": "http://127.0.0.1:5173/?test=1",
+        "products": {
+          "collectedIce": 71.9145917892456,
+          "suppliedToAnotherPlanet": 16,
+          "remainingStock": 55.914591789245605,
+          "destinationMassBefore": 29674.95736032931,
+          "destinationMassAfter": 29690.95736034421,
+          "restoredAfterReload": true
+        },
+        "fallback": {
+          "renderer": "Engine / WebGL",
+          "solver": "CPU",
+          "stockAndTwoWorldsRestored": true
+        },
+        "tidalLock": {
+          "orbitAngle": 0.4319689898685971,
+          "spinAngle": 0.4319689898685971,
+          "localSun": [
+            1,
+            0,
+            0
+          ]
+        },
+        "responsiveWidths": [
+          320,
+          375,
+          414,
+          768,
+          1280
+        ],
+        "horizontalOverflow": false,
+        "mobileToolPanel": "Opened and four tools present; no real-device multitouch automation",
+        "runtimeErrorsAfterFinalFix": []
+      },
+      "savedWorldRecovery": {
+        "cause": "Legacy cloud evaporation left negative Float32 roundoff near 1e-11; strict validation rejected it",
+        "fix": "Bound each evaporating phase by its actual stock; accept and normalize only negative roundoff >= -1e-7 on input without altering original object",
+        "userWorldRestored": true,
+        "subsequentAutosaveValid": true,
+        "subsequentNegativeCloudValues": 0
+      },
+      "evidence": [
+        "system-final.jpg",
+        "system-cpu.jpg",
+        "system-mobile.jpg",
+        "system-warehouse.jpg"
+      ],
+      "limits": [
+        "Four planets maximum",
+        "Inactive planets use conservative CPU rules at 5 Hz; active and inactive numerical trajectories can differ",
+        "No offline catch-up",
+        "No ecology, meteorite or campaign implementation",
+        "Single-layer cloud and shared thermal-column approximations remain"
+      ]
+    },
+    "critique": {
+      "philosophy": 4,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 4,
+      "variety": 4
+    }
+  },
+  {
+    "version": "0.3",
+    "date": "2026-10-09",
+    "direction": "orbital workbench",
+    "changes": [
+      "quiet rough-ocean reflection",
+      "unified liquid and frozen surface",
+      "curved shoreline with moving patchy foam",
+      "searchable inventory and eight pinned quick materials",
+      "in-scene orbit overview and camera travel",
+      "surface and planetary observatory",
+      "conservative biomass food web and meteors",
+      "persistent optional expeditions"
+    ],
+    "verification": "artifacts/v03-verification.json",
+    "critique": {
+      "philosophy": 4,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 4,
+      "variety": 4
+    },
+    "remainingLimits": [
+      "Simplified orbital planet previews",
+      "Ecological balance needs longer play sessions",
+      "No resolved shoreline wave physics"
+    ]
+  }
+]

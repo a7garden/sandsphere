@@ -1,0 +1,126 @@
+[
+  {
+    "pairs": [
+      {
+        "focusButtonContrast": 3.12621432709456,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "회전",
+        "textContrast": 14.202902650084395
+      },
+      {
+        "focusButtonContrast": 4.543163444358047,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "이동",
+        "textContrast": 14.202902650084395
+      },
+      {
+        "focusButtonContrast": 3.12621432709456,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "표면 확대",
+        "textContrast": 14.202902650084395
+      },
+      {
+        "focusButtonContrast": 4.543163444358047,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "전체",
+        "textContrast": 14.202902650084395
+      }
+    ],
+    "passed": true,
+    "sky": "white",
+    "theme": "dark"
+  },
+  {
+    "pairs": [
+      {
+        "focusButtonContrast": 4.043117742104464,
+        "focusPanelContrast": 4.090203739317379,
+        "label": "회전",
+        "textContrast": 8.40464568717086
+      },
+      {
+        "focusButtonContrast": 4.079848281394833,
+        "focusPanelContrast": 4.079848281394833,
+        "label": "이동",
+        "textContrast": 16.495306971601853
+      },
+      {
+        "focusButtonContrast": 4.043117742104464,
+        "focusPanelContrast": 4.079848281394833,
+        "label": "표면 확대",
+        "textContrast": 8.40464568717086
+      },
+      {
+        "focusButtonContrast": 4.079848281394833,
+        "focusPanelContrast": 4.079848281394833,
+        "label": "전체",
+        "textContrast": 16.495306971601853
+      }
+    ],
+    "passed": true,
+    "sky": "black",
+    "theme": "dark"
+  },
+  {
+    "pairs": [
+      {
+        "focusButtonContrast": 3.12621432709456,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "회전",
+        "textContrast": 14.202902650084395
+      },
+      {
+        "focusButtonContrast": 4.543163444358047,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "이동",
+        "textContrast": 14.202902650084395
+      },
+      {
+        "focusButtonContrast": 3.12621432709456,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "표면 확대",
+        "textContrast": 14.202902650084395
+      },
+      {
+        "focusButtonContrast": 4.543163444358047,
+        "focusPanelContrast": 4.543163444358047,
+        "label": "전체",
+        "textContrast": 14.202902650084395
+      }
+    ],
+    "passed": true,
+    "sky": "white",
+    "theme": "light"
+  },
+  {
+    "pairs": [
+      {
+        "focusButtonContrast": 4.043117742104464,
+        "focusPanelContrast": 4.090203739317379,
+        "label": "회전",
+        "textContrast": 8.40464568717086
+      },
+      {
+        "focusButtonContrast": 4.079848281394833,
+        "focusPanelContrast": 4.079848281394833,
+        "label": "이동",
+        "textContrast": 16.495306971601853
+      },
+      {
+        "focusButtonContrast": 4.043117742104464,
+        "focusPanelContrast": 4.079848281394833,
+        "label": "표면 확대",
+        "textContrast": 8.40464568717086
+      },
+      {
+        "focusButtonContrast": 4.079848281394833,
+        "focusPanelContrast": 4.079848281394833,
+        "label": "전체",
+        "textContrast": 16.495306971601853
+      }
+    ],
+    "passed": true,
+    "sky": "black",
+    "theme": "light"
+  }
+]

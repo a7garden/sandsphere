@@ -1,0 +1,30 @@
+
+> sandsphere@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /Users/garden/Workspace/Projects/sandsphere
+
+stdout | tests/p3-science.test.ts > P3 model domains and conservative game simplifications > converges large-scale heat conduction across sphere refinements after factoring out the known bath
+P3 thermal spatial convergence [{"cells":42,"decay":0.005232711264834711},{"cells":162,"decay":0.005426183245250127},{"cells":642,"decay":0.005475228671236287},{"cells":2562,"decay":0.005485449336379511}]
+
+ ❯ tests/p3-science.test.ts (11 tests | 1 failed) 5148ms
+   ❯ P3 model domains and conservative game simplifications (11)
+     × converges large-scale heat conduction across sphere refinements after factoring out the known bath 5010ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/p3-science.test.ts > P3 model domains and conservative game simplifications > converges large-scale heat conduction across sphere refinements after factoring out the known bath
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/p3-science.test.ts:79:2
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 23 passed (24)
+      Tests  1 failed | 147 passed (148)
+   Start at  12:10:14
+   Duration  5.55s (tests 75%, transform 19%, import 5%)
+

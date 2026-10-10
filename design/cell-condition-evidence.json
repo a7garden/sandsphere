@@ -1,0 +1,372 @@
+{
+  "generatedAt": "2026-10-10T00:44:01.074Z",
+  "backend": "CPU",
+  "sourceSha256": {
+    "src/sim/model.ts": "bc4629e7aa39a4b692426ee2cafc35ab9376c02b88a792800e09da3cd9c572fd",
+    "src/sim/sphere.ts": "8fe5eae607caefb3ee81885509ab8d317418a8bfb5c80e675dc80b0615c30c4a",
+    "src/sim/ecology.ts": "58f524de80530904b7e63a06ee23dd84f250595217a2189e37e869a98b5930d9",
+    "src/sim/gases.ts": "c7ab8c5c183d73d1a3db73a13f7e2af8db14e7e65294f16cc51912a708667f62",
+    "src/sim/clouds.ts": "9034466f7eea289d34131098acf798cfb289a6ac81fda750d848e3a292013ea8",
+    "src/sim/physics.wgsl": "9b50a4c89d74a59aad7a8e5c2590dbe1c01828d63889b14df009f9f9527207f5",
+    "src/sim/progress.ts": "962f2fa6186707ad8ea6c9dbbb7ca684e445fe1c290cf0222ddfa8865b34a895",
+    "src/sim/system.ts": "83a0b385e9e05d0fc7911fd61577ff6da540835ffa3856df72fe90ec14d91412",
+    "src/sim/session.ts": "325eb49b328dfcf153177708dde9f72642336db0a2601b3199135716a633697d",
+    "src/sim/gpu.ts": "1183352bee134b4e0d2f184dd46831e34bf128629944343e9bdd5049844ff40b",
+    "src/render/planet.ts": "247359687f2e8313b1b96ad2e6ee65d04077aea6d6b7d75e0621038cc517ccba",
+    "src/render/precipitationLayer.ts": "ce4ec0b6a547761fc23007d051151977810e2c335d482baa80e7817d9d259867",
+    "src/main.ts": "12655c139fd62e1593d2a08f87795937ce6f5e445972340256beaafdbb57f608",
+    "src/sim/atmosphere.ts": "bf181df772dc1d3c5a2b50fb12f97cf21f8019ee356eb8e1cda0488947c464b3",
+    "src/sim/orbit.ts": "7e5bc8203bd969a837989c3ecaec47f5d794dd18a691ce35d4968b8402d90ef0",
+    "src/sim/meteor.ts": "8d6cc199c862731d95fd223ac0692cec02c510fc4b025338fd4b101614d74a7b",
+    "src/sim/storage.ts": "0c3dc0022e665073ef1627ad8f5275818f8c642d943962d3259a4f02c4095bd6",
+    "src/sim/optics.ts": "e7b16b8b256837d81cbce24ac6523972b659b00e9e8c4bd079f51bc0877c5f4f"
+  },
+  "gridCount": 2562,
+  "units": "game mass, °C, game seconds; energy in constant-cp game units",
+  "conditions": {
+    "reactionIsolation": "Ambient equals initial temperature and sunlight=0 to suppress external thermal forcing. High ambient values are solver-only isolation, outside normal UI range.",
+    "energyReference": {
+      "water": 0,
+      "ice": -334,
+      "cloud": 0,
+      "cloudIce": -334,
+      "vapor": 2475,
+      "baseCapacity": 28
+    },
+    "limitations": "CPU numerical probes; WGSL inspected statically, not executed on a GPU. No measured materials calibration or player incidence estimate."
+  },
+  "results": {
+    "brineFreeze": [
+      {
+        "dissolved": 0,
+        "dt": 0,
+        "initialFreezingPoint": 0,
+        "water": 7.910179615020752,
+        "ice": 2.089820384979248,
+        "temperature": 0,
+        "finalFreezingPoint": 0,
+        "energyResidual": -0.00000858306884765625,
+        "predictedReferenceResidual": 0
+      },
+      {
+        "dissolved": 0.36000001430511475,
+        "dt": 0,
+        "initialFreezingPoint": -1.8764478764478763,
+        "water": 8.294880867004395,
+        "ice": 1.705119013786316,
+        "temperature": -1.8764479160308838,
+        "finalFreezingPoint": -2.2461315226715017,
+        "energyResidual": 6.6550922294845805,
+        "predictedReferenceResidual": 6.655099261221277
+      },
+      {
+        "dissolved": 2,
+        "dt": 0,
+        "initialFreezingPoint": -9,
+        "water": 9.785927772521973,
+        "ice": 0.2140718549489975,
+        "temperature": -9,
+        "finalFreezingPoint": -9.163470376239204,
+        "energyResidual": 4.007439586217515,
+        "predictedReferenceResidual": 4.007425124645233
+      }
+    ],
+    "boilingBoundary": [
+      {
+        "initialTemperature": 99.9,
+        "dt": 0.03333333333333333,
+        "water": 9.999640464782715,
+        "vapor": 0.0003596666792873293,
+        "cloud": 0,
+        "temperature": 99.88836669921875
+      },
+      {
+        "initialTemperature": 100,
+        "dt": 0.03333333333333333,
+        "water": 10,
+        "vapor": 0,
+        "cloud": 0,
+        "temperature": 100
+      },
+      {
+        "initialTemperature": 100.1,
+        "dt": 0.03333333333333333,
+        "water": 9.996907234191895,
+        "vapor": 0.0030925536993891,
+        "cloud": 0,
+        "temperature": 100
+      },
+      {
+        "initialTemperature": 120,
+        "dt": 0.03333333333333333,
+        "water": 9.38148021697998,
+        "vapor": 0.6185201406478882,
+        "cloud": 0,
+        "temperature": 100
+      }
+    ],
+    "pause": {
+      "boiling": {
+        "dt": 0,
+        "water": 9.38148021697998,
+        "ice": 0,
+        "vapor": 0.6185201406478882,
+        "salt": 0,
+        "dissolved": 0,
+        "temperature": 100
+      },
+      "crystallization": {
+        "dt": 0,
+        "water": 0,
+        "ice": 0,
+        "vapor": 0,
+        "salt": 1,
+        "dissolved": 0,
+        "temperature": 20
+      },
+      "freeze": {
+        "dt": 0,
+        "water": 7.910179615020752,
+        "ice": 2.089820384979248,
+        "vapor": 0,
+        "salt": 0,
+        "dissolved": 0,
+        "temperature": 0
+      }
+    },
+    "precipitationBoundary": {
+      "initialTemperature": 0.1,
+      "initialCloudIce": 10,
+      "dt": 0.03333333333333333,
+      "water": 0.0647515058517456,
+      "ice": 0,
+      "cloudIce": 9.931648254394531,
+      "vapor": 0.12259882688522339,
+      "temperature": -0.5431676506996155,
+      "rainDiagnostic": 0.0647515058517456,
+      "snowDiagnostic": 0,
+      "energyResidual": -0.00013785165629087714
+    },
+    "brineRain": {
+      "initialTemperature": -1,
+      "initialFreezingPoint": -1.8764478764478763,
+      "dt": 0.03333333333333333,
+      "water": 9.999990463256836,
+      "ice": 0.009830721653997898,
+      "dissolved": 0.36000001430511475,
+      "temperature": -0.9607623815536499,
+      "finalFreezingPoint": -1.8764496757579137
+    },
+    "freshClayHistory": {
+      "initialClay": 1,
+      "initialFiring": 29,
+      "addedClay": 100,
+      "externalHeat": 98000,
+      "dt": 1,
+      "afterInput": {
+        "clay": 101,
+        "firing": 29,
+        "temperature": 1000
+      },
+      "clay": 0,
+      "ceramic": 101,
+      "firing": 0,
+      "temperature": 1000
+    },
+    "foodWebExtreme": [
+      {
+        "temperature": -100,
+        "suitability": 0,
+        "dt": 1,
+        "before": [
+          10,
+          10,
+          2,
+          1
+        ],
+        "after": [
+          10.3166592,
+          9.65752,
+          2.0053658,
+          1.020455
+        ],
+        "biomassResidual": 0
+      },
+      {
+        "temperature": 22,
+        "suitability": 0.96,
+        "dt": 1,
+        "before": [
+          10,
+          10,
+          2,
+          1
+        ],
+        "after": [
+          9.41785056,
+          10.55632864,
+          2.0053658,
+          1.020455
+        ],
+        "biomassResidual": 0
+      },
+      {
+        "temperature": 1000,
+        "suitability": 0,
+        "dt": 1,
+        "before": [
+          10,
+          10,
+          2,
+          1
+        ],
+        "after": [
+          10.3166592,
+          9.65752,
+          2.0053658,
+          1.020455
+        ],
+        "biomassResidual": 0
+      }
+    ],
+    "cloudIceTransport": {
+      "dt": 0.1,
+      "energyResidual": -0.00003689783625304699,
+      "massResidual": 9.822844049267587e-8,
+      "sourceCloudIce": 0.9230517745018005,
+      "totalCloudIce": 0.9827142706735379
+    },
+    "escapeEnergy": {
+      "dt": 1,
+      "gravity": 0.03,
+      "removed": 2.20782470703125,
+      "temperature": 20,
+      "energyChange": -45.92275390634313,
+      "predictedMeanEnthalpyChange": -45.922753906249994
+    },
+    "phaseCoverage": [
+      {
+        "material": "glass",
+        "initialTemperature": 1900,
+        "dt": 1,
+        "glass": 10,
+        "molten": 0,
+        "dissolved": 0,
+        "temperature": 1900
+      },
+      {
+        "material": "iron",
+        "initialTemperature": 2000,
+        "dt": 1,
+        "iron": 10,
+        "molten": 0,
+        "dissolved": 0,
+        "temperature": 2000
+      },
+      {
+        "material": "ceramic",
+        "initialTemperature": 2000,
+        "dt": 1,
+        "ceramic": 10,
+        "molten": 0,
+        "dissolved": 0,
+        "temperature": 2000
+      },
+      {
+        "material": "salt",
+        "initialTemperature": 1000,
+        "dt": 1,
+        "salt": 10,
+        "molten": 0,
+        "dissolved": 0,
+        "temperature": 1000
+      }
+    ],
+    "ceramicSensibleHeat": {
+      "dt": 0.2,
+      "clay": 0,
+      "ceramic": 10,
+      "temperature": 1000,
+      "sensibleHeatChange": -1000
+    },
+    "cloudPhasePolicy": [
+      {
+        "initialColumnTemperature": -1,
+        "initialDiagnosticAirTemperature": -13,
+        "cloud": 0,
+        "cloudIce": 0.09000000357627869,
+        "temperature": -1
+      },
+      {
+        "initialColumnTemperature": 1,
+        "initialDiagnosticAirTemperature": -11,
+        "cloud": 4.6155874261488705e-11,
+        "cloudIce": 0.09000000357627869,
+        "temperature": 1
+      },
+      {
+        "initialColumnTemperature": 12.5,
+        "initialDiagnosticAirTemperature": 0.5,
+        "cloud": 0,
+        "cloudIce": 0.09000000357627869,
+        "temperature": 12.5
+      },
+      {
+        "initialColumnTemperature": 14.5,
+        "initialDiagnosticAirTemperature": 2.5,
+        "cloud": 0.0004500000213738531,
+        "cloudIce": 0.08955000340938568,
+        "temperature": 14.494278907775879
+      }
+    ],
+    "rotationSign": {
+      "positive": [
+        -0.11519999999999997,
+        0.1536,
+        -0.8351549814728784
+      ],
+      "negative": [
+        -0.11519999999999997,
+        0.1536,
+        -0.8351549814728784
+      ]
+    },
+    "stepSensitivity": [
+      {
+        "dt": 0.13333333333333333,
+        "steps": 30,
+        "elapsed": 4,
+        "waterAtSource": 5.660000324249268,
+        "totalMass": 999.9999333055575
+      },
+      {
+        "dt": 0.8,
+        "steps": 5,
+        "elapsed": 4,
+        "waterAtSource": 116.02342987060547,
+        "totalMass": 999.9999291389249
+      },
+      {
+        "dt": 0.03333333333333333,
+        "steps": 120,
+        "elapsed": 4,
+        "waterAtSource": 3.225513219833374,
+        "totalMass": 1000.0000393872997
+      },
+      {
+        "dt": 0.016666666666666666,
+        "steps": 240,
+        "elapsed": 4,
+        "waterAtSource": 3.15116548538208,
+        "totalMass": 1000.0006051238674
+      },
+      {
+        "dt": 0.008333333333333333,
+        "steps": 480,
+        "elapsed": 4,
+        "waterAtSource": 3.129342555999756,
+        "totalMass": 1000.0021713895633
+      }
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "before": {
+    "activeId": "planet-first",
+    "precipitation": {
+      "enabled": true,
+      "highlightedCells": 2562,
+      "intensityRange": [
+        0.8593547299037767,
+        0.8595108203596941
+      ],
+      "rainCells": 2562,
+      "snowCells": 0,
+      "visible": true
+    },
+    "section": {
+      "amount": 1,
+      "cells": 109,
+      "clip": {
+        "customShaders": 8,
+        "halfWidth": 0.22000000000000064,
+        "normal": [
+          -0.2035388098742055,
+          0.923876004326368,
+          0.32407573421183017
+        ]
+      },
+      "enabled": true,
+      "triangles": 1595,
+      "visible": true
+    }
+  },
+  "after": {
+    "activeId": "planet-second",
+    "paused": true,
+    "time": 123,
+    "precipitation": {
+      "enabled": true,
+      "highlightedCells": 0,
+      "intensityRange": [
+        0,
+        0
+      ],
+      "rainCells": 0,
+      "snowCells": 0,
+      "visible": false
+    },
+    "section": {
+      "amount": 1,
+      "cells": 109,
+      "clip": {
+        "customShaders": 8,
+        "halfWidth": 0.22000000000000064,
+        "normal": [
+          -0.2035388098742055,
+          0.923876004326368,
+          0.32407573421183017
+        ]
+      },
+      "enabled": true,
+      "triangles": 1595,
+      "visible": true
+    }
+  },
+  "consoleErrors": {
+    "product": [],
+    "section": []
+  }
+}

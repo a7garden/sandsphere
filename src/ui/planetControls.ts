@@ -1,0 +1,32 @@
+import {helpTip} from './helpTip';
+import {icon} from './icons';
+
+export function planetControlsMarkup() {
+  return `<section class="planet-controls" aria-label="행성과 시간 조작">
+<section id="planet-settings" class="planet-settings-panel" aria-label="행성 상세 조정" hidden>
+<div class="panel-title"><h2>행성 조정</h2><button id="planet-settings-close" class="icon-button" aria-label="행성 조정 접기">${icon('close')}</button></div>
+<div class="planet-settings-grid"><section class="rotation-settings" aria-label="자전 설정"><h3>자전</h3>
+<div class="rotation-actions"><button id="spin" class="spin-button" aria-pressed="false" title="행성의 화면 회전만 고정 / 재개">${icon('orbit')}<span id="spin-label">화면 회전 고정</span><output id="spin-angle" title="실제 자전 각도">0°</output></button>${helpTip('render-spin-help','화면 회전 고정','화면만 고정합니다. 자전·공전·날씨 계산은 계속됩니다.')}</div>
+<div class="control"><div class="precise-control"><span class="control-caption"><label for="spin-speed-number" class="control-label">실제 자전 속도</label>${helpTip('spin-speed-note','실제 자전 속도','0이면 실제 자전을 멈춥니다.')}</span><label class="numeric-control"><span class="visually-hidden">실제 자전 속도 직접 입력</span><input id="spin-speed-number" type="number" min="0" max="18" step="any" value="3" aria-describedby="spin-speed-note spin-speed-error"><span>°/s</span></label></div><p id="spin-speed-error" class="control-error" hidden>0 또는 0.3~18 °/s로 입력하세요.</p></div>
+<div class="control"><div class="precise-control"><label for="axis-tilt" class="control-label">자전축 기울기</label><label class="numeric-control"><span class="visually-hidden">자전축 기울기 직접 입력</span><input id="axis-number" type="number" min="0" max="180" step="0.5" value="0" aria-describedby="axis-error"><span>°</span></label></div><input id="axis-tilt" type="range" min="0" max="180" step="0.5" value="0" aria-label="자전축 기울기"><p id="axis-error" class="control-error" hidden>0~180°, 0.5° 단위로 입력하세요.</p></div>
+<div class="control"><div class="precise-control"><span class="control-caption"><label for="spin-period" class="control-label">자전 주기 <span id="spin-period-status" hidden>동기 자전 중</span></label>${helpTip('spin-period-note','동기 자전','동기 자전 표시에서 공전 주기와 맞춰 낮과 밤을 고정합니다. 자전축은 0°로 맞춰지고, 표시를 벗어나면 일반 자전으로 바뀝니다.')}</span><label class="numeric-control"><span class="visually-hidden">자전 주기 직접 입력</span><input id="period-number" type="number" min="20" max="1200" step="1" value="120" aria-describedby="period-error"><span>초</span></label></div><div class="spin-period-track"><input id="spin-period" type="range" min="20" max="1200" step="1" value="120" aria-label="자전 주기" aria-describedby="spin-period-note"><span id="sync-period-marker" class="sync-period-marker" aria-hidden="true"><i></i><span>동기 자전 <output id="sync-period-value">240초</output></span></span></div><p id="period-error" class="control-error" hidden>20~1,200초, 1초 단위로 입력하세요.</p></div>
+</section>
+<section class="display-settings" aria-label="단면 설정"><h3>단면 조정 ${helpTip('section-help','단면 조정','드래그로 절단면을 두 축으로 돌립니다. 이동 버튼 또는 Shift+드래그로 화면을 옮기고 휠로 확대합니다. 선택 지점 주변의 셀을 가로로 펼쳐 보여줍니다. 기반암은 숨기고 그 위의 표면 혼합물과 물을 표시합니다. 범위는 대략적인 셀 간격 기준입니다.')}</h3>
+<label class="control-label" for="section-angle">절단 방향 <output id="section-angle-value">0°</output></label><input id="section-angle" type="range" min="-180" max="180" step="1" value="0">
+<label class="control-label" for="section-tilt">절단 기울기 <output id="section-tilt-value">0°</output></label><input id="section-tilt" type="range" min="-180" max="180" step="1" value="0">
+<label class="control-label" for="section-width">관찰 띠 폭 <output id="section-width-value">보통</output></label><input id="section-width" type="range" min="0.08" max="0.8" step="0.02" value="0.22">
+</section></div></section>
+<div class="simulation-bar" aria-label="시뮬레이션 재생"><div class="time-controls"><button id="pause" class="icon-button" aria-label="일시 정지" title="일시 정지 / 재생">${icon('pause')}</button><button id="single-step" class="icon-button" aria-label="물리 한 단계 진행" title="한 단계 진행 · 일시정지 중에 사용" disabled>${icon('step')}</button><button id="speed" class="speed-button" aria-label="시간 속도 1배">1×</button></div><div class="planet-view-controls"><div class="camera-view-controls" role="group" aria-label="카메라 시점"><button data-camera-view="globe" aria-pressed="true">구면</button><button data-camera-view="section" title="주변 셀을 펼친 단면 · 기반암 숨김" aria-pressed="false">단면</button></div><button id="axis-align" class="icon-button" aria-label="자전축으로 정렬" title="자전축으로 정렬 · 현재 시점에서 한 번 맞추기">${icon('axis')}</button><button id="planet-settings-toggle" class="icon-button" aria-label="행성 조정" title="행성 조정" aria-controls="planet-settings" aria-expanded="false">${icon('settings')}</button><div class="zoom-controls" role="group" aria-label="확대와 축소"><button id="zoom-in" aria-label="확대">+</button><button id="zoom-out" aria-label="축소">−</button></div><button id="home" class="icon-button" aria-label="시점 되돌리기" title="처음 시점으로">${icon('home')}</button></div></div>
+
+</section>`;
+}
+
+export function sectionControlsMarkup(){return `<div id="section-controls" class="section-controls" hidden>
+<div class="section-actions"><div role="group" aria-label="단면 드래그 동작"><button data-section-navigation="rotate" aria-pressed="true" title="드래그로 절단면을 두 축으로 회전">회전</button><button data-section-navigation="pan" aria-pressed="false" title="드래그로 단면 화면 이동 · Shift로도 이동">이동</button></div><div role="group" aria-label="단면 표시 범위"><button data-section-framing="surface" aria-pressed="true" title="현재 관찰 범위를 화면에 맞춤">범위 맞춤</button></div></div>
+<label class="section-range-control" for="section-range"><span>관찰 범위 <output id="section-range-value">약 12셀</output></span><input id="section-range" type="range" min="6" max="36" step="1" value="12" aria-describedby="section-profile-note"></label><span id="section-profile-note" class="section-foundation-note">펼친 단면 · 기반암 숨김 · 표면 혼합물</span></div>`;}
+
+export function setPlanetSettings(open:boolean, restoreFocus=false) {
+  document.getElementById('planet-settings')!.hidden=!open;
+  document.getElementById('planet-settings-toggle')!.setAttribute('aria-expanded',String(open));
+  if(restoreFocus)document.getElementById('planet-settings-toggle')!.focus();
+}

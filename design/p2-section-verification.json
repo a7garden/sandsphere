@@ -1,0 +1,265 @@
+{
+  "before": {
+    "stats": {
+      "energy": 16174275.56564803,
+      "mass": 5515.424902965222,
+      "paused": true,
+      "poured": 0,
+      "ready": true,
+      "time": 0.26666666666666666,
+      "visual": {
+        "atmosphereRadii": [
+          7.009186270858833
+        ],
+        "cloudBanks": 13,
+        "cloudFamilies": [
+          5,
+          3,
+          2,
+          3
+        ],
+        "cloudOpacity": 0.84,
+        "cloudPieces": 29,
+        "cloudStyle": "faceted",
+        "cloudVolumeMass": 52.76797631359192,
+        "escape": 0,
+        "flatClouds": true,
+        "gas": 0,
+        "grains": 0,
+        "grainsByMaterial": {
+          "carnivore": 0,
+          "ceramic": 0,
+          "clay": 0,
+          "glass": 0,
+          "herbivore": 0,
+          "ice": 0,
+          "iron": 0,
+          "plant": 0,
+          "salt": 0,
+          "sand": 0,
+          "soil": 0,
+          "water": 0
+        },
+        "heat": 0,
+        "layers": {
+          "atmosphere": true,
+          "clouds": true
+        },
+        "precipitationLayer": {
+          "enabled": false,
+          "highlightedCells": 265,
+          "intensityRange": [
+            0.13711430897364163,
+            0.2562229970934545
+          ],
+          "rainCells": 265,
+          "snowCells": 0,
+          "visible": false
+        },
+        "rain": 0,
+        "renderTiles": 642,
+        "section": {
+          "amount": 1,
+          "cells": 55,
+          "clip": {
+            "customShaders": 8,
+            "halfWidth": 0.22000000000000064,
+            "normal": [
+              -0.5052640921315399,
+              -0.3122703748607152,
+              0.8044845618076455
+            ]
+          },
+          "enabled": true,
+          "triangles": 474,
+          "visible": true
+        },
+        "snow": 0,
+        "steam": 0
+      }
+    },
+    "totals": {
+      "cloud": 52.76337641496162,
+      "cloudIce": 0.004599898630317346,
+      "glass": 1752.4744296292774,
+      "herbivore": 53.648431807756424,
+      "ice": 531.9650220870972,
+      "molten": 191.52576959133148,
+      "plant": 528.8970116376877,
+      "vapor": 0.964068827831013,
+      "water": 79.92760530114174
+    }
+  },
+  "orbit": {
+    "energy": 16174275.56564803,
+    "mass": 5515.424902965222,
+    "paused": true,
+    "poured": 0,
+    "ready": true,
+    "time": 0.26666666666666666,
+    "visual": {
+      "atmosphereRadii": [
+        7.009186270858833
+      ],
+      "cloudBanks": 13,
+      "cloudFamilies": [
+        5,
+        3,
+        2,
+        3
+      ],
+      "cloudOpacity": 0.84,
+      "cloudPieces": 29,
+      "cloudStyle": "faceted",
+      "cloudVolumeMass": 52.76797631359192,
+      "escape": 0,
+      "flatClouds": true,
+      "gas": 0,
+      "grains": 0,
+      "grainsByMaterial": {
+        "carnivore": 0,
+        "ceramic": 0,
+        "clay": 0,
+        "glass": 0,
+        "herbivore": 0,
+        "ice": 0,
+        "iron": 0,
+        "plant": 0,
+        "salt": 0,
+        "sand": 0,
+        "soil": 0,
+        "water": 0
+      },
+      "heat": 0,
+      "layers": {
+        "atmosphere": true,
+        "clouds": true
+      },
+      "precipitationLayer": {
+        "enabled": false,
+        "highlightedCells": 265,
+        "intensityRange": [
+          0.13711430897364163,
+          0.2562229970934545
+        ],
+        "rainCells": 265,
+        "snowCells": 0,
+        "visible": false
+      },
+      "rain": 0,
+      "renderTiles": 642,
+      "section": {
+        "amount": 0,
+        "cells": 0,
+        "clip": {
+          "customShaders": 8,
+          "halfWidth": 1000000,
+          "normal": [
+            -0.5052640921315399,
+            -0.3122703748607152,
+            0.8044845618076455
+          ]
+        },
+        "enabled": false,
+        "triangles": 0,
+        "visible": false
+      },
+      "snow": 0,
+      "steam": 0
+    }
+  },
+  "after": {
+    "changedSlots": 0,
+    "stats": {
+      "energy": 16174275.56564803,
+      "mass": 5515.424902965222,
+      "paused": true,
+      "poured": 0,
+      "ready": true,
+      "time": 0.26666666666666666,
+      "visual": {
+        "atmosphereRadii": [
+          7.009186270858833
+        ],
+        "cloudBanks": 13,
+        "cloudFamilies": [
+          5,
+          3,
+          2,
+          3
+        ],
+        "cloudOpacity": 0.84,
+        "cloudPieces": 29,
+        "cloudStyle": "faceted",
+        "cloudVolumeMass": 52.76797631359192,
+        "escape": 0,
+        "flatClouds": true,
+        "gas": 0,
+        "grains": 0,
+        "grainsByMaterial": {
+          "carnivore": 0,
+          "ceramic": 0,
+          "clay": 0,
+          "glass": 0,
+          "herbivore": 0,
+          "ice": 0,
+          "iron": 0,
+          "plant": 0,
+          "salt": 0,
+          "sand": 0,
+          "soil": 0,
+          "water": 0
+        },
+        "heat": 0,
+        "layers": {
+          "atmosphere": true,
+          "clouds": true
+        },
+        "precipitationLayer": {
+          "enabled": false,
+          "highlightedCells": 265,
+          "intensityRange": [
+            0.13711430897364163,
+            0.2562229970934545
+          ],
+          "rainCells": 265,
+          "snowCells": 0,
+          "visible": false
+        },
+        "rain": 0,
+        "renderTiles": 642,
+        "section": {
+          "amount": 1,
+          "cells": 51,
+          "clip": {
+            "customShaders": 8,
+            "halfWidth": 0.22000000000000064,
+            "normal": [
+              -3.5483704110792014e-16,
+              1,
+              -2.1930134669532452e-16
+            ]
+          },
+          "enabled": true,
+          "triangles": 474,
+          "visible": true
+        },
+        "snow": 0,
+        "steam": 0
+      }
+    },
+    "totals": {
+      "cloud": 52.76337641496162,
+      "cloudIce": 0.004599898630317346,
+      "glass": 1752.4744296292774,
+      "herbivore": 53.648431807756424,
+      "ice": 531.9650220870972,
+      "molten": 191.52576959133148,
+      "plant": 528.8970116376877,
+      "vapor": 0.964068827831013,
+      "water": 79.92760530114174
+    }
+  },
+  "changedSlots": 0,
+  "recordedAt": "2026-10-10T02:27:38.546Z"
+}

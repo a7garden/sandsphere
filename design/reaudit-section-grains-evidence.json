@@ -1,0 +1,471 @@
+{
+  "after": [
+    {
+      "amount": 2,
+      "material": "sand",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "water",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "clay",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "salt",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "soil",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "ice",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "plant",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "herbivore",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "carnivore",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "iron",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "glass",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "ceramic",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    }
+  ],
+  "before": [
+    {
+      "amount": 2,
+      "material": "sand",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "water",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "clay",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "salt",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "soil",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "ice",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "plant",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "herbivore",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "carnivore",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "iron",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "glass",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    },
+    {
+      "amount": 2,
+      "material": "ceramic",
+      "position": [
+        -4.112537165804072,
+        6.654225071347365,
+        0
+      ],
+      "velocity": [
+        -0.00627457404248577,
+        -0.8267772743303476,
+        0
+      ]
+    }
+  ],
+  "grainsUnchanged": true,
+  "stateUnchanged": true,
+  "stats": {
+    "atmosphere": {
+      "boundaryKind": "hidden",
+      "color": [
+        0.648942181904619,
+        0.6018819220408773,
+        0.8827060259863739
+      ],
+      "displayHeightKm": 0,
+      "escapeRegime": "weak-binding",
+      "heightKm": 0,
+      "heightLimited": false,
+      "mass": 1.31260003359057,
+      "minimumBinding": 0.5275585839181921,
+      "molarMass": 0.018225904072927863,
+      "pressure": 0.00006815161129753739,
+      "profileValid": false,
+      "scaleHeightKm": 1445.9178502289874,
+      "species": [
+        {
+          "fraction": 0,
+          "id": "vapor",
+          "mass": 0
+        },
+        {
+          "fraction": 0.18234935034064553,
+          "id": "nitrogen",
+          "mass": 0.3678939751116559
+        },
+        {
+          "fraction": 0.8176506496593543,
+          "id": "methane",
+          "mass": 0.9447060584789142
+        },
+        {
+          "fraction": 0,
+          "id": "carbonDioxide",
+          "mass": 0
+        }
+      ],
+      "temperature": 37.783504457197694
+    },
+    "energy": 953385.1546327482,
+    "latestEnergy": [
+      -436.7352412830669,
+      0,
+      -0.4059263741946779,
+      0
+    ],
+    "latestEscape": 0.005439752683741972,
+    "mass": 5137.312600033591,
+    "paused": true,
+    "pick": {},
+    "poured": 24,
+    "ready": true,
+    "time": 57.4999999999993,
+    "visual": {
+      "atmosphereRadii": [
+        0
+      ],
+      "cloudBanks": 0,
+      "cloudFamilies": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "cloudOpacity": 0.84,
+      "cloudPieces": 0,
+      "cloudStyle": "faceted",
+      "cloudVolumeMass": 0,
+      "escape": 0,
+      "flatClouds": true,
+      "gas": 0,
+      "grains": 12,
+      "grainsByMaterial": {
+        "carnivore": 1,
+        "ceramic": 1,
+        "clay": 1,
+        "glass": 1,
+        "herbivore": 1,
+        "ice": 1,
+        "iron": 1,
+        "plant": 1,
+        "salt": 1,
+        "sand": 1,
+        "soil": 1,
+        "water": 1
+      },
+      "heat": 0,
+      "layers": {
+        "atmosphere": true,
+        "clouds": true
+      },
+      "precipitationLayer": {
+        "enabled": true,
+        "highlightedCells": 0,
+        "intensityRange": [
+          0,
+          0
+        ],
+        "rainCells": 0,
+        "snowCells": 0,
+        "visible": false
+      },
+      "rain": 0,
+      "renderTiles": 642,
+      "section": {
+        "amount": 1,
+        "cells": 48,
+        "clip": {
+          "customShaders": 8,
+          "halfWidth": 0.22000000000000064,
+          "normal": [
+            -1.652307445170943e-24,
+            1,
+            -1.0211821368741849e-24
+          ]
+        },
+        "enabled": true,
+        "triangles": 474,
+        "visible": true
+      },
+      "snow": 0,
+      "steam": 0
+    }
+  }
+}

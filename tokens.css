@@ -1,0 +1,105 @@
+:root {
+  --color-paper: oklch(97.2% 0.003 106);
+  --color-surface: oklch(99% 0.002 106);
+  --color-ink: oklch(27% 0.010 110);
+  --color-muted: oklch(51% 0.010 110);
+  --color-faint: oklch(62% 0.008 110);
+  --color-rule: oklch(88% 0.007 106);
+  --color-wash: oklch(93% 0.004 106);
+  --color-inverse: oklch(99% 0.002 106);
+  --color-focus: oklch(51% 0.15 251);
+  --color-water: oklch(65% 0.078 218);
+  --color-water-wash: oklch(93% 0.020 218);
+  --color-sand: oklch(79% 0.089 77);
+  --color-sand-wash: oklch(94% 0.023 77);
+  --color-clay: oklch(63% 0.086 44);
+  --color-clay-wash: oklch(94% 0.019 44);
+  --color-salt: oklch(87% 0.010 97);
+  --color-salt-wash: oklch(95% 0.004 97);
+  --color-hot: oklch(60% 0.13 39);
+  --color-cold: oklch(55% 0.09 244);
+  --color-success: oklch(49% 0.078 150);
+  --color-error: oklch(50% 0.14 27);
+  --color-scrim: oklch(20% 0.01 110 / 0.32);
+  --color-shadow: oklch(25% 0.01 110 / 0.08);
+  --color-transparent: transparent;
+  --color-space: oklch(13% 0.015 258);
+  --color-sky: oklch(98% 0.004 245);
+  --color-starlight: oklch(94% 0.006 245);
+  --color-star-muted: oklch(68% 0.020 245);
+  --color-ink-fixed: oklch(27% 0.010 110);
+  --color-muted-fixed: oklch(51% 0.010 110);
+  --color-solar: oklch(82% 0.11 74);
+  --color-gas-nitrogen: oklch(67% 0.079 232);
+  --color-gas-methane: oklch(65% 0.11 301);
+  --color-gas-carbon: oklch(68% 0.07 62);
+  --color-ice: oklch(84% 0.08 224);
+  --color-brush-shadow: oklch(18% 0.008 245 / .15);
+  --font-display: 'Space Grotesk', 'Apple SD Gothic Neo', sans-serif;
+  --font-body: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-lg: 18px;
+  --text-title: 24px;
+  --text-display: 48px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-round: 999px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-short: 150ms;
+  --dur-medium: 250ms;
+}
+[data-theme='dark'] {
+  --color-paper: oklch(22% 0.010 250);
+  --color-surface: oklch(26% 0.010 250);
+  --color-ink: oklch(94% 0.004 106);
+  --color-muted: oklch(76% 0.008 106);
+  --color-faint: oklch(64% 0.008 106);
+  --color-rule: oklch(38% 0.008 250);
+  --color-wash: oklch(30% 0.010 250);
+  --color-inverse: oklch(24% 0.010 250);
+  --color-focus: oklch(74% 0.10 244);
+  --color-water-wash: oklch(32% 0.025 218);
+  --color-sand-wash: oklch(32% 0.023 77);
+  --color-clay-wash: oklch(32% 0.019 44);
+  --color-salt-wash: oklch(32% 0.004 97);
+  --color-success: oklch(77% 0.09 150);
+  --color-error: oklch(76% 0.12 27);
+}
+
+/* Tactile material samples and the quieter observation workspace. */
+:root {
+  --color-panel-glass: oklch(99% 0.002 106 / .82);
+  --color-scene-glass: oklch(16% .014 250 / .76);
+  --color-scene-rule: oklch(72% .025 240 / .22);
+  --color-swatch-shade: oklch(25% .035 72 / .65);
+  --color-swatch-glint: oklch(99% .006 90 / .8);
+  --color-sand-deep: oklch(53% .073 67);
+  --color-clay-deep: oklch(40% .076 43);
+  --color-water-deep: oklch(34% .064 221);
+  --color-salt-deep: oklch(67% .02 95);
+  --radius-scene: 28px;
+}
+[data-theme='dark'] {
+  --color-paper: oklch(19% .012 250);
+  --color-surface: oklch(24% .013 250);
+  --color-rule: oklch(34% .012 250);
+  --color-panel-glass: oklch(24% .013 250 / .88);
+  --color-shadow: oklch(9% .015 250 / .25);
+}
+
+/* Diagnostic precipitation regions: same hues as the scene overlay. */
+:root{--color-rain-region:rgb(20 168 255);--color-snow-region:rgb(219 140 255)}
+
+/* Material identities shared with the planet's mineral palette. */
+:root{--color-depth-rock:rgb(186 191 179);--color-depth-ceramic:rgb(201 102 59);--color-depth-glass:rgb(117 186 171);--color-depth-molten:rgb(255 94 31);--color-depth-soil:rgb(102 84 56);--color-depth-iron:rgb(92 102 110)}

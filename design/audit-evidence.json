@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-10-09T23:58:58.281Z",
+  "backend": "CPU",
+  "sourceSha256": {
+    "src/sim/model.ts": "f2ce509e49702bd795c6bafde69db6533d113fbed7f3feda77b26be1dd061dba",
+    "src/sim/sphere.ts": "8fe5eae607caefb3ee81885509ab8d317418a8bfb5c80e675dc80b0615c30c4a",
+    "src/sim/ecology.ts": "58f524de80530904b7e63a06ee23dd84f250595217a2189e37e869a98b5930d9",
+    "src/sim/gases.ts": "c7ab8c5c183d73d1a3db73a13f7e2af8db14e7e65294f16cc51912a708667f62",
+    "src/sim/clouds.ts": "9034466f7eea289d34131098acf798cfb289a6ac81fda750d848e3a292013ea8",
+    "src/sim/physics.wgsl": "9b50a4c89d74a59aad7a8e5c2590dbe1c01828d63889b14df009f9f9527207f5",
+    "src/sim/progress.ts": "962f2fa6186707ad8ea6c9dbbb7ca684e445fe1c290cf0222ddfa8865b34a895",
+    "src/sim/system.ts": "83a0b385e9e05d0fc7911fd61577ff6da540835ffa3856df72fe90ec14d91412",
+    "src/sim/session.ts": "325eb49b328dfcf153177708dde9f72642336db0a2601b3199135716a633697d",
+    "src/sim/gpu.ts": "1183352bee134b4e0d2f184dd46831e34bf128629944343e9bdd5049844ff40b",
+    "src/render/planet.ts": "92b66fd6ff525d95f6d719d97211aa0be50ab0cda4661d50e453a0d0816e14b0",
+    "src/render/precipitationLayer.ts": "992f3b63303cc9be891438f52efba72f6b86bdcc8a477f3bdd7adf8b19e2eaee",
+    "src/main.ts": "1051fad5246b410d463b249af9dd76e8d683b88b94f53ef6870b74d3693f2c65"
+  },
+  "gridCount": 2562,
+  "units": "game kg, degrees C, game seconds; energy under stated constant-cp reference",
+  "energyReference": {
+    "ice": -334,
+    "water": 0,
+    "vapor": 2475,
+    "molten": 150,
+    "glass": 0,
+    "baseCapacity": 28
+  },
+  "conditions": {
+    "stepComparison": {
+      "elapsed": 4,
+      "activeStep": 0.13333333333333333,
+      "backgroundStep": 0.8,
+      "environment": {
+        "ambient": 20,
+        "sunlight": 0,
+        "sun": [
+          1,
+          0,
+          0
+        ],
+        "gravity": 3
+      },
+      "initialTemperature": 20,
+      "waterSource": 1000,
+      "nitrogenSource": 100
+    },
+    "reactionIsolation": "High ambient values suppress thermal forcing in solver-only probes, outside normal environment UI range.",
+    "glassPolicy": "ell_glass=0 is a diagnostic assumption, not a measured glass latent heat."
+  },
+  "results": {
+    "pause": {
+      "dt": 0,
+      "waterBefore": 10,
+      "waterAfter": 9.38148021697998,
+      "vaporAfter": 0.6185201406478882,
+      "temperature": 100
+    },
+    "firing": {
+      "energyChange": -1000,
+      "clay": 0,
+      "ceramic": 10,
+      "temperature": 1000
+    },
+    "glassCooling": {
+      "energyChange": -450,
+      "molten": 7,
+      "glass": 3,
+      "temperature": 1000
+    },
+    "reheatGlass": {
+      "glass": 10,
+      "molten": 0
+    },
+    "brineFreeze": {
+      "energyChange": 6.6550922294845805,
+      "ice": 1.705119013786316,
+      "temperature": -1.8764479160308838
+    },
+    "gasStep": {
+      "elapsed": 4,
+      "activeStep": 0.13333333333333333,
+      "backgroundStep": 0.8,
+      "activePeak": 2.3907909393310547,
+      "backgroundPeak": 6.378600597381592,
+      "activeMass": 99.9999947184198,
+      "backgroundMass": 100.00000260025263
+    },
+    "waterStep": {
+      "elapsed": 4,
+      "activeSource": 5.660000324249268,
+      "backgroundSource": 116.02342987060547
+    },
+    "moltenFlow": {
+      "source": 50,
+      "elsewhere": 0
+    },
+    "transferMission": [
+      "transfer"
+    ]
+  }
+}

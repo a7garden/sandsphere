@@ -1,0 +1,245 @@
+{
+  "date": "2026-10-10T04:07:37.504Z",
+  "passed": true,
+  "unit": {
+    "files": 26,
+    "tests": 166
+  },
+  "build": {
+    "typescript": true,
+    "production": true,
+    "existingChunkWarning": true
+  },
+  "gpu": {
+    "boundaryCases": 20,
+    "mixedCases": 6,
+    "allStepsValid": true,
+    "saveResumeExact": true,
+    "maximumTemperatureDifference": 0.036865234375,
+    "mixedColdTemperatureDifference": 0.0006761550903320312,
+    "tolerances": {
+      "closedMassRelative": 0.000001,
+      "energyScaleRelative": 0.00002,
+      "massCellScaled": 0.0001,
+      "temperatureAbsolute": 0.003,
+      "temperatureRelative": 0.00005
+    }
+  },
+  "resume": {
+    "normal": {
+      "cpuBootExact": true,
+      "gpuBootExact": true,
+      "gpuStepNonnegative": true,
+      "gpuStepSavedExact": true,
+      "cpuRebootExact": true,
+      "pagehideLocalExact": true,
+      "resumedTime": 123.03333333333332,
+      "cells": 2562,
+      "planets": 2,
+      "stock": {
+        "carnivore": 0,
+        "ceramic": 0,
+        "glass": 2,
+        "herbivore": 0,
+        "ice": 0,
+        "iron": 0,
+        "plant": 0
+      }
+    },
+    "legacy": {
+      "accepted": true,
+      "recoveredExpectedFloat32": true,
+      "time": 123,
+      "canonicalDiskNonnegative": true
+    },
+    "passed": true
+  },
+  "section": {
+    "clearZero": true,
+    "globeReached": true,
+    "hiddenClearZero": true,
+    "passed": true,
+    "pausedRetained": true,
+    "rainVertices": 648,
+    "ready": true,
+    "sameCanvas": true,
+    "sectionReached": true,
+    "snowVertices": 630,
+    "stateUnchanged": true
+  },
+  "productSwitch": {
+    "passed": true,
+    "before": {
+      "activeId": "planet-first",
+      "precipitation": {
+        "enabled": true,
+        "highlightedCells": 2562,
+        "intensityRange": [
+          0.8593547299037767,
+          0.8595108203596941
+        ],
+        "rainCells": 2562,
+        "snowCells": 0,
+        "visible": true
+      },
+      "section": {
+        "amount": 1,
+        "cells": 109,
+        "clip": {
+          "customShaders": 8,
+          "halfWidth": 0.22000000000000064,
+          "normal": [
+            -0.2035388098742055,
+            0.923876004326368,
+            0.32407573421183017
+          ]
+        },
+        "enabled": true,
+        "triangles": 1595,
+        "visible": true
+      }
+    },
+    "after": {
+      "activeId": "planet-second",
+      "paused": true,
+      "time": 123,
+      "precipitation": {
+        "enabled": true,
+        "highlightedCells": 0,
+        "intensityRange": [
+          0,
+          0
+        ],
+        "rainCells": 0,
+        "snowCells": 0,
+        "visible": false
+      },
+      "section": {
+        "amount": 1,
+        "cells": 109,
+        "clip": {
+          "customShaders": 8,
+          "halfWidth": 0.22000000000000064,
+          "normal": [
+            -0.2035388098742055,
+            0.923876004326368,
+            0.32407573421183017
+          ]
+        },
+        "enabled": true,
+        "triangles": 1595,
+        "visible": true
+      }
+    },
+    "consoleErrors": {
+      "product": [],
+      "section": []
+    }
+  },
+  "sourceSha256": {
+    "src/main.ts": "07aeae464e0ae47dc9156ef3acbda3f01fd8026fedfb7ae5b1f57662765ddc1a",
+    "src/render/biosphere.ts": "5af16ecc89c9a738fa21318b91f9e2c1199ce0bbd3e5fdcc34ec4a3861f4623c",
+    "src/render/budget.ts": "702cc697643d8f127fdfb55c47c83694d658030b2bc5892c096fed72ebf7a749",
+    "src/render/cloudBanks.ts": "a2612ab79bb1cd9731b499d8d8e67aaae49d921a6a2e8f60b35362b9f48cec7c",
+    "src/render/cloudComposition.ts": "a679ae05fabda19693805c906101ec01b102f1fa0da48691410937114039cbdd",
+    "src/render/columnGeometry.ts": "606ab2c1a573c89eaca131db7bd5c89606c61eaf4c5327da76c42a0fee536e77",
+    "src/render/effects.ts": "4d6a3b9dccd08a5ff0f84de674f3fe8add3908e4b9de1709c10cd289278202a3",
+    "src/render/materials.ts": "243de151c3d48325d246d667f133eb0613191b37e2883b7c731f3e9552fc3fa5",
+    "src/render/orbitAngles.ts": "fdd5237bcce846cb28c6fe77d9607a96259a4c3c7f2d0a4d8d3e2ee5d04a29f5",
+    "src/render/particles.ts": "c33c2c0163137e82ff2c6f98074e5be251dd0998a44cdd7a7007c3df9eb55120",
+    "src/render/planet.ts": "9be8bd11f0f701c14c22907ed29519b4e57b1e293dba5babe1e01a60a9dd129b",
+    "src/render/precipitation.ts": "d73ea165b91e9bd8b3ef97803ca10994ebbf275cc0294d206f1aab2206f31ba1",
+    "src/render/precipitationLayer.ts": "bfd8f1ae1a0e1cca4e86f109a77f78db3b2cf8c1888efcb60e97a20e903fe6b7",
+    "src/render/rotationFrame.ts": "8ba82b0af3dd17331fccdf1604fd167244f9623beb929eeda1d4f1fb2c53ffd6",
+    "src/render/sceneMarker.ts": "2627f52a62dbe7aba09fd35fe02b76eb6ec1a9a3a36df0bc303c0a5b309e1636",
+    "src/render/sectionCamera.ts": "21316b50a39fed5461a217c61342f1da4bbf4c677fbb6ef9cfb34821269ebf47",
+    "src/render/sectionClip.ts": "850a0c63dce7313fbe1555a706a7c82a0920ac66feb6a9f073268009456a36ab",
+    "src/render/sectionGeometry.ts": "f2dcea8e739c81caf7611c39cdf72bd2ce0b08457007e4d90ab371cf937b9056",
+    "src/render/sectionView.ts": "2c00015e98c43474eb14165b54e5d047e634d784e56792467aa608b56a96c0ca",
+    "src/render/sky.ts": "f8ff77ce4e0393e815766ec621e4cc24a3f63ca54673423859816e5048e16eb0",
+    "src/render/softHull.ts": "92ca5732a0f019bfa44f3dad4141784bb6d3ae6444b2ea9cb8e6d85f79db8bf0",
+    "src/render/solar.ts": "4e8a36d3871593f4497ec0ea29c345ce689e08b1fefcefe8a8a319605a61fc8d",
+    "src/render/surface.ts": "ec2c2c36de7a62083f31f7fcccffc911509860a2d2e33d8f9835a1eaa76aee77",
+    "src/render/system.ts": "052cf808f4e90a51cf8f30f9bb3ec5f65c54b186d29949fe6ffc33642ab8df6f",
+    "src/render/vegetation.ts": "6f385007e6033bffe15124abe8532856a2d05f44cf3bb1346ada5265f1d71b3e",
+    "src/render/weather.ts": "0b7c6ef3ded28e28b1b0f6262179ab067bb0e7dcd50b682a8e933c00b10f0557",
+    "src/sim/atmosphere.ts": "1b129b12943397c0c5cb59a36eab192ace6279a35ff64819e4a045fffa9dd263",
+    "src/sim/climate.ts": "3282662244bd06fae9bc582a4487630f13221fe606737b5ade82c0f3ba5f5483",
+    "src/sim/clock.ts": "2b5e79aa95975a1d1237b40fd251d97e5e80f3a893dc34081a40863c0faa9a03",
+    "src/sim/clouds.ts": "6fca0a2decb2d670f811564bf5b0321ced86353130589379f33117a66eb7a5e8",
+    "src/sim/ecology.ts": "2ed950feae284b8a22ca3c5a133075108586e8eb75ce757a5a863eb059c9bf0b",
+    "src/sim/falling.ts": "cee3c3d5badd009a3db1cf6e860264482b5a55098a096c56b93edd35d5bd8162",
+    "src/sim/gases.ts": "76c54899b838683ee798ac3719dbe871bac2a3e9605b6802ae186d047662e209",
+    "src/sim/gpu.ts": "efec3ddc86ff6b9f74b2b27d449d8b9af3c48d0bcd44523f68c8e521c9288d5c",
+    "src/sim/materialPhysics.ts": "d327ff296164ca4be81a7b43ca02f8824466c9400233e701b0d8b772191122f8",
+    "src/sim/meteor.ts": "5a3f3856c29e7ed906ef66faddfc55cd176042ba46d73f93c1ca8d2cf6d0d164",
+    "src/sim/model.ts": "ec3915b663ebc0c5be771d1c2286ab2985cc6057159a7ce6bbee3dbcba5b2673",
+    "src/sim/optics.ts": "e7b16b8b256837d81cbce24ac6523972b659b00e9e8c4bd079f51bc0877c5f4f",
+    "src/sim/orbit.ts": "7e5bc8203bd969a837989c3ecaec47f5d794dd18a691ce35d4968b8402d90ef0",
+    "src/sim/physics.wgsl": "d6b5be7898f28ae5d24ce9bc9b8f399b38abff443fe8d98989a0af161e25f804",
+    "src/sim/progress.ts": "14fe25005cf85bd1d158314c045974de815b1e3fe31f3547345177b47e53c5e5",
+    "src/sim/random.ts": "c93a5f57ad7f915338c9fdba417aba116c82b52a625eaa3a0918184251b6e2bb",
+    "src/sim/session.ts": "325eb49b328dfcf153177708dde9f72642336db0a2601b3199135716a633697d",
+    "src/sim/sphere.ts": "8fe5eae607caefb3ee81885509ab8d317418a8bfb5c80e675dc80b0615c30c4a",
+    "src/sim/storage.ts": "4c4b5765f64fb29966c3ec4544ef86444aadfc5a79bdb41ce571291732d8950e",
+    "src/sim/system.ts": "dd372dfb1e1574ca32f341e1cd2cb41e4287da02072bb624ddae896ef2b2cee9",
+    "src/sim/telemetry.ts": "469d8db23c2482784b6998952c1f032549ad648b5929ab9863473e1ed4cb2b90",
+    "src/sim/thermodynamics.ts": "e717051fd26974d1c7a301b779bc4e003fab6a1b25b1a6b39085eb18c6ebb0dd",
+    "src/sim/toolHeat.ts": "41f460254ee8282f5c5998e1e654804512100f53a2bdc2df2eebd7f9c9ba58f5",
+    "src/sim/waterPhysics.ts": "65c83403a56a9cc48bfb0c8ec1f2cd1d033876ec08b4c6b827c5e74d776e1078",
+    "src/style.css": "ebe4231f0527eeca4902eda81391c06abd0edcd9db02a18311b47a78a065bfde",
+    "src/ui/activityStore.ts": "54d48543d691c0871637d306e29a13a67aa6fe8aa8e27ef78480da2d3db32837",
+    "src/ui/appChrome.ts": "85c01b8c2741a091129b07dc136d047deb0f8362ac4674d6d03a8da98d61bc01",
+    "src/ui/content.ts": "7ea247b08e0f8035a6f4581682394d747ee8d49605915cb18722c7f5385e83ae",
+    "src/ui/depthProfile.ts": "6c0288ebd4403e3edb10e15764a482a7d8daa3a139cc30f7b359a6317f01baa3",
+    "src/ui/helpTip.ts": "63ee04b2ba0c8c767b7c429706fe59a960f2c51d6ea9c97c3d9c88ca5c1541a3",
+    "src/ui/icons.ts": "e66873187d1cac90e5cb0f61d321c1e6dce47460ce4502988774dc2d56a710af",
+    "src/ui/inspector.ts": "f00c55430462527dcdd726ed481b565006a459ff9fdb355fbadfa825dc3279c6",
+    "src/ui/inventory.ts": "25b873f3992af1518e3811a20f52cfd1f15ce13ca8c1d12d172dcce0220b4658",
+    "src/ui/observationPoint.ts": "ef8ff7e32de5cca79b403b11ba382d6e9fe0efc80c9ef1a59ab2ab32eaf4e938",
+    "src/ui/observatory.ts": "6c12fb8cacc43b5b2a45591fea903d89d35792de744ef66df76ba907ccda0ec4",
+    "src/ui/planetControls.ts": "902a5a47d368038b85c77b7028d144428b471ec464d533ba27e49d7d473bb7c8",
+    "src/ui/planetDashboard.css": "1a8cd132b84d0ab2719a9f1aa6b1707749420624d7c8d2fe147a14b7be47dbfc",
+    "src/ui/planetDashboard.ts": "5353b97d7636f29e21a40ad53bce3a4887514f54a4468b70544b579a8201d816",
+    "src/ui/rangeControl.ts": "638d10e1a5da9496794b35e1b6d242263c3833f47f0e97d151d562432900742e",
+    "src/ui/rotationStick.ts": "292ce7d02bb76e127ecc5b804d289e1c0503c9feeba8729a948fafc42a00a03c",
+    "src/ui/sceneLayers.ts": "c0f8b9d51ffc08b09449ce3734d7d708a475ab51bb85c2895cc507286b2ec326",
+    "src/ui/spinPeriod.ts": "d4be9213256120db53e1b432638fc8e46a1e185d006a2f99c2b8c569782be9ad",
+    "src/ui/system.ts": "3d5fb6fa0becfe2495453719a7ebce6bf720c3f64e899d8c1903808b78416876",
+    "tests/activity-store.test.ts": "1b54868f679a63bcc76e16dbf7b2a60f41744597d50c5552975435eddb088473",
+    "tests/atmosphere.test.ts": "d79c9c7021474dd5b5b8ac2863e52f934ced971ca23d8bfebd49a0ee216a37e1",
+    "tests/clouds.test.ts": "fda34aa0cf80d82c14a99870704fa44ba3975841b136a55cf40790117f0c8e4b",
+    "tests/depth-profile.test.ts": "bd58c5a7f9482fd700c468f9f1e8855e4f99f097a5c9d367e309b93c6c516d6e",
+    "tests/ecology-meteor.test.ts": "bcfe6c4075421cf1d31e790fd7877de209e491113d910f71612ee0f19fbabce7",
+    "tests/observation-point.test.ts": "ade0389e93a2ce44f2dc08fe88f324821ae35e79f7c09bdba925527665e04f12",
+    "tests/orbit-angles.test.ts": "888ba7b90cdea324699f820ac02f29dd7d42961c5ef20e31abf86d1d41495a32",
+    "tests/p2-science.test.ts": "6db6cf1d96e405e986b5a6a6fa3c47839cb6e4c8ab69fd896e1001403e2ba59e",
+    "tests/p3-science.test.ts": "73bb837deb4064d30008607440e5ba8554914707a70a427c4022123b949d228d",
+    "tests/physics.test.ts": "6603805aec256dd79e5acc138ca7719bf27dcb4cbc37dc0a96fe8b5c9429aca2",
+    "tests/precipitation-layer.test.ts": "cec5d2ca3ab83b2f01a362dede9606b38c9e78130be45fbadb9df5d0a14f97ad",
+    "tests/reaudit-fixes-lab.html": "22546c27c4f2bdae820067005aad1415b9c2344b38052b9cb7026e4da32c9c64",
+    "tests/reaudit-fixes-lab.ts": "e911e6685c248abe9bcce88c54e3ef27a243dd702d9f0525b221bcd48b40c531",
+    "tests/reaudit-lab.html": "5a94e5c6c7f45957179e331aa1a72670273fb2f2c8089dd40b3d15954b57a49f",
+    "tests/reaudit-lab.ts": "3346a7ac09e204f4bda63be97fa4d475a3ed80a18e5366913b480b6357681475",
+    "tests/reaudit-regressions.test.ts": "93b6eb96035370d97fcb545f3173b0cdc861d22af2b68e41be3dfaabdf495ae5",
+    "tests/reaudit-section-regressions.ts": "287c5783a25ad144dc96c6632833a831611da2f33ea4ad2eab19d1d58ab117c0",
+    "tests/render-budget.test.ts": "6f435134567d910cd3f43f5031d4dbcfce71d923182e9fbb94eda9606b7161fc",
+    "tests/render-cells.test.ts": "3f47325f45f4db64898e40ac3fefcb2dc47d02fe691f810f610f7e947ad01801",
+    "tests/render-chunks.test.ts": "8426b740e0cb7686f76c5b3811468d741097550932ac9919587b5e0f56a07b11",
+    "tests/render-lab.html": "a9b8ea33de8474f35ba8f6fa38780db67b11404d89688b9e39b8905edc6c50ae",
+    "tests/render-lab.ts": "de337697ee5ebea90c0d56409f6826ef62353e8bde77e6483dd236b5d99dc16f",
+    "tests/render-physics.test.ts": "c47475b1ed9e5abf43cdf086aa4d46d5f9e3d7cf107dc885f03a841d247a88ba",
+    "tests/rotation-frame.test.ts": "5030aec91eeb91926a2a1a88aa5e854e03ebbceb237c128d98dde28ab9e7a29b",
+    "tests/scene-marker.test.ts": "b675a28b4712e18fc8b036ff0247a4f06f580391e153759717e4ab50a544de4f",
+    "tests/science-contract.test.ts": "fb7c6b38f7ee59bf9dc4a30a31eb05f9cb31bf947d5e25939d740e80a54fa9cb",
+    "tests/section-lab.html": "fe78b207e22a8e28e29818c2ede0389e25cd31d45d855da773340cd1c1406bc7",
+    "tests/section-lab.ts": "339647a959b7534acb6bdb08902690677ef661f1906fb4591cd49375b4155faf",
+    "tests/section.test.ts": "134f0ef7c652580d338020f53e7bc5bc87d80a66dbbde2cfab4552bcf56f9b81",
+    "tests/session.test.ts": "448dc8a5c81c362feb994630a74d96df7ba5a4517712ac2e7f8782727d51daa0",
+    "tests/spin-period.test.ts": "cf68498b724ed2e86a9e2f316495bd02f52485993c408f33de668a416a76ebde",
+    "tests/surface.test.ts": "d21c69d46deb353b7bc46b55e70a835a1e5ce520ff891819e910ad07eb4675e1",
+    "tests/system.test.ts": "9abe7c9414dc48e56b3a73aaa4f57fbf910a0ce8ee99c09af1944a6b1379bf29",
+    "tests/telemetry.test.ts": "bcaa66ed3723fe6bda03ca0ed565496b0fa1f3d1dfc16f718e7ecd64a78e4118",
+    "tests/timestep.test.ts": "50ea64bda4e72fa4767a1392fc815a5d7288d5793b5ad5961e8fb376a6064ff1"
+  }
+}

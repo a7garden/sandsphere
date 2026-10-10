@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-10",
+  "files": {
+    "src/render/sectionCamera.ts": "93dbb6ddbad55b39bf4358e3ecb816f88b7b28fc98d807fc7b4a3aa75aad9ac8",
+    "src/render/sectionGeometry.ts": "9c0248c70ab1877d2d3e5e2cec19df0bd8838d07fd4a1e39ad5b8fee2b9596dc",
+    "src/render/sectionView.ts": "f5af1d8904379c51ccea00c690a0cd5bc48f48b34134996ba7c52abab1ee4bd0",
+    "src/render/planet.ts": "95ac3687df44fee4589f51504e1a3f446c2bb941cd7d9f9df09ce6e656daad24",
+    "src/ui/planetControls.ts": "01be8aec117c5e67f73ac1c71a989e40a23f70cd35ac9b8671094185f699371d",
+    "src/main.ts": "3bc03a44e9b12427c7e0ef3478ff18d36aca61bcfd7efd5533f35e9f437d6c5b",
+    "src/style.css": "a071195dd7cde69fa612c366b701b9b0639a1e56c88b55412aec51f39fe62483",
+    "tests/section.test.ts": "ac315ea848b8c21507997cdb95da9a562279158f2956b2086862b65f19f77369",
+    "tests/section-redesign-regressions.ts": "3f3ee49ea3b81afb7809bdb699ec05ac02d6de00e3973d40bf97580de41a8da7",
+    "tests/section-redesign-inputs.ts": "5f1d573efbae1ae3963281aeffefdcc145fa57a21c4f4c49b343f351553b8c71",
+    "tests/telemetry-csv-import.test.ts": "be86c7dd390a63a31da08fc03653c0ac046bf5eb2b1088d138fa2c4e20fed963"
+  }
+}

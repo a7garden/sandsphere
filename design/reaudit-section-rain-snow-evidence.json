@@ -1,0 +1,50 @@
+{
+  "afterClearCapIntensity": 0.6371163129806519,
+  "afterClearLayer": {
+    "enabled": true,
+    "highlightedCells": 0,
+    "intensityRange": [
+      0,
+      0
+    ],
+    "rainCells": 0,
+    "snowCells": 0,
+    "visible": false
+  },
+  "capColorsIdentical": true,
+  "capDataIdentical": true,
+  "centerPick": null,
+  "mapColorsIdentical": false,
+  "rainLayer": {
+    "enabled": true,
+    "highlightedCells": 642,
+    "intensityRange": [
+      0.6371162958886603,
+      0.6371162958886603
+    ],
+    "rainCells": 642,
+    "snowCells": 0,
+    "visible": true
+  },
+  "ringPick": {
+    "direction": [
+      0.525731086730957,
+      0,
+      -0.8506507873535156
+    ],
+    "inAir": false,
+    "index": 156
+  },
+  "snowLayer": {
+    "enabled": true,
+    "highlightedCells": 642,
+    "intensityRange": [
+      0.6371162958886603,
+      0.6371162958886603
+    ],
+    "rainCells": 0,
+    "snowCells": 642,
+    "visible": true
+  },
+  "stateUnchanged": true
+}
