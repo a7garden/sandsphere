@@ -1,6 +1,6 @@
 # Material supply and land animal movement
 
-These behaviors are under development in `0.6.0-alpha.3`.
+These behaviors are under development in `0.6.0-alpha.4`.
 
 ## Surface supply
 
@@ -25,6 +25,10 @@ The renderer shows up to 256 representatives per guild, with walking legs and pa
 ## Surface refresh
 
 Hexagonal terrain computes each tile's material blend once per snapshot. The water triangles write directly into reusable upload buffers and use precomputed coast neighbors. Terrain normals are recomputed only when the actual vertex positions change. These optimizations affect rendering only and do not lower simulation resolution or omit physics steps.
+
+## Rotation and section selection
+
+Freezing the displayed rotation applies within the current session. It is not restored from appearance preferences when the app reopens; saved physical spin settings and simulation pause remain intact. Section selection temporarily freezes the viewing frame, then restores the user's session choice on cancellation or opening the section. Returning to the globe hides the cut line, selected-cell highlights and endpoint handles. The selected range remains available when selecting a section again.
 
 ## Reproduce checks
 

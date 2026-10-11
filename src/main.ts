@@ -154,7 +154,9 @@ function sampleBackgroundPlanet(p:PlanetRecord,solver:Solver,dt:number){
 const discoveries=new Set<string>();
 const activeDiscoveryKey=()=>mode==='sandbox'?discoveryKey+'-sandbox':discoveryKey;
 function loadDiscoveries(){try {const known=JSON.parse(localStorage.getItem(activeDiscoveryKey())??'[]');if(Array.isArray(known))for(const id of known)if(RESEARCH.some(r=>r.id===id))discoveries.add(id);}catch{}}
-try {const prefs=JSON.parse(localStorage.getItem('sandsphere-appearance')??'{}');showAtmosphere=prefs.atmosphere!==false;showClouds=prefs.clouds!==false;showPrecipitation=prefs.precipitation===true;renderSpinFrozen=prefs.renderSpinFrozen===true;showAxis=prefs.axis!==false;}catch{}
+// Freezing the viewing frame is temporary interaction state, not a saved style.
+// Old preferences may contain renderSpinFrozen; reopen with visible rotation.
+try {const prefs=JSON.parse(localStorage.getItem('sandsphere-appearance')??'{}');showAtmosphere=prefs.atmosphere!==false;showClouds=prefs.clouds!==false;showPrecipitation=prefs.precipitation===true;showAxis=prefs.axis!==false;}catch{}
 let activity:ActivityCenter|undefined;
 let emphasizeNotifications=true,saveFailureNotified=false;
 try{const prefs=JSON.parse(localStorage.getItem('sandsphere-appearance')??'{}');emphasizeNotifications=prefs.noticeEmphasis!==false;}catch{}
@@ -177,7 +179,7 @@ function settingsUiUpdate(){
   el<HTMLInputElement>('settings-notice-emphasis').checked=emphasizeNotifications;
 }
 function saveAppearance(){
-  try{localStorage.setItem('sandsphere-appearance',JSON.stringify({theme:'dark',atmosphere:showAtmosphere,clouds:showClouds,precipitation:showPrecipitation,renderSpinFrozen,axis:showAxis,noticeEmphasis:emphasizeNotifications}));}catch{}
+  try{localStorage.setItem('sandsphere-appearance',JSON.stringify({theme:'dark',atmosphere:showAtmosphere,clouds:showClouds,precipitation:showPrecipitation,axis:showAxis,noticeEmphasis:emphasizeNotifications}));}catch{}
 }
 function updateMaterialModeTitle(){el('material-mode').title=currentLocale()==='en'?`Pour ${translatePhrase(MATERIALS.find(m=>m.id===material)!.name)} · click again to stop`:'재료 붓기 · '+MATERIALS.find(m=>m.id===material)!.name+' · 다시 눌러 해제';}
 function updateSceneCaption(){

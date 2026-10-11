@@ -8,6 +8,28 @@ import type {SphereGrid} from '../src/sim/sphere';
 import {RADIUS} from '../src/sim/sphere';
 
 const settle=()=>new Promise<void>(resolve=>{const t=performance.now();const frame=()=>performance.now()-t>700?resolve():requestAnimationFrame(frame);frame();});
+/** Exercise selection's temporary freeze independently of a user's explicit freeze. */
+export async function verifySectionLifecycle(view:PlanetView){
+ view.setRenderSpinFrozen(false);
+ view.beginSectionSelection();
+ const selectingFrozen=view.rotationStats().frozen,previewVisible=view.scene.getMeshByName('selected section arc')!.isEnabled();
+ view.setSection(false);await settle();
+ const cancelledResumes=!view.rotationStats().frozen&&!view.isSelectingSection;
+ view.beginSectionSelection();const cells=view.sectionSelection.cells;
+ view.setSection(true);await settle();view.setSection(false);await settle();
+ const returnedResumes=!view.rotationStats().frozen;
+ const previewHidden=!view.scene.getMeshByName('selected section arc')!.isEnabled()&&!view.scene.getMeshByName('selected section cells')!.isEnabled();
+ const retained=JSON.stringify(cells)===JSON.stringify(view.sectionSelection.cells);
+ const before=view.rotationStats().displayAngle;
+ view.setSpin(view.rotationStats().interpolatedAngle+.1,true);const after=view.rotationStats().displayAngle;
+ const resumedMotion=Math.abs(Math.atan2(Math.sin(after-before),Math.cos(after-before)))>.09;
+ view.beginSectionSelection();const reopenedPreview=view.scene.getMeshByName('selected section arc')!.isEnabled();view.cancelSectionSelection();
+ const cancelHides=!view.scene.getMeshByName('selected section arc')!.isEnabled();
+ view.setRenderSpinFrozen(true);view.beginSectionSelection();view.setSection(true);await settle();view.setSection(false);await settle();
+ const explicitFreezeRetained=view.rotationStats().frozen;view.setRenderSpinFrozen(false);
+ const result={selectingFrozen,previewVisible,cancelledResumes,returnedResumes,previewHidden,retained,resumedMotion,reopenedPreview,cancelHides,explicitFreezeRetained};
+ return {...result,passed:Object.values(result).every(Boolean)};
+}
 /** Run on the paused, disposable fixture after the actual A/B drag and Open button. */
 export async function verifySelectedSection(view:PlanetView,grid:SphereGrid,initial:Float32Array){
  const selected=view.sectionSelection.cells,allowed=new Set(selected),before=initial.slice(),engine=view.engine.constructor.name,scene=view.scene,canvas=view.canvas;

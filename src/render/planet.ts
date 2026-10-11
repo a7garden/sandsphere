@@ -964,7 +964,7 @@ export class PlanetView {
     this.sectionDirty=true;
   }
   private updateSelectionPreview(){
-    const arc=this.selectionArc,visible=!!arc&&!this.sectionCamera.active&&!this.systemScene.active;
+    const arc=this.selectionArc,visible=this.selectionEditing&&!!arc&&!this.sectionCamera.active&&!this.systemScene.active;
     this.selectionBrush.select(visible?this.selectionCells:[],this.heatPositions,'cool');
     this.selectionLine.setEnabled(visible);if(!visible||!arc)return;
     const points=Array.from({length:65},(_,i)=>{const t=arc.halfRange*(i/32-1),d=arc.v.scale(Math.cos(t)).add(arc.u.scale(Math.sin(t))),cell=nearestCell(this.grid,d.x,d.y,d.z);return d.scale(this.renderRadii[cell]+.05);});
@@ -982,6 +982,7 @@ export class PlanetView {
   get sectionSelection(){const a=this.selectionArc;return {editing:this.selectionEditing,cells:[...this.selectionCells],endCells:this.selectionEndCells?{...this.selectionEndCells}:null,windowHalfRange:this.selectionWindowRange,a:a?.a.asArray()??null,b:a?.b.asArray()??null,halfRange:a?.halfRange??null};}
   setSection(enabled:boolean,index?:number){
     this.focusFlight=null;this.axisAlignment.cancel();
+    if(!enabled)this.cancelSectionSelection();
     const cell=index??this.pick(this.canvas.clientWidth/2,this.canvas.clientHeight/2)?.index??(()=>{const local=Vector3.TransformCoordinates(this.camera.position,this.root.computeWorldMatrix(true).clone().invert());return nearestCell(this.grid,local.x,local.y,local.z);})();
     if(enabled){this.selectionControlBasis=null;this.finishSelectionEditing();this.sectionFitPending=true;this.sectionCamera.setFlatRange(this.sectionHalfRange);}
     this.sectionCamera.toggle(enabled,Vector3.FromArray(this.grid.directions,cell*3),Math.max(RADIUS,this.renderRadii[cell]),enabled?this.selectionArc??undefined:undefined);this.sectionDirty=true;
