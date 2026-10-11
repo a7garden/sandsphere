@@ -2,6 +2,8 @@
 
 정본 개발 경로는 `/Users/garden/Workspace/Projects/sandsphere`다. Git 원격과 릴리즈는 Mac mini의 Gitea `http://100.81.146.46:3000/garden/sandsphere`를 사용한다. Cloudflare Workers Static Assets가 `sandsphere.app`을 제공한다. Firebase Hosting은 사용하지 않는다.
 
+공개 소스는 GitHub의 `a7garden/sandsphere`에 게시한다. 로컬 `origin`은 기존 Gitea, `github`는 공개 GitHub 원격이며 GitHub의 기본 브랜치는 `main`이다. GitHub Actions는 운영 인증정보 없이 버전·테스트·보안 규칙·빌드를 검증한다. 운영 릴리즈와 배포는 계속 Gitea에서 수행한다. 공개 PR 코드를 운영 인증정보가 있는 전용 호스트에서 실행하지 않는다.
+
 ## 계정 저장
 
 Firebase Authentication의 이메일/비밀번호와 Google 로그인을 지원한다. 계정별 IndexedDB 슬롯과 재시작 체크포인트·발견 기록·알림 기록을 분리한다. 외관과 빠른 선택 같은 기기 설정은 브라우저에 남는다. 로그인·로그아웃 전에 현재 물리 단계와 로컬 저장을 정산하고 다시 열어 이전 계정의 실행 상태가 섞이지 않게 한다.

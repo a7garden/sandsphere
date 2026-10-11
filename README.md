@@ -1,5 +1,40 @@
 # Sandsphere
 
+Sandsphere is a tiny planet sandbox. Shape the land, pour water, and watch clouds, weather, and vegetation respond.
+
+**Early alpha.** The simulation is still experimental, and its climate model has not passed validation against observed climate. Features and save formats may change.
+
+[Play Sandsphere](https://sandsphere.app) · [Changelog](CHANGELOG.md) · [Scientific model and limits](docs/CLIMATE_ECOLOGY_DESIGN.md)
+
+![An Earth-like planet made in Sandsphere](docs/media/planet-preview.jpg)
+
+## Getting started
+
+Use Node.js 24:
+
+```sh
+npm ci
+npm run dev
+```
+
+Open `http://127.0.0.1:5173`. Guest play and local saves work without Firebase configuration. To enable your own account and cloud-save backend, copy `.env.example` to `.env.local`, provide your Firebase web app configuration, and follow [the account setup documentation](docs/OPERATIONS.md). Never commit credentials or service-account keys.
+
+Choose Sandbox for unlimited materials or Campaign for exploration tasks. Select a material and drag over the planet to pour it. Right-drag to rotate, use the wheel to zoom, and press Esc to return to grab mode. English and Korean are available in Settings. WebGPU is used when supported, with a WebGL/CPU fallback.
+
+```sh
+npm run check:version
+npm test
+npm run build
+```
+
+Changes and bug reports are welcome through GitHub issues and pull requests. For a bug report, include your browser, the steps to reproduce it, and whether you used the sphere or section view.
+
+## License
+
+Sandsphere's original code is licensed under [MIT](LICENSE). Bundled scientific data retains its separate [Apache 2.0 license](src/sim/data/LICENSE-APACHE-2.0) and [attribution notice](src/sim/data/NOTICE). Dependencies retain their own licenses.
+
+## 한국어 개발 문서
+
 버전별 변경 사항은 [변경 기록](CHANGELOG.md)에, 버전 지정과 운영 릴리즈 절차는 [운영 문서](docs/OPERATIONS.md)에 기록합니다.
 
 로그인·사용자별 클라우드 저장과 Gitea → Cloudflare 운영 릴리즈 설정을 추가했습니다. 계정은 Firebase Authentication, 게임 저장은 개인별 Firestore 압축 저장본과 revision을 사용합니다. 운영 계정 연결 절차와 `sandsphere.app` 배포 흐름은 [운영 문서](docs/OPERATIONS.md), 검증 범위는 [계정 저장 검증](docs/ACCOUNT_VALIDATION.md)에 정리했습니다. 기존 비회원 게임은 별도 슬롯에 보존됩니다.
