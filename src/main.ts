@@ -277,7 +277,7 @@ function selectedBrushWeights(center:number,rings:number){
   return selected.map(w=>({...w,weight:w.weight/sum}));
 }
 function deposit(index:number,mass:number,kind:Material) {commands[index*COMMAND_STRIDE+COMMAND_FIELD[kind]]+=mass;}
-function pour(dt:number,direction:readonly number[],kind=material,rate=Number(rateInput.value),rings=Number(radiusInput.value),emitter?:readonly number[],center=nearestCell(grid,direction[0],direction[1],direction[2])) {
+function pour(dt:number,direction:readonly number[],kind=material,rate=Number(rateInput.value),rings=Number(radiusInput.value),center=nearestCell(grid,direction[0],direction[1],direction[2])) {
   const weights=selectedBrushWeights(center,rings);if(!weights.length)return;
   const requested=rate*dt,{amount,fromStock}=materialSupply(mode,kind,stock,requested);
   if(fromStock&&isProduct(kind)){
@@ -288,9 +288,9 @@ function pour(dt:number,direction:readonly number[],kind=material,rate=Number(ra
   if(isGas(kind)){for(const {index,weight} of weights)deposit(index,amount*weight,kind);view.emitGas(center,kind,amount);return;}
   if(amount<=0)return;
   const land=(cell:number,mass:number)=>deposit(cell,mass,kind);
-  if(!emitter){view.supplySurface(weights,kind,amount,land);return;}
-  const pieces=1;
-  for(const {index,weight} of weights)for(let k=0;k<pieces;k++)view.emit(index,kind,amount*weight/pieces,land,index===center?[...grid.directions.subarray(index*3,index*3+3)]:undefined,index,emitter,true);
+  // Surface and air picks use the same bounded brush delivery. No physical
+  // dust is created by the editing tool, even while paused or at low gravity.
+  view.supplySurface(weights,kind,amount,land);
 }
 let brushCell:number|null=null,brushHover=false,brushRefreshPending=false,lastBrushRefresh=0;
 function brushSizeUpdate(){
@@ -315,7 +315,7 @@ function paint(dt:number) {
   showBrush(hit);lastBrushRefresh=performance.now();brushRefreshPending=false;
   if(tool==='meteor'){pointer.down=false;void meteorImpact(hit.direction);return;}
   if(paused&&(tool==='pour'||!hit.inAir))pausedEdited=true;
-  if(tool==='pour')pour(dt,hit.direction,material,Number(rateInput.value),Number(radiusInput.value),hit.emitter,hit.index);
+  if(tool==='pour')pour(dt,hit.direction,material,Number(rateInput.value),Number(radiusInput.value),hit.index);
   else {if(hit.inAir)return;const weights=selectedBrushWeights(hit.index,Number(radiusInput.value));
     if(tool==='heat'||tool==='cool'){const target=Number(el<HTMLInputElement>('target').value);for(const {index,weight} of weights){const heat=heatForTarget(solver.state,index,target,tool,commands,activeCommands,!!environment.climate);commands[index*COMMAND_STRIDE+4]+=heat*(paused?1:Math.min(1,dt*8))*Math.min(1,weight*weights.length);}}
     if(tool==='collect')for(const {index,weight} of weights){const c=index*COMMAND_STRIDE+6,amount=Math.min(.95,dt*2*Math.min(1,weight*weights.length));commands[c]=1-(1-commands[c])*(1-amount);}

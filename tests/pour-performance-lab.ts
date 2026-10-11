@@ -3,12 +3,20 @@ import {PlanetView} from '../src/render/planet';
 import {createSphere,cellBrushWeights} from '../src/sim/sphere';
 import {seedPlanet,DEFAULT_ENVIRONMENT} from '../src/sim/model';
 import {PHYSICS_DT} from '../src/sim/clock';
+import {verifyPowderEditing} from './powder-section-editing';
 
 const grid=createSphere(4),state=seedPlanet(grid,'sand',22);
 const canvas=document.querySelector('canvas')!,button=document.querySelector('button')!,output=document.querySelector('output')!;
 const view=await PlanetView.create(canvas,grid,state);
 view.setEnvironment(DEFAULT_ENVIRONMENT);view.setSpin(0,false,0);view.setLayers(false,false);view.orbitMode(false);
 let measuring=false,ready=false;
+document.querySelector<HTMLButtonElement>('#air-check')!.onclick=async e=>{
+ const airButton=e.currentTarget as HTMLButtonElement;airButton.disabled=true;button.disabled=true;
+ try{
+  view.clearGrains();view.setSection(true,0);view.animate(1);view.scene.render();
+  output.textContent=JSON.stringify(await verifyPowderEditing(view,grid,state),null,2);
+ }catch(error){output.textContent=String(error);}finally{airButton.disabled=false;button.disabled=false;}
+};
 view.engine.runRenderLoop(()=>{if(!measuring){view.animate(1/60);view.scene.render();}if(!ready&&view.scene.isReady()){ready=true;button.disabled=false;output.textContent='준비 완료 · 저장 데이터와 분리된 모래 행성';}});
 button.onclick=async()=>{
  measuring=true;button.disabled=true;view.clearGrains();

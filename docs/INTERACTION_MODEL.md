@@ -1,12 +1,12 @@
 # Material supply and land animal movement
 
-These behaviors are under development in `0.6.0-alpha.1`.
+These behaviors are under development in `0.6.0-alpha.2`.
 
 ## Surface supply
 
 The surface brush adds each cell's weighted share to the next solver command batch immediately. It retains the brush footprint, material inventory rules, and total supplied mass. Paused edits can commit with a zero-duration step. Supply cues are cosmetic: at most six appear per stroke, and the reusable pool holds at most 48 across all materials. They expire in display time and never appear in pending mass or saved material inventories.
 
-An emitter picked in open air still creates physical falling parcels. Their impact location, gravity, and escaping mass use the existing falling solver. These parcels remain pending inventory until impact or escape. Gas delivery continues to use the atmosphere command fields.
+Picks in open air use the same immediate brush delivery at the selected surface cells. They do not create airborne material, wait for gravity, or accumulate physical dust during paused strokes. Gas delivery continues to use the atmosphere command fields. The legacy falling-parcel solver remains available to physical test fixtures; the application brush does not call it.
 
 ## Land animal movement
 

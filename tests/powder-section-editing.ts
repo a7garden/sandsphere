@@ -5,7 +5,7 @@ import type {PlanetView} from '../src/render/planet';
 import type {SectionProjection} from '../src/render/sectionProjection';
 import {CpuSolver,applyCommand,COMMAND_STRIDE,F,STRIDE,totalMass,type Environment} from '../src/sim/model';
 import {RADIUS,type SphereGrid} from '../src/sim/sphere';
-/** Paused, disposable browser fixture: real pointer → physical falling → command → render. */
+/** Paused, disposable fixture: actual air pick → immediate command → render. */
 export async function verifyPowderEditing(view:PlanetView,grid:SphereGrid,initial:Float32Array){
  const solver=new CpuSolver(grid,initial.slice()),e:Environment={ambient:20,sunlight:0,sun:[1,0,0],gravity:1,climate:false};
  view.setEnvironment(e);view.setClimate('none',solver.climate);view.update(solver.state,0,e);view.frameSection('surface');view.setSectionMagnification(4);
@@ -15,13 +15,15 @@ export async function verifyPowderEditing(view:PlanetView,grid:SphereGrid,initia
  const pixel=Vector3.Project(world,Matrix.Identity(),view.scene.getTransformMatrix(),new Viewport(0,0,view.canvas.clientWidth,view.canvas.clientHeight)),pick=view.pick(pixel.x,pixel.y);
  if(!pick?.inAir||!pick.emitter)return {passed:false,reason:'air supply target unavailable'};
  const commands=new Float32Array(grid.count*COMMAND_STRIDE),mass=totalMass(solver.state);let landed=0;
- view.emit(pick.index,'sand',2,(i,amount)=>{commands[i*COMMAND_STRIDE+1]+=amount;landed+=amount;},pick.direction,pick.index,pick.emitter,true);
- let escaped=0;for(let n=0;n<120;n++){view.stepPhysics(1/30);solver.advance(1/30,commands,e);escaped+=solver.escapeCells.reduce((sum,v)=>sum+v,0);commands.fill(0);view.update(solver.state,1/30,e);}
+ view.supplySurface([{index:pick.index,weight:1}],'sand',2,(i,amount)=>{commands[i*COMMAND_STRIDE+1]+=amount;landed+=amount;});
+ solver.advance(0,commands,e);commands.fill(0);view.update(solver.state,0,e);
+ const escaped=solver.escapeCells.reduce((sum,v)=>sum+v,0);
  const suppliedMass=totalMass(solver.state)-mass,massBudgetError=Math.abs(suppliedMass+escaped-2),stock=solver.state.slice(),owner=pick.index,rock=solver.state[owner*STRIDE+F.rock];
  commands[owner*COMMAND_STRIDE+5]=.5;commands[owner*COMMAND_STRIDE+7]=1;applyCommand(solver.state,owner,commands);view.update(solver.state,0,e);
  const erased=totalMass(stock)-totalMass(solver.state),rockPreserved=solver.state[owner*STRIDE+F.rock]===rock;
  const mesh=view.scene.getMeshByName('live material cross section')!,data=mesh.getVerticesData('powder0')??[],rendered=mesh.isEnabled()&&data.length>0&&data.every(Number.isFinite);
- const result={passed:landed===2&&massBudgetError<.005&&erased>0&&rockPreserved&&rendered,landed,suppliedMass,escaped,massBudgetError,erased,rockPreserved,rendered,grainsLeft:view.deposits().filter(g=>g.amount>0).length};
+ const grainsLeft=view.deposits().length;
+ const result={passed:landed===2&&massBudgetError<.005&&erased>0&&rockPreserved&&rendered&&grainsLeft===0,airPick:pick.inAir,elapsedPhysicsSeconds:0,landed,suppliedMass,escaped,massBudgetError,erased,rockPreserved,rendered,grainsLeft};
  view.clearGrains();view.update(initial,0,e);return result;
 }
 
