@@ -10,15 +10,15 @@ export const MATERIALS:{id:Material;name:string;type:string;note:string;key:stri
 ];
 export const PRODUCT_NAMES={ice:'얼음',ceramic:'도자기',glass:'유리',plant:'식생',herbivore:'초식 생물',carnivore:'포식 생물',iron:'운철'} as const;
 MATERIALS.push(
- {id:'soil',name:'유기 토양',type:'유기물 · 보수력',note:'물을 붙잡고 생물량이 돌아오는 유기물 저장층입니다. 모래 식생의 필수 조건은 아닙니다.',key:'',category:'life'},
+ {id:'soil',name:'유기물',type:'생물 잔해 · 보수력',note:'물을 붙잡고 식생 성장을 돕습니다. 죽은 생물과 씨앗도 유기물로 돌아옵니다. 모래·점토에서 식생이 자라는 데 필수는 아닙니다.',key:'',category:'life'},
  {id:'plant',name:'식생',type:'생물량 · 생산자',note:'씨앗·탄소원·수분·햇빛이 맞으면 모래나 점토에서도 자랍니다. 얼음·깊은 물·염분·고온에서는 쇠퇴합니다.',key:'',category:'life'},
- {id:'herbivore',name:'초식 생물',type:'생물량 · 소비자',note:'식생을 먹고 성장하며 주변으로 이동합니다. 먹이가 없으면 토양으로 돌아갑니다.',key:'',category:'life'},
+ {id:'herbivore',name:'초식 생물',type:'생물량 · 소비자',note:'식생을 먹고 성장하며 주변으로 이동합니다. 먹이가 없으면 생물량이 유기물로 돌아갑니다.',key:'',category:'life'},
  {id:'carnivore',name:'포식 생물',type:'생물량 · 소비자',note:'초식 생물을 먹습니다. 작은 양으로 시작하고 먹이의 균형을 관찰하세요.',key:'',category:'life'},
- {id:'iron',name:'운철',type:'수집 · 운석',note:'충돌한 운석이 남기는 금속입니다. 회수해 다른 행성으로 옮길 수 있어요.',key:'',category:'crafted'},
+ {id:'iron',name:'운철',type:'금속 · 운석',note:'운석 충돌로 얻는 금속입니다. 캠페인에서는 회수한 양을 다른 행성에 쓸 수 있어요.',key:'',category:'crafted'},
 
- {id:'ice',name:'얼음',type:'생산 · 보관함',note:'물을 얼려 회수하세요. 다른 행성에서 녹여 물로 쓸 수 있어요.',key:'',category:'crafted'},
- {id:'ceramic',name:'도자기',type:'생산 · 보관함',note:'점토를 구워 얻는 단단한 물질입니다. 회수한 만큼 다른 행성에 쓸 수 있어요.',key:'',category:'crafted'},
- {id:'glass',name:'유리',type:'생산 · 보관함',note:'모래를 녹인 뒤 식혀 얻습니다. 회수 도구로 보관함에 담으세요.',key:'',category:'crafted'},
+ {id:'ice',name:'얼음',type:'물 · 고체',note:'물을 얼려 얻습니다. 캠페인에서는 회수한 만큼 다른 행성에 쓸 수 있어요.',key:'',category:'crafted'},
+ {id:'ceramic',name:'도자기',type:'구운 점토',note:'점토를 구워 얻는 단단한 물질입니다. 캠페인에서는 회수한 만큼 공급할 수 있어요.',key:'',category:'crafted'},
+ {id:'glass',name:'유리',type:'굳은 규사',note:'모래를 녹인 뒤 식혀 얻습니다. 캠페인에서는 회수한 만큼 공급할 수 있어요.',key:'',category:'crafted'},
 );
 export const RESEARCH=[
   {id:'wet-sand',name:'젖은 모래',icon:'sand',
@@ -31,7 +31,7 @@ export const RESEARCH=[
     url:'https://www.usgs.gov/water-science-school/science/vapor-pressure-and-water',source:'USGS · 물과 증기압'},
   {id:'cloud',name:'구름과 강수',icon:'cloud',
     science:'구름은 공중에 떠 있는 작은 물방울과 얼음 입자입니다. 응결만으로 바로 비가 되지는 않습니다. 입자가 성장해야 강수가 되고, 건조한 공기에서는 다시 증발할 수 있습니다.',
-    rule:'수증기를 구름 속 물방울·얼음으로 따로 저장하고 이동시킵니다. 일정량 이상이면 비·눈으로 내려옵니다. 바람·상층 냉각·강수 문턱은 게임 근사이며, 현재 구름은 물로 이루어집니다.',
+    rule:'각 대기층의 온도·기압·수증기량으로 응결을 계산합니다. 부력 상승에 따른 단열 냉각과 잠열을 반영하고 바람이 물방울·얼음을 운반합니다. 강수 성장과 침강 속도는 대표값으로 근사하며, 현재 구름은 물로 이루어집니다.',
     url:'https://www.weather.gov/source/zhu/ZHU_Training_Page/clouds/cloud_development/clouds.htm',source:'NWS · 구름의 발달과 강수'},
   {id:'ice',name:'동결',icon:'snow',
     science:'담수는 약 0°C, 보통의 해수는 약 −2°C에서 얼기 시작합니다. 얼음이 생기면서 남은 물의 염분이 높아집니다.',
@@ -47,7 +47,7 @@ export const RESEARCH=[
     url:'https://www.nasa.gov/news-release/nasas-asteroid-bennu-sample-reveals-mix-of-lifes-ingredients/',source:'NASA · 베누의 증발 광물'},
   {id:'ceramic',name:'점토 소성',icon:'heat',
     science:'점토를 가열하면 광물 구조가 바뀝니다. 필요한 온도와 시간은 조성에 따라 다릅니다.',
-    rule:'건조한 대표 점토를 850°C 이상에서 누적 30게임초 유지하면 도자기가 됩니다. 이 값은 게임 규칙입니다.',
+    rule:'건조한 대표 점토를 850°C 이상에서 행성 시간 30분 동안 유지하면 도자기가 됩니다. 이 값은 게임 규칙입니다.',
     url:'https://doi.org/10.1016/j.jas.2016.03.004',source:'Journal of Archaeological Science · 점토 구조 변화'},
   {id:'glass',name:'유리',icon:'heat',
     science:'석영질 모래를 녹이려면 대략 1,700°C의 높은 온도가 필요합니다.',
@@ -55,13 +55,13 @@ export const RESEARCH=[
     url:'https://www.corning.com/worldwide/en/innovation/materials-science/glass/how-glass-made.html',source:'Corning · 유리 제조'},
   {id:'atmosphere',name:'기체 대기',icon:'gas',
     science:'대기는 여러 기체의 혼합물입니다. 같은 조건에서 온도가 높거나 중력이 약하거나 평균 분자량이 작을수록 더 높이 퍼집니다.',
-    rule:'수증기·질소·메탄·이산화탄소를 따로 기록합니다. 이상기체·등온 대기로 높이를 근사하고, 약한 중력에서 빠져나간 질량도 기록합니다. 메탄의 빛 흡수·햇빛에 따른 연무를 색과 불투명도로 근사합니다. 온실효과·메탄 화학 반응은 아직 포함하지 않습니다.',
+    rule:'수증기·질소·메탄·이산화탄소를 따로 기록합니다. 이상기체·등온 대기로 높이를 근사하고, 약한 중력에서 빠져나간 질량도 기록합니다. 메탄의 빛 흡수·햇빛에 따른 연무를 색과 불투명도로 근사합니다. 복사에 의한 온실효과는 기후 모델에서 계산하며, 메탄 화학 반응은 포함하지 않습니다.',
     url:'https://ntrs.nasa.gov/citations/20070032693',source:'NASA · 행성 대기와 스케일 높이'},
 ];
 
 RESEARCH.push(...[
- {id:'plant',name:'식생',icon:'sand',science:'생산자 생물량을 나타냅니다.',rule:'씨앗이 있는 곳에서는 모래·점토에도 정착합니다. 탄소원과 재활용 유기물에서 질량을 얻고 빛·물·온도·염분 조건에 따라 성장합니다. 쇠퇴하면 토양으로 돌아갑니다.',url:'',source:'생태계 게임 규칙'},
- {id:'herbivore',name:'초식 생물',icon:'sand',science:'식생을 먹는 소비자 생물량입니다.',rule:'온도·물·염분·얼음이 섭식·이동·생존을 제한합니다. 섭식한 식생 일부는 초식 생물로, 나머지는 토양으로 이동합니다.',url:'',source:'생태계 게임 규칙'},
- {id:'carnivore',name:'포식 생물',icon:'sand',science:'초식 생물을 먹는 소비자 생물량입니다.',rule:'먹이와 온도·물·염분·얼음 조건이 생존과 이동을 제한합니다. 감소한 생물량은 토양으로 돌아갑니다.',url:'',source:'생태계 게임 규칙'},
+ {id:'plant',name:'식생',icon:'sand',science:'생산자 생물량을 나타냅니다.',rule:'씨앗이 있는 곳에서는 모래·점토에도 정착합니다. 탄소원과 재활용 유기물에서 질량을 얻고 빛·물·온도·염분 조건에 따라 성장합니다. 쇠퇴하면 유기물로 돌아갑니다.',url:'',source:'생태계 게임 규칙'},
+ {id:'herbivore',name:'초식 생물',icon:'sand',science:'식생을 먹는 소비자 생물량입니다.',rule:'온도·물·염분·얼음이 섭식·이동·생존을 제한합니다. 섭식한 식생 일부는 초식 생물로, 나머지는 유기물로 이동합니다.',url:'',source:'생태계 게임 규칙'},
+ {id:'carnivore',name:'포식 생물',icon:'sand',science:'초식 생물을 먹는 소비자 생물량입니다.',rule:'먹이와 온도·물·염분·얼음 조건이 생존과 이동을 제한합니다. 감소한 생물량은 유기물로 돌아갑니다.',url:'',source:'생태계 게임 규칙'},
  {id:'iron',name:'운철',icon:'heat',science:'외부에서 들어오는 운석의 금속 물질입니다.',rule:'충돌은 열과 운철을 추가하고 기반 물질을 분화구 둘레로 옮깁니다.',url:'',source:'충돌 게임 규칙'},
 ]);

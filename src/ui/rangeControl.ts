@@ -13,7 +13,7 @@ export function updateRangeControl(input: HTMLInputElement) {
   }
   const output = document.querySelector<HTMLLabelElement>(`label[for="${input.id}"]`)?.querySelector('output');
   const text = input.id === 'axis-tilt' ? `${input.value}°`
-    : input.id === 'spin-period' ? `${input.value}초`
+    : input.id === 'spin-period' ? `${input.value}분`
     : output?.textContent || input.value;
   const bubble = control.querySelector('.range-value')!;
   if (bubble.textContent !== text) bubble.textContent = text;

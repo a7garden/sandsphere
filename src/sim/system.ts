@@ -1,5 +1,5 @@
 import {EXPEDITIONS,type Progress} from './progress';
-import {CpuSolver,COMMAND_STRIDE,PRODUCTS,emptyStock,type Snapshot,type Stock} from './model';
+import {CpuSolver,COMMAND_STRIDE,PRODUCTS,emptyStock,isProduct,type Material,type Snapshot,type Stock} from './model';
 import {validSnapshot,upgradeSnapshot} from './storage';
 import {localSun,orbitalPeriod} from './orbit';
 import type {SphereGrid} from './sphere';
@@ -8,13 +8,13 @@ import type {TelemetryArchive} from './telemetryPersistence';
 
 export const PLANET_LIMIT=4;
 export interface PlanetRecord {id:string;name:string;snapshot:Snapshot;}
-export interface SystemSave {version:1|2;progress?:Progress;activeId:string;planets:PlanetRecord[];stock:Stock;savedAt:number;telemetry?:TelemetryArchive;}
+export type GameMode='campaign'|'sandbox';
+export interface ModeWorld {progress?:Progress;activeId:string;planets:PlanetRecord[];stock:Stock;telemetry?:TelemetryArchive;}
+export interface SystemSave extends ModeWorld {version:1|2|3;mode?:GameMode;other?:ModeWorld;savedAt:number;}
 
-export function validSystem(value:unknown,count:number):value is SystemSave {
- if(!value||typeof value!=='object')return false;
- const s=value as SystemSave;
- if(![1,2].includes(s.version)||!Number.isFinite(s.savedAt)||s.savedAt<0||!Array.isArray(s.planets)||!s.planets.length||s.planets.length>PLANET_LIMIT)return false;
- if(!s.stock||PRODUCTS.some(id=>!Number.isFinite((s.stock[id]??(s.version===1&&!['ice','ceramic','glass'].includes(id)?0:NaN)))||(s.stock[id]??0)<0))return false;
+function validModeWorld(s:ModeWorld,count:number,legacyStock=false,allowEmpty=false){
+ if(!Array.isArray(s.planets)||(!allowEmpty&&!s.planets.length)||s.planets.length>PLANET_LIMIT)return false;
+ if(!s.stock||PRODUCTS.some(id=>!Number.isFinite((s.stock[id]??(legacyStock&&!['ice','ceramic','glass'].includes(id)?0:NaN)))||(s.stock[id]??0)<0))return false;
  if(s.progress&&(!Array.isArray(s.progress.completed)||s.progress.completed.some(id=>!EXPEDITIONS.some(m=>m.id===id))||new Set(s.progress.completed).size!==s.progress.completed.length||!Number.isFinite(s.progress.meteorCount)||s.progress.meteorCount<0))return false;
  const ids=new Set<string>();
  for(const planet of s.planets){
@@ -22,14 +22,35 @@ export function validSystem(value:unknown,count:number):value is SystemSave {
   if(typeof planet.name!=='string'||!planet.name.trim()||planet.name.length>28||!validSnapshot(planet.snapshot,count))return false;
   ids.add(planet.id);
  }
- return ids.has(s.activeId);
+ return s.planets.length?ids.has(s.activeId):allowEmpty&&s.activeId==='';
+}
+export function validSystem(value:unknown,count:number):value is SystemSave {
+ if(!value||typeof value!=='object')return false;
+ const s=value as SystemSave;
+ if(![1,2,3].includes(s.version)||!Number.isFinite(s.savedAt)||s.savedAt<0)return false;
+ if(s.version===3){if(!['campaign','sandbox'].includes(s.mode??'')||!validModeWorld(s,count,false,true))return false;return s.other===undefined||s.other.telemetry?.baseSavedAt===undefined&&validModeWorld(s.other,count,false,true);}
+ return s.mode===undefined&&s.other===undefined&&validModeWorld(s,count,s.version===1);
 }
 
 /** Validate before persistence and write canonical, nonnegative phase stocks.
  * Upgrade operates on copies, so saving never mutates the running solver. */
 export function prepareSystemSave(system:SystemSave,count:number):SystemSave {
  if(!validSystem(system,count))throw new Error('계산 상태가 저장 형식과 맞지 않습니다.');
- return {...system,planets:system.planets.map(p=>({...p,snapshot:upgradeSnapshot(p.snapshot,count)}))};
+ const upgrade=(world:ModeWorld)=>({...world,planets:world.planets.map(p=>({...p,snapshot:upgradeSnapshot(p.snapshot,count)}))});
+ return {...system,...upgrade(system),other:system.other?upgrade(system.other):undefined};
+}
+
+/** Keep both modes in one local/cloud save while only one is active. */
+export function switchSystemMode(system:SystemSave,target:GameMode,savedAt:number):SystemSave {
+ const current=system.mode??'campaign';if(current===target)return system;
+ const stock=emptyStock();if(target==='campaign')stock.plant=8;
+ const other=system.other??{activeId:'',planets:[],stock};
+ const active:ModeWorld={activeId:system.activeId,planets:system.planets,stock:system.stock,progress:system.progress,telemetry:system.telemetry};
+ return {version:3,mode:target,...other,other:active,savedAt};
+}
+export function materialSupply(mode:GameMode,kind:Material,stock:Stock,requested:number){
+ if(mode==='campaign'&&isProduct(kind))return {amount:Math.min(stock[kind],requested),fromStock:true};
+ return {amount:requested,fromStock:false};
 }
 
 export function migrateWorld(snapshot:Snapshot,count:number):SystemSave {

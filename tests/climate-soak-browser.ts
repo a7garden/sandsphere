@@ -8,7 +8,7 @@ import {saveSnapshot,loadRecord,validSnapshot,upgradeSnapshot} from '../src/sim/
 export async function verifyEvolvedGpu(saved:Snapshot){
  const grid=createSphere(2),cpu=new CpuSolver(grid,new Float32Array(saved.state)),gpu=await GpuSolver.create(grid,new Float32Array(saved.state));
  if(!gpu)return {supported:false,passed:false};cpu.climate.restore(saved.climate);gpu.climate.restore(saved.climate);
- const orbit=structuredClone(saved),empty=new Float32Array(grid.count*COMMAND_STRIDE),mass=totalMass(cpu.state),h=totalEnthalpy(cpu.state);
+ const orbit=structuredClone(saved),empty=new Float32Array(grid.count*COMMAND_STRIDE),mass=totalMass(cpu.state),h=totalEnthalpy(cpu.state,cpu.climate);
  let switchCpu:CpuSolver|undefined,switchGpu:GpuSolver|undefined,maxT=0,maxMatter=0,maxWind=0,maxCurrent=0,maxSwitchT=0,saveExact=false,restored:Snapshot|undefined,qCpu=0,qGpu=0,escCpu=0,escGpu=0;
  try{
   for(let k=0;k<900;k++){
@@ -19,7 +19,7 @@ export async function verifyEvolvedGpu(saved:Snapshot){
    for(let i=0;i<cpu.climate.wind.length;i++){maxWind=Math.max(maxWind,Math.abs(cpu.climate.wind[i]-gpu.climate.wind[i]));maxCurrent=Math.max(maxCurrent,Math.abs(cpu.climate.currents[i]-gpu.climate.currents[i]));}
    if(k===449){const snapshot:Snapshot={...structuredClone(orbit),state:[...gpu.state],climate:gpu.climate.snapshot()};await saveSnapshot(snapshot,'long-climate-audit-only');const raw=await loadRecord('long-climate-audit-only');saveExact=JSON.stringify(raw)===JSON.stringify(snapshot)&&validSnapshot(raw,grid.count);if(!saveExact)throw new Error('장시간 기후 저장 왕복 불일치');restored=upgradeSnapshot(raw as Snapshot,grid.count);switchCpu=new CpuSolver(grid,new Float32Array(restored.state));switchCpu.climate.restore(restored.climate);switchGpu=(await GpuSolver.create(grid,cpu.state.slice()))!;switchGpu.climate.restore(cpu.climate.snapshot());}
   }
-  const result={supported:true,evolvedSeconds:saved.time,continuedSeconds:30,cells:grid.count,steps:900,maxT,maxMatter,maxWind,maxCurrent,maxSwitchT,saveExact,massResidualCpu:totalMass(cpu.state)+escCpu-mass,massResidualGpu:totalMass(gpu.state)+escGpu-mass,energyResidualCpu:totalEnthalpy(cpu.state)-h-qCpu,energyResidualGpu:totalEnthalpy(gpu.state)-h-qGpu,finite:gpu.state.every(Number.isFinite),nonnegative:gpu.state.every((v,i)=>i%STRIDE===F.temperature||v>=0)};
+  const result={supported:true,evolvedSeconds:saved.time,continuedSeconds:30,cells:grid.count,steps:900,maxT,maxMatter,maxWind,maxCurrent,maxSwitchT,saveExact,massResidualCpu:totalMass(cpu.state)+escCpu-mass,massResidualGpu:totalMass(gpu.state)+escGpu-mass,energyResidualCpu:totalEnthalpy(cpu.state,cpu.climate)-h-qCpu,energyResidualGpu:totalEnthalpy(gpu.state,gpu.climate)-h-qGpu,finite:gpu.state.every(Number.isFinite),nonnegative:gpu.state.every((v,i)=>i%STRIDE===F.temperature||v>=0)};
   return {...result,passed:result.finite&&result.nonnegative&&saveExact&&maxT<.01&&maxSwitchT<.01&&maxMatter<1e-3&&maxWind<1e-5&&maxCurrent<1e-5&&Math.abs(result.massResidualCpu)<.01&&Math.abs(result.massResidualGpu)<.01};
  }finally{gpu.dispose();switchGpu?.dispose();}
 }

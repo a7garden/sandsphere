@@ -31,13 +31,24 @@ export class SectionCamera {
   get profileHalfHeight(){return Math.max(1,RADIUS*(this.flatRange??.45)*1.12/this.camera.getEngine().getAspectRatio(this.camera));}
   get displayHalfHeight(){return this.halfHeight()*this.currentScale;}
   frame(mode:'surface'|'whole'){
-    this.framing=mode;this.pan.setAll(0);this.focus=mode==='surface'?(this.flatRange!==null?RADIUS+this.profileHalfHeight*.56:this.surfaceRadius-.15):0;
     const aspect=this.camera.getEngine().getAspectRatio(this.camera);
+    this.framing=mode;this.pan.setAll(0);this.focus=mode==='surface'?(this.flatRange!==null?RADIUS+this.profileHalfHeight*(aspect<1?.40:.24):this.surfaceRadius-.15):0;
     this.scale=(mode==='surface'?(this.flatRange!==null?this.profileHalfHeight:1.35):Math.max(6.6,this.surfaceRadius)*1.18/Math.min(1,aspect))/this.halfHeight();
   }
   followSurface(radius:number){this.surfaceRadius=radius;if(this.framing==='surface'&&this.flatRange===null)this.focus=radius-.15;}
   setFlatRange(range:number){this.flatRange=range;if(this.framing==='surface')this.frame('surface');}
   zoom(factor:number){this.scale=Math.max(.06,Math.min(6,this.scale*factor));}
+  zoomAt(factor:number,x:number,y:number,width:number,height:number){
+    const before=this.scale;this.zoom(factor);
+    const delta=this.halfHeight()*(before-this.scale);
+    this.pan.x+=(x/Math.max(1,width)*2-1)*width/Math.max(1,height)*delta;
+    this.pan.y+=(1-y/Math.max(1,height)*2)*delta;
+  }
+  /** CSS-pixel deltas, independent of device pixel ratio and zoom. */
+  movePixels(x:number,y:number,height:number){
+    const units=this.displayHalfHeight*2/Math.max(1,height);
+    this.pan.x-=x*units;this.pan.y+=y*units;
+  }
   move(x:number,y:number){this.pan.x-=x*8*this.scale;this.pan.y+=y*8*this.scale;if(this.pan.length()>12)this.pan.normalize().scaleInPlace(12);}
   home(){this.frame('surface');}
   get active(){return this.enabled||this.amount>0;}

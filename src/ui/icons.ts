@@ -1,4 +1,6 @@
 const paths:Record<string,string>={
+  panelLeft:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path class="panel-icon-fill" d="M5 6h2v12H5Z" stroke="none" fill="currentColor"/>',
+  panelRight:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/><path class="panel-icon-fill" d="M17 6h2v12h-2Z" stroke="none" fill="currentColor"/>',
   edit:'<path d="m15 4 5 5M4 20l4-1 12-12a2.8 2.8 0 0 0-4-4L4 15v5Z"/>',
   chart:'<path d="M3 3v18h18M7 14l4-5 4 3 5-7"/>',
   axisLine:'<path d="M12 2v20"/><ellipse cx="12" cy="12" rx="8" ry="3"/>',

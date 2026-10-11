@@ -1,4 +1,5 @@
 import {validClimate} from './weatherClimate';
+import {AIR_FIELDS,AIR_LAYERS,LEGACY_AIR_LAYERS} from './layeredAtmosphere';
 import { F,STRIDE,type Snapshot } from './model';
 import { RESEARCH } from '../ui/content';
 import {BASE_CAPACITY,SPECIFIC_HEAT,PHASE_ENERGY} from './thermodynamics';
@@ -73,6 +74,13 @@ export function validSnapshot(value:unknown,count:number):value is Snapshot {
   const savedStride=s.state.length/count;
   if(savedStride!==STRIDE && !([16,20].includes(savedStride)&&s.version<3))return false;
   if(!s.state.every((v,i)=>Number.isFinite(v) && (i%savedStride===F.temperature?v>=-100&&v<=2500:v>=-massRoundoffLimit(s.state,i-i%savedStride,i%savedStride)&&v<=100000)))return false;
+  if(s.climate?.atmosphere){
+    const air=s.climate.atmosphere,layers=air.version===1?LEGACY_AIR_LAYERS:AIR_LAYERS;
+    for(let i=0;i<count;i++)for(let f=0;f<6;f++){
+      let m=0;for(let k=0;k<layers;k++)m+=air.mass[(i*layers+k)*6+f];
+      if(Math.abs(m-s.state[i*STRIDE+AIR_FIELDS[f]])>Math.max(1e-8,m*2e-7))return false;
+    }
+  }
   if(!Number.isFinite(s.time)||s.time<0||!Number.isFinite(s.supplied)||s.supplied<0||!Number.isFinite(s.removed)||s.removed<0)return false;
   if(!Array.isArray(s.discoveries)||s.discoveries.some(id=>!RESEARCH.some(r=>r.id===id)))return false;
   if(s.savedAt!==undefined&&(!Number.isFinite(s.savedAt)||s.savedAt<0))return false;

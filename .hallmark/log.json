@@ -1,5 +1,230 @@
 [
   {
+    "date": "2026-10-11",
+    "macrostructure": "Aligned instrument desk",
+    "theme": "Existing restrained glass",
+    "brief": "전체 화면의 크기·여백·위치 재평가: 작은 패널과 정렬된 도구, 모바일 펼침 메뉴",
+    "changes": [
+      "240px edge panels with 16px screen margins",
+      "Map and layer controls grouped at the lower left",
+      "Single-row mobile header with labeled action menu",
+      "Compact settings rows, opaque map popup, landscape section layout",
+      "Menu keyboard focus, Escape, and dialog return focus"
+    ],
+    "verification": {
+      "bundle": "vite build passed",
+      "typecheck": "Blocked by unrelated tests/climate-rce.test.ts:22,32 TS7034/TS7005",
+      "browserChecks": [
+        "1440x900 and 1280x812 desktop",
+        "390x844 and 320x740 mobile; no horizontal overflow",
+        "844x390 landscape expanded section options without overlap",
+        "Section selection and opening after pointer-events fix",
+        "Light/dark settings and planet settings; mobile drawer",
+        "Mobile menu initial focus, Escape and dialog return focus"
+      ],
+      "evidence": [
+        "artifacts/layout-refinement-desktop.jpg",
+        "artifacts/layout-refinement-mobile.jpg",
+        "artifacts/layout-refinement-mobile-menu.jpg",
+        "artifacts/layout-refinement-settings.jpg"
+      ]
+    }
+  },
+  {
+    "date": "2026-10-11",
+    "macrostructure": "Instrument desk section rendering",
+    "theme": "Existing restrained glass",
+    "enrichment": "rounded material profiles",
+    "brief": "각진 단면 윤곽, 해안 장식용 턱, 뒤쪽 구면 조각 겹침 제거",
+    "verification": {
+      "targetedTests": "40 passed in 6 files",
+      "bundle": "vite build passed",
+      "typecheck": "blocked by current tests/climate-rce.test.ts TS7023/TS7034/TS7005",
+      "browserChecks": [
+        "Rounded sand/clay mound and continuous water shore",
+        "Isolated section lab: supply particles settled; pause, rotate, zoom and globe return",
+        "No warning/error logs in section lab"
+      ],
+      "evidence": [
+        "artifacts/section-rounded-desktop.jpg",
+        "artifacts/section-rounded-lab.jpg"
+      ],
+      "limitations": [
+        "Sustained full-app replay performance not certified; isolated rendering fixture verified"
+      ]
+    }
+  },
+  {
+    "date": "2026-10-11",
+    "macrostructure": "Instrument desk interaction refinement",
+    "theme": "Existing restrained glass",
+    "enrichment": "world-anchored section grains",
+    "brief": "실제 재료 붓기·이동·확대 검증, 단면 조작 충돌 수정 및 조절부 축소",
+    "changes": [
+      "Navigation buttons end material pouring",
+      "Pixel-matched panning and cursor-anchored wheel zoom",
+      "Stable world-space grain texture with distance fade",
+      "Compact desktop controls and collapsible mobile dimensions",
+      "Mobile material selection closes the tool drawer"
+    ],
+    "verification": {
+      "build": "passed; existing bundle size warning",
+      "targetedTests": "23 passed in 5 files",
+      "responsiveWidths": [
+        320,
+        375,
+        414,
+        768,
+        1024,
+        1280
+      ],
+      "horizontalOverflow": false,
+      "browserChecks": [
+        "Sand, clay and water poured in a separate test planet",
+        "Desktop and portrait pan, zoom, range and magnification controls",
+        "No warning or error console messages in final interaction run"
+      ],
+      "evidence": [
+        "artifacts/section-interaction-desktop.jpg",
+        "artifacts/section-interaction-mobile.jpg",
+        "artifacts/section-interaction-checks.json"
+      ],
+      "limitations": [
+        "Real-device multitouch not tested"
+      ]
+    },
+    "critique": {
+      "philosophy": 5,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 5,
+      "variety": 4
+    }
+  },
+  {
+    "date": "2026-10-11",
+    "macrostructure": "Instrument desk refinement",
+    "theme": "Existing restrained glass",
+    "enrichment": "native Babylon section",
+    "brief": "단면 렌더와 작은 공통 버튼 규격, 앱·행성 설정창 세부 개선",
+    "verification": {
+      "build": "passed",
+      "targetedTests": "35 passed in 5 files",
+      "responsiveWidths": [
+        320,
+        375,
+        414,
+        768,
+        1024,
+        1280
+      ],
+      "settings": "light/dark, invalid input, scroll, Escape focus restoration",
+      "render": "WebGPU material fixture rendered; derivative control-flow warning fixed"
+    },
+    "critique": {
+      "philosophy": 5,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 5,
+      "variety": 4
+    }
+  },
+  {
+    "date": "2026-10-11",
+    "macrostructure": "Instrument desk",
+    "theme": "Existing restrained glass",
+    "enrichment": "native Babylon scene",
+    "nav": "editing left, camera above scene",
+    "footer": "dedicated time transport",
+    "brief": "전체 UI 재평가: 역할별 도구 재배치, 지점·행성·날씨 관측 탭, 모바일 선택형 패널, 대화상자 가독성 개선",
+    "changes": [
+      "Content-sized material palette and persistent edit toolbar",
+      "Independent camera and playback controls",
+      "Keyboard-accessible observation tabs with live readings retained",
+      "One mobile drawer at a time with focus restoration",
+      "Section selection temporarily hides competing scene controls",
+      "Opaque dialog surfaces and compact mobile dashboard header"
+    ],
+    "verification": {
+      "build": "passed; existing bundle size warning",
+      "targetedTests": 25,
+      "responsiveWidths": [
+        320,
+        375,
+        414,
+        768,
+        1024,
+        1280
+      ],
+      "horizontalOverflow": false,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "browserChecks": [
+        "material selection and heat controls",
+        "observation tabs and arrow/Home keyboard navigation",
+        "mobile drawer switching, close, Escape focus restoration",
+        "globe / section selection and transition",
+        "wide view",
+        "inventory and dashboard dialogs"
+      ],
+      "evidence": [
+        "artifacts/ui-reevaluation-desktop.jpg",
+        "artifacts/ui-reevaluation-mobile.jpg",
+        "artifacts/ui-reevaluation-responsive.json"
+      ],
+      "limitations": [
+        "Real-device multitouch not tested",
+        "Existing simulation and persistence changes in working tree are outside this UI task"
+      ]
+    },
+    "critique": {
+      "philosophy": 5,
+      "hierarchy": 5,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 5,
+      "variety": 4
+    }
+  },
+  {
+    "date": "2026-10-11",
+    "macrostructure": "Floating orbital workbench",
+    "theme": "Restrained glass",
+    "enrichment": "native Babylon scene",
+    "nav": "floating controls",
+    "footer": "scene instruments",
+    "brief": "전체 검은 우주 화면 위에 떠 있는 미니멀 패널. 광택 그라데이션과 반사광 제거.",
+    "references": [
+      "https://developer.apple.com/design/human-interface-guidelines/materials",
+      "https://kube.io/blog/liquid-glass-css-svg/"
+    ],
+    "verification": {
+      "isolatedBuild": "passed",
+      "tests": 29,
+      "responsiveWidths": [
+        320,
+        375,
+        414,
+        768,
+        1280
+      ],
+      "horizontalOverflow": false,
+      "scope": "UI changes on snapshot f6fbc78; concurrent layered-atmosphere work excluded"
+    },
+    "critique": {
+      "philosophy": 5,
+      "hierarchy": 4,
+      "execution": 4,
+      "specificity": 5,
+      "restraint": 5,
+      "variety": 4
+    }
+  },
+  {
     "date": "2026-10-09",
     "macrostructure": "Workbench",
     "theme": "Cobalt",

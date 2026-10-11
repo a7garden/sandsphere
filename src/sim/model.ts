@@ -7,6 +7,7 @@ import {cloudEdgeFraction,CLOUD_COOLING,RAIN_THRESHOLD,SNOW_THRESHOLD} from './c
 import {columnPressure,saturationMass,boilingPoint,waterActivity,type WaterPhase} from './waterPhysics';
 import {albedo,transmittedLight,conductivity,pairConductance,edgeScale,meltMobility,GLASS_SOFTENING} from './materialPhysics';
 import {physicsSteps} from './clock';
+import {AIR_FIELDS} from './layeredAtmosphere';
 import {BASE_CAPACITY,SPECIFIC_HEAT,PHASE_ENERGY,SUPPLY_TEMPERATURE,ENERGY_CHANNELS} from './thermodynamics';
 
 export const STRIDE = 24;
@@ -63,7 +64,13 @@ export function capacity(state:Float32Array,i:number) {
 }
 export function phaseEnergy(state:Float32Array,i:number){const p=i*STRIDE;let h=0;for(const f of MASS_FIELDS)h+=state[p+f]*PHASE_ENERGY[f];return h;}
 export function enthalpy(state:Float32Array,i:number){return capacity(state,i)*state[i*STRIDE+F.temperature]+phaseEnergy(state,i);}
-export function totalEnthalpy(state:Float32Array){let h=0;for(let i=0;i<state.length/STRIDE;i++)h+=enthalpy(state,i);return h;}
+export function totalEnthalpy(state:Float32Array,climate?:ClimateSnapshot|WeatherClimate){
+ if(climate instanceof WeatherClimate&&climate.air.ready)return climate.energy(state);
+ let h=0;for(let i=0;i<state.length/STRIDE;i++)h+=enthalpy(state,i);
+ const a=climate&&!(climate instanceof WeatherClimate)?climate.atmosphere:undefined;
+ if(a)for(let i=0;i<state.length/STRIDE;i++){let actual=0;for(let k=0;k<5;k++){const q=i*5+k;let m=0,c=0,phase=0;for(let f=0;f<6;f++){const mass=a.mass[q*6+f];m+=mass;c+=mass*CP[AIR_FIELDS[f]];phase+=mass*PHASE_ENERGY[AIR_FIELDS[f]];}const v=q*3;actual+=c*a.temperature[q]+phase+m*(9.81*[500,1500,3000,5500,8500][k]+.5*(a.velocity[v]**2+a.velocity[v+1]**2+a.velocity[v+2]**2))/1000;}const p=i*STRIDE;h+=actual-AIR_FIELDS.reduce((sum,f)=>sum+state[p+f]*(CP[f]*state[p+F.temperature]+PHASE_ENERGY[f]),0);}
+ return h;
+}
 
 /** Fast-mixed liquid/ice/salt equilibrium at conserved column enthalpy.
  * Salt partitions reversibly at the game solubility limit; no brine EOS is claimed.
@@ -145,9 +152,10 @@ export function environmentFor(preset:Preset):Environment {
 /** Representative material columns; the fixed spherical interior is not a separate volume solver. */
 export function seedPlanet(grid:SphereGrid,primary:PlanetMaterial,temperature:number,gas:GasMaterial|'none'='nitrogen',gasAmount=1) {
   const state=seedWorld(grid,'coast',temperature);
+  const rockLevel=primary==='rock'?sphericalRockLevel(grid):0;
   for(let i=0;i<grid.count;i++) {
     const p=i*STRIDE;
-    if(primary==='rock'){for(const field of MASS_FIELDS)state[p+field]=0;state[p+F.rock]=8;}
+    if(primary==='rock'){for(const field of MASS_FIELDS)state[p+field]=0;state[p+F.rock]=rockLevel-grid.geometry[i*4+3];}
     if(primary!=='rock') {
       for(const field of MASS_FIELDS)state[p+field]=0;
       state[p+F.rock]=2;
@@ -159,6 +167,32 @@ export function seedPlanet(grid:SphereGrid,primary:PlanetMaterial,temperature:nu
     if(gas!=='none')state[p+F[gas]]=.3*gasAmount;
   }
   return state;
+}
+
+function sphericalRockLevel(grid:SphereGrid) {
+  let terrain=0;
+  for(let i=0;i<grid.count;i++)terrain+=grid.geometry[i*4+3];
+  return 8+terrain/grid.count;
+}
+
+/** Correct untouched rock planets saved before the spherical bedrock generator. */
+export function spherizeLegacyRockPlanet(snapshot:Snapshot,grid:SphereGrid) {
+  if(snapshot.planet?.primary!=='rock'||snapshot.state.length!==grid.count*STRIDE)return false;
+  const original=snapshot.state;
+  for(let i=0;i<grid.count;i++){
+    const p=i*STRIDE;
+    if(Math.abs(original[p+F.rock]-8)>1e-5)return false;
+    for(const field of SURFACE_ERASE_FIELDS)if(Math.abs(original[p+field])>1e-5)return false;
+  }
+  const state=new Float32Array(original);
+  const level=sphericalRockLevel(grid);
+  for(let i=0;i<grid.count;i++){
+    const heat=enthalpy(state,i),p=i*STRIDE;
+    state[p+F.rock]=Math.fround(level-grid.geometry[i*4+3]);
+    state[p+F.temperature]=(heat-phaseEnergy(state,i))/capacity(state,i);
+  }
+  snapshot.state=[...state];
+  return true;
 }
 
 export interface Solver {
@@ -201,14 +235,19 @@ export class CpuSolver implements Solver {
   }
   advance(dt:number,commands:Float32Array,environment:Environment) {
     this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);
+    if(dt<=0&&!commands.some(v=>v!==0))return;
     const steps=physicsSteps(dt),empty=steps.length>1?new Float32Array(commands.length):commands;
-    for(let n=0;n<steps.length;n++)this.advanceSingle(steps[n],n===0?commands:empty,environment);
+    const before=environment.climate?this.state.slice():undefined,climate=environment.climate?this.climate.checkpoint():undefined;
+    try{for(let n=0;n<steps.length;n++)this.advanceSingle(steps[n],n===0?commands:empty,environment);}
+    catch(error){if(before&&climate){this.state=before;this.climate.restoreCheckpoint(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);}throw error;}
   }
   private advanceSingle(dt:number,commands:Float32Array,environment:Environment) {
     const {grid}=this, n=grid.count;
     this.prepared.set(this.state);
+    if(environment.climate)this.climate.prepareSurface(this.prepared,environment);
     for(let i=0;i<n;i++){const before=enthalpy(this.prepared,i);applyCommand(this.prepared,i,commands);this.energyChanges[i*4+1]+=enthalpy(this.prepared,i)-before;}
-    if(dt<=0){this.next.set(this.prepared);const old=this.state;this.state=this.next;this.next=old;return;}
+    if(environment.climate)this.climate.surfaceSupplies(this.prepared,commands,COMMAND_STRIDE,this.energyChanges);
+    if(dt<=0){if(environment.climate)this.climate.step(this.prepared,0,environment,this.energyChanges);this.next.set(this.prepared);const old=this.state;this.state=this.next;this.next=old;return;}
     this.flux.fill(0);
     for(let i=0;i<n;i++) {
       const p=i*STRIDE, s=this.prepared, h=solidHeight(s,i,grid), head=h+s[p+4];
@@ -276,10 +315,14 @@ export class CpuSolver implements Solver {
       }
       for(let f=0;f<STRIDE;f++)this.next[p+f]=this.transported[p+f];
       this.next[p+8]=(energy+conduction)/capacity(this.next,i);
+      // Account for the actual Float64 → Float32 inventory/temperature writes;
+      // the conservative transport itself has no external energy source.
+      let transportedPhase=0;for(const f of MASS_FIELDS)transportedPhase+=this.transported[p+f]*PHASE_ENERGY[f];
+      this.energyChanges[i*4+3]+=enthalpy(this.next,i)-(energy+conduction+transportedPhase);
       this.next[p+F.firing]=this.next[p+F.clay]>1e-8?Math.max(0,firingDose)/this.next[p+F.clay]:0;
       react(this.next,i,dt,environment,grid,this.escapeCells,this.condensedCells,this.precipitatedCells,this.energyChanges);
     }
-    if(environment.climate)this.climate.step(this.next,dt,environment,this.energyChanges,this.condensedCells);
+    if(environment.climate)this.climate.step(this.next,dt,environment,this.energyChanges,this.condensedCells,this.precipitatedCells,this.escapeCells);
     const old=this.state;this.state=this.next;this.next=old;
   }
 }
@@ -323,7 +366,7 @@ export function react(s:Float32Array,i:number,dt:number,e:Environment,grid:Spher
   s[p+8]=t;
   equilibrateWater(s,i);t=s[p+8];c=capacity(s,i);
   const tf=freezingPoint(s[p+4],s[p+7]),activity=waterActivity(s[p+4],s[p+7]),boiling=s[p+4]+s[p+5]+s[p+9]+s[p+16]+s[p+17]>0?boilingPoint(cellPressure(s,i,e),activity):100;
-  if(s[p+4]>0 && t>tf+0.3) {
+  if(!e.climate&&s[p+4]>0 && t>tf+0.3) {
     const dry=Math.max(0,1-s[p+9]/Math.max(1e-12,vaporCapacity(s,i,t,e,'water',activity)));
     const evaporate=Math.max(0,t+8)*0.0001*dry*dt+Math.max(0,t-boiling)*c/(2475-2.18*boiling);
     const amount=Math.min(s[p+4],evaporate,Math.max(0,(t-tf)*c/(2475-2.18*tf)));
@@ -332,7 +375,7 @@ export function react(s:Float32Array,i:number,dt:number,e:Environment,grid:Spher
     c=capacity(s,i);
   }
   // Sublimation spends the same declared phase energy as cloud ice evaporation.
-  if(s[p+F.ice]>0&&t<=tf+.3){
+  if(!e.climate&&s[p+F.ice]>0&&t<=tf+.3){
     const dry=Math.max(0,1-s[p+F.vapor]/Math.max(1e-12,vaporCapacity(s,i,t,e,'ice')));
     const before=s[p+F.ice],requested=Math.min(before,before*dry*dt*.002,Math.max(0,(t+100)*c/2819));
     s[p+F.ice]-=requested;const amount=before-s[p+F.ice];s[p+F.vapor]+=amount;t=(c*t-amount*2809)/capacity(s,i);c=capacity(s,i);

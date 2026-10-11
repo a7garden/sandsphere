@@ -3,7 +3,7 @@ import {chooseSave,saveScope} from '../src/account/sync';
 import {encodeSave,decodeSave} from '../src/account/firebase';
 import {createSphere} from '../src/sim/sphere';
 import {seedWorld} from '../src/sim/model';
-import {migrateWorld} from '../src/sim/system';
+import {migrateWorld,switchSystemMode} from '../src/sim/system';
 
 const grid=createSphere(0);
 const system=migrateWorld({version:4,preset:'coast',time:0,state:[...seedWorld(grid)],discoveries:[],environment:{ambient:18,sunlight:1,sun:[0,1,0]},supplied:0,removed:0},grid.count);
@@ -31,5 +31,12 @@ describe('account save boundaries',()=>{
   expect(await decodeSave(bytes,grid.count)).toEqual(system);
   await expect(decodeSave(await (await encodeSave({...system,planets:[]})).arrayBuffer(),grid.count)).rejects.toThrow('형식');
   await expect(decodeSave(await (await encodeSave({...system,telemetry:{version:1,planets:[],baseSavedAt:10}})).arrayBuffer(),grid.count)).rejects.toThrow('형식');
+ });
+ it('round trips both mode profiles in one cloud save',async()=>{
+  const campaign={...system,stock:{...system.stock,glass:4}};
+  const sandbox=switchSystemMode(campaign,'sandbox',10);
+  sandbox.stock.glass=7;
+  expect(await decodeSave(await (await encodeSave(sandbox)).arrayBuffer(),grid.count)).toEqual(sandbox);
+  await expect(decodeSave(await (await encodeSave({...sandbox,other:{...sandbox.other!,telemetry:{version:1,planets:[],baseSavedAt:1}}})).arrayBuffer(),grid.count)).rejects.toThrow('형식');
  });
 });

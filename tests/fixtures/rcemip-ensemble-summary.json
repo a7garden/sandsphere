@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "source": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2020MS002138",
+  "table": "A1 (corrected version of record), RCE_small300",
+  "sstK": 300,
+  "purpose": "Independent ensemble context, not a universal pass threshold or an SCM-only reference",
+  "statistics": {
+    "olrWm2": {"mean": 241.24, "standardDeviation": 15.67},
+    "precipitationMmDay": {"mean": 2.9, "standardDeviation": 1.0},
+    "columnWaterKgM2": {"mean": 38.7, "standardDeviation": 5.1}
+  },
+  "limitations": [
+    "Table combines different model types, resolutions and sensitivity experiments",
+    "Published means discard the first 75 days; this experiment averages its final 200 days after at least 1,000 days",
+    "Inter-model spread is not an observational uncertainty or a certification tolerance",
+    "Table A1 contains no total cloud fraction reference"
+  ]
+}

@@ -25,8 +25,9 @@ describe('game climate',()=>{
  expect(an[1]).toBeLessThan(0);expect(as[1]).toBeGreaterThan(0);expect(b.every(Number.isFinite)).toBe(true);
  });
  it('uniform conditions stay at rest; pressure gradients produce tangent winds',()=>{
- const s=state(),c=new WeatherClimate(grid),energy=new Float32Array(grid.count*4);c.step(s,.03,{...env,sunlight:0},energy);
- expect(c.wind.every(v=>v===0)).toBe(true);
+ const s=seedPlanet(grid,'rock',22),c=new WeatherClimate(grid),energy=new Float32Array(grid.count*4);c.step(s,.03,{...env,sunlight:0},energy);
+ // Float64 pressure/enthalpy roundoff can leave sub-picoradian velocities.
+ expect(Math.max(...c.wind.map(Math.abs))).toBeLessThan(1e-12);
  s[F.nitrogen]=.6;c.step(s,.03,env,energy);expect(c.wind.some(v=>Math.abs(v)>.000001)).toBe(true);
  for(let i=0;i<grid.count;i++)expect(Math.abs([0,1,2].reduce((a,k)=>a+c.wind[i*3+k]*grid.directions[i*3+k],0))).toBeLessThan(1e-7);
  });
@@ -37,8 +38,8 @@ describe('game climate',()=>{
  const initialMass=totalMass(s),initialHeat=totalEnthalpy(s);
  for(let k=0;k<60;k++)c.step(s,.03,env,energy);
  expect(totalMass(s)).toBeCloseTo(initialMass,4);
- expect(totalEnthalpy(s)-initialHeat-energy.reduce((a,v)=>a+v,0)).toBeCloseTo(0,2);
- expect(s[F.cloud]).toBeLessThan(.2);expect(s.slice(STRIDE).some((v,i)=>i%STRIDE===F.cloud&&v>0)).toBe(true);
+ expect(totalEnthalpy(s,c)-initialHeat-energy.reduce((a,v)=>a+v,0)).toBeCloseTo(0,2);
+ expect(s[F.cloud]).toBeLessThan(.2);expect(s.slice(STRIDE).some((v,i)=>i%STRIDE===F.nitrogen&&v>.3)).toBe(true);
  expect(c.currents.some(v=>Math.abs(v)>1e-6)).toBe(true);expect(s.every(Number.isFinite)).toBe(true);expect(before+h).toBeGreaterThan(0);
  });
  it('has no spontaneous abiogenesis; existing seeds establish on moist sand without organic soil',()=>{
@@ -58,10 +59,9 @@ describe('game climate',()=>{
  const s=state(),c=new WeatherClimate(grid);for(let i=0;i<grid.count;i++){s[i*STRIDE+F.water]=.8;s[i*STRIDE+F.soil]=8;s[i*STRIDE+F.dissolved]=.03;c.currents[i*3]=.02;}
  c.step(s,.03,env,new Float32Array(grid.count*4));expect(c.currents.every(v=>v===0)).toBe(true);expect(s[F.water]).toBeCloseTo(.8,6);expect(s[F.dissolved]).toBeCloseTo(.03,6);
  });
- it('converging winds cool the cloud layer and seed removal prevents recolonization',()=>{
- const a=state(),b=a.slice(),ca=new WeatherClimate(grid),cb=new WeatherClimate(grid),q=new Float32Array(grid.count*4);
- for(let i=0;i<grid.count;i++){const p=i*STRIDE;a[p+F.vapor]=b[p+F.vapor]=.0018;const dot=[0,1,2].reduce((sum,k)=>sum+grid.directions[k]*grid.directions[i*3+k],0);for(let k=0;k<3;k++)ca.wind[i*3+k]=.1*(grid.directions[k]-dot*grid.directions[i*3+k]);}
- ca.step(a,.03,env,q);cb.step(b,.03,env,q);expect(ca.lift[0]).toBeGreaterThan(0);expect(a[F.cloud]).toBeGreaterThan(b[F.cloud]);
+ it('buoyant transport replaces diagnostic cooling and seed removal prevents recolonization',()=>{
+ const a=state(),ca=new WeatherClimate(grid),q=new Float32Array(grid.count*4);ca.prepareSurface(a,env);
+ ca.air.temperature[0]=35;ca.air.temperature[1]=5;ca.step(a,.03,env,q);expect(ca.air.updraft[0]).toBeGreaterThan(0);expect(ca.air.temperature[0]).toBeLessThan(35);
  const erased=state(),c=new WeatherClimate(grid);c.seedLife();c.step(erased,.03,env,q);expect(c.seeds.every(v=>v===0)).toBe(true);expect(erased[F.plant]).toBe(0);
  });
  it('physical dormant seeds germinate into biomass at conserved total mass',()=>{

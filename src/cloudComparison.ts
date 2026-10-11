@@ -6,6 +6,9 @@ import {F,STRIDE,seedWorld,totals,type Environment} from './sim/model';
 import {orbitalEnvironment} from './sim/orbit';
 import {loadRecord,upgradeSnapshot} from './sim/storage';
 import {validSystem} from './sim/system';
+import {currentLocale,setupLocalization,translatePhrase} from './ui/i18n';
+
+setupLocalization({selector:'#cloud-language',root:'body',title:{ko:'Sandsphere · 구름 3안 비교',en:'Sandsphere · Compare three cloud styles'}});
 
 const grid=createSphere(4),styles:CloudStyle[]=['stratus','cumulus','faceted'],views:PlanetView[]=[];
 const status=document.querySelector<HTMLOutputElement>('#status')!,main=document.querySelector<HTMLElement>('main')!;
@@ -29,7 +32,8 @@ function update(){
   view.setSun([.7,.45,-.55]);view.setCloudAppearance(true,.84);view.setCloudStyle(styles[i]);view.setAxisVisible(false);view.setLayers(air.checked,true);view.setSurfaceStyle(true,1,true);view.animate(.2,0);
  }
  document.querySelectorAll<HTMLButtonElement>('[data-source]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.source===source)));
- status.textContent=`${current.name} · 구름 물·얼음 ${mass.toFixed(1)} kg · 계산 정지`;
+ const name=document.createElement('span');name.textContent=source==='saved'?current.name:translatePhrase(current.name);name.translate=source!=='saved';
+ status.replaceChildren(name, currentLocale()==='en'?` · Cloud water and ice ${mass.toFixed(1)} kg · Simulation paused`:` · 구름 물·얼음 ${mass.toFixed(1)} kg · 계산 정지`);
 }
 function reset(){for(const view of views){view.home();view.camera.radius=17;view.camera.alpha=-1.01;view.camera.beta=1.17;}master=0;}
 function focus(style?:string){if(style)main.dataset.focus=style;else delete main.dataset.focus;document.querySelector<HTMLButtonElement>('#all')!.hidden=!style;}
@@ -54,6 +58,7 @@ async function start(){
  document.querySelectorAll<HTMLButtonElement|HTMLInputElement>('button,input').forEach(b=>b.disabled=false);
  document.querySelector<HTMLButtonElement>('[data-source=saved]')!.disabled=!saved;
 }
+window.addEventListener('sandsphere-language-change',update);
 document.querySelectorAll<HTMLButtonElement>('[data-source]').forEach(b=>b.onclick=()=>{source=b.dataset.source!;update();});
 document.querySelectorAll<HTMLButtonElement>('[data-focus]').forEach(b=>b.onclick=()=>focus(b.dataset.focus));
 document.querySelector<HTMLButtonElement>('#all')!.onclick=()=>focus();document.querySelector<HTMLButtonElement>('#reset')!.onclick=reset;air.onchange=()=>update();

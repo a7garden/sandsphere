@@ -1,4 +1,5 @@
 import {icon} from './icons';
+import {currentLocale} from './i18n';
 
 interface NamedPlanet {id:string;name:string;}
 export function planetNavigationMarkup(){return `<div class="header-planets"><span class="header-planet-icon" aria-hidden="true">${icon('planet')}</span><select id="header-planet-select" aria-label="행성 전환" title="행성 전환"></select><button id="planet-rename" class="icon-button" aria-label="행성 이름 변경" title="행성 이름 변경" aria-expanded="false" aria-controls="planet-name-form">${icon('edit')}</button><form id="planet-name-form" class="planet-name-editor" hidden novalidate><input id="planet-name" aria-label="행성 이름" aria-describedby="planet-name-hint planet-name-error" maxlength="28" autocomplete="off" spellcheck="false"><button id="planet-name-apply" class="icon-button" type="submit" aria-label="이름 저장" title="저장 · Enter">${icon('check')}</button><button id="planet-name-cancel" class="icon-button" type="button" aria-label="이름 변경 취소" title="취소 · Esc">${icon('close')}</button><div class="planet-name-assist"><span id="planet-name-hint"><kbd>Enter</kbd> 저장 <span>·</span> <kbd>Esc</kbd> 취소</span><output id="planet-name-count" aria-label="이름 글자 수"></output><span id="planet-name-error" role="alert" hidden></span></div></form><span id="planet-name-status" class="visually-hidden" role="status"></span></div>`;}
@@ -31,8 +32,8 @@ export class PlanetNavigation {
   const planets=this.planets();
   if(this.renameId&&(this.renameId!==this.activeId()||!planets.some(p=>p.id===this.renameId)))this.finish(false);
   for(const option of [...this.select.options])if(!planets.some(p=>p.id===option.value))option.remove();
-  for(const planet of planets){let option=[...this.select.options].find(o=>o.value===planet.id);if(!option){option=document.createElement('option');option.value=planet.id;this.select.append(option);}if(option.textContent!==planet.name)option.textContent=planet.name;}
+  for(const planet of planets){let option=[...this.select.options].find(o=>o.value===planet.id);if(!option){option=document.createElement('option');option.value=planet.id;option.translate=false;this.select.append(option);}if(option.textContent!==planet.name)option.textContent=planet.name;}
   this.select.value=this.navigatingId||this.activeId();const current=planets.find(p=>p.id===this.select.value);
-  this.select.disabled=this.edit.disabled=!current||this.busy();this.select.title=current?current.name+' · 행성 전환':'행성 전환';
+  this.select.disabled=this.edit.disabled=!current||this.busy();this.select.title=current?(currentLocale()==='en'?`${current.name} · Switch planet`:current.name+' · 행성 전환'):(currentLocale()==='en'?'Switch planet':'행성 전환');
  }
 }

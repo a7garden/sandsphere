@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><title>Production cloud geography</title><script type="module">
+import {createSphere} from '/src/sim/sphere.ts';
+import {F,STRIDE,COMMAND_STRIDE,CpuSolver,seedPlanet,totalMass,totalEnthalpy} from '/src/sim/model.ts';
+import {AIR_LAYERS,COLUMN_KG} from '/src/sim/layeredAtmosphere.ts';
+window.cloudGeography=()=>{
+ const grid=createSphere(1),env={ambient:22,sunlight:1,sun:[1,0,0],gravity:1,rotationRate:0,climate:true},s=seedPlanet(grid,'sand',22);
+ for(let i=0;i<grid.count;i++){const p=i*STRIDE;s[p+F.sand]=8;s[p+F.vapor]=.006;if(grid.directions[i*3+2]>0)s[p+F.water]=3;}
+ const initialMass=totalMass(s),initialHeat=totalEnthalpy(s),solver=new CpuSolver(grid,s);
+ solver.advance(1/30,new Float32Array(grid.count*COMMAND_STRIDE),env);
+ const groups={land:0,water:0,day:0,night:0};let path=0;
+ for(let i=0;i<grid.count;i++){const p=i*STRIDE,m=solver.state[p+F.cloud]+solver.state[p+F.cloudIce];path+=m*COLUMN_KG;if(m>1e-8){groups[grid.directions[i*3+2]>0?'water':'land']++;groups[grid.directions[i*3]>0?'day':'night']++;}}
+ return {cells:grid.count,physicalSeconds:2,groups,meanCondensatePathKgM2:path/grid.count,layers:AIR_LAYERS,massResidual:totalMass(solver.state)+solver.escapeCells.reduce((a,b)=>a+b,0)-initialMass,energyResidual:totalEnthalpy(solver.state,solver.climate)-initialHeat-solver.energyChanges.reduce((a,b)=>a+b,0),finite:solver.state.every(Number.isFinite),meaning:'Controlled wet initial state; geography masks/conservation regression, not observed climate'};
+};
+</script>

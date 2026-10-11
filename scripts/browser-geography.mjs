@@ -1,0 +1,4 @@
+import {chromium} from '../artifacts/science/runtime/browser/node_modules/playwright-core/index.mjs';
+import {mkdirSync,writeFileSync} from 'node:fs';
+const browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+try{const page=await browser.newPage();await page.goto('http://127.0.0.1:5189/tests/climate-geography-lab.html');await page.waitForFunction(()=>Boolean(window.cloudGeography));const result=await page.evaluate(()=>window.cloudGeography());result.engine=await browser.version();if(!result.finite||Object.values(result.groups).some(v=>v===0)||Math.abs(result.massResidual)>.001||Math.abs(result.energyResidual)>.01)throw Error(JSON.stringify(result));mkdirSync('artifacts/science/browser',{recursive:true});writeFileSync('artifacts/science/browser/cloud-geography.json',JSON.stringify(result,null,2));console.log(result);}finally{await browser.close();}

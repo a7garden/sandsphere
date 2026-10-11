@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>Sandsphere 기후 물리 실행</title>
+<body><h1>브라우저 기후 모델 장기 실행</h1><pre id="progress">준비됨</pre>
+<script type="module">
+ const results=[],worker=new Worker(new URL('./climate-science-worker.ts',import.meta.url),{type:'module'});
+ let resolve,reject;
+ worker.onmessage=({data})=>{
+  document.getElementById('progress').textContent=JSON.stringify(data.type==='result'?{type:data.type,sst:data.sst,stationarity:data.result.stationarity}:data,null,2);
+  if(data.type==='progress')console.log('RCE browser',data.sst,data.day,data.drift);
+  if(data.type==='result')results.push(data.result);
+  if(data.type==='failed')reject(Error(data.error));
+  if(data.type==='completed')resolve(results);
+ };
+ window.climateScience={run:()=>new Promise((yes,no)=>{resolve=yes;reject=no;worker.postMessage({run:'rce'});})};
+</script></body></html>

@@ -1,3 +1,4 @@
+import {CLOUD_DISPLAY_SCALE} from '../sim/layeredAtmosphere';
 import {F,STRIDE} from '../sim/model';
 import {INVALID,NEIGHBORS,type SphereGrid} from '../sim/sphere';
 
@@ -7,10 +8,11 @@ export class CloudEnvelopeField {
  private data:Float32Array;
  private scratch:Float32Array;
  constructor(private grid:SphereGrid){this.data=new Float32Array(grid.count*4);this.scratch=new Float32Array(this.data.length);}
- sample(state:Float32Array,radii:Float32Array){
+ sample(state:Float32Array,radii:Float32Array,physical=false){
+  const scale=physical?CLOUD_DISPLAY_SCALE:1;
   for(let i=0;i<this.grid.count;i++){
    const p=i*STRIDE,q=i*4,liquid=Math.max(0,state[p+F.cloud]),ice=Math.max(0,state[p+F.cloudIce]);
-   this.data.set([liquid,ice,radii[i],liquid+ice],q);
+   this.data.set([liquid*scale,ice*scale,radii[i],(liquid+ice)*scale],q);
   }
   for(let pass=0;pass<2;pass++){
    for(let i=0;i<this.grid.count;i++)for(let f=0;f<3;f++){

@@ -1,8 +1,10 @@
 import {icon} from './icons';
+import {currentLocale,translatePhrase} from './i18n';
 
 const escape=(text:string)=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 export function helpTip(id:string,label:string,text:string){
- return `<span class="help-tip"><button type="button" class="help-tip-button" data-help-tip="${id}" aria-label="${escape(label)} 설명" aria-describedby="${id}" aria-expanded="false">${icon('info')}</button><span id="${id}" class="help-tip-content" role="tooltip" popover="manual">${escape(text)}</span></span>`;
+ const accessibleLabel=currentLocale()==='en'?`${translatePhrase(label)} help`:`${label} 설명`;
+ return `<span class="help-tip"><button type="button" class="help-tip-button" data-help-tip="${id}" aria-label="${escape(accessibleLabel)}" aria-describedby="${id}" aria-expanded="false">${icon('info')}</button><span id="${id}" class="help-tip-content" role="tooltip" popover="manual">${escape(text)}</span></span>`;
 }
 
 /** Top-layer tooltips remain readable inside scrolling sidebars. */

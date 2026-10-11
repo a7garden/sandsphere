@@ -1,11 +1,17 @@
+import {WeatherClimate,type ClimateSnapshot} from './weatherClimate';
+import type {Environment} from './model';
+import {AIR_FIELDS} from './layeredAtmosphere';
 import {COMMAND_STRIDE,COMMAND_FIELD,F,MASS_FIELDS,SURFACE_ERASE,SURFACE_ERASE_FIELDS,STRIDE,applyCommand,emptyStock,type Material} from './model';
 
 export interface FallingDeposit {index:number;material:Material;amount:number;}
 
 /** Save a complete material budget without snapping or stopping visible falling grains. */
-export function snapshotSurface(live:Float32Array,pending:Float32Array,falling:FallingDeposit[],inFlight?:Float32Array|null):{state:Float32Array;pendingRemoved:number;collected:ReturnType<typeof emptyStock>} {
-  const prior=inFlight?snapshotSurface(live,inFlight,[]):null;
+export function snapshotSurface(live:Float32Array,pending:Float32Array,falling:FallingDeposit[],inFlight?:Float32Array|null,climate?:WeatherClimate,environment?:Environment):{state:Float32Array;pendingRemoved:number;collected:ReturnType<typeof emptyStock>;climate?:ClimateSnapshot} {
+  const prior=inFlight?snapshotSurface(live,inFlight,[],null,climate,environment):null;
   const state=prior?.state??new Float32Array(live),count=live.length/STRIDE;
+  const shadow=climate&&environment?new WeatherClimate(climate.grid):undefined;
+  if(shadow){shadow.restore(prior?.climate??climate!.snapshot());shadow.prepareSurface(state,environment!);}
+  const energy=new Float32Array(count*4);
   let pendingRemoved=prior?.pendingRemoved??0;
   const collected=prior?.collected??emptyStock();
   for(let i=0;i<count;i++) {
@@ -13,12 +19,16 @@ export function snapshotSurface(live:Float32Array,pending:Float32Array,falling:F
     if(fraction) {
       const fields=pending[c+SURFACE_ERASE]>0?SURFACE_ERASE_FIELDS:MASS_FIELDS;
       let mass=Object.entries(COMMAND_FIELD).reduce((sum,[material,f])=>sum+(fields.includes(F[material as Material])?pending[c+f]:0),0);
-      for(const f of fields)mass+=state[i*STRIDE+f];pendingRemoved+=mass*fraction;
+      for(const f of fields)mass+=state[i*STRIDE+f];
+      if(shadow&&pending[c+SURFACE_ERASE]===0)for(let k=0;k<5;k++)mass+=shadow.air.layerMass(i*5+k);
+      pendingRemoved+=mass*fraction;
     }
     applyCommand(state,i,pending,collected);
   }
+  if(shadow)shadow.surfaceSupplies(state,pending,COMMAND_STRIDE,energy);
   const landing=new Float32Array(pending.length);
   for(const grain of falling)landing[grain.index*COMMAND_STRIDE+COMMAND_FIELD[grain.material]]+=grain.amount;
   for(let i=0;i<count;i++)applyCommand(state,i,landing);
-  return {state,pendingRemoved,collected};
+  if(shadow){shadow.surfaceSupplies(state,landing,COMMAND_STRIDE,energy);shadow.air.attach(state);}
+  return {state,pendingRemoved,collected,climate:shadow?.snapshot()};
 }

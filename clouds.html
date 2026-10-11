@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sandsphere · 구름 3안 비교</title></head><body>
-<header><div><a href="/">sandsphere</a><h1>구름 표현 비교</h1></div><p>같은 구름량 · 같은 조명 · 시점 동기화</p><button id="reset" disabled>시점 초기화</button></header>
+<header><div><a href="/">sandsphere</a><h1>구름 표현 비교</h1></div><p>같은 구름량 · 같은 조명 · 시점 동기화</p><label for="cloud-language">언어 <select id="cloud-language"><option value="ko">한국어</option><option value="en">English</option></select></label><button id="reset" disabled>시점 초기화</button></header>
 <nav aria-label="비교할 구름 분포"><button data-source="saved" disabled>내 행성</button><button data-source="mixed" aria-pressed="true" disabled>지역별 구름</button><button data-source="thin" disabled>적은 구름</button><button data-source="dense" disabled>많은 구름</button><label><input id="air" type="checkbox" disabled>대기 함께 보기</label><button id="all" hidden>세 안 함께 보기</button></nav>
 <main id="comparisons">
 <article data-look="stratus"><div class="canvas-wrap"><canvas aria-label="A 층운 · 드래그로 모든 시점 회전, 휠로 확대"></canvas></div><footer><div><h2><span>A</span> 얇고 흐르는 층운</h2><p>낮은 두께 · 넓은 연결 · 옅은 음영</p></div><button data-focus="stratus" disabled>크게 보기</button></footer></article>

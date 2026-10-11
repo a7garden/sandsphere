@@ -155,14 +155,14 @@ fn reaction(initial:Cell,i:u32)->Cell {
   let environmentHeat=select(c*(equilibrium-t)*lossFraction(dt*.032*28.0/c),0.0,params.wind.y>0.5);t+=environmentHeat/c;
   s.c.x=t;s=equilibrateWater(s);t=s.c.x;c=capacity(s);
   let tf=freezing(s.b.x,s.b.w);let activity=waterActivity(s);var boiling=100.0;if(s.b.x+s.b.y+s.c.y+s.cloud.x+s.cloud.y>0){boiling=boilingPoint(s,activity);}
-  if(s.b.x>0 && t>tf+0.3){
+  if(params.wind.y<0.5&&s.b.x>0 && t>tf+0.3){
     let dry=max(0.0,1.0-s.c.y/max(1e-12,saturation(s,t,false,activity)));
     let evaporate=max(0.0,t+8.0)*0.0001*dry*dt+max(0.0,t-boiling)*c/(2475.0-2.18*boiling);
     let amount=min(s.b.x,min(evaporate,max(0.0,(t-tf)*c/(2475.0-2.18*tf))));
     s.b.x-=amount;s.c.y+=amount;
     t=(c*t-amount*(2257.0+2.18*100.0))/capacity(s);c=capacity(s);
   }
-  if(s.b.y>0&&t<=tf+.3){let dry=max(0.0,1.0-s.c.y/max(1e-12,saturation(s,t,true,1.0)));let before=s.b.y;let requested=min(before,min(before*dry*dt*.002,max(0.0,(t+100.0)*c/2819.0)));s.b.y-=requested;let amount=before-s.b.y;s.c.y+=amount;t=(c*t-amount*2809.0)/capacity(s);c=capacity(s);}
+  if(params.wind.y<0.5&&s.b.y>0&&t<=tf+.3){let dry=max(0.0,1.0-s.c.y/max(1e-12,saturation(s,t,true,1.0)));let before=s.b.y;let requested=min(before,min(before*dry*dt*.002,max(0.0,(t+100.0)*c/2819.0)));s.b.y-=requested;let amount=before-s.b.y;s.c.y+=amount;t=(c*t-amount*2809.0)/capacity(s);c=capacity(s);}
   if(params.wind.y<0.5){
   let airTemperature=t-12.0;let airIce=airTemperature< -12.001;let cloudMass=s.cloud.x+s.cloud.y;
   let iceShare=select(select(0.0,1.0,airIce),s.cloud.y/max(1e-8,cloudMass),cloudMass>1e-8);

@@ -6,6 +6,7 @@ import type {Scene} from '@babylonjs/core/scene';
 import type {TransformNode} from '@babylonjs/core/Meshes/transformNode';
 import type {SphereGrid} from '../sim/sphere';
 import {F,STRIDE} from '../sim/model';
+import {CLOUD_VISIBLE_MASS} from '../sim/layeredAtmosphere';
 import {sectionShader} from './sectionClip';
 import {CloudEnvelopeField,cloudComponents} from './cloudEnvelope';
 import {CloudEnvelopeGeometry,CLOUD_RADIUS_GLSL} from './cloudEnvelopeGeometry';
@@ -94,9 +95,9 @@ export class CloudBanks {
   this.material.setFloat('cloudBlend',1);this.material.setFloat('cloudOpacity',this.cloudOpacity);this.material.setVector3('sunlight',Vector3.Right());this.updateProfile();this.mesh.setEnabled(false);
   this.material.onBindObservable.add(()=>{if(scene.activeCamera)this.material.setVector3('eye',scene.activeCamera.globalPosition);});
  }
- update(state:Float32Array,radii:Float32Array){
-  this.mass=0;this.cells=0;for(let i=0;i<this.grid.count;i++){const m=Math.max(0,state[i*STRIDE+F.cloud])+Math.max(0,state[i*STRIDE+F.cloudIce]);this.mass+=m;if(m>1e-6)this.cells++;}
-  const field=this.field.sample(state,radii),components=cloudComponents(this.grid,field);this.count=components.count;this.connectedCells=components.cells;
+ update(state:Float32Array,radii:Float32Array,physical=false){
+  this.mass=0;this.cells=0;for(let i=0;i<this.grid.count;i++){const m=Math.max(0,state[i*STRIDE+F.cloud])+Math.max(0,state[i*STRIDE+F.cloudIce]);this.mass+=m;if(m>(physical?CLOUD_VISIBLE_MASS:1e-6))this.cells++;}
+  const field=this.field.sample(state,radii,physical),components=cloudComponents(this.grid,field);this.count=components.count;this.connectedCells=components.cells;
   for(let p=0;p<this.previous.length;p++)this.previous[p]+=(this.next[p]-this.previous[p])*this.blend;
   for(let p=0;p<this.previousNormals.length;p++)this.previousNormals[p]+=(this.nextNormals[p]-this.previousNormals[p])*this.blend;
   this.geometry.expand(field,this.next);this.geometry.normals(this.next,this.height,this.nextNormals);

@@ -18,22 +18,33 @@ describe('climate connections and observations',()=>{
   expect(ca.currents.every(v=>v===0)).toBe(true);expect(Math.max(...cb.currents.map(Math.abs))).toBeLessThan(1e-6);
   expect(currentMobility(b,0)).toBeGreaterThan(0);b[F.water]=.5;expect(currentMobility(b,0)).toBeCloseTo(1);b[F.water]=.8;b[F.soil]=8;expect(currentMobility(b,0)).toBe(0);
  });
- it('uses convergent wind cooling for condensation, humidity and resumed diagnostics without advancing',()=>{
-  const s=blank(),c=new WeatherClimate(grid);for(let i=0;i<grid.count;i++){s[i*STRIDE+F.vapor]=.0018;const dot=[0,1,2].reduce((sum,k)=>sum+grid.directions[k]*grid.directions[i*3+k],0);for(let k=0;k<3;k++)c.wind[i*3+k]=.1*(grid.directions[k]-dot*grid.directions[i*3+k]);}
-  const before=s.slice(),saved=c.snapshot(),air=c.conditions(s,0,env),baseline=cloudConditions(s,0,env),resumed=new WeatherClimate(grid);resumed.restore(saved);
-  expect(air.temperature).toBeLessThan(baseline.temperature);expect(air.humidity).toBeGreaterThan(baseline.humidity);expect(relativeHumidity(s,0,env,c)).toBe(air.humidity);expect(resumed.conditions(s,0,env)).toEqual(air);
+ it('reads prognostic layer temperature and humidity on resume without advancing',()=>{
+  const s=blank(),c=new WeatherClimate(grid);for(let i=0;i<grid.count;i++)s[i*STRIDE+F.vapor]=.0018;c.prepareSurface(s,env);c.air.attach(s);
+  const before=s.slice(),saved=c.snapshot(),air=c.conditions(s,0,env),resumed=new WeatherClimate(grid);resumed.restore(saved);
+  expect(air.temperature).not.toBe(s[F.temperature]);expect(air.pressure).toBeGreaterThan(0);expect(relativeHumidity(s,0,env,c)).toBe(air.humidity);expect(resumed.conditions(s,0,env)).toEqual(air);
   expect(climateColor('humidity',s,0,env,resumed)).toEqual(climateColor('humidity',s,0,env,c));expect(s).toEqual(before);expect(c.snapshot()).toEqual(saved);
+ });
+ it('restores a complete committed climate state after a failed physics step',()=>{
+  const solver=new CpuSolver(grid,blank());solver.advance(1/30,empty,env);
+  const state=solver.state.slice(),climate=solver.climate.snapshot(),original=solver.climate.step.bind(solver.climate);
+  solver.climate.step=()=>{solver.climate.air.mass[0]+=1;solver.climate.seeds[0]=.7;throw new Error('injected climate failure');};
+  expect(()=>solver.advance(1/30,empty,env)).toThrow('injected climate failure');
+  expect(solver.state).toEqual(state);expect(solver.climate.snapshot()).toEqual(climate);
+  solver.climate.step=original;
+  const reference=new CpuSolver(grid,state.slice());reference.climate.restore(climate);
+  solver.advance(1/30,empty,env);reference.advance(1/30,empty,env);
+  expect(solver.state).toEqual(reference.state);expect(solver.climate.snapshot()).toEqual(reference.climate.snapshot());
  });
  it('diagnoses ice cloud saturation against ice rather than a liquid-only humidity',()=>{
   const s=blank();s[F.temperature]=-25;s[F.cloudIce]=.3;s[F.vapor]=.00004;const air=cloudConditions(s,0,env);
-  expect(air.saturation).toBeCloseTo(saturationMass(-37,'ice',s[F.nitrogen],s[F.methane],s[F.carbonDioxide],1),12);
-  expect(air.saturation).toBeLessThan(saturationMass(-37,'water',s[F.nitrogen],s[F.methane],s[F.carbonDioxide],1));
+  expect(air.saturation).toBeCloseTo(saturationMass(-25,'ice',s[F.nitrogen],s[F.methane],s[F.carbonDioxide],1),12);
+  expect(air.saturation).toBeLessThan(saturationMass(-25,'water',s[F.nitrogen],s[F.methane],s[F.carbonDioxide],1));
  });
  it('creates clouds from vapor and delivers precipitation with closed water/mass/heat accounts',()=>{
   const s=blank();for(let i=0;i<grid.count;i++){const p=i*STRIDE;s[p+F.water]=30;s[p+F.vapor]=.6;s[p+F.temperature]=15;}
   const solver=new CpuSolver(grid,s),mass=totalMass(s),heat=totalEnthalpy(s);let formed=0,rain=0,escaped=0,q=0;
   for(let k=0;k<180;k++){solver.advance(1/30,empty,{...env,sunlight:0});formed+=solver.condensedCells.reduce((a,b)=>a+b,0);rain+=solver.precipitatedCells.reduce((a,b)=>a+b,0);escaped+=solver.escapeCells.reduce((a,b)=>a+b,0);q+=solver.energyChanges.reduce((a,b)=>a+b,0);}
-  expect(formed).toBeGreaterThan(1);expect(rain).toBeGreaterThan(.01);expect(totalMass(solver.state)+escaped-mass).toBeCloseTo(0,3);expect(totalEnthalpy(solver.state)-heat-q).toBeCloseTo(0,1);
+  expect(formed).toBeGreaterThan(1);expect(rain).toBeGreaterThan(.01);expect(totalMass(solver.state)+escaped-mass).toBeCloseTo(0,3);expect(totalEnthalpy(solver.state,solver.climate)-heat-q).toBeCloseTo(0,1);
  });
  it('has no source of cloud water on a dry planet; unsaturated existing clouds evaporate',()=>{
   const dry=new CpuSolver(grid,blank());for(let k=0;k<90;k++)dry.advance(1/30,empty,env);expect(dry.state.every((v,i)=>!([F.water,F.ice,F.vapor,F.cloud,F.cloudIce] as number[]).includes(i%STRIDE)||v===0)).toBe(true);

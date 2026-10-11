@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {BackgroundWorlds,advanceOrbit,migrateWorld,validSystem} from '../src/sim/system';
+import {BackgroundWorlds,advanceOrbit,migrateWorld,validSystem,switchSystemMode,materialSupply,prepareSystemSave} from '../src/sim/system';
 import {createSphere} from '../src/sim/sphere';
 import {COMMAND_STRIDE,COMMAND_FIELD,F,STRIDE,CpuSolver,applyCommand,emptyStock,totalMass,seedPlanet,type Snapshot} from '../src/sim/model';
 import {snapshotSurface} from '../src/sim/session';
@@ -36,6 +36,27 @@ describe('discovery production and stock transfers',()=>{
 });
 
 describe('persistent solar system',()=>{
+ it('keeps campaign and sandbox worlds separate across mode switches',()=>{
+  const campaign=migrateWorld(snapshot(),grid.count);campaign.stock.glass=3;campaign.progress={completed:['water'],meteorCount:1};campaign.telemetry={version:1,planets:[]};
+  const sandbox=switchSystemMode(campaign,'sandbox',1);
+  expect(validSystem(sandbox,grid.count)).toBe(true);
+  expect(sandbox.planets).toEqual([]);expect(sandbox.stock.glass).toBe(0);
+  sandbox.planets=[{id:'planet-sandbox',name:'Sandbox',snapshot:snapshot('ice')}];sandbox.activeId='planet-sandbox';
+  sandbox.stock.glass=12;
+  const restored=switchSystemMode(prepareSystemSave(sandbox,grid.count),'campaign',2);
+  expect(validSystem(restored,grid.count)).toBe(true);
+  expect(restored.planets).toEqual(campaign.planets);expect(restored.stock.glass).toBe(3);
+  expect(restored.progress).toEqual(campaign.progress);
+  expect(restored.telemetry).toEqual(campaign.telemetry);
+  expect(restored.other?.stock.glass).toBe(12);
+ });
+ it('makes every material externally supplied only in sandbox',()=>{
+  const stock=emptyStock();stock.glass=2;
+  expect(materialSupply('campaign','glass',stock,5)).toEqual({amount:2,fromStock:true});
+  expect(materialSupply('sandbox','glass',stock,5)).toEqual({amount:5,fromStock:false});
+  expect(materialSupply('sandbox','plant',stock,5)).toEqual({amount:5,fromStock:false});
+  expect(materialSupply('campaign','sand',stock,5)).toEqual({amount:5,fromStock:false});
+ });
  it('reads tiny legacy phase-transfer roundoff while rejecting genuinely negative mass',()=>{
   const s=snapshot();s.state[F.cloud]=-2.153607500665622e-11;s.state[F.cloudIce]=-1.8189894035458565e-12;
   expect(validSnapshot(s,grid.count)).toBe(true);

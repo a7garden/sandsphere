@@ -1,0 +1,250 @@
+/* Hallmark · genre: atmospheric · macrostructure: floating orbital workbench
+ * theme: restrained glass (owner brief) · nav: floating islands · footer: scene instruments
+ * pre-emit critique: P5 H4 E4 S5 R5 V4 · native simulation supplies the visual */
+
+body { background: var(--color-space); }
+.app {
+  --edge: var(--space-lg);
+  --panel-width: 280px;
+  --scene-inset: calc(var(--edge) + var(--panel-width) + var(--space-md));
+  --chrome-top: 96px;
+  --chrome-bottom: 104px;
+  display: block;
+  padding: 0;
+  min-height: 0;
+  height: 100dvh;
+  isolation: isolate;
+}
+.app > .view, .app.wide-view > .view, .app.system-view > .view {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--color-space);
+  --scene-panel: var(--color-scene-glass);
+}
+
+/* Every island has its own optical surface. The gaps expose the universe. */
+:is(.brand-group, .top-actions, .header-planets, .materials-panel, .inspector,
+  .simulation-bar, .planet-settings-panel, .footer-meta, .catalog,
+  dialog, .system-dock) {
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+.app > .topbar {
+  position: absolute;
+  inset: var(--edge) var(--edge) auto;
+  height: 48px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border: 0;
+  pointer-events: none;
+}
+.topbar > * { pointer-events: auto; }
+.brand-group {
+  padding: 0 var(--space-xs); height: 48px;
+  background: var(--color-transparent); border: 0; box-shadow: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  color: var(--color-starlight);
+}
+.brand-group .brand-version { color: var(--color-star-muted); }
+.brand { font-size: 21px; letter-spacing: -.05em; }
+.brand-mark, .brand-mark svg { width: 22px; height: 22px; }
+.brand-version { align-self: center; margin-left: var(--space-xs); }
+.header-planets { height: 44px; margin: 2px 0; width: min(248px, 22vw); flex-shrink: 0; }
+@media (min-width: 961px) {
+  .topbar > .header-planets { position: absolute; left: 50%; transform: translateX(-50%); }
+}
+.top-actions { border-radius: var(--radius-glass-control); gap: 2px; padding: var(--space-xs); min-width: 0; }
+.top-actions :is(.icon-button, .text-button) { border-radius: var(--radius-round); }
+.top-actions .text-button { padding-inline: var(--space-sm); }
+
+.app > :is(.materials-panel, .inspector) {
+  position: absolute;
+  top: var(--chrome-top);
+  bottom: var(--chrome-bottom);
+  width: var(--panel-width);
+  max-height: none;
+  min-height: 0;
+  padding: var(--space-lg) var(--space-md);
+  overflow-y: auto;
+  scrollbar-gutter: auto;
+  z-index: 2;
+}
+.app > .materials-panel { left: var(--edge); }
+.app > .inspector { right: var(--edge); }
+.materials-panel .panel-title { margin-bottom: var(--space-md); }
+.materials-panel .panel-title h2 { font-size: var(--text-sm); }
+.materials-panel .inventory-open { font-size: var(--text-xs); }
+.material-list { gap: var(--space-xs); }
+.material-list .material { border-radius: var(--radius-glass-control); min-height: 44px; }
+.material[aria-pressed='true'] { background: var(--color-glass-selection); box-shadow: none; }
+.tool { border-radius: var(--radius-glass-control); background: var(--color-transparent); border-color: var(--color-transparent); }
+.tool[aria-pressed='true'] { background: var(--color-ink); }
+.inspector .inspector-heading { background: var(--color-transparent); }
+.inspector .temperature output { font-size: var(--text-display); }
+.inspector .phase-note { min-height: 0; }
+
+.scene-heading { top: var(--chrome-top); left: var(--scene-inset); max-width: calc(100% - 2 * var(--scene-inset)); padding: 0; background: var(--color-transparent); }
+.sun-label { top: calc(var(--chrome-top) + var(--space-sm)); right: var(--scene-inset); }
+:is(.scene-mode-toolbar, .scene-layer-controls, .scene-layer-legend,
+  #climate-map-toggle, #climate-legend-toggle, .climate-picker-menu,
+  .climate-layer-legend, .section-controls, .section-selection-controls,
+  .scene-stick .rotation-stick, .sun-label) {
+  background: var(--color-scene-glass);
+  border: 1px solid var(--color-scene-rule);
+  border-radius: var(--radius-glass-control);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 4px 16px var(--color-glass-shadow);
+}
+.scene-mode-toolbar { border-radius: var(--radius-round); padding: var(--space-xs); }
+.scene-mode-toolbar button { border-radius: var(--radius-round); width: 36px; height: 36px; }
+.scene-mode-toolbar button[aria-pressed='true'] { background: var(--color-scene-selection); border-color: var(--color-scene-rule); }
+.sun-label { padding: var(--space-sm) 12px; border-radius: var(--radius-round); }
+.scene-layer-dock { left: var(--scene-inset); bottom: calc(var(--chrome-bottom) + var(--space-sm)); max-width: calc(100% - 2 * var(--scene-inset) - 88px); }
+.climate-map-controls { left: var(--scene-inset); bottom: calc(var(--chrome-bottom) + var(--weather-dock-height, 90px) + var(--space-md)); max-width: calc(100% - 2 * var(--scene-inset)); }
+.scene-layer-controls { padding: var(--space-xs); }
+.scene-layer-controls button { border-radius: var(--radius-sm); }
+.scene-stick { right: var(--scene-inset); bottom: calc(var(--chrome-bottom) + var(--space-sm)); }
+.scene-stick .rotation-stick { border-radius: var(--radius-round); border-color: var(--color-scene-rule); }
+.scene-stick .rotation-stick::before { border-color: var(--color-scene-rule); }
+.section-note { right: var(--scene-inset); bottom: calc(var(--chrome-bottom) + 100px); }
+
+.app > .planet-controls, .app.wide-view > .planet-controls {
+  position: absolute;
+  inset: auto var(--edge) var(--edge);
+  height: 56px;
+  min-width: 0;
+}
+.planet-controls .simulation-bar, .wide-view .planet-controls .simulation-bar,
+.system-view .planet-controls .simulation-bar {
+  top: auto;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  padding: var(--space-sm);
+  gap: var(--space-sm);
+  border-radius: var(--radius-round);
+}
+.planet-controls .icon-button, .planet-controls .zoom-controls button { border-radius: var(--radius-round); }
+.camera-view-controls { border: 0; background: var(--color-wash); border-radius: var(--radius-round); }
+.camera-view-controls button { border-radius: var(--radius-round); }
+.planet-settings-panel, .wide-view .planet-settings-panel {
+  left: 50%; bottom: 76px; transform: translateX(-50%);
+  width: min(680px, calc(100vw - 2 * var(--edge)));
+  max-height: calc(100dvh - 200px);
+}
+.planet-settings-panel > .panel-title { background: var(--color-transparent); }
+.footer-meta { z-index: 3; left: var(--edge); bottom: calc(var(--edge) + var(--space-sm)); transform: none; min-height: 36px; padding: var(--space-sm) 12px; border-radius: var(--radius-round); font-size: 10px; }
+.dialog-header { background: var(--color-transparent); backdrop-filter: blur(var(--glass-blur)); }
+.boot { inset: 0; background: var(--color-space); color: var(--color-starlight); }
+.boot p { color: var(--color-star-muted); }
+.wide-view { --scene-inset: var(--edge); }
+.system-view { --scene-inset: var(--edge); }
+.system-view #system-dialog.system-dock { top: var(--chrome-top); bottom: var(--chrome-bottom); left: var(--edge); width: var(--panel-width); padding: var(--space-lg) var(--space-md); border: 1px solid var(--color-glass-edge); border-radius: var(--radius-glass); box-shadow: var(--glass-shadow); }
+
+@media (min-width: 961px) and (max-width: 1200px) {
+  .app { --edge: var(--space-md); --panel-width: 240px; }
+  .top-actions .text-button { width: 40px; padding: 0; justify-content: center; }
+  .sun-label span { display: none; }
+  .brand { font-size: 21px; }
+  .footer-meta { max-width: 220px; flex-wrap: wrap; }
+}
+@media (max-width: 960px) {
+  .app { --edge: 12px; --chrome-top: 128px; --chrome-bottom: 260px; --scene-inset: var(--edge); }
+  .app > .topbar { height: auto; flex-wrap: wrap; gap: var(--space-sm); align-items: center; }
+  .brand-group { height: 40px; padding: 0 12px; }
+  .brand { font-size: 19px; }
+  .top-actions { margin-left: auto; }
+  .top-actions :is(.icon-button, .text-button) { width: 32px; height: 32px; min-height: 32px; }
+  .header-planets { order: 3; width: min(260px, 100%); height: 36px; margin: 0 auto; --planet-label-width: 190px; }
+  .app > .materials-panel { top: auto; bottom: 92px; left: var(--edge); width: calc(100% - 2 * var(--edge)); padding: 12px; max-height: 168px; overflow: visible; border-radius: var(--radius-lg); }
+  .materials-panel .panel-title { margin-bottom: var(--space-sm); }
+  .materials-panel .material-list { max-height: 80px; overflow-y: auto; }
+  .materials-panel.show-controls .controls { padding: var(--space-md); max-height: calc(100dvh - 330px); overflow-y: auto; background: var(--color-glass); backdrop-filter: blur(var(--glass-blur)); border-color: var(--color-glass-edge); border-radius: var(--radius-lg); }
+  .app > .materials-panel.show-controls { z-index: 7; }
+  .materials-panel.show-controls .expeditions { display: none; }
+  .app > .inspector { top: 104px; bottom: auto; right: var(--edge); width: 164px; padding: var(--space-sm) 12px; overflow: visible; border-radius: var(--radius-lg); }
+  .inspector .inspector-heading { padding: 0; }
+  .inspector .inspector-toggle { width: 32px; height: 32px; }
+  .inspector .temperature output { font-size: 28px; letter-spacing: -.06em; }
+  .app > .inspector.expanded { top: 104px; width: min(344px, calc(100vw - 2 * var(--edge))); bottom: 268px; max-height: none; overflow-y: auto; padding: var(--space-md); z-index: 6; }
+  .inspector.expanded .inspector-heading { position: static; background: var(--color-transparent); }
+  .scene-heading { top: 104px; max-width: calc(100% - 196px); }
+  .scene-mode-toolbar button { width: 32px; height: 36px; min-height: 36px; }
+  .sun-label { display: none; }
+  .scene-layer-dock { bottom: calc(var(--chrome-bottom) + var(--space-sm)); max-width: calc(100% - 92px); }
+  .scene-layer-legend { display: none; }
+  .climate-map-controls { top: auto; right: auto; left: var(--edge); bottom: calc(var(--chrome-bottom) + var(--weather-dock-height, 48px) + var(--space-md)); align-items: flex-start; max-width: calc(100% - 92px); }
+  .climate-picker-menu { top: auto; bottom: calc(100% + var(--space-sm)); left: 0; right: auto; }
+  .scene-stick { bottom: calc(var(--chrome-bottom) + var(--space-sm)); }
+  .scene-layer-controls button { height: 36px; }
+  .app > .planet-controls, .app.wide-view > .planet-controls { bottom: var(--edge); height: 64px; }
+  .planet-controls .simulation-bar { display: flex; flex-direction: row; width: max-content; padding: var(--space-xs); gap: var(--space-xs); border-radius: var(--radius-lg); }
+  .planet-controls .time-controls { width: auto; gap: 0; }
+  .planet-controls .planet-view-controls { width: auto; border-top: 0; border-left: 1px solid var(--color-rule); padding-left: var(--space-xs); flex-wrap: nowrap; }
+  .planet-controls .icon-button { width: 32px; height: 44px; }
+  .planet-controls .zoom-controls button { width: 28px; }
+  .planet-controls .speed-button { min-width: 32px; }
+  .camera-view-controls { padding: 2px; }
+  .camera-view-controls button { padding: 0 var(--space-sm); min-height: 40px; }
+  .footer-meta { display: none; }
+  .planet-settings-panel, .wide-view .planet-settings-panel { bottom: 76px; max-height: calc(100dvh - 200px); }
+  .wide-view { --chrome-bottom: 88px; }
+  .system-view #system-dialog.system-dock { top: auto; bottom: 92px; width: calc(100% - 2 * var(--edge)); height: 168px; padding: 12px; }
+  .section-note { bottom: calc(var(--chrome-bottom) + 76px); }
+  .view:has(.section-controls:not([hidden])) .climate-map-controls { top: auto; }
+  .view:has(.section-selection-controls:not([hidden])) .section-selection-controls { left: var(--edge); right: var(--edge); bottom: 92px; background: var(--color-glass); }
+}
+@media (max-width: 600px) {
+  .app > .topbar { gap: var(--space-xs); }
+  .brand-group { padding: 0 var(--space-sm); }
+  .brand { font-size: 16px; gap: 6px; }
+  .brand-mark, .brand-mark svg { width: 18px; height: 18px; }
+  .top-actions { gap: 0; padding: 2px; }
+  .top-actions :is(.icon-button, .text-button) { width: 28px; }
+  .top-actions svg { width: 16px; height: 16px; }
+  .top-actions #overview-open { width: 28px; }
+  .planet-controls .simulation-bar { flex-direction: column; width: max-content; }
+  .planet-controls .time-controls { width: 100%; }
+  .planet-controls .planet-view-controls { border-left: 0; border-top: 1px solid var(--color-rule); padding: 0; }
+  .app > .materials-panel { bottom: 116px; }
+  .app { --chrome-bottom: 280px; }
+  .wide-view { --chrome-bottom: 120px; }
+  .planet-settings-panel, .wide-view .planet-settings-panel { bottom: 112px; }
+  .app > .inspector.expanded { bottom: 280px; }
+  .system-view #system-dialog.system-dock { bottom: 116px; }
+  .view:has(.section-selection-controls:not([hidden])) .section-selection-controls { bottom: 116px; }
+}
+@media (max-height: 600px) and (min-width: 601px) {
+  .app { --chrome-top: 80px; --chrome-bottom: 92px; }
+  .app > .topbar { top: var(--space-sm); }
+}
+@media (max-width: 360px) {
+  .brand { font-size: 14px; }
+  .brand-mark { display: none; }
+  .top-actions :is(.icon-button, .text-button), .top-actions #overview-open { width: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app :is(.header-planets, .notification-button) { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :is(.brand-group, .top-actions, .header-planets, .materials-panel, .inspector,
+    .simulation-bar, .planet-settings-panel, .footer-meta, .catalog, dialog,
+    #system-dialog.system-dock) { background: var(--color-surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

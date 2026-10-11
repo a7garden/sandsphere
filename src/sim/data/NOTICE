@@ -1,0 +1,11 @@
+ecCKD gas absorption and Planck tables: Copyright ECMWF.
+ecCKD: https://github.com/ecmwf-ifs/ecckd
+ecRad data commit: 131ac980517719b7a859e3ccc117919a1d888a20
+Data and interpolation conventions supplied by NumericalRadiation.jl 0.1.1,
+Copyright NumericalEarth contributors, Apache License 2.0.
+https://github.com/NumericalEarth/NumericalRadiation.jl
+The original tables were exported to little-endian Float32 arrays by
+science/export_browser_optics.jl; this representation was modified for
+Sandsphere's TypeScript browser core. Table SHA-256 hashes accompany the data.
+Apache License 2.0 is provided in LICENSE-APACHE-2.0.
+ECMWF retains its privileges and immunities as an intergovernmental organisation.

@@ -1,0 +1,761 @@
+/* Hallmark · macrostructure: instrument desk · tone: quiet observatory · anchor hue: mineral
+ * Existing restrained-glass tokens and native planet scene; separate editing, viewing and playback.
+ * pre-emit critique: P5 H5 E4 S5 R5 V4 */
+
+html, body { overflow-x: clip; }
+.app { --panel-width: 256px; --chrome-top: 88px; --chrome-bottom: 96px; }
+:is(.top-actions, .scene-mode-toolbar, .camera-bar, .simulation-bar, .inspector-tabs, .tool-list) button,
+.workspace-toggle { white-space: nowrap; }
+.app h2, .app h3 { min-width: 0; overflow-wrap: anywhere; font-style: normal; }
+.app button:focus-visible, .app [role='tabpanel']:focus-visible {
+  outline: 2px solid var(--color-focus); outline-offset: 3px;
+}
+.app button:disabled { opacity: .38; cursor: default; }
+.top-actions { box-shadow: none; }
+.topbar > .header-planets { width: 232px; }
+.app > .materials-panel {
+  top: 148px; bottom: auto; max-height: calc(100dvh - 244px);
+  padding: var(--space-md); border-radius: var(--radius-workbench);
+}
+.app > .inspector {
+  top: var(--chrome-top); bottom: var(--chrome-bottom);
+  padding: var(--space-md); border-radius: var(--radius-workbench);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.materials-panel > .panel-title, .inspector .inspector-heading {
+  display: flex; position: static; flex-shrink: 0; padding: 0; margin: 0 0 var(--space-md); gap: var(--space-sm);
+}
+.materials-panel .panel-title h2, .inspector-heading h2 {
+  font-size: var(--text-base); letter-spacing: -.02em; font-weight: 600;
+}
+.materials-panel .quick-edit { margin-left: auto; }
+.materials-panel .inventory-open { margin-left: 0; font-size: var(--text-xs); }
+.materials-panel .material-list { gap: var(--space-xs); }
+.material-list .material {
+  min-height: 48px; padding: var(--space-sm); border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm); justify-content: flex-start;
+}
+.material-list .material[aria-pressed='true'] {
+  border-color: var(--color-ink); background: var(--color-glass-selection);
+}
+.material-list .material-name { font-size: var(--text-sm); }
+.material-list .material > span:nth-child(2) { flex: 1; min-width: 0; }
+.material-list .material-name { white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+.material-list .material .material-supply { flex-shrink: 0; }
+html:lang(en) .material-list .material { display: grid; grid-template-columns: 5px minmax(0, 1fr); gap: 3px 8px; }
+html:lang(en) .material-list .material-name { overflow-wrap: normal; }
+html:lang(en) .material-list .material .material-supply { grid-column: 2; margin-left: 0; justify-self: start; }
+.material-list .material .material-icon { display: block; flex-shrink: 0; }
+.material-list .material .material-supply { margin-left: auto; }
+.materials-panel > .tool-list {
+  grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px;
+  margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid var(--color-rule);
+}
+.materials-panel .tool { min-height: 48px; gap: 6px; border-radius: var(--radius-sm); }
+.materials-panel .tool span { font-size: var(--text-xs); }
+.materials-panel .controls { margin-top: var(--space-md); padding-top: var(--space-md); }
+.materials-panel .controls:not(:has(.control:not([hidden]))) { display: none; }
+.materials-panel .control:last-child { margin-bottom: 0; }
+.expedition-disclosure { margin-top: var(--space-md); border-top: 1px solid var(--color-rule); }
+.expedition-disclosure > summary {
+  display: flex; justify-content: space-between; align-items: center; min-height: 44px;
+  cursor: pointer; color: var(--color-muted); font-size: var(--text-sm); list-style: none;
+}
+.expedition-disclosure > summary::-webkit-details-marker { display: none; }
+.expedition-disclosure > summary::after { content: '+'; font-size: var(--text-lg); }
+.expedition-disclosure[open] > summary::after { content: '−'; }
+.materials-panel .expeditions { display: block; margin: 0; padding: var(--space-sm) 0; border: 0; }
+.expeditions .panel-title { margin-bottom: var(--space-sm); }
+.expeditions .panel-title h2 { font-size: var(--text-sm); }
+
+/* A small edit bar aligns with the palette, while the camera stays over the scene. */
+.scene-heading {
+  top: var(--chrome-top); left: var(--edge); width: var(--panel-width);
+  max-width: var(--panel-width);
+}
+#app .scene-mode-toolbar {
+  width: 100%; padding: var(--space-xs); border-radius: var(--radius-workbench);
+  background: var(--color-glass); border-color: var(--color-glass-edge);
+}
+.scene-mode-toolbar button {
+  flex: 1; width: auto; height: 40px; min-height: 40px; gap: 6px;
+  color: var(--color-muted); font-size: var(--text-sm); border-radius: var(--radius-glass-control);
+}
+.scene-mode-toolbar button[aria-pressed='true'] {
+  color: var(--color-ink); background: var(--color-glass-selection); border-color: var(--color-transparent);
+}
+.scene-heading .observation-instruction { color: var(--color-starlight); }
+.scene-heading:has(.section-controls:not([hidden])),
+.scene-heading:has(.section-selection-controls:not([hidden])) { width: var(--panel-width); max-width: var(--panel-width); display: block; }
+.section-controls { margin-top: var(--space-sm); }
+.scene-heading:has(.section-controls:not([hidden])) .section-controls {
+  position: fixed; top: 148px; left: var(--scene-inset); width: calc(100vw - 2 * var(--scene-inset));
+}
+.scene-heading:has(.section-selection-controls:not([hidden])) .section-selection-controls {
+  position: fixed; top: auto; bottom: 100px; left: var(--scene-inset); right: var(--scene-inset); width: auto;
+}
+#app .section-selection-controls { background: var(--color-drawer); color: var(--color-ink); }
+.view:has(.section-selection-controls:not([hidden])) :is(.scene-layer-dock, .climate-map-controls, .scene-stick) { visibility: hidden; }
+.camera-bar {
+  position: fixed; z-index: 4; top: var(--chrome-top); left: 50%; transform: translateX(-50%);
+  padding: var(--space-xs); pointer-events: auto; border: 1px solid var(--color-glass-edge);
+  border-radius: var(--radius-workbench); background: var(--color-glass);
+  backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-shadow);
+}
+.planet-controls .camera-bar .planet-view-controls {
+  width: auto; border: 0; padding: 0; gap: 2px; flex-wrap: nowrap;
+}
+.camera-view-controls { background: var(--color-transparent); padding: 0 var(--space-xs) 0 0; border-radius: var(--radius-sm); }
+.camera-view-controls button { min-height: 40px; padding-inline: 12px; border-radius: var(--radius-glass-control); }
+.planet-controls .camera-bar .icon-button { width: 32px; height: 40px; }
+.planet-controls .camera-bar .zoom-controls { gap: 0; border-left: 1px solid var(--color-rule); }
+.planet-controls .camera-bar .zoom-controls button { width: 28px; }
+.planet-controls .simulation-bar { min-width: 152px; justify-content: center; }
+.planet-controls .time-controls { width: auto; gap: var(--space-sm); }
+.planet-controls .time-controls .icon-button { width: 40px; height: 40px; }
+.planet-controls .speed-button { min-width: 44px; min-height: 40px; font-size: var(--text-sm); }
+.sun-label { top: auto; bottom: 32px; right: var(--edge); box-shadow: none; }
+.scene-layer-dock { left: var(--scene-inset); bottom: 100px; }
+.climate-map-controls { left: var(--scene-inset); bottom: calc(100px + var(--weather-dock-height, 80px) + var(--space-sm)); }
+.scene-stick { right: var(--scene-inset); bottom: 100px; }
+#app .scene-layer-legend { background: var(--color-transparent); border: 0; box-shadow: none; backdrop-filter: none; }
+.scene-layer-controls { border-radius: var(--radius-glass-control); }
+.footer-meta { padding-inline: 0; background: var(--color-transparent); color: var(--color-star-muted); border: 0; box-shadow: none; backdrop-filter: none; }
+.workspace-toggle { display: none; }
+#app dialog, #app .catalog { background: var(--color-surface); }
+#app .dialog-header { background: var(--color-surface); }
+.catalog-material { white-space: normal; }
+.dashboard-nav button { white-space: nowrap; }
+
+/* The observation scope stays visible as its contents scroll. */
+.inspector-tabs {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xs);
+  flex-shrink: 0; padding: var(--space-xs); background: var(--color-wash); border-radius: var(--radius-glass-control);
+  margin-bottom: var(--space-md);
+}
+.inspector-tabs button {
+  min-height: 36px; color: var(--color-muted); border-radius: var(--radius-sm); font-size: var(--text-sm);
+}
+.inspector-tabs button[aria-selected='true'] { color: var(--color-ink); background: var(--color-glass-selection); font-weight: 600; }
+.inspector-details { display: block; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.inspector-details > [role='tabpanel'] { padding: 2px 2px var(--space-xs); }
+.inspector-details > [hidden] { display: none; }
+.inspector .point-summary h3 { color: var(--color-muted); font-size: var(--text-xs); font-weight: 400; }
+.inspector .observed-material { margin-top: 12px; }
+.inspector .observed-name { font-size: var(--text-base); color: var(--color-ink); }
+.inspector .temperature { margin: var(--space-sm) 0 var(--space-md); }
+.inspector .temperature output { font-size: var(--text-display); letter-spacing: -.06em; }
+.inspector .temperature-caption { font-size: var(--text-xs); }
+.inspector :is(.depth-profile, .surface-readout, .thermal-details, .atmosphere-panel, .environment) { margin-top: var(--space-md); padding-top: var(--space-md); }
+.inspector #inspect-planet > .planet-readout, .inspector #inspect-weather > .local-climate-panel { margin-top: 0; padding-top: 0; border-top: 0; }
+.inspector .local-climate-grid { row-gap: var(--space-md); }
+.inspector .weather-readout { margin-top: var(--space-lg); }
+.app.wide-view, .app.system-view { --scene-inset: var(--edge); }
+.app.wide-view > .inspector, .app.system-view > .inspector { display: none; }
+.system-view .camera-bar { display: none; }
+
+@media (min-width: 961px) and (max-width: 1150px) {
+  .app { --panel-width: 224px; --edge: var(--space-md); }
+  .planet-controls .camera-bar .zoom-controls { display: none; }
+  .camera-bar { max-width: calc(100vw - 2 * var(--scene-inset)); }
+}
+
+/* Compact screens use one accessible drawer at a time, leaving a clear canvas. */
+@media (max-width: 960px) {
+  .app { --edge: 12px; --chrome-top: 108px; --chrome-bottom: 88px; --scene-inset: var(--edge); }
+  .app > .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xs); }
+  .topbar > .header-planets { grid-column: 1 / -1; grid-row: 2; justify-self: center; width: min(260px, 100%); }
+  .app > .materials-panel, .app > .inspector { display: none; }
+  .app[data-mobile-panel='materials'] > .materials-panel,
+  .app[data-mobile-panel='observation'] > .inspector {
+    display: flex; flex-direction: column; position: absolute; z-index: 6;
+    top: 228px; bottom: 88px; left: var(--edge); right: var(--edge);
+    width: auto; max-height: none; padding: var(--space-md);
+    border-radius: var(--radius-workbench); background: var(--color-drawer); overflow-y: auto;
+    box-shadow: var(--glass-shadow);
+  }
+  .app[data-mobile-panel='materials'] > .materials-panel { top: auto; max-height: calc(100dvh - 316px); }
+  .materials-panel .panel-title { margin-bottom: var(--space-md); }
+  .materials-panel .panel-title h2, .inspector .inspector-heading h2 { display: block; font-size: var(--text-base); }
+  .materials-panel #settings-toggle, .inspector #inspector-toggle { display: grid; width: 36px; height: 36px; margin-left: auto; }
+  .materials-panel .quick-edit { margin-left: auto; }
+  .materials-panel .material-list { max-height: none; overflow: visible; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .materials-panel .material { flex-direction: row; min-height: 44px; gap: var(--space-sm); }
+  .materials-panel .controls { display: block; position: static; width: auto; background: var(--color-transparent); }
+  .materials-panel .controls:not(:has(.control:not([hidden]))) { display: none; }
+  .materials-panel > .tool-list { flex-shrink: 0; }
+  .materials-panel .expedition-disclosure { flex-shrink: 0; }
+  .inspector .inspector-details { display: block; }
+  .inspector .point-summary h3 { display: block; }
+  .inspector .point-summary :is(.phase-badge, .temperature-caption) { display: inline-flex; }
+  .inspector .observed-material, .inspector .temperature { justify-content: flex-start; }
+  .inspector .observed-name { text-align: left; }
+  .inspector .temperature output { font-size: 40px; }
+  .inspector .inspector-heading { margin-bottom: var(--space-sm); }
+  .inspector-tabs { margin-bottom: var(--space-md); }
+  .scene-heading { top: 164px; left: var(--edge); width: 244px; max-width: calc(100% - 2 * var(--edge)); }
+  .scene-mode-toolbar button { height: 40px; min-height: 40px; }
+  .camera-bar { top: 108px; width: max-content; max-width: calc(100vw - 2 * var(--edge)); }
+  .planet-controls .camera-bar .planet-view-controls { border: 0; }
+  .planet-controls .camera-bar .icon-button { height: 40px; width: 32px; }
+  .camera-view-controls button { min-height: 40px; }
+  .app > .planet-controls, .app.wide-view > .planet-controls { bottom: var(--edge); height: 56px; }
+  .planet-controls .simulation-bar { flex-direction: row; width: max-content; min-width: 136px; padding: var(--space-xs); border-radius: var(--radius-workbench); }
+  .planet-controls .time-controls { width: auto; gap: var(--space-xs); }
+  .planet-controls .time-controls .icon-button { width: 36px; height: 44px; }
+  .planet-controls .speed-button { min-width: 40px; min-height: 44px; }
+  .workspace-toggle {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    position: absolute; bottom: 0; height: 54px; min-width: 64px; padding: var(--space-sm);
+    pointer-events: auto; border: 1px solid var(--color-glass-edge); border-radius: var(--radius-workbench);
+    background: var(--color-glass); color: var(--color-ink); font-size: var(--text-sm);
+    backdrop-filter: blur(var(--glass-blur));
+  }
+  .workspace-toggle svg { width: 16px; height: 16px; }
+  #workspace-materials { left: 0; }
+  #workspace-observation { right: 0; }
+  .workspace-toggle[aria-expanded='true'] { background: var(--color-ink); color: var(--color-inverse); }
+  .wide-view .workspace-toggle, .system-view .workspace-toggle { display: none; }
+  .scene-layer-dock { left: var(--edge); bottom: 88px; max-width: calc(100% - 88px); }
+  .scene-layer-controls { flex-wrap: wrap; }
+  .scene-layer-controls button { height: 36px; padding-inline: 6px; }
+  .climate-map-controls { bottom: calc(88px + var(--weather-dock-height, 44px) + var(--space-sm)); max-width: calc(100% - 88px); }
+  .scene-stick { right: var(--edge); bottom: 88px; }
+  .app:has(.materials-panel :focus-visible) .materials-panel { scroll-padding: var(--space-md); }
+  .app[data-mobile-panel='materials'] .view :is(.scene-layer-dock, .climate-map-controls, .scene-stick),
+  .app[data-mobile-panel='observation'] .view :is(.scene-layer-dock, .climate-map-controls, .scene-stick) { visibility: hidden; }
+  .planet-settings-panel, .wide-view .planet-settings-panel { bottom: 76px; max-height: calc(100dvh - 200px); }
+  .scene-heading:has(.section-controls:not([hidden])) { width: 244px; max-width: calc(100% - 24px); }
+  .scene-heading:has(.section-controls:not([hidden])) .section-controls {
+    display: block; top: 216px; left: var(--edge); right: auto; width: min(420px, calc(100vw - 2 * var(--edge)));
+  }
+  .scene-heading:has(.section-selection-controls:not([hidden])) .section-selection-controls { left: var(--edge); right: var(--edge); bottom: 88px; }
+  .section-note { bottom: 164px; }
+  .system-view #system-dialog.system-dock { bottom: 88px; height: 200px; }
+}
+@media (max-width: 360px) {
+  .workspace-toggle { min-width: 60px; flex-direction: column; gap: 2px; }
+  .planet-controls .camera-bar .icon-button { width: 28px; }
+  .camera-view-controls button { padding-inline: 10px; }
+  .materials-panel .panel-title { gap: var(--space-xs); }
+}
+@media (max-width: 600px) {
+  .dashboard-header { gap: var(--space-sm); padding: 12px; }
+  .dashboard-header h2 { font-size: 16px; white-space: nowrap; }
+  .dashboard-model { display: none; }
+  .dashboard-header-actions { gap: 2px; }
+  .dashboard-header-actions .icon-button { width: 32px; height: 40px; }
+  .dashboard-header-actions .text-button { padding-inline: var(--space-sm); }
+  .dashboard-toolbar { padding: 12px; }
+  .dashboard-toolbar :is(.dashboard-time-window, .dashboard-scale) button { padding-inline: 7px; font-size: var(--text-xs); white-space: nowrap; }
+}
+@media (max-height: 600px) and (max-width: 960px) and (min-width: 601px) {
+  .app > .topbar { top: var(--space-sm); }
+  .app { --chrome-top: 100px; }
+  .scene-heading { top: 100px; }
+  .camera-bar { top: 100px; left: auto; right: var(--edge); transform: none; }
+  .app[data-mobile-panel] > :is(.materials-panel, .inspector) { top: 160px; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .camera-bar, .scene-mode-toolbar, .workspace-toggle { background: var(--color-surface); backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .camera-bar, .workspace-toggle, .inspector-tabs button { transition: none; }
+}
+.app:is(.wide-view, .system-view)[data-mobile-panel] > :is(.materials-panel, .inspector) { display: none; }
+
+/* Compact control scale — content determines width; icons stay square. */
+.app :is(.top-actions, .camera-bar, .simulation-bar, .dialog-header) .icon-button {
+  width: var(--control-size); height: var(--control-size); min-height: var(--control-size);
+  padding: 0; flex-shrink: 0; border-radius: var(--radius-control);
+}
+.top-actions { gap: 2px; padding: var(--space-xs); }
+.top-actions .text-button { min-height: var(--control-size); padding-inline: var(--space-sm); }
+.top-actions svg, .camera-bar svg { width: 16px; height: 16px; }
+.topbar > .header-planets { min-height: 36px; }
+.app > .materials-panel { top: 136px; padding: 12px; }
+.materials-panel > .panel-title { margin-bottom: 12px; }
+.material-list .material { min-height: 38px; padding: 6px 8px; }
+.materials-panel > .tool-list { margin-top: 12px; padding-top: 12px; gap: 4px; }
+.materials-panel .tool { min-height: 40px; gap: 4px; padding: 4px 0; }
+.materials-panel .tool svg { width: 16px; height: 16px; }
+.expedition-disclosure { margin-top: 12px; }
+.expedition-disclosure > summary { min-height: 34px; }
+.scene-mode-toolbar button { height: var(--control-size); min-height: var(--control-size); border-radius: var(--radius-control); }
+.camera-view-controls button { min-height: var(--control-size); height: var(--control-size); padding-inline: 10px; border-radius: var(--radius-control); }
+.planet-controls .camera-bar .zoom-controls button { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); border-radius: var(--radius-control); }
+.planet-controls .simulation-bar { min-width: 120px; padding: var(--space-xs); border-radius: var(--radius-workbench); }
+.planet-controls .time-controls { gap: var(--space-xs); }
+.planet-controls .speed-button { min-width: 36px; height: var(--control-size); min-height: var(--control-size); border-radius: var(--radius-control); }
+.inspector-tabs { padding: 3px; gap: 2px; }
+.inspector-tabs button { min-height: 30px; }
+.scene-heading:has(.section-controls:not([hidden])) .section-controls {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px 12px;
+  top: 136px; left: 50%; transform: translateX(-50%); width: min(440px, calc(100vw - 2 * var(--scene-inset)));
+  margin: 0; padding: 10px 12px; border-radius: var(--radius-workbench);
+}
+.section-actions { grid-column: 1 / -1; gap: 8px; }
+.section-actions > div { padding: 0; border: 0; background: var(--color-transparent); }
+.section-actions button { min-width: 36px; min-height: var(--control-size); padding: 0 10px; white-space: nowrap; }
+.section-actions > div + div { margin-left: auto; }
+.section-dimensions { grid-column: 1 / -1; display: flex; flex-wrap: nowrap; justify-content: space-between; gap: 12px; }
+.section-controls .section-range-control { flex: 1; min-width: 0; display: flex; gap: 8px; margin: 0; }
+.section-controls .section-range-control > span { white-space: nowrap; }
+.section-controls .section-range-control input { width: 100%; min-width: 32px; max-width: 128px; }
+.section-controls .section-range-name { display: inline; }
+.section-height-control { gap: 6px; white-space: nowrap; }
+.section-height-control select { min-height: var(--control-size); height: var(--control-size); }
+.section-foundation-note { grid-column: 1 / -1; margin: 0; font-size: 10px; color: var(--scene-muted); }
+
+/* Settings use aligned rows and one scroll region, with a persistent close control. */
+#app .app-settings { width: min(480px, calc(100vw - 24px)); border-radius: var(--radius-workbench); }
+#app .dialog-header { padding: 12px 16px; min-height: 56px; }
+.dialog-header h2 { font-size: 16px; }
+.app-settings .dialog-body { padding: 16px; }
+.settings-section h3 { margin-bottom: 4px; font-weight: 600; }
+.settings-section + .settings-section { margin-top: 12px; padding-top: 12px; }
+.settings-row { min-height: 56px; gap: 16px; padding: 8px 0; }
+.settings-row > span { min-width: 0; }
+.settings-row small { max-width: 29em; line-height: 1.5; }
+.settings-row .segmented-control { padding: 2px; gap: 2px; }
+.settings-row .segmented-control button { min-height: 30px; padding: 0 8px; gap: 6px; white-space: nowrap; }
+.settings-switch::before { background: var(--color-muted); }
+.settings-footer { margin-top: 12px; padding-top: 12px; }
+.settings-footer .text-button { min-height: 32px; }
+#app .planet-settings-panel {
+  position: fixed; z-index: 8; top: 136px; bottom: auto; left: 50%; transform: translateX(-50%);
+  width: min(560px, calc(100vw - 24px)); max-height: calc(100dvh - 212px);
+  padding: 0 16px 16px; background: var(--color-surface); border-radius: var(--radius-workbench);
+}
+#app .planet-settings-panel > .panel-title {
+  position: sticky; top: 0; z-index: 2; padding: 12px 0; margin: 0 0 12px;
+  background: var(--color-surface); border-bottom: 1px solid var(--color-rule);
+}
+.planet-settings-panel > .panel-title h2 { font-size: 16px; }
+.planet-settings-panel .panel-title .icon-button { width: 32px; height: 32px; min-height: 32px; }
+.planet-settings-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; }
+.planet-settings-grid h3 { margin-bottom: 12px; }
+.planet-settings-panel .display-settings { border-top: 0; border-left: 1px solid var(--color-rule); padding: 0 0 0 20px; }
+.planet-settings-panel .rotation-actions { margin-bottom: 16px; gap: 6px; }
+.planet-settings-panel .rotation-actions .spin-button { min-width: 0; min-height: 32px; height: 32px; padding: 0 8px; gap: 6px; white-space: nowrap; }
+.planet-settings-panel .spin-button span { font-size: var(--text-xs); }
+.planet-settings-panel .control { margin-bottom: 12px; }
+.planet-settings-panel .numeric-control input { width: 72px; height: 32px; padding: 4px 6px; font-size: 13px; }
+.planet-settings-panel .precise-control { gap: 8px; }
+.planet-settings-panel .display-settings input { margin-bottom: 16px; }
+.planet-settings-panel .control-label { font-size: var(--text-xs); }
+#app:has(#planet-settings:not([hidden])) .section-controls { visibility: hidden; }
+@media (max-width: 960px) {
+  .scene-heading { top: 152px; }
+  .scene-mode-toolbar button { min-height: var(--control-touch-size); height: var(--control-touch-size); }
+  .app :is(.camera-bar, .simulation-bar) .icon-button,
+  .planet-controls .camera-bar .zoom-controls button { width: var(--control-touch-size); height: var(--control-touch-size); min-height: var(--control-touch-size); }
+  .camera-view-controls button, .planet-controls .speed-button { min-height: var(--control-touch-size); height: var(--control-touch-size); }
+  .planet-controls .simulation-bar { min-width: 124px; }
+  .workspace-toggle { height: 44px; min-width: 60px; flex-direction: row; border-radius: var(--radius-workbench); }
+  .app > .planet-controls, .app.wide-view > .planet-controls { height: 44px; }
+  .scene-heading:has(.section-controls:not([hidden])) .section-controls {
+    top: 204px; left: var(--edge); transform: none; width: min(440px, calc(100vw - 24px));
+  }
+  .section-controls .section-actions, .section-controls .section-dimensions, .section-controls .section-foundation-note { grid-column: 1 / -1; grid-row: auto; }
+  .section-controls .section-range-name { display: none; }
+  .view:has(.section-controls:not([hidden])) .climate-map-controls { top: auto; }
+  .app[data-mobile-panel] > .materials-panel { padding: 12px; }
+  .materials-panel .material { min-height: 40px; }
+  #app .planet-settings-panel { top: 156px; max-height: calc(100dvh - 232px); }
+  .app[data-mobile-panel] #planet-settings { z-index: 9; }
+}
+@media (max-width: 560px) {
+  .planet-settings-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .planet-settings-panel .display-settings { border-left: 0; border-top: 1px solid var(--color-rule); padding: 16px 0 0; }
+  .planet-settings-panel .numeric-control input { width: 84px; }
+  .settings-footer { flex-wrap: wrap; align-items: center; flex-direction: row; }
+  .settings-footer > span { margin-left: auto; }
+  .dashboard-header-actions .icon-button { height: 32px; }
+}
+@media (pointer: coarse) {
+  .settings-row { min-height: 60px; }
+  .settings-switch { box-shadow: 0 0 0 8px var(--color-transparent); }
+}
+.section-controls .section-range-control,
+.section-controls .section-range-control input { min-height: 32px; padding: 0; background: var(--color-transparent); }
+.section-controls .section-foundation-note { padding: 0; background: var(--color-transparent); }
+.display-settings .section-settings-hint { display: none; margin: -4px 0 12px; font-size: var(--text-xs); line-height: 1.5; color: var(--color-muted); }
+.display-settings:has(input:disabled) .section-settings-hint { display: block; }
+.app .camera-bar :is(#axis-align, #home, #planet-settings-toggle) {
+  width: var(--control-size); height: var(--control-size); min-height: var(--control-size); padding: 0;
+}
+.planet-controls .camera-view-controls { padding: 0 4px 0 0; }
+@media (max-width: 960px) {
+  .app .camera-bar :is(#axis-align, #home, #planet-settings-toggle) {
+    width: var(--control-touch-size); height: var(--control-touch-size); min-height: var(--control-touch-size);
+  }
+  .top-actions .text-button { width: 32px; padding: 0; }
+  .brand-group { padding-inline: 0; }
+  .scene-heading { top: 160px; }
+  .scene-heading:has(.section-controls:not([hidden])) .section-controls { top: 212px; }
+}
+@media (max-width: 380px) {
+  .brand-mark { display: none; }
+  .brand { font-size: 14px; }
+  .top-actions { gap: 0; }
+  .app .top-actions :is(.icon-button, .text-button) { width: 28px; height: 32px; min-height: 32px; }
+}
+/* Secondary surfaces follow the same compact rhythm. */
+.catalog h2 { font-size: 18px; }
+.catalog-search input { min-height: 36px; padding: 8px 10px; }
+.catalog-row { padding: 10px 0; gap: 8px; }
+.catalog header .icon-button { width: 32px; height: 32px; }
+.dashboard-header-actions .text-button { min-height: 32px; }
+@media (max-width: 960px) {
+  #app:has(#catalog:not([hidden])) .materials-panel { visibility: hidden; }
+}
+
+/* Keep the material surface clear while editing a section. */
+@media (min-width: 1151px) {
+  .scene-heading:has(.section-controls:not([hidden])) .section-controls {
+    width: min(640px, calc(100vw - 2 * var(--scene-inset)));
+    grid-template-columns: auto minmax(0, 1fr); gap: 6px 20px; padding: 8px 12px;
+  }
+  .section-controls .section-actions { grid-column: 1; grid-row: 1; flex-wrap: nowrap; }
+  .section-controls .section-dimensions { grid-column: 2; grid-row: 1; }
+  .section-controls .section-foundation-note { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (max-width: 960px) {
+  .app[data-mobile-panel='materials'] .section-controls,
+  .app[data-mobile-panel='observation'] .section-controls { visibility: hidden; }
+}
+.section-actions [data-section-framing] { border: 1px solid var(--color-scene-rule); color: var(--scene-ink); }
+@media (hover: hover) {
+  .section-actions [data-section-framing]:hover { background: var(--color-scene-selection); }
+}
+#section-options-toggle { display: none; }
+@media (max-width: 960px) {
+  #section-options-toggle { display: block; border: 1px solid var(--color-scene-rule); }
+  #section-options-toggle[aria-expanded='true'] { color: var(--scene-panel); background: var(--scene-ink); }
+  .section-controls:not(.section-options-open) :is(.section-dimensions, .section-foundation-note) { display: none; }
+  .section-controls .section-actions { gap: 6px; }
+  .section-controls .section-actions button { padding-inline: 8px; }
+}
+
+/* Screen layout: aligned edge tools, a clear center, and one mobile menu. */
+.app {
+  --edge: var(--space-workbench-edge);
+  --panel-width: var(--size-workbench-panel);
+  --chrome-top: 72px;
+  --chrome-bottom: 76px;
+  --scene-inset: calc(var(--edge) + var(--panel-width) + var(--space-workbench-gap));
+}
+.app > .topbar { top: var(--edge); height: var(--size-workbench-header); min-height: 0; }
+.brand-group { height: 40px; padding-inline: 8px; }
+.brand { font-size: 18px; }
+.brand-mark { width: 20px; height: 20px; }
+.topbar > .header-planets { width: 224px; height: 40px; min-height: 40px; }
+#workbench-menu-toggle, .top-actions .action-label { display: none; }
+.app > .materials-panel { top: 120px; max-height: calc(100dvh - 328px); padding: 12px; }
+.materials-panel > .panel-title { margin-bottom: 8px; gap: 6px; }
+.materials-panel .panel-title h2 { font-size: 12px; }
+.material-list .material { min-height: 36px; padding: 5px 8px; }
+.materials-panel .controls { margin-top: 12px; padding-top: 12px; }
+.app > .inspector { padding: 12px; }
+.inspector .inspector-heading, .inspector-tabs { margin-bottom: 12px; }
+.inspector .temperature output { font-size: 36px; }
+.inspector .temperature { margin: 8px 0 12px; }
+.inspector .observed-material { margin-top: 8px; }
+.inspector :is(.depth-profile, .surface-readout, .thermal-details, .atmosphere-panel, .environment) { margin-top: 12px; padding-top: 12px; }
+.inspector .local-climate-grid { row-gap: 12px; }
+.app .scene-heading { top: 72px; }
+.app .camera-bar { top: 72px; }
+.app .scene-heading:has(.section-controls:not([hidden])) .section-controls { top: 124px; }
+.scene-display-controls {
+  position: absolute; z-index: 3; left: var(--edge); bottom: var(--chrome-bottom);
+  width: var(--panel-width); display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+}
+.scene-display-controls :is(.climate-map-controls, .scene-layer-dock) {
+  position: relative; top: auto; right: auto; bottom: auto; left: auto;
+  width: 100%; max-width: 100%; margin: 0; pointer-events: auto;
+}
+.scene-display-controls .climate-layer-selector { width: 100%; }
+.scene-display-controls #climate-map-toggle { flex: 1; min-width: 0; }
+.scene-display-controls .scene-layer-controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; width: 100%; }
+.scene-display-controls .scene-layer-controls button { min-width: 0; justify-content: center; padding-inline: 4px; }
+html:lang(en) .scene-display-controls .scene-layer-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.scene-display-controls .scene-layer-legend { margin: 0 0 4px; padding: 0 4px; font-size: 10px; }
+.scene-display-controls .climate-layer-legend {
+  position: absolute; bottom: calc(100% + 8px); left: 0; width: 100%;
+  background: var(--color-scene-glass); padding: 10px; border-radius: var(--radius-control);
+}
+.app .scene-stick { bottom: var(--chrome-bottom); }
+.scene-stick .rotation-stick { width: 56px; height: 56px; }
+.app > .planet-controls, .app.wide-view > .planet-controls { bottom: var(--edge); }
+.app .footer-meta { bottom: 18px; min-height: 36px; }
+.app .sun-label { bottom: 22px; }
+.app.system-view .scene-display-controls { display: none; }
+#app .planet-settings-panel { top: 124px; max-height: calc(100dvh - 200px); }
+.settings-row { min-height: 50px; gap: 12px; }
+.settings-row small { font-size: 11px; }
+#app .catalog { top: 72px; bottom: 76px; padding: 16px; }
+@media (min-width: 961px) and (max-width: 1150px) {
+  .app { --panel-width: 224px; }
+}
+
+@media (max-width: 960px) {
+  .app { --edge: 12px; --chrome-top: 64px; --scene-inset: var(--edge); }
+  .app > .topbar {
+    top: 12px; display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px;
+    gap: 8px; height: 40px; align-items: center;
+  }
+  .app .brand-group { padding: 0; width: 40px; height: 40px; justify-content: center; }
+  .app .brand { font-size: 0; gap: 0; }
+  .app .brand-mark { display: flex; width: 22px; height: 22px; }
+  .app .brand-version { display: none; }
+  .app .topbar > .header-planets {
+    position: relative; left: auto; transform: none; grid-column: 2; grid-row: 1;
+    width: 100%; max-width: 260px; height: 40px; justify-self: center;
+  }
+  #workbench-menu-toggle {
+    display: grid; grid-column: 3; grid-row: 1; place-items: center; width: 40px; height: 40px; padding: 0;
+    color: var(--color-ink); background: var(--color-glass); border: 1px solid var(--color-glass-edge);
+    border-radius: var(--radius-glass-control);
+  }
+  #workbench-menu-toggle svg { width: 18px; height: 18px; }
+  #workbench-menu-toggle[aria-expanded='true'] { background: var(--color-surface); }
+  .app .top-actions { display: none; }
+  .app[data-menu-open='true'] .top-actions {
+    display: grid; position: absolute; top: 48px; right: 0; z-index: 12;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin: 0; padding: 8px;
+    width: min(320px, calc(100vw - 24px)); background: var(--color-drawer);
+    border-radius: var(--radius-workbench); box-shadow: var(--glass-shadow);
+  }
+  .app .top-actions :is(.icon-button, .text-button), .app .top-actions #overview-open {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: auto; min-width: 0; height: 64px; min-height: 64px; padding: 8px 4px; gap: 6px;
+    border-radius: var(--radius-control); font-size: 11px;
+  }
+  .app .top-actions button > span:not(.notification-badge):not(#discovery-count) { display: inline; font-size: 11px; }
+  .app .top-actions svg { width: 18px; height: 18px; }
+  .app .top-actions #discovery-count { position: absolute; top: 4px; right: 12px; font-size: 10px; }
+  .app .camera-bar { top: 64px; left: 50%; right: auto; transform: translateX(-50%); }
+  .app .scene-heading { top: 116px; width: 240px; }
+  .app .scene-heading:has(.section-controls:not([hidden])) .section-controls { top: 164px; }
+  .app[data-mobile-panel='materials'] > .materials-panel {
+    top: auto; bottom: 76px; max-height: calc(100dvh - 244px); padding: 12px;
+  }
+  .app[data-mobile-panel='observation'] > .inspector { top: 164px; bottom: 76px; padding: 12px; }
+  .materials-panel .material { min-height: 40px; }
+  .scene-display-controls { width: min(340px, calc(100% - 92px)); }
+  .scene-display-controls .scene-layer-legend { margin-bottom: 8px; }
+  .app .scene-stick { right: 12px; }
+  #app .planet-settings-panel { top: 112px; max-height: calc(100dvh - 188px); }
+  #app .catalog { top: 64px; bottom: 76px; }
+  .settings-row { min-height: 56px; }
+}
+@media (max-height: 600px) and (min-width: 601px) and (max-width: 960px) {
+  .app .camera-bar { left: auto; right: 12px; transform: none; }
+  .app .scene-heading { top: 64px; }
+  .app .scene-heading:has(.section-controls:not([hidden])) .section-controls { top: 116px; }
+  .app[data-mobile-panel='observation'] > .inspector { top: 116px; }
+  .app[data-mobile-panel='materials'] > .materials-panel { max-height: calc(100dvh - 192px); }
+}
+@media (max-height: 600px) and (min-width: 601px) and (max-width: 960px) {
+  .app .scene-heading:has(.section-controls:not([hidden])) .section-controls {
+    width: min(400px, calc(50vw - 24px));
+  }
+  .scene-display-controls { left: calc(50% + 8px); right: 80px; width: auto; }
+}
+/* A map menu may open over the editing palette; keep its labels opaque. */
+.scene-display-controls .climate-picker-menu {
+  width: 100%; background: var(--color-surface); color: var(--color-ink);
+  border-color: var(--color-rule); box-shadow: var(--glass-shadow);
+}
+.scene-display-controls .climate-picker-menu button { color: var(--color-ink); }
+.scene-display-controls .climate-picker-menu button:is(:hover, :focus-visible, [aria-selected='true']) {
+  background: var(--color-wash);
+}
+#app .scene-display-controls .climate-picker-menu {
+  background: var(--color-surface); border-color: var(--color-rule); box-shadow: var(--glass-shadow);
+}
+
+/* View and playback belong at the edge, leaving the planet unobstructed. */
+.app .footer-meta, .app .sun-label { display: none; }
+.view-transport-dock {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; padding: 4px;
+  width: max-content; max-width: 100%; pointer-events: auto;
+  background: var(--color-glass); border: 1px solid var(--color-glass-edge);
+  border-radius: var(--radius-workbench); backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur)); box-shadow: var(--glass-shadow);
+}
+.app .view-transport-dock :is(.camera-bar, .simulation-bar) {
+  position: static; top: auto; right: auto; bottom: auto; left: auto; transform: none;
+  width: auto; max-width: none; min-width: 0; padding: 0;
+  border: 0; background: transparent; border-radius: 0; box-shadow: none; backdrop-filter: none;
+}
+.app .view-transport-dock .camera-bar { order: 0; }
+.app .view-transport-dock .simulation-bar { order: 1; padding-left: 8px; border-left: 1px solid var(--color-rule); }
+.speed-control { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.app .view-transport-dock .speed-step { width: 26px; min-width: 26px; height: 32px; min-height: 32px; padding: 0; border: 1px solid var(--color-rule); border-radius: var(--radius-control); background: var(--color-wash); color: var(--color-ink); font-size: 16px; line-height: 1; }
+.app .view-transport-dock .speed-step:hover:not(:disabled) { border-color: var(--color-muted); background: var(--color-glass-selection); }
+.speed-control output { display: grid; place-items: center; min-width: 42px; height: 32px; font: 600 12px/1 var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.speed-control .help-tip-button { width: 20px; height: 32px; color: var(--color-muted); }
+.speed-control .help-tip-button svg { width: 13px; height: 13px; }
+.game-time-readout { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 0 4px; font-size: 11px; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.game-time-readout small { color: var(--color-muted); font-size: 10px; }
+.game-time-readout #game-rate { padding-left: 8px; border-left: 1px solid var(--color-rule); }
+@media (max-width: 600px) {
+  .app .view-transport-dock .time-controls { gap: 2px; }
+  .app .view-transport-dock .time-controls .icon-button { width: 32px; min-width: 32px; }
+  .app .view-transport-dock .game-time-readout { gap: 6px; padding-inline: 1px; }
+  .app .view-transport-dock .game-time-readout #game-rate { padding-left: 6px; }
+}
+@media (max-width: 360px) {
+  .app .view-transport-dock #game-rate { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; padding: 0; }
+}
+.app .scene-heading:has(.section-controls:not([hidden])) .section-controls { top: auto; bottom: 76px; }
+#app .planet-settings-panel { top: auto; bottom: 76px; max-height: calc(100dvh - 148px); }
+.app.system-view .view-transport-dock .simulation-bar { border: 0; padding-left: 0; }
+@media (max-width: 960px) {
+  .app .scene-heading { top: 64px; }
+  .app[data-mobile-panel='observation'] > .inspector { top: 116px; }
+  .app .scene-heading:has(.section-controls:not([hidden])) .section-controls { top: 116px; bottom: auto; }
+  .app .view-transport-dock .camera-bar { left: auto; right: auto; transform: none; }
+}
+@media (max-width: 600px) {
+  .view-transport-dock { flex-direction: column; gap: 4px; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+  .app .view-transport-dock :is(.camera-bar, .simulation-bar) {
+    padding: 2px; border: 1px solid var(--color-glass-edge); border-radius: var(--radius-workbench);
+    background: var(--color-glass); backdrop-filter: blur(var(--glass-blur));
+  }
+  .app .view-transport-dock .simulation-bar { border-left: 1px solid var(--color-glass-edge); }
+  .scene-display-controls, .app .scene-stick { bottom: 128px; }
+  .app[data-mobile-panel='materials'] > .materials-panel { bottom: 128px; max-height: calc(100dvh - 252px); }
+  .app[data-mobile-panel='observation'] > .inspector { bottom: 128px; }
+  #app .planet-settings-panel { bottom: 128px; max-height: calc(100dvh - 192px); }
+  #app .catalog { bottom: 128px; }
+  .app .scene-heading:has(.section-selection-controls:not([hidden])) .section-selection-controls { bottom: 128px; }
+}
+@media (min-width: 961px) {
+  .app .scene-stick { right: var(--edge); bottom: var(--edge); }
+}
+
+/* Reclaim the former status strip; keep rotation with the view controls. */
+@media (min-width: 961px) {
+  .app > .inspector { bottom: var(--edge); }
+  .scene-display-controls { bottom: var(--edge); }
+  .app > .materials-panel {
+    max-height: calc(100dvh - 120px - var(--display-controls-height, 136px) - var(--edge) - 12px);
+  }
+  .app .scene-stick {
+    left: calc(50% + var(--view-dock-width, 392px) / 2 + 12px);
+    right: auto; bottom: var(--edge);
+  }
+  .scene-stick .rotation-stick { width: 42px; height: 42px; }
+  .scene-stick .rotation-stick-thumb { width: 20px; height: 20px; }
+}
+@media (max-width: 960px) {
+  .app .scene-stick { top: 64px; bottom: auto; right: var(--edge); left: auto; }
+  .scene-stick .rotation-stick { width: 44px; height: 44px; }
+  .scene-stick .rotation-stick-thumb { width: 22px; height: 22px; }
+}
+@media (max-width: 600px) {
+  .scene-display-controls { width: calc(100% - 2 * var(--edge)); }
+}
+
+/* Independent panel toggles remain available even with both panels folded. */
+.panel-toggles { display: flex; gap: 4px; margin-left: 12px; }
+.panel-toggles button {
+  display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 8px;
+  border: 1px solid var(--color-glass-edge); border-radius: var(--radius-control);
+  color: var(--color-muted); background: var(--color-glass); font-size: 12px;
+}
+.panel-toggles button[aria-expanded='true'] { color: var(--color-ink); background: var(--color-wash); }
+.panel-toggles svg { width: 16px; height: 16px; }
+.app.system-view .panel-toggles { display: none; }
+@media (min-width: 961px) {
+  .app.materials-collapsed > .materials-panel, .app.observation-collapsed > .inspector { display: none; }
+  .materials-panel #settings-toggle, .inspector #inspector-toggle {
+    display: grid; flex-shrink: 0; width: 28px; height: 28px; margin-left: auto;
+  }
+  .materials-panel .panel-title { gap: 4px; }
+  .materials-panel .panel-title h2 { margin-right: auto; }
+  .materials-panel .quick-edit { margin-left: 0; }
+}
+@media (max-width: 960px) {
+  .panel-toggles { display: none; }
+}
+/* Familiar sidebar glyphs; names remain available to assistive technology. */
+.panel-toggles button { width: 32px; height: 32px; padding: 0; justify-content: center; }
+.panel-toggles svg, .workspace-toggle svg { width: 18px; height: 18px; }
+[aria-expanded='false'] .panel-icon-fill { opacity: 0; }
+[aria-expanded='true'] .panel-icon-fill { opacity: .5; }
+@media (max-width: 960px) {
+  .app .workspace-toggle { width: 44px; min-width: 44px; height: 44px; padding: 0; }
+}
+
+/* Place each sidebar control on its own edge of the header. */
+.app .sidebar-toggle {
+  display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px;
+  padding: 0; border: 0; border-radius: var(--radius-control);
+  color: var(--color-muted); background: transparent;
+}
+.sidebar-toggle svg { width: 18px; height: 18px; }
+.app .sidebar-toggle[aria-expanded='true'] { color: var(--color-ink); }
+.app .sidebar-toggle:hover { background: var(--color-wash); }
+@media (min-width: 961px) {
+  .app .brand-group { padding-left: 0; gap: 12px; }
+  .app .top-actions { margin-right: 44px; }
+  #toggle-observation { position: absolute; right: 0; top: 4px; }
+  .materials-panel #settings-toggle, .inspector #inspector-toggle { display: none; }
+}
+.app.system-view .sidebar-toggle { display: none; }
+@media (max-width: 960px) {
+  .app .sidebar-toggle { display: none; }
+}
+@media (min-width: 961px) {
+  .app .brand-group { padding-left: 8px; }
+  #toggle-materials { position: absolute; left: calc(var(--panel-width) - 32px); top: 4px; }
+}
+
+.app .mode-switch { margin-left: 10px; padding: 5px 9px; border: 1px solid var(--color-rule); border-radius: var(--radius-sm); color: var(--color-muted); font-size: var(--text-xs); white-space: nowrap; }
+.app .mode-switch:hover { color: var(--color-ink); background: var(--color-surface); }
+#game-mode { width: min(520px, calc(100vw - 32px)); }
+#game-mode .dialog-body > p { margin-bottom: 16px; color: var(--color-muted); font-size: var(--text-sm); }
+.mode-options { display: grid; gap: 10px; }
+.mode-options button { display: grid; gap: 6px; width: 100%; min-width: 0; padding: 16px; border: 1px solid var(--color-rule); border-radius: var(--radius-sm); text-align: left; white-space: normal; }
+.mode-options button:hover, .mode-options button:focus-visible { border-color: var(--color-ink); }
+.mode-options button[aria-current='true'] { background: var(--color-surface); }
+.mode-options strong { font-size: var(--text-base); }
+.mode-options span { color: var(--color-muted); font-size: var(--text-sm); line-height: 1.5; }
+@media (max-width: 414px) { .app .mode-switch { margin-left: 4px; padding: 4px 6px; font-size: 10px; } }
+
+/* Motion follows interaction, without animating the simulation's changing readouts. */
+@media (prefers-reduced-motion: no-preference) {
+  .app :is(button, select, summary) {
+    transition: background-color var(--dur-short) var(--ease-out),
+      border-color var(--dur-short) var(--ease-out),
+      color var(--dur-short) var(--ease-out),
+      opacity var(--dur-short) var(--ease-out),
+      translate var(--dur-short) var(--ease-out);
+  }
+  .app button:active:not(:disabled) { translate: 0 1px; }
+  @media (hover: hover) {
+    .app :is(.material, .tool, .planet-row):hover { translate: 0 -1px; }
+  }
+  .app :is(.material, .tool, .planet-row):active { translate: 0 0; }
+  .app :is(.inspector-details > [role='tabpanel'], .materials-panel, .inspector,
+    .planet-settings-panel, .catalog, #system-dialog.system-dock):not([hidden]),
+  .app dialog[open],
+  .help-tip-content:popover-open {
+    animation: workbench-enter var(--dur-medium) var(--ease-out) both;
+  }
+  .app dialog[open]::backdrop { animation: workbench-scrim var(--dur-medium) ease-out both; }
+  @keyframes workbench-enter {
+    from { opacity: 0; translate: 0 7px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+  @keyframes workbench-scrim {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}

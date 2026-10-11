@@ -1,3 +1,4 @@
+import type {ClimateSnapshot,WeatherClimate} from './weatherClimate';
 import {F,STRIDE,gravityMultiplier,type Environment} from './model';
 
 import {REFERENCE_GAS_MASS} from './waterPhysics';
@@ -31,11 +32,9 @@ export interface AtmosphereState {
   color:readonly number[];
 }
 
-/** A well-mixed, isothermal column model. Surface cells share their temperature with local gas.
- * p₀ ∝ column mass × g; H0 = RT/(Mg); spherical pressure profile at fixed T.
- * Game mass is normalised to the initial N₂ column at 1g, rather than claiming a real planet's kg.
- */
-export function atmosphereState(state:Float32Array,e:Environment):AtmosphereState {
+/** Bulk diagnostics use prognostic layer temperatures when present. The outer
+ * visual boundary is still an isothermal approximation using their mole mean. */
+export function atmosphereState(state:Float32Array,e:Environment,climate?:ClimateSnapshot|WeatherClimate):AtmosphereState {
   const masses=GASES.map(()=>0);let moles=0,thermalMoles=0,minimumBinding=Infinity;
   for(let p=0;p<state.length;p+=STRIDE) {
     let localMoles=0;
@@ -44,6 +43,15 @@ export function atmosphereState(state:Float32Array,e:Environment):AtmosphereStat
       if(mass>0)minimumBinding=Math.min(minimumBinding,bindingParameter(state[p+F.temperature],gravityMultiplier(e),GASES[k].molarMass));
     }
     moles+=localMoles;thermalMoles+=localMoles*Math.max(1,state[p+F.temperature]+273.15);
+  }
+  const air=climate&&'air' in climate?(climate.air.ready?climate.air:undefined):climate?.atmosphere;
+  if(air){
+    thermalMoles=0;minimumBinding=Infinity;
+    for(let q=0;q<air.temperature.length;q++)for(let k=0;k<4;k++){
+      const gas=GASES[k],mass=air.mass[q*6+k],n=mass/gas.molarMass;
+      thermalMoles+=n*Math.max(1,air.temperature[q]+273.15);
+      if(mass>0)minimumBinding=Math.min(minimumBinding,bindingParameter(air.temperature[q],gravityMultiplier(e),gas.molarMass));
+    }
   }
   const mass=masses.reduce((a,b)=>a+b,0),kelvin=moles>0?thermalMoles/moles:273.15+e.ambient;
   const molarMass=moles>0?mass/moles:0;

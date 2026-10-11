@@ -1,0 +1,736 @@
+{
+  "schema": 1,
+  "thresholdAuthority": "Declared project diagnostics, not official benchmark pass criteria",
+  "heldSuarez": {
+    "configuration": {
+      "truncation": 42,
+      "nlayers": 20,
+      "days": 1200,
+      "spinupDays": 200,
+      "averageDays": 1000,
+      "sampleHours": 6,
+      "timestepSeconds": 900.0,
+      "seed": 42,
+      "flatSurface": true
+    },
+    "samples": 4000,
+    "status": "completed-project-sanity-checks-pass",
+    "jets": [
+      {
+        "hemisphere": "north",
+        "speedMS": 43.53881664651972,
+        "latitude": 54.41619873046875,
+        "sigma": 0.02500000037252903
+      },
+      {
+        "hemisphere": "south",
+        "speedMS": 43.67166306745019,
+        "latitude": -51.625732421875,
+        "sigma": 0.02500000037252903
+      }
+    ],
+    "maximumRelativePressureMassDrift": 9.820381986325177e-05,
+    "symmetryRmseMS": 1.8321081881708006,
+    "projectSanityChecks": {
+      "massConservation": true,
+      "subtropicalWesterlyJets": true,
+      "activeEddies": true,
+      "approximateHemisphericSymmetry": true
+    },
+    "paperQuantitativeValidation": "not-certified; compare zonal/eddy plots with Held & Suarez Fig. 1\u20133"
+  },
+  "earth-climate": {
+    "status": "failed-project-observation-gates",
+    "configuration": {
+      "truncation": 31,
+      "nlayers": 20,
+      "precipitationNormalization": "physical m/s rain+snow rate integrated over elapsed clock seconds",
+      "days": 1095,
+      "spinupDays": 365,
+      "averageDays": 730,
+      "sampleHours": 6,
+      "timestepSeconds": 900.0,
+      "surface": "Earth orography and land fraction, monthly prescribed SST, prognostic soil/snow/vegetation",
+      "radiation": "SPEEDY shortwave/ozone and Frierson longwave; not spectroscopic Earth radiation",
+      "cloud": "SPEEDY diagnosis with SI precipitation and dimensionless stability corrections"
+    },
+    "surfaceBoundaryAudit": null,
+    "gates": {
+      "precipitation": false,
+      "clouds": false,
+      "landTemperature": false
+    },
+    "metrics": {
+      "skin_temperature": {
+        "observedMean": 13.894647034385994,
+        "modelMean": 14.226338494081906,
+        "bias": 0.3316914596959126,
+        "rmse": 6.83619920548171,
+        "correlation": 0.9427617807113021
+      },
+      "rain_mm_day": {
+        "observedMean": 2.280035886876986,
+        "modelMean": 2.9027001578628893,
+        "bias": 0.6226642709859034,
+        "rmse": 2.4293626282105376,
+        "correlation": 0.24838411057126555
+      },
+      "cloud_fraction": {
+        "observedMean": 62.65727985781318,
+        "modelMean": 75.45149691679848,
+        "bias": 12.794217058985296,
+        "rmse": 29.46430933811559,
+        "correlation": 0.10909643333152293
+      },
+      "land_skin_temperature": {
+        "observedMean": 11.557788694655521,
+        "modelMean": 12.665147872767001,
+        "bias": 1.10735917811148,
+        "rmse": 8.92727293567512,
+        "correlation": 0.9614004717174434
+      }
+    },
+    "residualGroups": {
+      "land": {
+        "pointCount": 10,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 11.557788694655521,
+            "modelMean": 12.665147872767001,
+            "bias": 1.10735917811148,
+            "rmse": 8.92727293567512,
+            "correlation": 0.9614004717174434
+          },
+          "rain_mm_day": {
+            "observedMean": 1.7941749200441004,
+            "modelMean": 2.6936431363533817,
+            "bias": 0.8994682163092813,
+            "rmse": 2.589827532719306,
+            "correlation": 0.3674790200973828
+          },
+          "cloud_fraction": {
+            "observedMean": 46.33091635028774,
+            "modelMean": 74.08521271704494,
+            "bias": 27.754296366757202,
+            "rmse": 37.47781100984253,
+            "correlation": 0.3306193850074366
+          }
+        }
+      },
+      "ocean": {
+        "pointCount": 14,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 15.508478887571771,
+            "modelMean": 15.304495056136705,
+            "bias": -0.2039838314350657,
+            "rmse": 4.895885578879383,
+            "correlation": 0.9180963658869356
+          },
+          "rain_mm_day": {
+            "observedMean": 2.615570947416849,
+            "modelMean": 3.047074711813429,
+            "bias": 0.43150376439658,
+            "rmse": 2.3120535750775595,
+            "correlation": 0.09661333651327801
+          },
+          "cloud_fraction": {
+            "observedMean": 73.93224891655953,
+            "modelMean": 76.39505131399015,
+            "bias": 2.4628023974306217,
+            "rmse": 22.30874470974147,
+            "correlation": -0.37383803268089877
+          }
+        }
+      },
+      "tropics": {
+        "pointCount": 8,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 26.849976027397254,
+            "modelMean": 25.365125771867028,
+            "bias": -1.484850255530226,
+            "rmse": 3.472004635510916,
+            "correlation": 0.46224654759607486
+          },
+          "rain_mm_day": {
+            "observedMean": 2.2761883561643836,
+            "modelMean": 3.4473545597074677,
+            "bias": 1.171166203543084,
+            "rmse": 3.2401361799524593,
+            "correlation": 0.14406787359795992
+          },
+          "cloud_fraction": {
+            "observedMean": 49.78136301369862,
+            "modelMean": 80.46065416333762,
+            "bias": 30.679291149639,
+            "rmse": 37.76481917837828,
+            "correlation": 0.1512819097282099
+          }
+        }
+      },
+      "midlatitudes": {
+        "pointCount": 8,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 9.785729452054795,
+            "modelMean": 9.498048350615093,
+            "bias": -0.28768110143970205,
+            "rmse": 4.518869319432248,
+            "correlation": 0.9203093128695905
+          },
+          "rain_mm_day": {
+            "observedMean": 2.7321917808219176,
+            "modelMean": 2.7790563293621386,
+            "bias": 0.04686454854022104,
+            "rmse": 1.179748290691392,
+            "correlation": 0.38374644088373633
+          },
+          "cloud_fraction": {
+            "observedMean": 78.67011643835616,
+            "modelMean": 73.38702362804457,
+            "bias": -5.283092810311587,
+            "rmse": 15.951171637467466,
+            "correlation": 0.02369060342056242
+          }
+        }
+      },
+      "polar": {
+        "pointCount": 8,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": -23.229527397260274,
+            "modelMean": -14.426252656435517,
+            "bias": 8.803274740824756,
+            "rmse": 15.749486652428624,
+            "correlation": 0.773861506108003
+          },
+          "rain_mm_day": {
+            "observedMean": 1.059082191780822,
+            "modelMean": 1.2078234791192688,
+            "bias": 0.14874128733844683,
+            "rmse": 1.0335864311091607,
+            "correlation": 0.671227301587711
+          },
+          "cloud_fraction": {
+            "observedMean": 66.96297260273971,
+            "modelMean": 62.397313485357074,
+            "bias": -4.565659117382637,
+            "rmse": 21.49887606949891,
+            "correlation": 0.7678018858893587
+          }
+        }
+      }
+    },
+    "limitations": [
+      "Surface air temperature is dry-adiabatically extrapolated, not a Monin\u2013Obukhov 2-m diagnostic",
+      "Ocean skin temperature is prescribed; it is not an independent SST prediction",
+      "Different climatology periods for SST boundary and POWER 2001\u20132020 observations",
+      "Two years of averaging and 24 reference points do not establish a globally validated climate model",
+      "Nearest coarse grid centers; distance and land fraction reported",
+      "24 points and two forecast years versus 2001\u20132020 MERRA-2/CERES climatology; no claim of a validated global mean",
+      "Skin temperature compared with TS, not an extrapolated surface-air diagnostic with T2M"
+    ]
+  },
+  "earth-climate-spectral": {
+    "status": "failed-project-observation-gates",
+    "configuration": {
+      "truncation": 21,
+      "nlayers": 32,
+      "precipitationNormalization": "physical m/s rain+snow rate integrated over elapsed clock seconds",
+      "days": 1095,
+      "spinupDays": 365,
+      "averageDays": 730,
+      "sampleHours": 6,
+      "timestepSeconds": 1350.0,
+      "surface": "Earth orography and land fraction, monthly prescribed SST, prognostic soil/snow, prescribed monthly sea ice and vegetation climatology",
+      "radiation": "ecCKD gas/Mie liquid/Baum ice, random overlap, diagnostic condensate, 3 h radiation",
+      "cloud": "SPEEDY SI/stability corrections; reference sigma-pressure cloud sampling; random union"
+    },
+    "surfaceBoundaryAudit": {
+      "sst": {
+        "activeSstRangeK": [
+          239.53572,
+          306.575
+        ],
+        "monthlyTimeInterpolation": "linear between calendar-month midpoints",
+        "maximumFallbackDistanceKm": 1682.1624158471732,
+        "maskedLandPlaceholderK": 285.0,
+        "partialCoastalInterpolations": 1884,
+        "nearestSeaFallbacks": 828
+      },
+      "seaIce": {
+        "monthlyTimeInterpolation": "linear between calendar-month midpoints",
+        "source": "SpeedyWeatherAssets v1 ERA5-derived monthly sea_ice.nc sic, unit 1",
+        "maximumFallbackDistanceKm": 1682.1624158471732,
+        "climatologyPeriod": "not established by asset metadata",
+        "activeConcentrationRange": [
+          0.0,
+          1.0
+        ],
+        "maskedLandPlaceholder": 0.0,
+        "partialCoastalInterpolations": 1884,
+        "nearestSeaFallbacks": 828
+      }
+    },
+    "gates": {
+      "precipitation": false,
+      "clouds": false,
+      "landTemperature": false
+    },
+    "metrics": {
+      "skin_temperature": {
+        "observedMean": 13.894647034385994,
+        "modelMean": 15.757987502610012,
+        "bias": 1.8633404682240187,
+        "rmse": 5.812380761752622,
+        "correlation": 0.9570222329263771
+      },
+      "rain_mm_day": {
+        "observedMean": 2.280035886876986,
+        "modelMean": 2.54669907536701,
+        "bias": 0.2666631884900239,
+        "rmse": 3.440557653581938,
+        "correlation": -0.013395635159324744
+      },
+      "cloud_fraction": {
+        "observedMean": 62.65727985781318,
+        "modelMean": 64.26270647075191,
+        "bias": 1.6054266129387287,
+        "rmse": 33.241997638175484,
+        "correlation": -0.17877899075085787
+      },
+      "land_skin_temperature": {
+        "observedMean": 9.951992786892315,
+        "modelMean": 16.72593959141121,
+        "bias": 6.773946804518893,
+        "rmse": 9.817740338367516,
+        "correlation": 0.9634565103777802
+      }
+    },
+    "residualGroups": {
+      "land": {
+        "pointCount": 8,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 9.951992786892315,
+            "modelMean": 16.72593959141121,
+            "bias": 6.773946804518893,
+            "rmse": 9.817740338367516,
+            "correlation": 0.9634565103777802
+          },
+          "rain_mm_day": {
+            "observedMean": 1.441769679159537,
+            "modelMean": 3.424894853522199,
+            "bias": 1.983125174362662,
+            "rmse": 4.27638827696846,
+            "correlation": -0.09477532232235744
+          },
+          "cloud_fraction": {
+            "observedMean": 44.441744984921286,
+            "modelMean": 65.34097378528713,
+            "bias": 20.899228800365847,
+            "rmse": 42.53889356526286,
+            "correlation": -0.127067145019827
+          }
+        }
+      },
+      "ocean": {
+        "pointCount": 16,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 15.829943710811664,
+            "modelMean": 15.282857211490253,
+            "bias": -0.5470864993214111,
+            "rmse": 1.7475009164183604,
+            "correlation": 0.992559463785047
+          },
+          "rain_mm_day": {
+            "observedMean": 2.691508388374375,
+            "modelMean": 2.1156266901089835,
+            "bias": -0.5758816982653916,
+            "rmse": 2.9447159107397622,
+            "correlation": 0.14626754236004058
+          },
+          "cloud_fraction": {
+            "observedMean": 71.59858231192347,
+            "modelMean": 63.73342669648689,
+            "bias": -7.865155615436578,
+            "rmse": 27.553680112179638,
+            "correlation": -0.2762189551684882
+          }
+        }
+      },
+      "tropics": {
+        "pointCount": 8,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 26.849976027397254,
+            "modelMean": 28.72297846138634,
+            "bias": 1.873002433989086,
+            "rmse": 3.9503785296187814,
+            "correlation": 0.4802256952348844
+          },
+          "rain_mm_day": {
+            "observedMean": 2.2761883561643836,
+            "modelMean": 3.6609451002905486,
+            "bias": 1.384756744126165,
+            "rmse": 4.398623244616116,
+            "correlation": -0.09601663534688029
+          },
+          "cloud_fraction": {
+            "observedMean": 49.78136301369862,
+            "modelMean": 71.1183763609255,
+            "bias": 21.337013347226872,
+            "rmse": 38.15389326206393,
+            "correlation": -0.38435084564081806
+          }
+        }
+      },
+      "midlatitudes": {
+        "pointCount": 8,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": 9.785729452054795,
+            "modelMean": 10.769425385146445,
+            "bias": 0.9836959330916493,
+            "rmse": 5.403749063101947,
+            "correlation": 0.7792386509915084
+          },
+          "rain_mm_day": {
+            "observedMean": 2.7321917808219176,
+            "modelMean": 1.8077488614453043,
+            "bias": -0.9244429193766133,
+            "rmse": 2.3231203615097304,
+            "correlation": 0.07558669610006025
+          },
+          "cloud_fraction": {
+            "observedMean": 78.67011643835616,
+            "modelMean": 59.280962412319624,
+            "bias": -19.389154026036536,
+            "rmse": 28.747851246057408,
+            "correlation": 0.12327498488416838
+          }
+        }
+      },
+      "polar": {
+        "pointCount": 8,
+        "metrics": {
+          "skin_temperature": {
+            "observedMean": -23.229527397260274,
+            "modelMean": -18.99901231359053,
+            "bias": 4.230515083669744,
+            "rmse": 10.683995003173683,
+            "correlation": 0.8898659875259463
+          },
+          "rain_mm_day": {
+            "observedMean": 1.059082191780822,
+            "modelMean": 0.4071258269186965,
+            "bias": -0.6519563648621255,
+            "rmse": 1.1848900127146988,
+            "correlation": 0.2925387438158625
+          },
+          "cloud_fraction": {
+            "observedMean": 66.96297260273971,
+            "modelMean": 52.287375998645274,
+            "bias": -14.675596604094437,
+            "rmse": 23.608613693653815,
+            "correlation": 0.7192836001538272
+          }
+        }
+      }
+    },
+    "limitations": [
+      "Surface air temperature is dry-adiabatically extrapolated, not a Monin\u2013Obukhov 2-m diagnostic",
+      "Ocean skin temperature is prescribed; it is not an independent SST prediction",
+      "Different climatology periods for SST boundary and POWER 2001\u20132020 observations",
+      "Two years of averaging and 24 reference points do not establish a globally validated climate model",
+      "Nearest coarse grid centers; distance and land fraction reported",
+      "24 points and two forecast years versus 2001\u20132020 MERRA-2/CERES climatology; no claim of a validated global mean",
+      "Skin temperature compared with TS, not an extrapolated surface-air diagnostic with T2M"
+    ]
+  },
+  "rcemip295": {
+    "configuration": {
+      "sstK": 295,
+      "days": 1000,
+      "nlayers": 64,
+      "redundantHomogeneousGridPoints": 32,
+      "topCenterHeightM": 54732.756209081344,
+      "radiationSeconds": 3600,
+      "solarConstantWm2": 551.58,
+      "zenithDegrees": 42.05,
+      "albedo": 0.07,
+      "surfaceFluxWindMS": 5,
+      "co2Ppm": 348,
+      "ch4Ppb": 1650,
+      "n2oPpb": 306,
+      "cfc11Ppt": 0,
+      "cfc12Ppt": 0,
+      "ozone": "Wing analytic pressure profile",
+      "initialSounding": "Wing analytic tropical sounding",
+      "surfacePressurePa": 101480.0,
+      "timestepSeconds": 300.0,
+      "cloudClosure": "pressure-sampled diagnostic SPEEDY cover, 900 s precipitation-linked condensate, 0.01 kg/m\u00b2 in-cloud stratocumulus path floor"
+    },
+    "stationarity": {
+      "maximum100DayMeanTemperatureDifferenceK": 0.19443202160169903,
+      "projectToleranceK": 0.2,
+      "passed": true,
+      "checkpoints": [
+        {
+          "day": 1000,
+          "maximum100DayMeanTemperatureDifferenceK": 0.19443202160169903
+        }
+      ]
+    },
+    "final200DayMeans": {
+      "precipitationMmDay": 1.9158488702332057,
+      "olrWm2": 216.26435925011435,
+      "cloudFraction": 0.604237481772826
+    },
+    "waterResidualKgM2": -0.0055512552678465,
+    "protocolDeviations": [
+      "Diagnostic condensate rather than prognostic cloud liquid/ice",
+      "Single realization of each SST, no parameterization uncertainty ensemble",
+      "Ensemble summary comparison at 300 K only; no full profile/temperature/cloud-amount intercomparison",
+      "Single vertical resolution; convergence not demonstrated",
+      "500-day continuation chunks reinitialize leapfrog; not bitwise identical to one uninterrupted integration"
+    ]
+  },
+  "rcemip300": {
+    "configuration": {
+      "sstK": 300,
+      "days": 1000,
+      "nlayers": 64,
+      "redundantHomogeneousGridPoints": 32,
+      "topCenterHeightM": 56312.549804561684,
+      "radiationSeconds": 3600,
+      "solarConstantWm2": 551.58,
+      "zenithDegrees": 42.05,
+      "albedo": 0.07,
+      "surfaceFluxWindMS": 5,
+      "co2Ppm": 348,
+      "ch4Ppb": 1650,
+      "n2oPpb": 306,
+      "cfc11Ppt": 0,
+      "cfc12Ppt": 0,
+      "ozone": "Wing analytic pressure profile",
+      "initialSounding": "Wing analytic tropical sounding",
+      "surfacePressurePa": 101480.0,
+      "timestepSeconds": 300.0,
+      "cloudClosure": "pressure-sampled diagnostic SPEEDY cover, 900 s precipitation-linked condensate, 0.01 kg/m\u00b2 in-cloud stratocumulus path floor"
+    },
+    "stationarity": {
+      "maximum100DayMeanTemperatureDifferenceK": 0.13285345432598206,
+      "projectToleranceK": 0.2,
+      "passed": true,
+      "checkpoints": [
+        {
+          "day": 1000,
+          "maximum100DayMeanTemperatureDifferenceK": 0.13285345432598206
+        }
+      ]
+    },
+    "final200DayMeans": {
+      "precipitationMmDay": 2.426665189934642,
+      "olrWm2": 219.04232923593813,
+      "cloudFraction": 0.6415130647622536
+    },
+    "waterResidualKgM2": -0.005660437790538708,
+    "protocolDeviations": [
+      "Diagnostic condensate rather than prognostic cloud liquid/ice",
+      "Single realization of each SST, no parameterization uncertainty ensemble",
+      "Ensemble summary comparison at 300 K only; no full profile/temperature/cloud-amount intercomparison",
+      "Single vertical resolution; convergence not demonstrated",
+      "500-day continuation chunks reinitialize leapfrog; not bitwise identical to one uninterrupted integration"
+    ],
+    "ensembleComparison": {
+      "source": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2020MS002138",
+      "table": "A1 (corrected version of record), RCE_small300",
+      "metrics": {
+        "olrWm2": {
+          "model": 219.04232923593813,
+          "ensembleMean": 241.24,
+          "ensembleStandardDeviation": 15.67,
+          "standardizedDifference": -1.4165712038329217
+        },
+        "precipitationMmDay": {
+          "model": 2.426665189934642,
+          "ensembleMean": 2.9,
+          "ensembleStandardDeviation": 1.0,
+          "standardizedDifference": -0.4733348100653578
+        },
+        "columnWaterKgM2": {
+          "model": 52.10055275346307,
+          "ensembleMean": 38.7,
+          "ensembleStandardDeviation": 5.1,
+          "standardizedDifference": 2.627559363424131
+        }
+      },
+      "limitations": [
+        "Table combines different model types, resolutions and sensitivity experiments",
+        "Published means discard the first 75 days; this experiment averages its final 200 days after at least 1,000 days",
+        "Inter-model spread is not an observational uncertainty or a certification tolerance",
+        "Table A1 contains no total cloud fraction reference"
+      ]
+    }
+  },
+  "rcemip305": {
+    "configuration": {
+      "sstK": 305,
+      "days": 1000,
+      "nlayers": 64,
+      "redundantHomogeneousGridPoints": 32,
+      "topCenterHeightM": 57844.629745559716,
+      "radiationSeconds": 3600,
+      "solarConstantWm2": 551.58,
+      "zenithDegrees": 42.05,
+      "albedo": 0.07,
+      "surfaceFluxWindMS": 5,
+      "co2Ppm": 348,
+      "ch4Ppb": 1650,
+      "n2oPpb": 306,
+      "cfc11Ppt": 0,
+      "cfc12Ppt": 0,
+      "ozone": "Wing analytic pressure profile",
+      "initialSounding": "Wing analytic tropical sounding",
+      "surfacePressurePa": 101480.0,
+      "timestepSeconds": 300.0,
+      "cloudClosure": "pressure-sampled diagnostic SPEEDY cover, 900 s precipitation-linked condensate, 0.01 kg/m\u00b2 in-cloud stratocumulus path floor"
+    },
+    "stationarity": {
+      "maximum100DayMeanTemperatureDifferenceK": 0.12117114245694438,
+      "projectToleranceK": 0.2,
+      "passed": true,
+      "checkpoints": [
+        {
+          "day": 1000,
+          "maximum100DayMeanTemperatureDifferenceK": 0.12117114245694438
+        }
+      ]
+    },
+    "final200DayMeans": {
+      "precipitationMmDay": 3.028677558484127,
+      "olrWm2": 227.31527615554597,
+      "cloudFraction": 0.6549474041783175
+    },
+    "waterResidualKgM2": -0.053284310355593334,
+    "protocolDeviations": [
+      "Diagnostic condensate rather than prognostic cloud liquid/ice",
+      "Single realization of each SST, no parameterization uncertainty ensemble",
+      "Ensemble summary comparison at 300 K only; no full profile/temperature/cloud-amount intercomparison",
+      "Single vertical resolution; convergence not demonstrated",
+      "500-day continuation chunks reinitialize leapfrog; not bitwise identical to one uninterrupted integration"
+    ]
+  },
+  "appRce295": {
+    "configuration": {
+      "days": 1000,
+      "averagingDays": 200,
+      "sstK": 295,
+      "maximumStepSeconds": 30,
+      "windSpeedMS": 5,
+      "solarWm2": 409.58158455817284,
+      "albedo": 0.07,
+      "co2Ppm": 348,
+      "cloudOverlap": "maximum-random",
+      "initialSounding": "Wing et al. 2018 analytic tropical sounding sampled at 11 centers to 42 km"
+    },
+    "stationarity": {
+      "projectToleranceKPerDay": 0.01,
+      "passed": false,
+      "maximum100DayMeanTemperatureDifferenceK": 1.2938274591143788,
+      "projectWindowToleranceK": 0.2,
+      "finalMaximumTemperatureChangeKPerDay": 0.004994724690121188
+    },
+    "energyResidual": 1.313144134940103e-05,
+    "protocolDeviations": [
+      "Representative-height coordinates with only 11 layers; no vertical-grid convergence",
+      "No ozone/N2O/CH4 spectroscopic absorption",
+      "Air composition uses N2 proxy rather than dry-air EOS",
+      "Representative height/pressure coordinates; no vertical-grid convergence",
+      "No RCEMIP ensemble output comparison; this is a column development experiment"
+    ]
+  },
+  "appRce300": {
+    "configuration": {
+      "days": 1000,
+      "averagingDays": 200,
+      "sstK": 300,
+      "maximumStepSeconds": 30,
+      "windSpeedMS": 5,
+      "solarWm2": 409.58158455817284,
+      "albedo": 0.07,
+      "co2Ppm": 348,
+      "cloudOverlap": "maximum-random",
+      "initialSounding": "Wing et al. 2018 analytic tropical sounding sampled at 11 centers to 42 km"
+    },
+    "stationarity": {
+      "projectToleranceKPerDay": 0.01,
+      "passed": false,
+      "maximum100DayMeanTemperatureDifferenceK": 0.5969622407822843,
+      "projectWindowToleranceK": 0.2,
+      "finalMaximumTemperatureChangeKPerDay": 0.0022326775000873766
+    },
+    "energyResidual": -5.414881528764681e-05,
+    "protocolDeviations": [
+      "Representative-height coordinates with only 11 layers; no vertical-grid convergence",
+      "No ozone/N2O/CH4 spectroscopic absorption",
+      "Air composition uses N2 proxy rather than dry-air EOS",
+      "Representative height/pressure coordinates; no vertical-grid convergence",
+      "No RCEMIP ensemble output comparison; this is a column development experiment"
+    ]
+  },
+  "appRce305": {
+    "configuration": {
+      "days": 1000,
+      "averagingDays": 200,
+      "sstK": 305,
+      "maximumStepSeconds": 30,
+      "windSpeedMS": 5,
+      "solarWm2": 409.58158455817284,
+      "albedo": 0.07,
+      "co2Ppm": 348,
+      "cloudOverlap": "maximum-random",
+      "initialSounding": "Wing et al. 2018 analytic tropical sounding sampled at 11 centers to 42 km"
+    },
+    "stationarity": {
+      "projectToleranceKPerDay": 0.01,
+      "passed": false,
+      "maximum100DayMeanTemperatureDifferenceK": 1.0752849349620597,
+      "projectWindowToleranceK": 0.2,
+      "finalMaximumTemperatureChangeKPerDay": 0.009959481179388163
+    },
+    "energyResidual": -6.771831124297023e-06,
+    "protocolDeviations": [
+      "Representative-height coordinates with only 11 layers; no vertical-grid convergence",
+      "No ozone/N2O/CH4 spectroscopic absorption",
+      "Air composition uses N2 proxy rather than dry-air EOS",
+      "Representative height/pressure coordinates; no vertical-grid convergence",
+      "No RCEMIP ensemble output comparison; this is a column development experiment"
+    ]
+  },
+  "experimentDate": "2026-10-11",
+  "interpretation": "Reference Julia benchmarks do not validate the browser core. Earth observational gates failed; native RCE stationarity is not RCEMIP ensemble agreement.",
+  "artifactSha256": {
+    "held-suarez-T42.json": "021234b735a2dd253cc15e0525f37117095bb934169ed9b52dd3084bff4e93b4",
+    "rcemip-295-K.json": "78aa52942701bbfae6e0e7c7b47002024167e9d88195129452e191aa945468ec",
+    "rcemip-300-K.json": "44c824d4b6c8ac0a69107fd2bb83e4caf9b2865a5922e9a578fca3ba7e41b2b8",
+    "rcemip-305-K.json": "f8db8734c057a4b204f6ae0f9d8bd6494bdac183f4094ec4e389e8208b57af94",
+    "earth-climate.json": "3a82e5bce8e42ae5a2021d5a515a49a53e5f2046221baf412c355d9030e06336",
+    "earth-climate-spectral.json": "4aa681ff1c0b8f99eaf094e5d1bfb39314a3f5dc9733385700a469b6b2e8cfb7",
+    "earth-climate-spectral-comparison.json": "1b66c6085b77d32276dfa6ad9f91d70b8ea603dd4e06b51ffb0b300af2a363f4",
+    "boundary-data-provenance.json": "79d6e674f983a87396536ac9fc5a141ae7e5ed28e49d0cc0317d9d20708c0601",
+    "surface-boundary-check.json": "391015e378153ded131c9cd16a15977381d0e2dced3816d78d4a58fb21330589",
+    "earth-run-manifest.json": "d368f55c94f4bd1d4af993167a502e5593588f96af1843d3812abafbba2c6dac",
+    "rcemip-run-manifest.json": "6569113142a643060396647ce6fbaea76fb11d5042d9f0067613f2fbaabe6c20"
+  },
+  "verification": {
+    "appTestsPassed": 303,
+    "appTestsSkipped": 17,
+    "juliaTestsPassed": 34,
+    "productionBuild": "passed",
+    "spectralFluxBudgetSmoke": "passed"
+  }
+}

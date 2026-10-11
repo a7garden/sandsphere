@@ -1,3 +1,4 @@
+import {AIR_RADIUS,AIR_SECONDS} from '../sim/layeredAtmosphere';
 import {Mesh} from '@babylonjs/core/Meshes/mesh';
 import {VertexData} from '@babylonjs/core/Meshes/mesh.vertexData';
 import {MeshBuilder} from '@babylonjs/core/Meshes/meshBuilder';
@@ -33,7 +34,7 @@ export class ClimateLayers {
   if(this.layer==='wind'||this.layer==='currents'){
    const lines:Vector3[][]=[],vel=this.layer==='wind'?c.wind:c.currents,stride=Math.max(1,Math.ceil(this.grid.count/260));
    const radii=new Float32Array(this.grid.count);for(let v=0;v<terrain.length/3;v++){const p=v*3;radii[owners[Math.floor(v/3)]]=Math.max(radii[owners[Math.floor(v/3)]],Math.hypot(positions[p],positions[p+1],positions[p+2]));}
-   for(let i=0;i<this.grid.count;i+=stride){const vector=Vector3.FromArray(vel,i*3),speed=vector.length(),n=Vector3.FromArray(this.grid.directions,i*3);if(speed<.000001)continue;const center=n.scale(radii[i]+.04),t=vector.normalize(),length=Math.min(.32,.05+speed*4),end=center.add(t.scale(length)),side=Vector3.Cross(n,t).scale(length*.22);lines.push([center,end],[end.subtract(t.scale(length*.3)).add(side),end,end.subtract(t.scale(length*.3)).subtract(side)]);}
+   for(let i=0;i<this.grid.count;i+=stride){const vector=Vector3.FromArray(vel,i*3),speed=vector.length(),n=Vector3.FromArray(this.grid.directions,i*3);if(speed<.000001)continue;const center=n.scale(radii[i]+.04),t=vector.normalize(),length=Math.min(.32,.05+speed*(this.layer==='wind'?AIR_RADIUS/AIR_SECONDS*.0027:4)),end=center.add(t.scale(length)),side=Vector3.Cross(n,t).scale(length*.22);lines.push([center,end],[end.subtract(t.scale(length*.3)).add(side),end,end.subtract(t.scale(length*.3)).subtract(side)]);}
    if(lines.length){if(lines.length!==this.arrowCount){this.arrows.dispose();this.arrows=this.createArrows(lines);}else MeshBuilder.CreateLineSystem('climate velocity arrows',{lines,instance:this.arrows},this.scene);this.arrowCount=lines.length;}else this.arrows.setEnabled(false);
   }
  }

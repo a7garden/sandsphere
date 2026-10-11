@@ -2,7 +2,7 @@ import {createUserWithEmailAndPassword,signInWithEmailAndPassword,signInWithPopu
 import type {FirebaseServices} from '../account/firebase';
 import {icon} from './icons';
 
-export function accountMarkup(){return `<dialog id="account" aria-labelledby="account-title"><div class="dialog-header"><h2 id="account-title">계정과 저장</h2><button class="icon-button dialog-close" aria-label="계정 닫기">${icon('close')}</button></div><div class="dialog-body">
+export function accountMarkup(){return `<dialog id="account" aria-labelledby="account-title"><div class="dialog-header"><h2 id="account-title">계정과 저장</h2><button class="icon-button dialog-close" aria-label="계정 창 닫기">${icon('close')}</button></div><div class="dialog-body">
 <p id="account-identity"></p><p id="account-status" role="status" aria-live="polite"></p>
 <form id="account-form"><label for="account-email">이메일</label><input id="account-email" type="email" autocomplete="username" required><label for="account-password">비밀번호</label><input id="account-password" type="password" autocomplete="current-password" minlength="6" required><div class="account-actions"><button type="submit" class="account-primary">로그인</button><button type="submit" data-register>회원가입</button></div><button type="button" id="account-google">Google로 로그인</button><button type="button" id="account-reset">비밀번호 재설정</button></form>
 <div id="account-signed-in" hidden><div class="account-actions"><button id="account-sync" class="account-primary">지금 저장</button><button id="account-logout">로그아웃</button></div><button id="account-import">이 브라우저의 비회원 게임 가져오기</button><p class="account-note">가져오기는 현재 계정에 저장된 게임이 없을 때 사용할 수 있습니다.</p></div>
@@ -12,9 +12,10 @@ export interface AccountActions {beforeAuth:()=>Promise<void>;sync:()=>Promise<v
 export class AccountPanel {
   private busy=false;
   private dialog=document.getElementById('account') as HTMLDialogElement;
+  private opener:HTMLElement|null=null;
   constructor(private services:FirebaseServices|null,private actions:AccountActions){
-    document.getElementById('account-open')!.addEventListener('click',()=>this.open());
-    this.dialog.addEventListener('close',()=>document.getElementById('account-open')!.focus());
+    document.getElementById('account-open')!.addEventListener('click',event=>this.open(event.currentTarget as HTMLElement));
+    this.dialog.addEventListener('close',()=>{(this.opener?.getClientRects().length?this.opener:document.getElementById('account-open'))?.focus();this.opener=null;});
     const auth=services?.auth;
     document.getElementById('account-identity')!.textContent=auth?.currentUser?.email??(auth?.currentUser?'로그인됨':'비회원 · 이 브라우저에 저장');
     (document.getElementById('account-form') as HTMLFormElement).hidden=!!auth?.currentUser||!auth;
@@ -32,7 +33,7 @@ export class AccountPanel {
       document.getElementById(id)!.addEventListener('click',()=>void this.run(action));
   }
   private input(id:string){return (document.getElementById(id) as HTMLInputElement).value;}
-  open(){if(!this.dialog.open)this.dialog.showModal();}
+  open(opener?:HTMLElement){this.opener=opener??document.activeElement as HTMLElement;if(!this.dialog.open)this.dialog.showModal();}
   status(text:string){document.getElementById('account-status')!.textContent=text;}
   conflict(show:boolean){document.getElementById('account-conflict')!.hidden=!show;}
   private async run(action:()=>Promise<void>){

@@ -1,6 +1,6 @@
 import {WeatherClimate} from './weatherClimate';
 import shader from './physics.wgsl?raw';
-import { COMMAND_STRIDE, gravityMultiplier, type Environment, type Solver } from './model';
+import { COMMAND_STRIDE, gravityMultiplier, type Environment, type Solver,applyCommand,enthalpy } from './model';
 import { NEIGHBORS, type SphereGrid } from './sphere';
 import {physicsSteps} from './clock';
 
@@ -76,16 +76,25 @@ export class GpuSolver implements Solver {
     this.device.queue.writeBuffer(this.buffers[this.parity===0?0:3],0,this.state as Float32Array<ArrayBuffer>);
   }
   async step(dt:number,commands:Float32Array,environment:Environment) {
-    const before=this.state,parity=this.parity,climate=this.climate.snapshot();
+    const before=this.state,parity=this.parity,climate=this.climate.checkpoint();
     this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);
+    if(dt<=0&&!commands.some(v=>v!==0))return;
     const steps=physicsSteps(dt),empty=new Float32Array(commands.length);
     try{for(let n=0;n<steps.length;n++)await this.stepSingle(steps[n],n===0?commands:empty,environment);}
-    catch(error){this.state=before;this.parity=parity;this.climate.restore(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);throw error;}
+    catch(error){this.state=before;this.parity=parity;this.climate.restoreCheckpoint(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);throw error;}
   }
   private async stepSingle(dt:number,commands:Float32Array,environment:Environment) {
     if(this.loss) throw this.loss;
     const params=new Float32Array([this.grid.count,dt,environment.ambient,environment.sunlight,...environment.sun,gravityMultiplier(environment),environment.rotationRate??0,environment.climate?1:0,0,0]);
-    this.device.queue.writeBuffer(this.buffers[6],0,commands as Float32Array<ArrayBuffer>);
+    let kernelCommands=commands;
+    if(environment.climate){
+      const surface=this.state.slice();this.climate.prepareSurface(surface,environment);
+      for(let i=0;i<this.grid.count;i++){const before=enthalpy(surface,i);applyCommand(surface,i,commands);this.energyChanges[i*4+1]+=enthalpy(surface,i)-before;}
+      this.climate.surfaceSupplies(surface,commands,COMMAND_STRIDE,this.energyChanges);
+      this.device.queue.writeBuffer(this.buffers[this.parity===0?0:3],0,surface as Float32Array<ArrayBuffer>);
+      kernelCommands=new Float32Array(commands.length);
+    }
+    this.device.queue.writeBuffer(this.buffers[6],0,kernelCommands as Float32Array<ArrayBuffer>);
     this.device.queue.writeBuffer(this.buffers[7],0,params);
     const encoder=this.device.createCommandEncoder();
     for(const pipeline of this.pipelines) {
@@ -106,7 +115,7 @@ export class GpuSolver implements Solver {
     for(let i=0;i<this.grid.count;i++){for(let k=0;k<4;k++){this.escapeCells[i*4+k]+=changes[i*12+k];this.energyChanges[i*4+k]+=changes[i*12+8+k];}this.condensedCells[i]+=changes[i*12+4];this.precipitatedCells[i*2]+=changes[i*12+5];this.precipitatedCells[i*2+1]+=changes[i*12+6];}
     this.state=data.slice(0,this.state.length);
     this.staging.unmap();
-    if(environment.climate&&dt>0){this.climate.step(this.state,dt,environment,this.energyChanges,this.condensedCells);this.device.queue.writeBuffer(out,0,this.state as Float32Array<ArrayBuffer>);}
+    if(environment.climate){this.climate.step(this.state,dt,environment,this.energyChanges,this.condensedCells,this.precipitatedCells,this.escapeCells);this.device.queue.writeBuffer(out,0,this.state as Float32Array<ArrayBuffer>);}
     this.parity=1-this.parity;
   }
   dispose() {

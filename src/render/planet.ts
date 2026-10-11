@@ -176,10 +176,11 @@ export class PlanetView {
   private sectionWidth=-1;
   private sectionNormal=Vector3.Zero();private sectionUp=Vector3.Zero();
   private inspectionMode=true;
+  private cameraDragPointers=new Set<number>();
   private sectionControlsDetached=false;
   private constructor(readonly canvas:HTMLCanvasElement,readonly grid:SphereGrid,state:Float32Array,engine:AbstractEngine,renderRefinement=0) {
     this.state=state;this.atmosphereInfo=atmosphereState(state,this.environment);this.engine=engine;this.scene=new Scene(engine);this.root=new TransformNode('rotating planet',this.scene);
-    this.scene.clearColor=new Color4(...PALETTE.paper,1);
+    this.scene.clearColor=new Color4(0,0,0,1);
     this.scene.imageProcessingConfiguration.toneMappingEnabled=false;
     this.camera=new ArcRotateCamera('observer',-1.01,1.17,16.4,Vector3.Zero(),this.scene);
     this.axisAlignment=new AxisAlignment(this.camera);
@@ -371,16 +372,19 @@ export class PlanetView {
     let sectionDrag:{id:number;x:number;y:number}|null=null;const sectionTouches=new Set<number>();
     canvas.addEventListener('pointerdown',event=>{
       this.focusFlight=null;this.axisAlignment.cancel();if(event.pointerType==='touch')sectionTouches.add(event.pointerId);
+      if(event.button===2||event.button===0&&(this.inspectionMode||event.shiftKey||this.sectionCamera.active)){
+        this.cameraDragPointers.add(event.pointerId);canvas.setPointerCapture(event.pointerId);
+      }
       // Two-finger navigation belongs to the common pinch/centroid handler.
       if(sectionTouches.size>1){sectionDrag=null;return;}
-      if(this.sectionCamera.active&&(event.button===2||(event.button===0&&this.inspectionMode))){sectionDrag={id:event.pointerId,x:event.clientX,y:event.clientY};canvas.setPointerCapture(event.pointerId);}
+      if(this.sectionCamera.active&&(event.button===2||(event.button===0&&(this.inspectionMode||event.shiftKey)))){sectionDrag={id:event.pointerId,x:event.clientX,y:event.clientY};canvas.setPointerCapture(event.pointerId);}
     });
-    canvas.addEventListener('pointermove',event=>{if(sectionDrag?.id===event.pointerId){if(this.sectionCamera.active)this.navigateSection((event.clientX-sectionDrag.x)/220,(event.clientY-sectionDrag.y)/220,event.shiftKey);sectionDrag={id:event.pointerId,x:event.clientX,y:event.clientY};}});
-    const releaseSection=(event:PointerEvent)=>{sectionTouches.delete(event.pointerId);if(sectionDrag?.id===event.pointerId)sectionDrag=null;};
+    canvas.addEventListener('pointermove',event=>{if(sectionDrag?.id===event.pointerId){if(this.sectionCamera.active){const dx=event.clientX-sectionDrag.x,dy=event.clientY-sectionDrag.y;if(event.shiftKey||this.sectionNavigation==='pan')this.panSectionPixels(dx,dy);else this.navigateSection(dx/220,dy/220);}sectionDrag={id:event.pointerId,x:event.clientX,y:event.clientY};}});
+    const releaseSection=(event:PointerEvent)=>{sectionTouches.delete(event.pointerId);this.cameraDragPointers.delete(event.pointerId);if(sectionDrag?.id===event.pointerId)sectionDrag=null;};
     canvas.addEventListener('pointerup',releaseSection);canvas.addEventListener('pointercancel',releaseSection);canvas.addEventListener('lostpointercapture',releaseSection);
-    canvas.addEventListener('wheel',event=>{if(this.sectionCamera.active){event.preventDefault();this.sectionCamera.zoom(Math.exp(event.deltaY*.001));}},{passive:false});
+    canvas.addEventListener('wheel',event=>{if(this.sectionCamera.active){event.preventDefault();const rect=canvas.getBoundingClientRect();this.sectionCamera.zoomAt(Math.exp(event.deltaY*.001),event.clientX-rect.left,event.clientY-rect.top,rect.width,rect.height);}},{passive:false});
     updateSectionClip(this.scene,this.root,Vector3.Forward(),1e6);
-    this.update(state,0);this.setSpace(true);this.setSun([-0.65,0.72,0.35]);this.scene.executeWhenReady(()=>this.readyCallback());
+    this.update(state,0);this.setSpace();this.setSun([-0.65,0.72,0.35]);this.scene.executeWhenReady(()=>this.readyCallback());
   }
   static async create(canvas:HTMLCanvasElement,grid:SphereGrid,state:Float32Array,renderRefinement=0) {
     let engine:AbstractEngine;
@@ -611,6 +615,7 @@ export class PlanetView {
     const pointers=this.camera.inputs.attached.pointers;
     if(pointers && 'buttons' in pointers)(pointers as {buttons:number[]}).buttons=enabled?[0,2]:[2];
   }
+  get cameraDragging(){return this.cameraDragPointers.size>0;}
   observationPosition(index:number){
     const direction=Vector3.FromArray(this.grid.directions,index*3);
     const radius=Math.max(Vector3.FromArray(this.vertexTerrain,index*3).length(),Vector3.FromArray(this.vertexWater,index*3).length())+.03;
@@ -656,6 +661,7 @@ export class PlanetView {
   setAxisVisible(visible:boolean){this.showSpinAxis=visible;this.spinAxis.setEnabled(visible&&!this.sectionCamera.active);}
   turn(dx:number,dy:number) {this.focusFlight=null;this.axisAlignment.cancel();if(this.sectionCamera.active){this.navigateSection(dx,dy);return;}this.camera.alpha+=dx;this.camera.beta=Math.max(0.12,Math.min(Math.PI-0.12,this.camera.beta+dy));}
   zoom(factor:number) {this.focusFlight=null;if(this.sectionCamera.active){this.sectionCamera.zoom(factor);return;}this.camera.radius=Math.max(7.1,Math.min(24,this.camera.radius*factor));}
+  panSectionPixels(x:number,y:number){if(this.sectionCamera.active)this.sectionCamera.movePixels(x,y,this.canvas.clientHeight);}
   brushPixels(angle:number) {
     const size=this.camera.fovMode===Camera.FOVMODE_HORIZONTAL_FIXED?this.canvas.clientWidth:this.canvas.clientHeight;
     return angle*RADIUS*size/(this.camera.radius*Math.tan(this.camera.fov/2)*(this.sectionCamera.active?this.sectionCamera.viewScale:1));
@@ -666,14 +672,14 @@ export class PlanetView {
     this.themeDark=dark;this.scene.clearColor=new Color4(...(dark?PALETTE.dark:PALETTE.paper),1);
     this.ground.setEnabled(!dark);
   }
-  setSpace(black:boolean) {
-    this.themeDark=black;this.scene.clearColor=new Color4(...(black?[.018,.026,.04] as const:[.97,.976,.98] as const),1);
-    this.ground?.setEnabled(false);this.stars.setEnabled(black);this.effects.setSpace(black);this.sky.setSpace(black);this.weather.setSpace(black);
+  setSpace() {
+    this.themeDark=true;this.scene.clearColor=new Color4(0,0,0,1);
+    this.ground?.setEnabled(false);this.stars.setEnabled(true);this.effects.setSpace(true);this.sky.setSpace(true);this.weather.setSpace(true);
     this.updateAtmosphere();
   }
   setEnvironment(e:Environment) {this.environment={...e};this.updateAtmosphere();}
   private updateAtmosphere() {
-    this.atmosphereInfo=atmosphereState(this.state,this.environment);
+    this.atmosphereInfo=atmosphereState(this.state,this.environment,this.climateState??undefined);
     // The geometry is a readable compression of model kilometres, not a planet at true scale.
     let surfaceRadius=0,axisRadius=RADIUS;
     for(let i=0;i<this.grid.count;i++){this.renderRadii[i]=RADIUS+altitude(this.displayHeights[i]+Math.max(0,this.surfaceDepths[i]));surfaceRadius+=this.renderRadii[i];axisRadius=Math.max(axisRadius,this.renderRadii[i]);}
@@ -937,14 +943,21 @@ export class PlanetView {
     if(active&&!this.sectionControlsDetached){this.camera.detachControl();this.sectionControlsDetached=true;}
     if(!active&&this.sectionControlsDetached){this.camera.attachControl(this.canvas,true);this.orbitMode(this.inspectionMode);this.sectionControlsDetached=false;}
     const width=active?this.sectionCamera.clipWidth:1e6,normal=this.sectionCamera.normal;
+    this.sectionSamples.terrainVertices=this.vertexTerrain;this.sectionSamples.waterVertices=this.vertexWater;this.sectionSamples.waterDepths=this.surfaceDepths;
     this.sectionProjection.configure(this.sectionCamera.u,this.sectionCamera.v,normal,this.root.computeWorldMatrix(true),this.sectionCamera.framing==='surface'?this.sectionCamera.amount*this.sectionCamera.amount*(3-2*this.sectionCamera.amount):0,this.sectionHalfRange);
+    // The unfolded view is a single cut, not a stack of front/back globe faces.
+    // Keeping those faces visible creates detached wedges above the profile.
+    const unfolded=this.sectionProjection.amount>.999;
+    for(const mesh of [this.terrain,this.water,this.hexBanks,this.heatSurface])mesh.isVisible=!unfolded;
     updateSectionClip(this.scene,this.root,normal,width);this.sectionMaterials.update();this.sectionView.setVisible(active);
     if(active&&(this.sectionDirty||this.sectionWidth!==width||!this.sectionNormal.equalsWithEpsilon(normal,1e-7)||!this.sectionUp.equalsWithEpsilon(this.sectionCamera.v,1e-7))){const cap=this.sectionView.update(this.terrainData,this.waterData,this.surface.owners,this.surfaceState,normal,width,this.sectionSamples,this.sectionCamera.framing==='surface',this.selectionArc?{...this.selectionArc,cells:this.selectionCellSet,wholeCells:true}:undefined);this.sectionProjection.updateFoundation(cap);this.sectionProjection.stackDepth=Math.max(.001,this.sectionView.profileDepth(this.sectionProjection));this.sectionDirty=false;this.sectionWidth=width;this.sectionNormal.copyFrom(normal);this.sectionUp.copyFrom(this.sectionCamera.v);}
     if(!active&&this.selectionPending){this.selectionPending=false;this.beginSectionSelection(this.selectionPendingIndex);}
     if(active){
       if(this.sectionFitPending&&this.sectionCamera.amount>.999&&this.sectionProjection.stackDepth>.003){if(this.sectionMagnificationMode===0)this.sectionHeightTarget=Math.max(1,Math.min(64,this.sectionCamera.profileHalfHeight*.68/Math.max(.03,this.sectionProjection.stackDepth)));this.sectionFitPending=false;}
       this.sectionProjection.heightScale+=(this.sectionHeightTarget-this.sectionProjection.heightScale)*(1-Math.exp(-dt/.12));
-      this.sectionView.setPowderSize(Math.max(.003,this.sectionCamera.displayHalfHeight*2/Math.max(1,this.canvas.clientHeight)*5));
+      const grainSize=RADIUS*Math.sqrt(4*Math.PI/this.grid.count)/48;
+      const grainPixels=grainSize*Math.max(1,this.canvas.clientHeight)/(this.sectionCamera.displayHalfHeight*2);
+      this.sectionView.setPowderSize(grainSize,Math.max(0,Math.min(1,(grainPixels-.75)/1.5)));
       this.sectionView.updateProjection(this.sectionProjection);
     }
   }

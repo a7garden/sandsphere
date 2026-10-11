@@ -1,18 +1,28 @@
 {
   "name": "sandsphere",
-  "version": "0.4.2",
+  "version": "0.5.0-alpha.6",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
+    "check:version": "node scripts/check-version.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run --maxWorkers=2 --testTimeout=20000",
+    "test:climate-reference": "vitest run tests/climate-physics.test.ts tests/climate-reference.test.ts --maxWorkers=2",
+    "test:climate-rce": "CLIMATE_BENCHMARKS=1 vitest run tests/climate-rce.test.ts --maxWorkers=1 --disableConsoleIntercept",
     "dev:emulator": "vite --host 127.0.0.1 --port 5174 --mode emulator",
     "emulators": "firebase emulators:start --project demo-sandsphere --only auth,firestore,storage",
     "test:rules": "firebase emulators:exec --project demo-sandsphere --only firestore,storage \"vitest run tests/account-rules.test.ts\"",
     "build:production": "node scripts/check-production.mjs && npm run build",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "science:setup": "node scripts/science.mjs setup",
+    "science:test": "node scripts/science.mjs test",
+    "science:held-suarez": "node scripts/science.mjs held-suarez",
+    "science:rcemip": "node scripts/science.mjs rcemip",
+    "science:earth": "node scripts/science.mjs earth",
+    "science:analyze": "uv run --python 3.12 --with numpy==2.0.2 --with matplotlib==3.9.4 python scripts/analyze-science.py",
+    "test:i18n": "vitest run tests/i18n.test.ts --maxWorkers=1"
   },
   "dependencies": {
     "@babylonjs/core": "9.30.0",
@@ -23,6 +33,7 @@
     "@firebase/rules-unit-testing": "6.0.0",
     "@webgpu/types": "0.1.74",
     "firebase-tools": "15.33.0",
+    "happy-dom": "20.14.6",
     "typescript": "7.0.2",
     "vite": "8.3.4",
     "vitest": "5.0.3",

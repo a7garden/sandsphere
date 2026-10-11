@@ -98,8 +98,57 @@
   --color-shadow: oklch(9% .015 250 / .25);
 }
 
+/* Instrument desk: denser corners and opaque mobile reading surfaces. */
+:root { --radius-workbench: 14px; --color-drawer: oklch(97% .003 106 / .98); }
+[data-theme='dark'] { --color-drawer: oklch(23% .005 250 / .98); }
+
 /* Diagnostic precipitation regions: same hues as the scene overlay. */
 :root{--color-rain-region:rgb(20 168 255);--color-snow-region:rgb(219 140 255)}
 
 /* Material identities shared with the planet's mineral palette. */
 :root{--color-depth-rock:rgb(186 191 179);--color-depth-ceramic:rgb(201 102 59);--color-depth-glass:rgb(117 186 171);--color-depth-molten:rgb(255 94 31);--color-depth-soil:rgb(102 84 56);--color-depth-iron:rgb(92 102 110)}
+
+/* Restrained material layers over the full-screen universe.
+ * References: Apple HIG Materials; kube.io/blog/liquid-glass-css-svg/.
+ * Owner direction: no simulated lights or specular washes. */
+:root {
+  --color-space: oklch(0% 0 0);
+  --color-muted: oklch(43% .010 110);
+  --color-glass: oklch(96% 0 0 / .91);
+  --color-glass-edge: oklch(25% 0 0 / .12);
+  --color-glass-shadow: oklch(0% 0 0 / .24);
+  --color-glass-selection: oklch(100% 0 0 / .5);
+  --color-scene-glass: oklch(18% 0 0 / .74);
+  --color-scene-rule: oklch(100% 0 0 / .10);
+  --color-scene-selection: oklch(100% 0 0 / .08);
+  --radius-glass: 20px;
+  --radius-glass-control: 10px;
+  --glass-blur: 20px;
+  --glass-shadow: 0 12px 36px var(--color-glass-shadow);
+}
+[data-theme='dark'] {
+  --color-glass: oklch(21% 0 0 / .80);
+  --color-ink: oklch(94% 0 0);
+  --color-muted: oklch(76% 0 0);
+  --color-glass-edge: oklch(100% 0 0 / .09);
+  --color-glass-selection: oklch(100% 0 0 / .08);
+  --color-hot: oklch(76% .13 39);
+  --color-cold: oklch(76% .09 244);
+  --color-rule: oklch(100% 0 0 / .09);
+  --color-wash: oklch(100% 0 0 / .06);
+}
+
+/* Compact workbench controls share square icon geometry. */
+:root {
+  --control-size: 32px;
+  --control-touch-size: 36px;
+  --radius-control: 6px;
+}
+
+/* Shared screen edges and panel proportions. */
+:root {
+  --space-workbench-edge: 16px;
+  --space-workbench-gap: 12px;
+  --size-workbench-panel: 240px;
+  --size-workbench-header: 40px;
+}

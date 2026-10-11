@@ -29,6 +29,12 @@ npx firebase deploy --project sandsphere-app --only firestore:rules,firestore:in
 
 ## Cloudflare와 Gitea 릴리즈
 
+### 버전과 릴리즈 노트
+
+`package.json`의 버전이 앱 상단 표시의 정본이며 `package-lock.json`은 같은 값으로 유지한다. 개발 중에는 `0.5.0-alpha.1`처럼 선행 버전을 사용한다. 사용자에게 보이는 변경은 작업할 때마다 루트 `CHANGELOG.md`의 `Unreleased`에 적는다. 버전을 올릴 때는 `npm version <version> --no-git-tag-version --ignore-scripts`를 사용하고 `npm run check:version`으로 패키지·잠금 파일·변경 기록을 확인한다.
+
+정식 릴리즈 전에 `Unreleased`의 내용을 해당 버전과 날짜 아래로 옮기고, Gitea 릴리즈 설명을 그 항목에서 작성한다. 릴리즈 태그는 패키지 버전과 같은 `vX.Y.Z` 형식이어야 한다. 알파·베타 태그는 운영 배포를 시작하지 않는다. 다음 릴리즈 준비 중에도 직전의 안정 배포와 개발 버전을 혼동하지 않도록 앱 상단에 개발 버전을 표시한다.
+
 `wrangler.jsonc`는 `sandsphere.app` Custom Domain을 사용한다. 해당 도메인이 배포 계정의 활성 Cloudflare zone에 있어야 한다. 운영용 API token은 해당 계정의 Workers Scripts 편집, 해당 zone의 Workers Routes 편집 및 Zone 조회 권한을 사용한다.
 
 Gitea 저장소 secrets:

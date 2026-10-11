@@ -6,7 +6,7 @@ export const EXPEDITIONS=[
  {id:'water',name:'물의 여정',detail:'수증기 1kg과 구름 0.1kg을 만드세요.'},
  {id:'kiln',name:'흙을 굽다',detail:'도자기 1kg을 만들거나 보관하세요.'},
  {id:'glass',name:'녹이고 식히다',detail:'유리 1kg을 만들거나 보관하세요.'},
- {id:'garden',name:'첫 정원',detail:'유기 토양과 얕은 물, 햇빛으로 식생을 9kg까지 키우세요. 보상: 초식 생물 4kg.'},
+ {id:'garden',name:'첫 정원',detail:'얕은 물과 햇빛으로 식생을 9kg까지 키우세요. 유기물은 성장을 돕습니다. 보상: 초식 생물 4kg.'},
  {id:'grazer',name:'먹이의 연결',detail:'식생을 먹는 초식 생물을 4.2kg까지 키우세요. 보상: 포식 생물 1kg.'},
  {id:'web',name:'함께 사는 세계',detail:'식생 2kg·초식 생물 1kg·포식 생물 0.2kg이 함께 있는 행성을 만드세요.'},
  {id:'meteor',name:'우주에서 온 금속',detail:'운석을 충돌시키고 운철 1kg을 회수하세요.'},

@@ -1,4 +1,6 @@
 import {F,STRIDE,MASS_FIELDS,totalEnthalpy,type Environment} from './model';
+import {CLOUD_VISIBLE_MASS} from './layeredAtmosphere';
+import type {ClimateSnapshot} from './weatherClimate';
 import {atmosphereState} from './atmosphere';
 
 export type MetricGroup='matter'|'thermal'|'water'|'atmosphere'|'ecology'|'budget';
@@ -20,7 +22,7 @@ export const METRICS:Metric[]=[
  {key:'rainRate',name:'비 강수율',symbol:'Ṁrain',unit:'kg/s',group:'water',digits:4,color:'#4294ae'},
  {key:'snowRate',name:'눈 강수율',symbol:'Ṁsnow',unit:'kg/s',group:'water',digits:4,color:'#87bbcb'},
  mass('rainTotal','누적 비','water'),mass('snowTotal','누적 눈','water'),
- {key:'cloudCover',name:'구름 셀 비율',symbol:'Ccloud',unit:'%',group:'water',digits:2,tip:'응축물 > 0.02 kg인 셀 / 전체 셀'},
+ {key:'cloudCover',name:'구름 셀 비율',symbol:'Ccloud',unit:'%',group:'water',digits:2,tip:'광학 깊이 > 0.1인 셀 / 전체 셀'},
  {key:'rainCover',name:'비 셀 비율',symbol:'Crain',unit:'%',group:'water',digits:2,tip:'직전 물리 단계에서 강수 > 10⁻⁶ kg인 셀 / 전체 셀'},
  {key:'snowCover',name:'눈 셀 비율',symbol:'Csnow',unit:'%',group:'water',digits:2},
  {key:'pressure',name:'표면 평균 압력',symbol:'p₀',unit:'atm',group:'atmosphere',digits:4,tip:'게임 기준 기체 컬럼 질량과 중력으로 환산'},
@@ -30,14 +32,14 @@ export const METRICS:Metric[]=[
  {key:'binding',name:'최소 결합 매개변수',symbol:'λmin',unit:'',group:'atmosphere',digits:3},
  mass('nitrogen','질소 질량','atmosphere'),mass('methane','메탄 질량','atmosphere'),mass('carbonDioxide','CO₂ 질량','atmosphere'),
  ...[['nitrogen','질소','N₂'],['methane','메탄','CH₄'],['carbonDioxide','이산화탄소','CO₂'],['vapor','수증기','H₂O']].map(([id,name,symbol])=>({key:'mole_'+id,name:name+' 몰 분율',symbol:'x'+symbol,unit:'%',group:'atmosphere' as const,digits:3})),
- mass('soil','유기 토양','ecology','#a18a68'),mass('plant','식생','ecology','#5b956f'),mass('seed','휴면 씨앗','ecology','#a18a68'),mass('herbivore','초식 생물','ecology','#ae9c4d'),mass('carnivore','포식 생물','ecology','#ba7968'),
+ mass('soil','유기물','ecology','#a18a68'),mass('plant','식생','ecology','#5b956f'),mass('seed','휴면 씨앗','ecology','#a18a68'),mass('herbivore','초식 생물','ecology','#ae9c4d'),mass('carnivore','포식 생물','ecology','#ba7968'),
  {key:'plantCover',name:'식생 셀 비율',symbol:'Cplant',unit:'%',group:'ecology',digits:2,tip:'식생 > 0.01 kg인 셀 / 전체 셀'},
  mass('supplied','외부 공급','budget'),mass('transferredIn','인벤토리 투입','budget'),mass('removed','깎기 배출','budget'),mass('transferredOut','인벤토리 회수','budget'),mass('escaped','우주 탈출','budget'),
  ...['환경 열교환','명령 · 공급 · 충돌','탈출 에너지','수치 보정'].map((name,i)=>({key:'energy'+i,name,symbol:['Qenv','Qcmd','Qesc','Qnum'][i],unit:'kJ',group:'budget' as const,digits:3,color:['#c17950','#7e8c62','#5a92bd','#9972b1'][i]})),
 ];
 export const metricByKey=new Map(METRICS.map(m=>[m.key,m]));
 export interface Budget {supplied:number;removed:number;escaped:number;transferredIn:number;transferredOut:number;}
-export interface TelemetryInput extends Budget {time:number;state:Float32Array;environment:Environment;airborne?:number;pending?:number;}
+export interface TelemetryInput extends Budget {time:number;state:Float32Array;environment:Environment;climate?:ClimateSnapshot;airborne?:number;pending?:number;}
 export interface TelemetryPoint {time:number;values:Record<string,number|null>;histogram:number[];bins:number[];profileValid:boolean;detailsUnavailable?:true;}
 export interface TelemetryGap {start:number;end:number;}
 export interface PlanetTelemetry {id:string;name:string;points:TelemetryPoint[];baseline:TelemetryPoint;energy:Float64Array;rain:number;snow:number;rainRate:number|null;snowRate:number|null;rainCover:number|null;snowCover:number|null;lastSample:number;interval:number;gaps?:TelemetryGap[];}
@@ -47,11 +49,11 @@ function quantile(sorted:number[],q:number){const p=(sorted.length-1)*q,i=Math.f
 export function measurePlanet(input:TelemetryInput):TelemetryPoint {
  const {state,environment}=input,n=state.length/STRIDE,t=new Float64Array(STRIDE),temperatures:number[]=[];
  let cloudCells=0,plantCells=0;
- for(let p=0;p<state.length;p+=STRIDE){for(const f of MASS_FIELDS)t[f]+=state[p+f];temperatures.push(state[p+F.temperature]);if(state[p+F.cloud]+state[p+F.cloudIce]>.02)cloudCells++;if(state[p+F.plant]>.01)plantCells++;}
- const a=atmosphereState(state,environment),surface=MASS_FIELDS.reduce((sum,f)=>sum+t[f],0),airborne=(input.airborne??0)+(input.pending??0);
+ for(let p=0;p<state.length;p+=STRIDE){for(const f of MASS_FIELDS)t[f]+=state[p+f];temperatures.push(state[p+F.temperature]);if(state[p+F.cloud]+state[p+F.cloudIce]>CLOUD_VISIBLE_MASS)cloudCells++;if(state[p+F.plant]>.01)plantCells++;}
+ const a=atmosphereState(state,environment,input.climate),surface=MASS_FIELDS.reduce((sum,f)=>sum+t[f],0),airborne=(input.airborne??0)+(input.pending??0);
  const values:Record<string,number|null>={
   mass:surface+airborne,surface,airborne,terrain:[F.sand,F.clay,F.ceramic,F.glass,F.salt,F.rock,F.soil,F.iron].reduce<number>((sum,f)=>sum+t[f],0),liquid:t[F.water]+t[F.dissolved]+t[F.molten],ice:t[F.ice],gas:a.mass,cloud:t[F.cloud]+t[F.cloudIce],biomass:t[F.plant]+t[F.seed]+t[F.herbivore]+t[F.carnivore],
-  tempMean:temperatures.reduce((sum,v)=>sum+v,0)/n,enthalpy:totalEnthalpy(state),waterTotal:t[F.water]+t[F.ice]+t[F.vapor]+t[F.cloud]+t[F.cloudIce],water:t[F.water],waterIce:t[F.ice],vapor:t[F.vapor],cloudWater:t[F.cloud],cloudIce:t[F.cloudIce],cloudCover:100*cloudCells/n,
+  tempMean:temperatures.reduce((sum,v)=>sum+v,0)/n,enthalpy:totalEnthalpy(state,input.climate),waterTotal:t[F.water]+t[F.ice]+t[F.vapor]+t[F.cloud]+t[F.cloudIce],water:t[F.water],waterIce:t[F.ice],vapor:t[F.vapor],cloudWater:t[F.cloud],cloudIce:t[F.cloudIce],cloudCover:100*cloudCells/n,
   pressure:a.pressure,gasTemp:a.mass?a.temperature:null,scaleHeight:a.mass?a.scaleHeightKm:null,boundary:a.mass?a.heightKm:null,binding:a.mass?a.minimumBinding:null,
   soil:t[F.soil],plant:t[F.plant],herbivore:t[F.herbivore],carnivore:t[F.carnivore],plantCover:100*plantCells/n,
   supplied:input.supplied,removed:input.removed,escaped:input.escaped,transferredIn:input.transferredIn,transferredOut:input.transferredOut,
@@ -101,5 +103,5 @@ export function massResidual(current:TelemetryPoint,baseline:TelemetryPoint){ret
 export function energyResidual(current:TelemetryPoint,baseline:TelemetryPoint){return delta(current,baseline,'enthalpy')!-[0,1,2,3].reduce((sum,k)=>sum+(delta(current,baseline,'energy'+k)??0),0);}
 export function telemetryCsv(record:PlanetTelemetry){
  const keys=METRICS.map(m=>m.key),headers=['simulation_s',...METRICS.map(m=>`${m.key} [${m.unit}]`)];
- return ['# recorded observation; game kg / kJ; baseline_simulation_s='+record.baseline.time,...(record.gaps?.length?['# observation_gaps='+JSON.stringify(record.gaps)]:[]),headers.join(','),...record.points.map(p=>[p.time,...keys.map(k=>p.values[k]??'')].join(','))].join('\n');
+ return ['# recorded observation; game kg / kJ; 1 simulation_s = 1 planet minute; baseline_simulation_s='+record.baseline.time,...(record.gaps?.length?['# observation_gaps='+JSON.stringify(record.gaps)]:[]),headers.join(','),...record.points.map(p=>[p.time,...keys.map(k=>p.values[k]??'')].join(','))].join('\n');
 }

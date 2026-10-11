@@ -1,3 +1,4 @@
+import {CLOUD_DISPLAY_SCALE} from '../sim/layeredAtmosphere';
 import {CloudBanks,type CloudStyle} from './cloudBanks';
 import {MeshBuilder} from '@babylonjs/core/Meshes/meshBuilder';
 import {ShaderMaterial} from '@babylonjs/core/Materials/shaderMaterial';
@@ -115,13 +116,13 @@ export class SkyLayers {
     for(let p=0;p<WIDTH*HEIGHT;p++){
       let cloud=0,ice=0,ground=0;
       for(let k=0;k<3;k++){const i=this.samples[p*3+k],w=this.weights[p*3+k];cloud+=state[i*STRIDE+F.cloud]*w;ice+=state[i*STRIDE+F.cloudIce]*w;ground+=radii[i]*w;}
-      this.pixels[p*4]=Math.round((1-Math.exp(-cloud*6))*255);this.pixels[p*4+1]=Math.round((1-Math.exp(-ice*6))*255);const encoded=Math.round(Math.min(1,ground/12)*65535);this.pixels[p*4+2]=encoded>>8;this.pixels[p*4+3]=encoded&255;
+      this.pixels[p*4]=Math.round((1-Math.exp(-cloud*6*(e.climate?CLOUD_DISPLAY_SCALE:1)))*255);this.pixels[p*4+1]=Math.round((1-Math.exp(-ice*6*(e.climate?CLOUD_DISPLAY_SCALE:1)))*255);const encoded=Math.round(Math.min(1,ground/12)*65535);this.pixels[p*4+2]=encoded>>8;this.pixels[p*4+3]=encoded&255;
     }
     this.texture.update(this.pixels);
     const outer=Math.max(max+.82,atmosphereRadius),optics=atmosphereOptics(info,e);
     this.mesh.scaling.setAll(outer);this.material.setFloat('outerRadius',outer);this.material.setFloat('surfaceRadius',mean);this.material.setFloat('cloudRadius',max+.30);this.material.setFloat('cloudInnerRadius',min+.04);
     this.material.setFloat('rotationRate',e.rotationRate??0);this.material.setFloat('airHeight',Math.max(.08,atmosphereRadius-mean));this.material.setFloat('airOpacity',optics.opacity);this.material.setColor3('airColor',Color3.FromArray(optics.color));
-    this.banks.update(state,radii);this.mesh.setEnabled(this.atmosphereVisible&&info.mass>.01);
+    this.banks.update(state,radii,!!e.climate);this.mesh.setEnabled(this.atmosphereVisible&&info.mass>.01);
   }
   get densityTexture(){return this.texture;}
   setCloudAppearance(flat:boolean,opacity:number){this.banks.setAppearance(flat,opacity);}
