@@ -40,6 +40,8 @@ import {SkyLayers} from './sky';
 import {WeatherParticles} from './weather';
 import {PrecipitationLayer} from './precipitationLayer';
 import {materialGrain} from './particles';
+import {SupplyFlow} from './supplyFlow';
+import {deliverSurfaceSupply,type SupplyCell} from '../sim/supply';
 import {surfaceMaterial} from './materials';
 import type {ShaderMaterial} from '@babylonjs/core/Materials/shaderMaterial';
 import {atmosphereOptics} from '../sim/optics';
@@ -77,6 +79,7 @@ export class PlanetView {
   private physicalSun:readonly number[]=[1,0,0];
   private spinTilt=0;
   private focusFlight:{cell:number;time:number;alpha:number;beta:number}|null=null;
+  private supplyFlow=new SupplyFlow();
   private physicalRandom=new SimulationRandom(0x971fc31);
   readonly engine:AbstractEngine;
   readonly scene:Scene;
@@ -748,8 +751,12 @@ export class PlanetView {
   setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionDirty=true;}
   clearPrecipitation(){this.precipitationLayer.clear();this.sectionView.clearPrecipitation();this.sectionDirty=true;}
   precipitationStats(){return this.precipitationLayer.stats();}
-  visualStats() {return {climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
+  visualStats() {return {climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:this.supplyFlow.traces.filter(t=>this.supplyFlow.active(t)).length,grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
   deposits() {return this.grains.map(g=>({index:g.index,material:g.material,amount:g.amount}));}
+  supplySurface(cells:readonly SupplyCell[],material:SurfaceMaterial,amount:number,land:Grain['land']) {
+    deliverSurfaceSupply(cells,amount,land);
+    if(amount>0)this.supplyFlow.emit(cells,material);
+  }
   emitGas(index:number,material:GasMaterial,amount:number) {
     const dir=Vector3.FromArray(this.grid.directions,index*3),radius=this.renderRadii[index];
     this.effects.gas(dir.scale(radius+.06),material,amount);
@@ -792,7 +799,7 @@ export class PlanetView {
       this.streamPath=Array.from({length:13},(_,i)=>{const t=i/12;return start.scale((1-t)*(1-t)).add(control.scale(2*t*(1-t))).add(end.scale(t*t));});this.streamLife=.38;
     }
   }
-  clearGrains() {this.grains=[];this.escapedGrains=0;this.streamLife=0;this.stream.setEnabled(false);this.effects.clear();this.weather.clear();}
+  clearGrains() {this.supplyFlow.clear();this.grains=[];this.escapedGrains=0;this.streamLife=0;this.stream.setEnabled(false);this.effects.clear();this.weather.clear();}
   settleGrains() {
     for(const grain of this.grains)grain.land(grain.index,grain.amount);
     this.grains=[];
@@ -822,6 +829,7 @@ export class PlanetView {
     if(this.systemScene.active){this.systemScene.update(dt,speed);this.sun.position.copyFrom(this.systemScene.starPosition);this.sun.scaling.setAll(Math.max(1,Math.min(3.6,1+(this.camera.radius-24)/30)));return;}
     if(this.motion&&this.motionDisplay){this.motionDisplay.update(this.motion,dt,speed);this.applySpin(this.motionDisplay.spin);this.setSun(orbitalSun(this.motionDisplay.angle));}
     this.updateSection(dt);this.updateSelectionPreview();
+    this.biosphere.animate(dt,this.motion?.paused?0:speed);
     this.spinAxis.setEnabled(this.showSpinAxis&&!this.sectionCamera.active);
     if(!this.sectionCamera.active)this.axisAlignment.update(dt);
     this.systemScene.update(dt);this.sun.scaling.setAll(Math.max(1,Math.min(3.6,1+(this.camera.radius-24)/30)));
@@ -853,6 +861,19 @@ export class PlanetView {
         Matrix.ComposeToRef(this.grainScale,rotation,this.grainPosition,this.grainMatrix);
         this.grainMatrix.copyToArray(this.grainMatrices.get(g.material)!,index*16);
       }
+    }
+    this.supplyFlow.animate(dt);
+    for(const trace of this.supplyFlow.traces){
+      if(!this.supplyFlow.active(trace))continue;
+      const index=counts.get(trace.material)!;if(index>=2048)continue;
+      const t=this.supplyFlow.progress(trace),i=trace.index*3;
+      this.grainDirection.set(this.grid.directions[i],this.grid.directions[i+1],this.grid.directions[i+2]);
+      this.grainPosition.copyFrom(this.grainDirection).scaleInPlace(this.renderRadii[trace.index]+.025+.32*(1-t));
+      Quaternion.FromUnitVectorsToRef(Vector3.UpReadOnly,this.grainDirection,this.grainRotation);
+      const size=(.035+trace.phase*.015)*Math.min(1,(1-t)*5);
+      this.grainScale.set(size,size*2.5,size);
+      Matrix.ComposeToRef(this.grainScale,this.grainRotation,this.grainPosition,this.grainMatrix);
+      this.grainMatrix.copyToArray(this.grainMatrices.get(trace.material)!,index*16);counts.set(trace.material,index+1);
     }
     for(const material of SURFACE_MATERIALS) {
       const mesh=this.grainMeshes.get(material)!;

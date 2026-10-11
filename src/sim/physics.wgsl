@@ -244,11 +244,11 @@ fn advance(@builtin(global_invocation_id) gid:vec3u) {
     s.b.x+=change.x;s.a.x+=change.y;s.a.y+=change.z;s.b.w+=change.w;
     energy+=dot(incoming*prepared[j].c.x-outgoing*original.c.x,vec4f(4.18,0.8,1.0,0.85));
     let distance=length(geometry[i].xyz-geometry[j].xyz)*4.8/.024;let spatial=edgeScale(distance);
-    let here=vec3f(plantHabitat(original,surfaceLight(original,i)),consumerHabitat(original,false),consumerHabitat(original,true));
-    let there=vec3f(plantHabitat(prepared[j],surfaceLight(prepared[j],j)),consumerHabitat(prepared[j],false),consumerHabitat(prepared[j],true));
-    let biomass=(vec3f(prepared[j].cloud.w,prepared[j].life.xy)*here-vec3f(original.cloud.w,original.life.xy)*there)*min(vec3f(dt*spatial)*vec3f(.004,.025,.025),vec3f(1.0/6.0));
-    s.cloud.w+=biomass.x;s.life.x+=biomass.y;s.life.y+=biomass.z;
-    energy+=dot(biomass,select(vec3f(original.c.x),vec3f(prepared[j].c.x),biomass>=vec3f(0)));
+    let here=plantHabitat(original,surfaceLight(original,i));
+    let there=plantHabitat(prepared[j],surfaceLight(prepared[j],j));
+    let biomass=(prepared[j].cloud.w*here-original.cloud.w*there)*min(dt*spatial*.004,1.0/6.0);
+    s.cloud.w+=biomass;
+    energy+=biomass*select(original.c.x,prepared[j].c.x,biomass>=0.0);
     let ka=conductivity(original);let kb=conductivity(prepared[j]);
     conduction+=(prepared[j].c.x-original.c.x)*min(dt*2.0*ka*kb/max(1e-8,ka+kb)*spatial,min(capacity(original),capacity(prepared[j]))/12.0);
     let diff=(prepared[j].c.y-original.c.y)*min(dt*.28*spatial,1.0/6.0);

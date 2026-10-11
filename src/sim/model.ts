@@ -1,6 +1,7 @@
 import {WeatherClimate,pioneerRootability,type ClimateSnapshot} from './weatherClimate';
 import {bathHeat,thermalTarget} from './climate';
 import {habitat,consumerHabitat,foodWeb} from './ecology';
+import {AnimalNavigation} from './animalNavigation';
 import { HEIGHT_SCALE, INVALID, NEIGHBORS, type SphereGrid } from './sphere';
 import {GASES,thermalEscapeFraction} from './gases';
 import {cloudEdgeFraction,CLOUD_COOLING,RAIN_THRESHOLD,SNOW_THRESHOLD} from './clouds';
@@ -215,12 +216,14 @@ export class CpuSolver implements Solver {
   private next:Float32Array;
   private transported:Float64Array;
   private flux:Float32Array;
+  private animalNavigation:AnimalNavigation;
   escapeCells:Float32Array;
   condensedCells:Float32Array;
   precipitatedCells:Float32Array;
   energyChanges:Float32Array;
   constructor(readonly grid:SphereGrid,public state:Float32Array) {
     this.climate=new WeatherClimate(grid);
+    this.animalNavigation=new AnimalNavigation(grid);
     this.prepared=new Float32Array(state.length);this.next=new Float32Array(state.length);this.transported=new Float64Array(state.length);
     this.flux=new Float32Array(grid.count*NEIGHBORS*8);
     this.escapeCells=new Float32Array(grid.count*4);
@@ -299,8 +302,9 @@ export class CpuSolver implements Solver {
           this.transported[p+fields[f]]+=amountIn-amountOut;
           energy+=(amountIn*s[j*STRIDE+8]-amountOut*s[p+8])*CP[fields[f]];
         }
-        // Biomass dispersal is a symmetric conservative exchange between neighbours.
-        for(const field of [F.plant,F.herbivore,F.carnivore]){
+        // Plant dispersal remains a symmetric conservative exchange. Consumers
+        // use the shared land navigation pass after local reactions.
+        for(const field of [F.plant]){
           const diff=(s[j*STRIDE+field]*cellHabitat(s,i,environment,field,grid)-s[p+field]*cellHabitat(s,j,environment,field,grid))*Math.min(dt*(field===F.plant?.004:.025)*edgeScale(grid.distances[edge]),1/NEIGHBORS);
           this.transported[p+field]+=diff;energy+=diff*(diff>=0?s[j*STRIDE+8]:s[p+8]);
         }
@@ -322,6 +326,7 @@ export class CpuSolver implements Solver {
       this.next[p+F.firing]=this.next[p+F.clay]>1e-8?Math.max(0,firingDose)/this.next[p+F.clay]:0;
       react(this.next,i,dt,environment,grid,this.escapeCells,this.condensedCells,this.precipitatedCells,this.energyChanges);
     }
+    this.animalNavigation.move(this.next,dt,environment,this.energyChanges);
     if(environment.climate)this.climate.step(this.next,dt,environment,this.energyChanges,this.condensedCells,this.precipitatedCells,this.escapeCells);
     const old=this.state;this.state=this.next;this.next=old;
   }

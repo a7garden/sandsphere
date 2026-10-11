@@ -107,6 +107,7 @@ Sandsphere uses a discrete spherical grid and simplified material, climate, and 
 | Reference | Contents |
 | --- | --- |
 | [Changelog](CHANGELOG.md) | Version history and verified changes. |
+| [Interaction model](docs/INTERACTION_MODEL.md) | Surface supply, land navigation, and population display limits (English). |
 | [Climate and ecology](docs/CLIMATE_ECOLOGY_DESIGN.md) | Scientific basis and model scope. |
 | [Layered atmosphere](docs/LAYERED_CLIMATE.md) | Equations, units, and limitations. |
 | [Climate benchmarks](docs/CLIMATE_BENCHMARK_RESULTS.md) | Reference comparisons and validation results. |

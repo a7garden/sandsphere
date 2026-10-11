@@ -3,6 +3,7 @@ import shader from './physics.wgsl?raw';
 import { COMMAND_STRIDE, gravityMultiplier, type Environment, type Solver,applyCommand,enthalpy } from './model';
 import { NEIGHBORS, type SphereGrid } from './sphere';
 import {physicsSteps} from './clock';
+import {AnimalNavigation} from './animalNavigation';
 
 /** GPU storage is authoritative; a compact readback updates the surface renderer. */
 export class GpuSolver implements Solver {
@@ -21,9 +22,11 @@ export class GpuSolver implements Solver {
   private parity=0;
   private loss:Error|null=null;
   private stopped=false;
+  private animalNavigation:AnimalNavigation;
   private constructor(readonly grid:SphereGrid,public state:Float32Array,device:GPUDevice,
     buffers:GPUBuffer[],staging:GPUBuffer,layout:GPUBindGroupLayout,pipelines:GPUComputePipeline[]) {
     this.climate=new WeatherClimate(grid);
+    this.animalNavigation=new AnimalNavigation(grid);
     this.device=device;this.buffers=buffers;this.staging=staging;this.layout=layout;this.pipelines=pipelines;
     this.escapeCells=new Float32Array(grid.count*4);
     this.condensedCells=new Float32Array(grid.count);this.precipitatedCells=new Float32Array(grid.count*2);
@@ -115,7 +118,9 @@ export class GpuSolver implements Solver {
     for(let i=0;i<this.grid.count;i++){for(let k=0;k<4;k++){this.escapeCells[i*4+k]+=changes[i*12+k];this.energyChanges[i*4+k]+=changes[i*12+8+k];}this.condensedCells[i]+=changes[i*12+4];this.precipitatedCells[i*2]+=changes[i*12+5];this.precipitatedCells[i*2+1]+=changes[i*12+6];}
     this.state=data.slice(0,this.state.length);
     this.staging.unmap();
-    if(environment.climate){this.climate.step(this.state,dt,environment,this.energyChanges,this.condensedCells,this.precipitatedCells,this.escapeCells);this.device.queue.writeBuffer(out,0,this.state as Float32Array<ArrayBuffer>);}
+    const moved=this.animalNavigation.move(this.state,dt,environment,this.energyChanges);
+    if(environment.climate)this.climate.step(this.state,dt,environment,this.energyChanges,this.condensedCells,this.precipitatedCells,this.escapeCells);
+    if(environment.climate||moved)this.device.queue.writeBuffer(out,0,this.state as Float32Array<ArrayBuffer>);
     this.parity=1-this.parity;
   }
   dispose() {

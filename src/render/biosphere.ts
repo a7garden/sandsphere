@@ -10,15 +10,14 @@ import type {TransformNode} from '@babylonjs/core/Meshes/transformNode';
 import {createSphere,type SphereGrid} from '../sim/sphere';
 import {vegetationCover,woodlandDensity} from './vegetation';
 import {F,STRIDE} from '../sim/model';
+import {LandAnimals} from './animals';
 export class Biosphere {
- private kinds=[F.herbivore,F.carnivore];
  private trees:Mesh;
  private shadows:Mesh;
  private shadowMatrices:Float32Array;
  private patches:number[][];
  private treeMatrices:Float32Array;
- private meshes;
- private buffers:Float32Array[];
+ private animals:LandAnimals;
  constructor(scene:Scene,root:TransformNode,private grid:SphereGrid){
   const trunk=MeshBuilder.CreateCylinder('tree trunk',{height:.53,diameterTop:.065,diameterBottom:.13,tessellation:7},scene);trunk.position.y=.265;
   const parts:Mesh[]=[trunk];
@@ -60,12 +59,7 @@ export class Biosphere {
   for(let i=0;i<positions.length/3;i++)colors.set([1,1,1,Math.max(0,1-Math.hypot(positions[i*3],positions[i*3+1]))],i*4);
   this.shadows.setVerticesData(VertexBuffer.ColorKind,colors);this.shadows.useVertexColors=true;this.shadows.hasVertexAlpha=true;
   this.shadowMatrices=new Float32Array(this.treeMatrices.length);this.shadows.thinInstanceSetBuffer('matrix',this.shadowMatrices,16,false);this.shadows.thinInstanceCount=0;this.shadows.setEnabled(false);
-  this.buffers=this.kinds.map(()=>new Float32Array(grid.count*16));
-  this.meshes=this.kinds.map((_,k)=>{
-   const mesh=MeshBuilder.CreateSphere(['grazing populations','predator populations'][k],{diameter:1,segments:8},scene);
-   const mat=new StandardMaterial('living surface '+k,scene,true);mat.diffuseColor=[new Color3(.77,.63,.41),new Color3(.35,.24,.16)][k];mat.specularColor=new Color3(.05,.06,.04);mesh.material=mat;mesh.parent=root;mesh.isPickable=false;mesh.alwaysSelectAsActiveMesh=true;
-   mesh.thinInstanceSetBuffer('matrix',this.buffers[k],16,false);mesh.thinInstanceCount=0;mesh.setEnabled(false);return mesh;
-  });
+  this.animals=new LandAnimals(scene,root,grid);
  }
  update(state:Float32Array,radii:Float32Array,time:number,cover:Float32Array=vegetationCover(this.grid,state)){
   let treeCount=0;
@@ -91,18 +85,7 @@ export class Biosphere {
   this.shadows.thinInstanceCount=treeCount;this.shadows.setEnabled(treeCount>0);if(treeCount)this.shadows.thinInstanceBufferUpdated('matrix');
 
   this.trees.thinInstanceCount=treeCount;this.trees.setEnabled(treeCount>0);if(treeCount)this.trees.thinInstanceBufferUpdated('matrix');
-  for(let k=0;k<this.kinds.length;k++){
-   let count=0;
-   for(let i=0;i<this.grid.count;i++){
-    const mass=state[i*STRIDE+this.kinds[k]];if(mass<.025)continue;
-    const normal=Vector3.FromArray(this.grid.directions,i*3),tangent=Vector3.Cross(normal,Math.abs(normal.y)>.9?Vector3.Right():Vector3.Up()).normalize();
-    const seed=(Math.imul(i+1,16807)>>>0)%997/997,walking=Math.sin(time*.3+seed*13)*.09;
-    const size=Math.min(.2,.055+Math.sqrt(mass)*.07),point=normal.scale(radii[i]+size*.36).add(tangent.scale((seed-.5)*.13+walking));
-    const scale=new Vector3(size*1.5,size*.65,size*.75);
-    const q=Quaternion.FromUnitVectorsToRef(Vector3.Up(),normal,new Quaternion());
-    Matrix.ComposeToRef(scale,q,point,Matrix.Identity()).copyToArray(this.buffers[k],count++*16);
-   }
-   const mesh=this.meshes[k];mesh.thinInstanceCount=count;mesh.setEnabled(count>0);if(count)mesh.thinInstanceBufferUpdated('matrix');
-  }
+  this.animals.update(state,radii);
  }
+ animate(dt:number,speed=1){this.animals.animate(dt,speed);}
 }

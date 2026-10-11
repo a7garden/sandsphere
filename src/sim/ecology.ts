@@ -9,6 +9,11 @@ export function consumerHabitat(temperature:number,water:number,salt:number,ice:
  const warmth=Math.max(0,1-Math.abs(temperature-(predator?26:22))/(predator?50:45));
  return warmth*Math.min(1,water/.04)*Math.max(0,1-water/7)*Math.max(0,1-salt/Math.max(.001,water)*6)*Math.exp(-ice*.7);
 }
+/** Travel can cross dry land even when the local feeding habitat lacks water. */
+export function consumerTravelHabitat(temperature:number,water:number,salt:number,ice:number,predator=false){
+ const warmth=Math.max(0,1-Math.abs(temperature-(predator?26:22))/(predator?50:45));
+ return warmth*Math.max(0,1-salt/Math.max(.001,water)*6)*Math.exp(-ice*.7);
+}
 export function foodWeb(soil:number,plant:number,herbivore:number,carnivore:number,suitability:number,dt:number,herbivoreHabitat=1,carnivoreHabitat=1){
  const growth=Math.min(soil,plant*.085*suitability*dt);soil-=growth;plant+=growth;
  const grazing=Math.min(plant,herbivore*.12*herbivoreHabitat*dt),hunting=Math.min(herbivore,carnivore*.075*carnivoreHabitat*dt);

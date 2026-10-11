@@ -267,7 +267,12 @@ function clearRotationErrors() {
     el(input).removeAttribute('aria-invalid');el<HTMLInputElement>(input).setCustomValidity('');el(error).hidden=true;
   }
 }
+let brushWeightsCache:{grid:typeof grid;center:number;rings:number;weights:ReturnType<typeof cellBrushWeights>}|undefined;
 function selectedBrushWeights(center:number,rings:number){
+  if(!view.isSection){
+    if(!brushWeightsCache||brushWeightsCache.grid!==grid||brushWeightsCache.center!==center||brushWeightsCache.rings!==rings)brushWeightsCache={grid,center,rings,weights:cellBrushWeights(grid,center,rings)};
+    return brushWeightsCache.weights;
+  }
   const weights=cellBrushWeights(grid,center,rings),allowed=new Set(view.sectionBrushCells(weights.map(w=>w.index))),selected=weights.filter(w=>allowed.has(w.index)),sum=selected.reduce((s,w)=>s+w.weight,0);
   return selected.map(w=>({...w,weight:w.weight/sum}));
 }
@@ -281,8 +286,11 @@ function pour(dt:number,direction:readonly number[],kind=material,rate=Number(ra
   }else supplied+=amount;
   if(amount>0)firstSteps?.poured();
   if(isGas(kind)){for(const {index,weight} of weights)deposit(index,amount*weight,kind);view.emitGas(center,kind,amount);return;}
-  const pieces=Math.max(1,Math.ceil(dt*240/weights.length));
-  for(const {index,weight} of weights)for(let k=0;k<pieces;k++)view.emit(index,kind,amount*weight/pieces,(cell,mass)=>deposit(cell,mass,kind),index===center?[...grid.directions.subarray(index*3,index*3+3)]:undefined,index,emitter,true);
+  if(amount<=0)return;
+  const land=(cell:number,mass:number)=>deposit(cell,mass,kind);
+  if(!emitter){view.supplySurface(weights,kind,amount,land);return;}
+  const pieces=1;
+  for(const {index,weight} of weights)for(let k=0;k<pieces;k++)view.emit(index,kind,amount*weight/pieces,land,index===center?[...grid.directions.subarray(index*3,index*3+3)]:undefined,index,emitter,true);
 }
 let brushCell:number|null=null,brushHover=false,brushRefreshPending=false,lastBrushRefresh=0;
 function brushSizeUpdate(){
