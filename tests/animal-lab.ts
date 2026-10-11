@@ -28,11 +28,11 @@ document.querySelector<HTMLButtonElement>('#gpu')!.onclick=async e=>{
  const button=e.currentTarget as HTMLButtonElement;button.disabled=true;const out=document.querySelector('#result')!;out.textContent='Comparing 20 conservative steps...';let gpu:GpuSolver|null=null;
  try{
   const small=createSphere(2),s=seedPlanet(small,'rock',22,'none');for(let i=0;i<small.count;i++){s[i*STRIDE+F.soil]=2;s[i*STRIDE+F.water]=.025;if(small.directions[i*3]>.3)s[i*STRIDE+F.water]=10;if(small.directions[i*3]<-.2)s[i*STRIDE+F.plant]=.4;}
-  s[F.herbivore]=2;s[F.carnivore]=.8;const cpu=new CpuSolver(small,s.slice());gpu=await GpuSolver.create(small,s.slice());if(!gpu){out.textContent=JSON.stringify({supported:false});return;}
+  s[F.herbivore]=2;s[F.carnivore]=.8;s[F.plant]=3;const cpu=new CpuSolver(small,s.slice());gpu=await GpuSolver.create(small,s.slice());if(!gpu){out.textContent=JSON.stringify({supported:false});return;}
   const commands=new Float32Array(small.count*COMMAND_STRIDE),before=totalMass(s),heat=totalEnthalpy(s);let ledgerCpu=0,ledgerGpu=0;
   for(let n=0;n<20;n++){cpu.advance(.1,commands,environment);await gpu.step(.1,commands,environment);ledgerCpu+=cpu.energyChanges.reduce((a,b)=>a+b,0);ledgerGpu+=gpu.energyChanges.reduce((a,b)=>a+b,0);}
-  let maxError=0,waterConsumers=0;for(let i=0;i<s.length;i++)maxError=Math.max(maxError,Math.abs(cpu.state[i]-gpu.state[i]));for(let i=0;i<small.count;i++)if(s[i*STRIDE+F.water]>1)waterConsumers+=gpu.state[i*STRIDE+F.herbivore]+gpu.state[i*STRIDE+F.carnivore];
-  out.textContent=JSON.stringify({supported:true,maxError,cpuMassError:totalMass(cpu.state)-before,gpuMassError:totalMass(gpu.state)-before,cpuEnergyLedgerError:totalEnthalpy(cpu.state)-heat-ledgerCpu,gpuEnergyLedgerError:totalEnthalpy(gpu.state)-heat-ledgerGpu,waterConsumers});
+  let maxError=0,waterConsumers=0,maxFeedingError=0;for(let i=0;i<s.length;i++)maxError=Math.max(maxError,Math.abs(cpu.state[i]-gpu.state[i]));for(let i=0;i<small.count;i++)if(s[i*STRIDE+F.water]>1)waterConsumers+=gpu.state[i*STRIDE+F.herbivore]+gpu.state[i*STRIDE+F.carnivore];for(let i=0;i<cpu.feedingCells.length;i++)maxFeedingError=Math.max(maxFeedingError,Math.abs(cpu.feedingCells[i]-gpu.feedingCells[i]));
+  out.textContent=JSON.stringify({supported:true,maxError,maxFeedingError,grazed:gpu.feedingCells.filter((_,i)=>i%2===0).reduce((a,b)=>a+b,0),hunted:gpu.feedingCells.filter((_,i)=>i%2===1).reduce((a,b)=>a+b,0),cpuMassError:totalMass(cpu.state)-before,gpuMassError:totalMass(gpu.state)-before,cpuEnergyLedgerError:totalEnthalpy(cpu.state)-heat-ledgerCpu,gpuEnergyLedgerError:totalEnthalpy(gpu.state)-heat-ledgerGpu,waterConsumers});
  }catch(error){out.textContent=String(error);}finally{gpu?.dispose();button.disabled=false;}
 };
 document.querySelector<HTMLButtonElement>('#benchmark')!.onclick=()=>{

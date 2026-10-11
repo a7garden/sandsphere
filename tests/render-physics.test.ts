@@ -49,7 +49,7 @@ describe('GPU failure commits',()=>{
   const gpu=Object.create(GpuSolver.prototype) as GpuSolver;
   const unmap=vi.fn();
   Object.assign(gpu,{climate:new WeatherClimate(grid),grid,state,loss:null,parity:0,buffers:Array(9).fill({}),pipelines:[],groups:[],
-   escapeCells:new Float32Array(grid.count*4),condensedCells:new Float32Array(grid.count),precipitatedCells:new Float32Array(grid.count*2),energyChanges:new Float32Array(grid.count*4),
+   escapeCells:new Float32Array(grid.count*4),condensedCells:new Float32Array(grid.count),precipitatedCells:new Float32Array(grid.count*2),energyChanges:new Float32Array(grid.count*4),feedingCells:new Float32Array(grid.count*2),
    staging:{mapAsync:async()=>{Object.assign(gpu,{loss:new Error('device lost')});},getMappedRange:()=>mapped.buffer,unmap},
    device:{queue:{writeBuffer:vi.fn(),submit:vi.fn()},createCommandEncoder:()=>({copyBufferToBuffer:vi.fn(),finish:()=>({})})}});
   vi.stubGlobal('GPUMapMode',{READ:1});

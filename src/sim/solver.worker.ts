@@ -22,7 +22,7 @@ scope.onmessage=async({data:request})=>{
   solver.replace(request.state);solver.climate.restoreCheckpoint(request.climate);solver.climate.lift.set(request.lift);
   await solver.step(request.dt,request.commands,request.environment);
   const result={state:solver.state.slice(),climate:solver.climate.checkpoint(),lift:solver.climate.lift.slice(),
-   escapeCells:solver.escapeCells.slice(),condensedCells:solver.condensedCells.slice(),precipitatedCells:solver.precipitatedCells.slice(),energyChanges:solver.energyChanges.slice()};
+   escapeCells:solver.escapeCells.slice(),condensedCells:solver.condensedCells.slice(),precipitatedCells:solver.precipitatedCells.slice(),energyChanges:solver.energyChanges.slice(),feedingCells:solver.feedingCells.slice()};
   scope.postMessage({id:request.id,type:'result',result},resultTransferBuffers(result));
  }catch(error){scope.postMessage({id:request.id,type:'error',message:error instanceof Error?error.message:String(error)});}
 };

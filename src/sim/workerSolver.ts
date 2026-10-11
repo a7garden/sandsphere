@@ -9,7 +9,7 @@ export class WorkerSolver implements Solver {
  readonly climate:WeatherClimate;
  readonly backgroundCompute=true;
  backend:Solver['backend']='CPU';
- escapeCells:Float32Array;condensedCells:Float32Array;precipitatedCells:Float32Array;energyChanges:Float32Array;
+ escapeCells:Float32Array;condensedCells:Float32Array;precipitatedCells:Float32Array;energyChanges:Float32Array;feedingCells:Float32Array;
  private nextId=0;
  private stopped=false;
  private inFlight=false;
@@ -18,6 +18,7 @@ export class WorkerSolver implements Solver {
   this.climate=new WeatherClimate(grid);
   this.escapeCells=new Float32Array(grid.count*4);this.condensedCells=new Float32Array(grid.count);
   this.precipitatedCells=new Float32Array(grid.count*2);this.energyChanges=new Float32Array(grid.count*4);
+  this.feedingCells=new Float32Array(grid.count*2);
   worker.onmessage=({data}:MessageEvent<SolverWorkerReply>)=>{
    const pending=this.pending.get(data.id);if(!pending)return;
    this.pending.delete(data.id);clearTimeout(pending.timer);
@@ -57,14 +58,14 @@ export class WorkerSolver implements Solver {
    // Publish together, without mutating or detaching any live input while waiting.
    const result=reply.result;this.state=result.state;this.climate.restoreCheckpoint(result.climate);this.climate.lift.set(result.lift);
    this.escapeCells=result.escapeCells;this.condensedCells=result.condensedCells;
-   this.precipitatedCells=result.precipitatedCells;this.energyChanges=result.energyChanges;
+   this.precipitatedCells=result.precipitatedCells;this.energyChanges=result.energyChanges;this.feedingCells=result.feedingCells;
   }finally{this.inFlight=false;}
  }
  replace(state:Float32Array){
   if(this.inFlight)throw new Error('Cannot replace a running simulation step');
   this.state=state.slice();this.clearTransfers();
  }
- private clearTransfers(){this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);}
+ private clearTransfers(){this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);}
  private stop(error:Error){
   this.stopped=true;this.worker.terminate();
   for(const pending of this.pending.values()){clearTimeout(pending.timer);pending.reject(error);}this.pending.clear();

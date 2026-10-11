@@ -24,7 +24,7 @@ class ControlledWorker {
   cpu.climate.restoreCheckpoint(request.climate);cpu.climate.lift.set(request.lift);
   await cpu.step(request.dt,request.commands,request.environment);
   const result={state:cpu.state,climate:cpu.climate.checkpoint(),lift:cpu.climate.lift,
-   escapeCells:cpu.escapeCells,condensedCells:cpu.condensedCells,precipitatedCells:cpu.precipitatedCells,energyChanges:cpu.energyChanges};
+   escapeCells:cpu.escapeCells,condensedCells:cpu.condensedCells,precipitatedCells:cpu.precipitatedCells,energyChanges:cpu.energyChanges,feedingCells:cpu.feedingCells};
   this.onmessage?.({data:structuredClone({id:request.id,type:'result',result},{transfer:resultTransferBuffers(result)})});
  }
  terminate(){this.terminated=true;}
@@ -42,7 +42,7 @@ describe('simulation worker commits',()=>{
   expect(worker.climate.checkpoint()).toEqual(checkpoint);
   await ControlledWorker.latest.complete();await step;
   expect(worker.state).toEqual(cpu.state);expect(worker.climate.checkpoint()).toEqual(cpu.climate.checkpoint());
-  expect(worker.climate.lift).toEqual(cpu.climate.lift);expect(worker.energyChanges).toEqual(cpu.energyChanges);worker.dispose();
+  expect(worker.climate.lift).toEqual(cpu.climate.lift);expect(worker.energyChanges).toEqual(cpu.energyChanges);expect(worker.feedingCells).toEqual(cpu.feedingCells);worker.dispose();
  });
 
  it('carries restored planets and paused commands without advancing climate time',async()=>{
@@ -77,8 +77,8 @@ describe('simulation worker commits',()=>{
 
  it('supports environments without Worker and clears diagnostics on paused no-ops',async()=>{
   vi.stubGlobal('Worker',undefined);expect(await WorkerSolver.create(grid,seedPlanet(grid,'sand',22))).toBeNull();
-  const worker=await make();worker.energyChanges[0]=4;const initial=worker.state;
+  const worker=await make();worker.energyChanges[0]=4;worker.feedingCells[0]=1;const initial=worker.state;
   await worker.step(0,new Float32Array(grid.count*COMMAND_STRIDE),environment);
-  expect(worker.state).toBe(initial);expect(worker.energyChanges[0]).toBe(0);expect(ControlledWorker.latest.request).toBeNull();worker.dispose();
+  expect(worker.state).toBe(initial);expect(worker.energyChanges[0]).toBe(0);expect(worker.feedingCells[0]).toBe(0);expect(ControlledWorker.latest.request).toBeNull();worker.dispose();
  });
 });

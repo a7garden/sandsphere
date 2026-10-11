@@ -2,7 +2,7 @@ struct Cell { a:vec4f, b:vec4f, c:vec4f, d:vec4f, cloud:vec4f, life:vec4f };
 struct Flow { surface:vec4f, cloud:vec4f };
 struct Command { deposit:vec4f, tools:vec4f, gas:vec4f, products:vec4f, life:vec4f };
 struct Params { control:vec4f, sun:vec4f, wind:vec4f };
-struct Changes { escape:vec4f, weather:vec4f, energy:vec4f };
+struct Changes { escape:vec4f, weather:vec4f, energy:vec4f, feeding:vec4f };
 @group(0) @binding(0) var<storage,read> source:array<Cell>;
 @group(0) @binding(1) var<storage,read_write> prepared:array<Cell>;
 @group(0) @binding(2) var<storage,read_write> flows:array<Flow>;
@@ -150,7 +150,7 @@ fn flux(@builtin(global_invocation_id) gid:vec3u) {
 
 fn reaction(initial:Cell,i:u32)->Cell {
   var tools=0.0;if(!emptyCommand(commands[i])){tools=enthalpy(prepared[i])-enthalpy(source[i]);}
-  if(params.control.y<=0){changes[i]=Changes(vec4f(0),vec4f(0),vec4f(0,tools,0,0));return initial;}
+  if(params.control.y<=0){changes[i]=Changes(vec4f(0),vec4f(0),vec4f(0,tools,0,0),vec4f(0));return initial;}
   var s=initial;
   s.a=max(s.a,vec4f(0));s.b=max(s.b,vec4f(0));s.c.y=max(0.0,s.c.y);s.c.w=max(0.0,s.c.w);s.d=max(s.d,vec4f(0));s.cloud=max(s.cloud,vec4f(0));s.life=max(s.life,vec4f(0));
   var numerical=enthalpy(s)-enthalpy(initial);
@@ -224,7 +224,7 @@ fn reaction(initial:Cell,i:u32)->Cell {
   let fraction=vec4f(lossFraction(rate.x),lossFraction(rate.y),lossFraction(rate.z),lossFraction(rate.w));
   let remaining=gases*(vec4f(1)-fraction);
   let removed=gases-remaining;let escapedEnergy=-dot(removed,vec4f(2,1.04,2.22,.85)*s.c.x+vec4f(2475,0,0,0));
-  changes[i]=Changes(removed,vec4f(condensed,rainReaching,snowReaching,0),vec4f(environmentHeat,tools,escapedEnergy,numerical));s.c.y=remaining.x;s.d=vec4f(s.d.x,remaining.yzw);
+  changes[i]=Changes(removed,vec4f(condensed,rainReaching,snowReaching,0),vec4f(environmentHeat,tools,escapedEnergy,numerical),vec4f(grazing,hunting,0,0));s.c.y=remaining.x;s.d=vec4f(s.d.x,remaining.yzw);
   return s;
 }
 

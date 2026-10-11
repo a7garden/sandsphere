@@ -88,4 +88,6 @@ export class Biosphere {
   this.animals.update(state,radii);
  }
  animate(dt:number,speed=1){this.animals.animate(dt,speed);}
+ feed(cells:Float32Array,dt:number){this.animals.feed(cells,dt);}
+ animalStats(){return this.animals.stats();}
 }

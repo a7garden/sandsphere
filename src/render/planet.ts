@@ -101,6 +101,7 @@ export class PlanetView {
   readonly terrain:Mesh;
   private water:Mesh;
   private hexBanks:Mesh;
+  private bankPulseLength=0;
   private terrainMaterial:ShaderMaterial;
   private waterMaterial:ShaderMaterial;
   private displayHeights:Float32Array;
@@ -575,7 +576,9 @@ export class PlanetView {
       data.positions=bankPositions;data.indices=bankIndices;data.normals=normals;data.colors=bankColors;
       data.applyToMesh(this.hexBanks,true);this.hexBanks.setVerticesData('surfaceInfo',bankSurface,true,4);
       // Zero coordinates keep the vertical coastal banks out of the pulse.
-      if(this.hexBanks.getVerticesData('supplyCoord')?.length!==bankPositions.length)this.hexBanks.setVerticesData('supplyCoord',new Float32Array(bankPositions.length),false,3);
+      // Geometry already has its new vertex count here. Reading the old custom
+      // buffer through getVerticesData would use that count and can overrun it.
+      if(this.bankPulseLength!==bankPositions.length){this.hexBanks.setVerticesData('supplyCoord',new Float32Array(bankPositions.length),false,3);this.bankPulseLength=bankPositions.length;}
     }
     this.terrain.updateVerticesData(VertexBuffer.PositionKind,this.terrainData,true);
     this.terrain.updateVerticesData(VertexBuffer.NormalKind,this.normals);
@@ -725,6 +728,7 @@ export class PlanetView {
   }
   sectionBrushCells(cells:readonly number[]){return this.isSection&&this.selectionArc?cells.filter(i=>this.selectionCellSet.has(i)):[...cells];}
   setBrushCells(cells:readonly number[],kind='pour'){this.cellBrush.select(cells,this.heatPositions,kind);}
+  showFeeding(cells:Float32Array,dt:number){this.biosphere.feed(cells,dt);}
   setDark(dark:boolean) {
     this.themeDark=dark;this.scene.clearColor=new Color4(...(dark?PALETTE.dark:PALETTE.paper),1);
     this.ground.setEnabled(!dark);
@@ -790,7 +794,7 @@ export class PlanetView {
   setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionDirty=true;}
   clearPrecipitation(){this.precipitationLayer.clear();this.sectionView.clearPrecipitation();this.sectionDirty=true;}
   precipitationStats(){return this.precipitationLayer.stats();}
-  visualStats() {return {climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:0,supplyPulse:{activeCells:this.supplyPulse.activeCells(),bytes:this.supplyPulse.pixels.byteLength,uploads:this.supplyUploads},grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
+  visualStats() {return {brush:this.cellBrush.stats(),animals:this.biosphere.animalStats(),climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:0,supplyPulse:{activeCells:this.supplyPulse.activeCells(),bytes:this.supplyPulse.pixels.byteLength,uploads:this.supplyUploads},grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
   deposits() {return this.grains.map(g=>({index:g.index,material:g.material,amount:g.amount}));}
   supplySurface(cells:readonly SupplyCell[],material:SurfaceMaterial,amount:number,land:Grain['land']) {
     deliverSurfaceSupply(cells,amount,land);

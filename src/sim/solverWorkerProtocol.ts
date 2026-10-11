@@ -4,7 +4,7 @@ import type {ClimateCheckpoint} from './weatherClimate';
 
 export interface WorkerStepState {
  state:Float32Array;climate:ClimateCheckpoint;lift:Float32Array;
- escapeCells:Float32Array;condensedCells:Float32Array;precipitatedCells:Float32Array;energyChanges:Float32Array;
+ escapeCells:Float32Array;condensedCells:Float32Array;precipitatedCells:Float32Array;energyChanges:Float32Array;feedingCells:Float32Array;
 }
 export type SolverWorkerRequest=
  | {id:number;type:'init';grid:SphereGrid;forceCpu:boolean}
@@ -19,5 +19,5 @@ export function climateTransferBuffers(c:ClimateCheckpoint):ArrayBuffer[]{
  return [c.wind,c.currents,c.seeds,c.air.mass,c.air.temperature,c.air.velocity,c.air.updraft,c.air.roundoff,c.air.radiationCache].map(a=>a.buffer as ArrayBuffer);
 }
 export function resultTransferBuffers(s:WorkerStepState):ArrayBuffer[]{
- return [s.state,s.lift,s.escapeCells,s.condensedCells,s.precipitatedCells,s.energyChanges].map(a=>a.buffer as ArrayBuffer).concat(climateTransferBuffers(s.climate));
+ return [s.state,s.lift,s.escapeCells,s.condensedCells,s.precipitatedCells,s.energyChanges,s.feedingCells].map(a=>a.buffer as ArrayBuffer).concat(climateTransferBuffers(s.climate));
 }

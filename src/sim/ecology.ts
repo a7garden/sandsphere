@@ -15,9 +15,10 @@ export function consumerTravelHabitat(temperature:number,water:number,salt:numbe
  const warmth=Math.max(0,1-Math.abs(temperature-(predator?26:22))/(predator?50:45));
  return warmth*Math.max(0,1-salt/Math.max(.001,water)*6)*Math.exp(-ice*.7);
 }
-export function foodWeb(soil:number,plant:number,herbivore:number,carnivore:number,suitability:number,dt:number,herbivoreHabitat=1,carnivoreHabitat=1){
+export function foodWeb(soil:number,plant:number,herbivore:number,carnivore:number,suitability:number,dt:number,herbivoreHabitat=1,carnivoreHabitat=1,feeding?:Float32Array,offset=0){
  const growth=Math.min(soil,plant*.085*suitability*dt);soil-=growth;plant+=growth;
  const grazing=Math.min(plant,herbivore*.12*herbivoreHabitat*dt),hunting=Math.min(herbivore,carnivore*.075*carnivoreHabitat*dt);
+ if(feeding){feeding[offset]+=grazing;feeding[offset+1]+=hunting;}
  plant-=grazing;herbivore+=grazing*.36-hunting;carnivore+=hunting*.3;soil+=grazing*.64+hunting*.7;
  const pd=Math.min(plant,plant*(.0015+(1-suitability)*.009)*dt);
  const hd=Math.min(herbivore,herbivore*(.003+(grazing<herbivore*.015*dt?.018:0)+(1-herbivoreHabitat)*.12)*dt);

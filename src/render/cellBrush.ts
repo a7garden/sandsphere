@@ -13,11 +13,12 @@ export class CellBrush {
  private selected=new Set<number>();
  private owners:Uint32Array;
  private corners=new Map<number,number[]>();
+ private faces=new Map<number,number[]>();
  private material;
  constructor(scene:Scene,root:TransformNode,grid:SphereGrid,surface:ReturnType<typeof dualSurface>,name='cell brush footprint',group=2){
   this.owners=Uint32Array.from(surface.owners,i=>nearestCell(grid,surface.directions[i*3],surface.directions[i*3+1],surface.directions[i*3+2]));
   const seen=new Map<number,Set<number>>();
-  for(let t=0;t<this.owners.length;t++){const owner=this.owners[t],vertices=seen.get(owner)??new Set<number>(),offsets=this.corners.get(owner)??[];
+  for(let t=0;t<this.owners.length;t++){const owner=this.owners[t],vertices=seen.get(owner)??new Set<number>(),offsets=this.corners.get(owner)??[],faces=this.faces.get(owner)??[];faces.push(t);this.faces.set(owner,faces);
    for(const k of [1,2]){const vertex=surface.indices[t*3+k];if(!vertices.has(vertex)){vertices.add(vertex);offsets.push(t*9+k*3);}}
    seen.set(owner,vertices);this.corners.set(owner,offsets);
   }
@@ -30,15 +31,16 @@ void main(){float line=1.0-smoothstep(0.0,fwidth(edge)*1.4,edge);gl_FragColor=ve
   this.material.disableDepthWrite=true;this.material.backFaceCulling=true;this.material.setVector3('brushColor',new Vector3(1,.84,.46));this.mesh.material=this.material;this.mesh.setEnabled(false);
  }
  select(cells:readonly number[],positions:Float32Array,kind:string){
-  this.material.setVector3('brushColor',kind==='heat'?new Vector3(1,.45,.15):kind==='cool'?new Vector3(.4,.85,1):new Vector3(1,.84,.46));
+  this.material.setVector3('brushColor',kind==='heat'?new Vector3(1,.45,.15):kind==='cool'?new Vector3(.4,.85,1):kind==='observe'?new Vector3(.72,.88,1):new Vector3(1,.84,.46));
   if(cells.length===this.selected.size&&cells.every(i=>this.selected.has(i)))return;
   this.selected=new Set(cells);this.update(positions);
  }
  boundaryPoints(cell:number,positions:Float32Array){return (this.corners.get(cell)??[]).map(offset=>Vector3.FromArray(positions,offset).scale(1.001));}
+ stats(){return {cells:[...this.selected],visible:this.mesh.isEnabled()};}
  update(positions:Float32Array){
   if(!this.selected.size){this.mesh.setEnabled(false);return;}
   const points:number[]=[],edges:number[]=[];
-  for(let t=0;t<this.owners.length;t++)if(this.selected.has(this.owners[t])){
+  for(const cell of this.selected)for(const t of this.faces.get(cell)??[]){
    for(let k=0;k<9;k++)points.push(positions[t*9+k]*1.001);
    edges.push(1,0,0);
   }

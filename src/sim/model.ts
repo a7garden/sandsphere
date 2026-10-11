@@ -204,6 +204,7 @@ export interface Solver {
   condensedCells:Float32Array;
   precipitatedCells:Float32Array;
   energyChanges:Float32Array;
+  feedingCells:Float32Array;
   step(dt:number,commands:Float32Array,environment:Environment):Promise<void>;
   replace(state:Float32Array):void;
   dispose():void;
@@ -221,6 +222,7 @@ export class CpuSolver implements Solver {
   condensedCells:Float32Array;
   precipitatedCells:Float32Array;
   energyChanges:Float32Array;
+  feedingCells:Float32Array;
   constructor(readonly grid:SphereGrid,public state:Float32Array) {
     this.climate=new WeatherClimate(grid);
     this.animalNavigation=new AnimalNavigation(grid);
@@ -230,19 +232,20 @@ export class CpuSolver implements Solver {
     this.condensedCells=new Float32Array(grid.count);
     this.precipitatedCells=new Float32Array(grid.count*2);
     this.energyChanges=new Float32Array(grid.count*ENERGY_CHANNELS);
+    this.feedingCells=new Float32Array(grid.count*2);
   }
-  replace(state:Float32Array) {this.state=new Float32Array(state);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);}
+  replace(state:Float32Array) {this.state=new Float32Array(state);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);}
   dispose() {}
   async step(dt:number,commands:Float32Array,environment:Environment) {
     this.advance(dt,commands,environment);
   }
   advance(dt:number,commands:Float32Array,environment:Environment) {
-    this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);
+    this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);
     if(dt<=0&&!commands.some(v=>v!==0))return;
     const steps=physicsSteps(dt),empty=steps.length>1?new Float32Array(commands.length):commands;
     const before=environment.climate?this.state.slice():undefined,climate=environment.climate?this.climate.checkpoint():undefined;
     try{for(let n=0;n<steps.length;n++)this.advanceSingle(steps[n],n===0?commands:empty,environment);}
-    catch(error){if(before&&climate){this.state=before;this.climate.restoreCheckpoint(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);}throw error;}
+    catch(error){if(before&&climate){this.state=before;this.climate.restoreCheckpoint(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);}throw error;}
   }
   private advanceSingle(dt:number,commands:Float32Array,environment:Environment) {
     const {grid}=this, n=grid.count;
@@ -324,7 +327,7 @@ export class CpuSolver implements Solver {
       let transportedPhase=0;for(const f of MASS_FIELDS)transportedPhase+=this.transported[p+f]*PHASE_ENERGY[f];
       this.energyChanges[i*4+3]+=enthalpy(this.next,i)-(energy+conduction+transportedPhase);
       this.next[p+F.firing]=this.next[p+F.clay]>1e-8?Math.max(0,firingDose)/this.next[p+F.clay]:0;
-      react(this.next,i,dt,environment,grid,this.escapeCells,this.condensedCells,this.precipitatedCells,this.energyChanges);
+      react(this.next,i,dt,environment,grid,this.escapeCells,this.condensedCells,this.precipitatedCells,this.energyChanges,this.feedingCells);
     }
     this.animalNavigation.move(this.next,dt,environment,this.energyChanges);
     if(environment.climate)this.climate.step(this.next,dt,environment,this.energyChanges,this.condensedCells,this.precipitatedCells,this.escapeCells);
@@ -363,7 +366,7 @@ export function applyCommand(s:Float32Array,i:number,commands:Float32Array,colle
   if(commands[c+COMMAND_FIELD.water]>0||commands[c+COMMAND_FIELD.herbivore]>0||commands[c+COMMAND_FIELD.carnivore]>0)drownConsumers(s,i);
 }
 
-export function react(s:Float32Array,i:number,dt:number,e:Environment,grid:SphereGrid,escaped?:Float32Array,condensed?:Float32Array,precipitated?:Float32Array,energyChanges?:Float32Array) {
+export function react(s:Float32Array,i:number,dt:number,e:Environment,grid:SphereGrid,escaped?:Float32Array,condensed?:Float32Array,precipitated?:Float32Array,energyChanges?:Float32Array,feeding?:Float32Array) {
   if(dt<=0)return;
   const p=i*STRIDE;
   const beforeClamp=enthalpy(s,i);
@@ -445,7 +448,7 @@ export function react(s:Float32Array,i:number,dt:number,e:Environment,grid:Spher
   s[p+8]=t;equilibrateWater(s,i);t=s[p+8];c=capacity(s,i);
   if(precipitated){const frozen=Math.min(reaching,Math.max(0,s[p+F.ice]-iceBeforeRain));precipitated[i*2]+=reaching-frozen;precipitated[i*2+1]+=frozen;}
   drownConsumers(s,i);
-  const life=foodWeb(s[p+F.soil],s[p+F.plant],s[p+F.herbivore],s[p+F.carnivore],habitat(t,s[p+F.water],s[p+F.dissolved],s[p+F.ice],light)*(e.climate?pioneerRootability(s,p):1),dt,consumerHabitat(t,s[p+4],s[p+7],s[p+5]),consumerHabitat(t,s[p+4],s[p+7],s[p+5],true));
+  const life=foodWeb(s[p+F.soil],s[p+F.plant],s[p+F.herbivore],s[p+F.carnivore],habitat(t,s[p+F.water],s[p+F.dissolved],s[p+F.ice],light)*(e.climate?pioneerRootability(s,p):1),dt,consumerHabitat(t,s[p+4],s[p+7],s[p+5]),consumerHabitat(t,s[p+4],s[p+7],s[p+5],true),feeding,i*2);
   s[p+F.soil]=life[0];s[p+F.plant]=life[1];s[p+F.herbivore]=life[2];s[p+F.carnivore]=life[3];
   s[p+8]=Math.max(-100,Math.min(2500,t));
   if(energyChanges)energyChanges[i*4+3]+=c*(s[p+8]-t);

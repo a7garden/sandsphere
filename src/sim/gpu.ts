@@ -13,6 +13,7 @@ export class GpuSolver implements Solver {
   condensedCells:Float32Array;
   precipitatedCells:Float32Array;
   energyChanges:Float32Array;
+  feedingCells:Float32Array;
   private device:GPUDevice;
   private buffers:GPUBuffer[];
   private staging:GPUBuffer;
@@ -31,6 +32,7 @@ export class GpuSolver implements Solver {
     this.escapeCells=new Float32Array(grid.count*4);
     this.condensedCells=new Float32Array(grid.count);this.precipitatedCells=new Float32Array(grid.count*2);
     this.energyChanges=new Float32Array(grid.count*4);
+    this.feedingCells=new Float32Array(grid.count*2);
     this.groups=[this.bind(false),this.bind(true)];
     device.lost.then(info=>{if(!this.stopped)this.loss=new Error(info.message||'GPU 연결이 종료됐습니다.');});
   }
@@ -51,7 +53,7 @@ export class GpuSolver implements Solver {
       buffer('spherical geometry',grid.geometry.byteLength),buffer('neighbors',grid.neighbors.byteLength),
       buffer('queued brush commands',grid.count*COMMAND_STRIDE*4),
       buffer('environment',48,GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST),
-      buffer('mass and energy transfers',grid.count*12*4),
+      buffer('mass, energy and feeding transfers',grid.count*16*4),
     ];
     device.queue.writeBuffer(buffers[0],0,state as Float32Array<ArrayBuffer>);
     device.queue.writeBuffer(buffers[4],0,grid.geometry as Float32Array<ArrayBuffer>);
@@ -64,7 +66,7 @@ export class GpuSolver implements Solver {
     const pipelineLayout=device.createPipelineLayout({bindGroupLayouts:[layout]});
     const pipelines=await Promise.all(['apply','flux','advance'].map(entryPoint =>
       device.createComputePipelineAsync({layout:pipelineLayout,compute:{module,entryPoint}})));
-    const staging=buffer('surface and transfers readback',state.byteLength+grid.count*12*4,GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ);
+    const staging=buffer('surface and transfers readback',state.byteLength+grid.count*16*4,GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ);
     return new GpuSolver(grid,state,device,buffers,staging,layout,pipelines);
   }
   private bind(swapped:boolean) {
@@ -75,16 +77,16 @@ export class GpuSolver implements Solver {
   }
   replace(state:Float32Array) {
     this.state=new Float32Array(state);
-    this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);
+    this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);
     this.device.queue.writeBuffer(this.buffers[this.parity===0?0:3],0,this.state as Float32Array<ArrayBuffer>);
   }
   async step(dt:number,commands:Float32Array,environment:Environment) {
     const before=this.state,parity=this.parity,climate=this.climate.checkpoint();
-    this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);
+    this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);
     if(dt<=0&&!commands.some(v=>v!==0))return;
     const steps=physicsSteps(dt),empty=new Float32Array(commands.length);
     try{for(let n=0;n<steps.length;n++)await this.stepSingle(steps[n],n===0?commands:empty,environment);}
-    catch(error){this.state=before;this.parity=parity;this.climate.restoreCheckpoint(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);throw error;}
+    catch(error){this.state=before;this.parity=parity;this.climate.restoreCheckpoint(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);throw error;}
   }
   private async stepSingle(dt:number,commands:Float32Array,environment:Environment) {
     if(this.loss) throw this.loss;
@@ -107,7 +109,7 @@ export class GpuSolver implements Solver {
     }
     const out=this.buffers[this.parity===0?3:0];
     encoder.copyBufferToBuffer(out,0,this.staging,0,this.state.byteLength);
-    encoder.copyBufferToBuffer(this.buffers[8],0,this.staging,this.state.byteLength,this.grid.count*12*4);
+    encoder.copyBufferToBuffer(this.buffers[8],0,this.staging,this.state.byteLength,this.grid.count*16*4);
     this.device.queue.submit([encoder.finish()]);
     await this.staging.mapAsync(GPUMapMode.READ);
     const data=new Float32Array(this.staging.getMappedRange());
@@ -115,7 +117,7 @@ export class GpuSolver implements Solver {
     // the fallback replays this step's command batch exactly once.
     if(this.loss){this.staging.unmap();throw this.loss;}
     const changes=data.subarray(this.state.length);
-    for(let i=0;i<this.grid.count;i++){for(let k=0;k<4;k++){this.escapeCells[i*4+k]+=changes[i*12+k];this.energyChanges[i*4+k]+=changes[i*12+8+k];}this.condensedCells[i]+=changes[i*12+4];this.precipitatedCells[i*2]+=changes[i*12+5];this.precipitatedCells[i*2+1]+=changes[i*12+6];}
+    for(let i=0;i<this.grid.count;i++){for(let k=0;k<4;k++){this.escapeCells[i*4+k]+=changes[i*16+k];this.energyChanges[i*4+k]+=changes[i*16+8+k];}this.condensedCells[i]+=changes[i*16+4];this.precipitatedCells[i*2]+=changes[i*16+5];this.precipitatedCells[i*2+1]+=changes[i*16+6];this.feedingCells[i*2]+=changes[i*16+12];this.feedingCells[i*2+1]+=changes[i*16+13];}
     this.state=data.slice(0,this.state.length);
     this.staging.unmap();
     const moved=this.animalNavigation.move(this.state,dt,environment,this.energyChanges);

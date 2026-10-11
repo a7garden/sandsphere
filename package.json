@@ -1,6 +1,6 @@
 {
   "name": "sandsphere",
-  "version": "0.6.0-alpha.5",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "scripts": {

@@ -1,6 +1,6 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect,vi} from 'vitest';
 import {AnimalNavigation,animalLand} from '../src/sim/animalNavigation';
-import {F,STRIDE,COMMAND_STRIDE,CpuSolver,seedPlanet,totalMass,totalEnthalpy} from '../src/sim/model';
+import {F,STRIDE,COMMAND_STRIDE,CpuSolver,seedPlanet,totalMass,totalEnthalpy,react} from '../src/sim/model';
 import {REFERENCE_EDGE} from '../src/sim/materialPhysics';
 import {INVALID,NEIGHBORS,createSphere,type SphereGrid} from '../src/sim/sphere';
 import {NullEngine} from '@babylonjs/core/Engines/nullEngine';
@@ -56,6 +56,21 @@ describe('land guild navigation and conservative movement',()=>{
 });
 
 describe('walking guild representatives',()=>{
+ it('reports actual consumption without changing the food web and animates feeding only while running',()=>{
+  const engine=new NullEngine(),scene=new Scene(engine),grid=graph(1,[]),root=new TransformNode('root',scene),s=world(grid);
+  try{
+   s[F.plant]=4;s[F.herbivore]=1;s[F.carnivore]=.5;s[F.water]=.3;s[F.soil]=10;s[F.nitrogen]=.3;
+   const expected=s.slice(),fed=s.slice(),feeding=new Float32Array(2);react(expected,0,.1,environment,grid);react(fed,0,.1,environment,grid,undefined,undefined,undefined,undefined,feeding);
+   expect(fed).toEqual(expected);expect(feeding[0]).toBeGreaterThan(0);expect(feeding[1]).toBeGreaterThan(0);
+   const animals=new LandAnimals(scene,root,grid);animals.update(s,new Float32Array(1).fill(1));const original=s.slice();
+   const matrices=()=>scene.meshes.map(mesh=>[...(mesh as unknown as {_thinInstanceDataStorage:{matrixData:Float32Array}})._thinInstanceDataStorage.matrixData.slice(0,16)]),before=matrices();
+   animals.feed(feeding,0);animals.animate(.05,1);expect(matrices()).toEqual(before);
+   animals.feed(feeding,.1);animals.animate(.05,1);expect(matrices()).not.toEqual(before);expect(s).toEqual(original);
+   const eating=matrices();for(let n=0;n<20;n++)animals.animate(.05,0);expect(matrices()).toEqual(eating);
+   for(let n=0;n<100;n++)animals.animate(.05,1);expect(matrices()[0][13]).toBeCloseTo(before[0][13],5);
+   const empty=s.slice(),noFood=new Float32Array(2);empty[F.plant]=0;react(empty,0,.1,environment,grid,undefined,undefined,undefined,undefined,noFood);expect(noFood[0]).toBe(0);expect(noFood[1]).toBeGreaterThan(0);
+  }finally{scene.dispose();engine.dispose();}
+ });
  it('walks across dry cells, pauses, and removes flooded or erased representatives without changing stock',()=>{
   const engine=new NullEngine(),scene=new Scene(engine),grid=createSphere(2),root=new TransformNode('root',scene),s=world(grid),radii=new Float32Array(grid.count).fill(5);
   try{
@@ -72,7 +87,40 @@ describe('walking guild representatives',()=>{
    const animals=new LandAnimals(scene,root,grid);for(let i=0;i<grid.count;i++){s[i*STRIDE+F.herbivore]=1;s[i*STRIDE+F.carnivore]=1;}
    animals.update(s,new Float32Array(grid.count).fill(5));animals.animate(.05,1);
    for(const name of ['grazing populations','predator populations'])expect((scene.getMeshByName(name)! as Mesh).thinInstanceCount).toBe(256);
-   for(const name of ['walking legs 0','walking legs 1'])expect((scene.getMeshByName(name)! as Mesh).thinInstanceCount).toBe(1024);
+   expect(scene.meshes).toHaveLength(2);
+   const triangles=scene.meshes.map(m=>m.getTotalIndices()/3);expect(triangles).toEqual([120,8]);
+   for(let kind=0;kind<2;kind++){
+    const positions=scene.meshes[kind].getVerticesData('position')!,normals=scene.meshes[kind].getVerticesData('normal')!;let outward=0;
+    for(let i=0;i<positions.length;i+=3)outward+=positions[i]*normals[i]+(positions[i+1]-(kind===0?.24:.19))*normals[i+1]+positions[i+2]*normals[i+2];
+    expect(outward).toBeGreaterThan(0);
+   }
+   for(const mesh of scene.meshes){const data=(mesh as unknown as {_thinInstanceDataStorage:{matrixData:Float32Array}})._thinInstanceDataStorage.matrixData;expect(data.byteLength).toBe(256*16*4);}
+  }finally{scene.dispose();engine.dispose();}
+ });
+ it('keeps the nose aligned with travel, turns gradually, and holds its heading on arrival',()=>{
+  const engine=new NullEngine(),scene=new Scene(engine),grid=graph(2,[[0,1]]),root=new TransformNode('root',scene),s=world(grid),radii=new Float32Array(2).fill(1);
+  try{
+   const animals=new LandAnimals(scene,root,grid);s[F.herbivore]=1;s[STRIDE+F.plant]=4;animals.update(s,radii);
+   const mesh=scene.getMeshByName('grazing populations')! as Mesh,data=()=> (mesh as unknown as {_thinInstanceDataStorage:{matrixData:Float32Array}})._thinInstanceDataStorage.matrixData;
+   const nose=()=>Vector3.FromArray(data(),8).normalize(),position=()=>Vector3.FromArray(data(),12);let previous=nose(),oldPosition=position(),movedAligned=false;
+   for(let n=0;n<100;n++){
+    animals.animate(.05,1);const current=nose(),nextPosition=position(),delta=nextPosition.subtract(oldPosition);
+    expect(Vector3.Dot(previous,current)).toBeGreaterThan(Math.cos(.16));
+    if(delta.length()>.0001){const alignment=Vector3.Dot(current,delta.normalize());expect(alignment).toBeGreaterThan(.75);if(alignment>.97)movedAligned=true;}
+    previous=current;oldPosition=nextPosition;
+   }
+   expect(movedAligned).toBe(true);
+   animals.animate(.05,0);const paused=[...data()],upload=vi.spyOn(mesh,'thinInstanceBufferUpdated');for(let n=0;n<20;n++)animals.animate(.05,0);
+   expect([...data()]).toEqual(paused);expect(upload).not.toHaveBeenCalled();
+   animals.update(s,radii);expect([...data()]).toEqual(paused);
+  }finally{scene.dispose();engine.dispose();}
+ });
+ it('does not visually wander into fatal or salt-blocked land when food routes are absent',()=>{
+  const engine=new NullEngine(),scene=new Scene(engine),grid=graph(3,[[0,1],[0,2]]),root=new TransformNode('root',scene),s=world(grid);
+  try{
+   const animals=new LandAnimals(scene,root,grid);s[F.herbivore]=1;s[F.carnivore]=1;s[STRIDE+F.temperature]=1000;s[2*STRIDE+F.dissolved]=1;animals.update(s,new Float32Array(3).fill(1));
+   const positions=()=>scene.meshes.map(mesh=>[...(mesh as unknown as {_thinInstanceDataStorage:{matrixData:Float32Array}})._thinInstanceDataStorage.matrixData.slice(12,15)]),start=positions();
+   for(let n=0;n<100;n++)animals.animate(.05,1);expect(positions()).toEqual(start);
   }finally{scene.dispose();engine.dispose();}
  });
 });
