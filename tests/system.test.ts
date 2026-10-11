@@ -1,4 +1,4 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect,vi} from 'vitest';
 import {BackgroundWorlds,advanceOrbit,migrateWorld,validSystem,switchSystemMode,materialSupply,prepareSystemSave} from '../src/sim/system';
 import {createSphere} from '../src/sim/sphere';
 import {COMMAND_STRIDE,COMMAND_FIELD,F,STRIDE,CpuSolver,applyCommand,emptyStock,totalMass,seedPlanet,type Snapshot} from '../src/sim/model';
@@ -83,6 +83,35 @@ describe('persistent solar system',()=>{
   expect(system.planets[0].snapshot).toEqual(active);expect(c).toEqual(paused);expect(b.time).toBeCloseTo(8);
   expect(totalMass(new Float32Array(b.state))+(b.escaped??0)).toBeCloseTo(mass,3);
   expect(b.state.reduce((sum,value,index)=>sum+(index%STRIDE===F.water?value:0),0)).toBeGreaterThan(0);
+ });
+ it('advances asynchronous inactive worlds with exactly the synchronous orbit and climate',async()=>{
+  const a=snapshot(),b=snapshot('ice'),c=snapshot();c.paused=true;
+  const planets=[{id:'planet-1',name:'Active',snapshot:a},{id:'planet-2',name:'Ice',snapshot:b},{id:'planet-3',name:'Paused',snapshot:c}],expected=structuredClone(planets);
+  const synchronous=new BackgroundWorlds(grid),factory=vi.fn(async(state:Float32Array)=>new CpuSolver(grid,state)),background=new BackgroundWorlds(grid,factory);
+  for(let n=0;n<4;n++){synchronous.step(expected,'planet-1',.2);await background.stepAsync(planets,'planet-1',.2);}
+  expect(planets).toEqual(expected);expect(factory).toHaveBeenCalledTimes(1);
+ });
+ it('publishes an inactive planet only after a completed step and disposes invalidated workers',async()=>{
+  const planet={id:'planet-2',name:'Ice',snapshot:snapshot('ice')},before=structuredClone(planet);
+  let release!:()=>void;const waiting=new Promise<void>(resolve=>release=resolve);
+  const solver=new CpuSolver(grid,new Float32Array(planet.snapshot.state)),dispose=vi.spyOn(solver,'dispose'),original=solver.step.bind(solver);
+  solver.step=async(...args)=>{await waiting;await original(...args);};
+  const background=new BackgroundWorlds(grid,async()=>solver),finished=background.stepAsync([planet],'planet-1',.01);
+  await Promise.resolve();expect(planet).toEqual(before);
+  release();await finished;expect(planet.snapshot.time).toBe(.01);expect(planet.snapshot.climate).toBeDefined();
+  background.invalidate(planet.id);expect(dispose).toHaveBeenCalledOnce();
+ });
+ it('recreates failed background compute from its committed climate and advances orbit once',async()=>{
+  const planet={id:'planet-2',name:'Ice',snapshot:snapshot('ice')},expected=structuredClone(planet);
+  let calls=0,failed!:CpuSolver;const warning=vi.spyOn(console,'warn').mockImplementation(()=>{});
+  const background=new BackgroundWorlds(grid,async state=>{
+   const solver=new CpuSolver(grid,state);
+   if(++calls===1){failed=solver;const step=solver.step.bind(solver);let steps=0;solver.step=async(...args)=>{if(++steps===2)throw new Error('Worker lost');await step(...args);};}
+   return solver;
+  });
+  const synchronous=new BackgroundWorlds(grid);synchronous.step([expected],'planet-1',.01);synchronous.step([expected],'planet-1',.01);
+  await background.stepAsync([planet],'planet-1',.01);const dispose=vi.spyOn(failed,'dispose');await background.stepAsync([planet],'planet-1',.01);
+  expect(planet).toEqual(expected);expect(calls).toBe(2);expect(dispose).toHaveBeenCalledOnce();warning.mockRestore();
  });
  it('makes period depend on radius and synchronous rotation keep one solar face',()=>{
   expect(orbitalPeriod(4)/orbitalPeriod(1)).toBe(8);

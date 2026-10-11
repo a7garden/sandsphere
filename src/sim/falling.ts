@@ -8,19 +8,25 @@ export function physicalContact(state:Float32Array,i:number,grid:SphereGrid){
 }
 /** The single owner of grain motion. No camera, scene, render heights or frame time. */
 export function advanceFalling(grains:FallingGrain[],grid:SphereGrid,state:Float32Array,dt:number,e:Environment){
-  if(dt<=0)return 0;let escaped=0;
+  if(dt<=0)return 0;let escaped=0,write=grains.length;
+  const gravity=12*gravityMultiplier(e)*RADIUS*RADIUS;
   for(let n=grains.length-1;n>=0;n--){
     const g=grains[n],r=g.position.length();g.age+=dt;
-    g.velocity.addInPlace(g.position.scale(-12*gravityMultiplier(e)*RADIUS*RADIUS/(r*r*r)*dt));g.position.addInPlace(g.velocity.scale(dt));
-    const specificEnergy=g.velocity.lengthSquared()/2-12*gravityMultiplier(e)*RADIUS*RADIUS/g.position.length();
-    if(g.position.length()>RADIUS*2.1&&Vector3.Dot(g.position,g.velocity)>0&&specificEnergy>0){escaped+=g.amount;grains.splice(n,1);continue;}
+    const acceleration=-gravity/(r*r*r)*dt;
+    g.velocity.x+=g.position.x*acceleration;g.velocity.y+=g.position.y*acceleration;g.velocity.z+=g.position.z*acceleration;
+    g.position.x+=g.velocity.x*dt;g.position.y+=g.velocity.y*dt;g.position.z+=g.velocity.z*dt;
+    const radius=g.position.length(),specificEnergy=g.velocity.lengthSquared()/2-gravity/radius;
+    if(radius>RADIUS*2.1&&Vector3.Dot(g.position,g.velocity)>0&&specificEnergy>0){escaped+=g.amount;continue;}
     g.index=nearestCell(grid,g.position.x,g.position.y,g.position.z,g.index);
     const floor=physicalContact(state,g.index,grid);
-    if(g.position.length()<=floor){
+    if(radius<=floor){
       if(g.amount>0)g.land(g.index,g.amount);
       if(g.material==='water'&&g.amount>0){const normal=g.position.normalizeToNew();g.position=normal.scale(floor+.015);g.velocity=g.velocity.subtract(normal.scale(Vector3.Dot(g.velocity,normal))).scale(.2).add(normal.scale(.8));g.amount=0;g.size*=.65;}
-      else grains.splice(n,1);
+      else continue;
     }
+    grains[--write]=g;
   }
+  // Keep particle and landing order while removing a whole batch in linear time.
+  if(write){grains.copyWithin(0,write);grains.length-=write;}
   return escaped;
 }

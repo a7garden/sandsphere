@@ -70,10 +70,10 @@ export class LayeredAtmosphere {
  readonly mass:Float64Array;readonly temperature:Float64Array;readonly velocity:Float64Array;readonly updraft:Float64Array;
  private roundoff:Float64Array;
  private initialized=false;private detached=false;private gravity=1;
- private delta:Float64Array;private heat:Float64Array;private momentum:Float64Array;private out:Float64Array;
+ private fluxMass:Float64Array;private delta:Float64Array;private heat:Float64Array;private momentum:Float64Array;private out:Float64Array;
  private gradients:Float64Array;private radiationCache:Float64Array;
  private acceleration:Float64Array;private rt:Float64Array;private virtualTemperature:Float64Array;private logPressure:Float64Array;private edgeSpeeds:Float64Array;private carried:Float64Array;
- constructor(readonly grid:SphereGrid,private edges:AirEdge[],private maxStepSeconds=1){if(!Number.isFinite(maxStepSeconds)||maxStepSeconds<=0||maxStepSeconds>60)throw new Error("대기 적분 간격은 0–60초 범위여야 합니다.");const n=grid.count*AIR_LAYERS;this.roundoff=new Float64Array(grid.count);this.mass=new Float64Array(n*6);this.temperature=new Float64Array(n);this.velocity=new Float64Array(n*3);this.updraft=new Float64Array(grid.count*(AIR_LAYERS-1));this.delta=new Float64Array(n*6);this.heat=new Float64Array(n);this.momentum=new Float64Array(n*3);this.out=new Float64Array(n);this.acceleration=new Float64Array(n*3);this.rt=new Float64Array(n);this.virtualTemperature=new Float64Array(n);this.logPressure=new Float64Array(n);this.edgeSpeeds=new Float64Array(edges.length*AIR_LAYERS);this.carried=new Float64Array(3);this.gradients=this.gradientGeometry();this.radiationCache=new Float64Array(grid.count*RAD_STRIDE);for(let i=0;i<grid.count;i++)this.radiationCache[i*RAD_STRIDE]=-1;}
+ constructor(readonly grid:SphereGrid,private edges:AirEdge[],private maxStepSeconds=1){if(!Number.isFinite(maxStepSeconds)||maxStepSeconds<=0||maxStepSeconds>60)throw new Error("대기 적분 간격은 0–60초 범위여야 합니다.");const n=grid.count*AIR_LAYERS;this.roundoff=new Float64Array(grid.count);this.mass=new Float64Array(n*6);this.temperature=new Float64Array(n);this.velocity=new Float64Array(n*3);this.updraft=new Float64Array(grid.count*(AIR_LAYERS-1));this.fluxMass=new Float64Array(n);this.delta=new Float64Array(n*6);this.heat=new Float64Array(n);this.momentum=new Float64Array(n*3);this.out=new Float64Array(n);this.acceleration=new Float64Array(n*3);this.rt=new Float64Array(n);this.virtualTemperature=new Float64Array(n);this.logPressure=new Float64Array(n);this.edgeSpeeds=new Float64Array(edges.length*AIR_LAYERS);this.carried=new Float64Array(3);this.gradients=this.gradientGeometry();this.radiationCache=new Float64Array(grid.count*RAD_STRIDE);for(let i=0;i<grid.count;i++)this.radiationCache[i*RAD_STRIDE]=-1;}
  /** Consistent tangent least-squares gradient, including the 12 pentagons.
   * A fixed division by 3 biases irregular neighbor fans as resolution grows. */
  private gradientGeometry(){
@@ -102,9 +102,9 @@ export class LayeredAtmosphere {
  thickness(k:number){return AIR_DZ[k]/this.gravity;}
  layerMass(q:number){return sum(this.mass,q*6,6);}
  layerCapacity(q:number){let c=0;for(let f=0;f<6;f++)c+=this.mass[q*6+f]*cp[f];return c;}
- layerEnergy(q:number){let h=this.layerCapacity(q)*this.temperature[q];for(let f=0;f<6;f++)h+=this.mass[q*6+f]*latent[f];return h+this.layerMass(q)*(9.81*this.gravity*this.height(q%AIR_LAYERS)+this.speed2(q)*.5)/1000;}
+ layerEnergy(q:number,mass=this.layerMass(q)){let h=this.layerCapacity(q)*this.temperature[q];for(let f=0;f<6;f++)h+=this.mass[q*6+f]*latent[f];return h+mass*(9.81*this.gravity*this.height(q%AIR_LAYERS)+this.speed2(q)*.5)/1000;}
  private speed2(q:number){const v=q*3;return this.velocity[v]**2+this.velocity[v+1]**2+this.velocity[v+2]**2;}
- private setEnergy(q:number,h:number){const c=this.layerCapacity(q);if(c<=1e-18){this.temperature[q]=0;this.velocity.fill(0,q*3,q*3+3);return;}let phase=0;for(let f=0;f<6;f++)phase+=this.mass[q*6+f]*latent[f];this.temperature[q]=(h-phase-this.layerMass(q)*(9.81*this.gravity*this.height(q%AIR_LAYERS)+this.speed2(q)*.5)/1000)/c;}
+ private setEnergy(q:number,h:number,mass=this.layerMass(q)){const c=this.layerCapacity(q);if(c<=1e-18){this.temperature[q]=0;this.velocity.fill(0,q*3,q*3+3);return;}let phase=0;for(let f=0;f<6;f++)phase+=this.mass[q*6+f]*latent[f];this.temperature[q]=(h-phase-mass*(9.81*this.gravity*this.height(q%AIR_LAYERS)+this.speed2(q)*.5)/1000)/c;}
  totalEnergy(){let h=0;for(let q=0;q<this.temperature.length;q++)h+=this.layerEnergy(q);return h;}
  columnEnergy(i:number){let h=0;for(let k=0;k<AIR_LAYERS;k++)h+=this.layerEnergy(i*AIR_LAYERS+k);return h;}
  /** Relative to the old aggregate-at-surface-temperature diagnostic. */
@@ -192,28 +192,29 @@ export class LayeredAtmosphere {
  /** Tangent-vector parallel transport between sphere cells (Rodrigues). */
  private carriedVelocity(q:number,from:number,to:number){const g=this.grid,n=from*3,m=to*3,v=q*3,ax=g.directions[n+1]*g.directions[m+2]-g.directions[n+2]*g.directions[m+1],ay=g.directions[n+2]*g.directions[m]-g.directions[n]*g.directions[m+2],az=g.directions[n]*g.directions[m+1]-g.directions[n+1]*g.directions[m],c=g.directions[n]*g.directions[m]+g.directions[n+1]*g.directions[m+1]+g.directions[n+2]*g.directions[m+2],x=this.velocity[v],y=this.velocity[v+1],z=this.velocity[v+2],bx=ay*z-az*y,by=az*x-ax*z,bz=ax*y-ay*x;this.carried[0]=x+bx+(ay*bz-az*by)/Math.max(1e-9,1+c);this.carried[1]=y+by+(az*bx-ax*bz)/Math.max(1e-9,1+c);this.carried[2]=z+bz+(ax*by-ay*bx)/Math.max(1e-9,1+c);}
  private queue(d:number,r:number,fraction:number){
-  if(fraction<=0||this.layerMass(d)<1e-18)return;
-  const di=Math.floor(d/AIR_LAYERS),ri=Math.floor(r/AIR_LAYERS),m=this.layerMass(d)*fraction,h=this.layerEnergy(d)*fraction;
+  const mass=this.fluxMass[d];if(fraction<=0||mass<1e-18)return;
+  const di=Math.floor(d/AIR_LAYERS),ri=Math.floor(r/AIR_LAYERS),m=mass*fraction,h=this.layerEnergy(d,mass)*fraction;
   if(di!==ri)this.carriedVelocity(d,di,ri);
   for(let f=0;f<6;f++){const a=this.mass[d*6+f]*fraction;this.delta[d*6+f]-=a;this.delta[r*6+f]+=a;}this.heat[d]-=h;this.heat[r]+=h;
   for(let k=0;k<3;k++){this.momentum[d*3+k]-=m*this.velocity[d*3+k];this.momentum[r*3+k]+=m*(di===ri?this.velocity[d*3+k]:this.carried[k]);}
  }
  private commit(){
   for(let q=0;q<this.temperature.length;q++){
-   const oldMass=this.layerMass(q),h=this.layerEnergy(q)+this.heat[q];
+   const oldMass=this.fluxMass[q],h=this.layerEnergy(q,oldMass)+this.heat[q];
    for(let f=0;f<6;f++)this.mass[q*6+f]+=this.delta[q*6+f];const m=this.layerMass(q);
    for(let k=0;k<3;k++)this.velocity[q*3+k]=m>1e-18?(oldMass*this.velocity[q*3+k]+this.momentum[q*3+k])/m:0;
-   this.setEnergy(q,h);
+   this.setEnergy(q,h,m);
   }
  }
- private clearFlux(){this.delta.fill(0);this.heat.fill(0);this.momentum.fill(0);this.out.fill(0);}
+ /** Mass stays fixed while fluxes are queued. Refresh after each commit. */
+ private clearFlux(){this.delta.fill(0);this.heat.fill(0);this.momentum.fill(0);this.out.fill(0);for(let q=0;q<this.fluxMass.length;q++)this.fluxMass[q]=this.layerMass(q);}
  private dynamics(dt:number,e:Environment){
   const acceleration=this.acceleration,rt=this.rt,virtual=this.virtualTemperature,logPressure=this.logPressure;
   acceleration.fill(0);
-  for(let i=0;i<this.grid.count;i++){let above=0;for(let k=AIR_LAYERS-1;k>=0;k--){const q=i*AIR_LAYERS+k,m=this.layerMass(q);rt[q]=this.gasConstant(q)*(this.temperature[q]+273.15);virtual[q]=this.virtual(q);logPressure[q]=Math.log(Math.max(.01,(above+m*.5)*COLUMN_KG*9.81*this.gravity));above+=m;}}
+  for(let i=0;i<this.grid.count;i++){let above=0;for(let k=AIR_LAYERS-1;k>=0;k--){const q=i*AIR_LAYERS+k,m=this.layerMass(q);this.fluxMass[q]=m;rt[q]=this.gasConstant(q)*(this.temperature[q]+273.15);virtual[q]=this.virtual(q);logPressure[q]=Math.log(Math.max(.01,(above+m*.5)*COLUMN_KG*9.81*this.gravity));above+=m;}}
   let edgeIndex=0;for(const {i,j,distance} of this.edges){let thermal=0,previous=0;for(let k=0;k<AIR_LAYERS;k++){
    const a=i*AIR_LAYERS+k,b=j*AIR_LAYERS+k;
-   if(this.layerMass(a)<1e-12||this.layerMass(b)<1e-12)continue;
+   if(this.fluxMass[a]<1e-12||this.fluxMass[b]<1e-12)continue;
    // Linearized hypsometric pressure anomaly at a fixed reference height:
    // ∂z ln p = -g/(R Tv). Heating expands the column and creates horizontal
    // pressure differences even before total column mass has redistributed.
@@ -224,7 +225,7 @@ export class LayeredAtmosphere {
   const groundDrag=Math.exp(-dt/86400),airDrag=Math.exp(-dt/604800),g=this.grid.directions;
   let previousCell=-1,c=1,sn=0;
   for(let q=0;q<this.temperature.length;q++){
-   const h=this.layerEnergy(q),i=Math.floor(q/AIR_LAYERS),v=q*3,n=i*3;
+   const h=this.layerEnergy(q,this.fluxMass[q]),i=Math.floor(q/AIR_LAYERS),v=q*3,n=i*3;
    if(i!==previousCell){const angle=-2*(e.rotationRate??0)/AIR_SECONDS*g[n+1]*dt;c=Math.cos(angle);sn=Math.sin(angle);previousCell=i;}
    for(let k=0;k<3;k++)this.velocity[v+k]+=acceleration[v+k]*dt;
    const dot=this.velocity[v]*g[n]+this.velocity[v+1]*g[n+1]+this.velocity[v+2]*g[n+2];for(let k=0;k<3;k++)this.velocity[v+k]-=dot*g[n+k];
@@ -232,12 +233,12 @@ export class LayeredAtmosphere {
    this.velocity[v]=(x*c+(g[n+1]*z-g[n+2]*y)*sn)*drag;this.velocity[v+1]=(y*c+(g[n+2]*x-g[n]*z)*sn)*drag;this.velocity[v+2]=(z*c+(g[n]*y-g[n+1]*x)*sn)*drag;
    // Pressure work, drag and upwind mixing exchange kinetic/internal energy;
    // dissipation is retained as heat rather than silently discarded.
-   this.setEnergy(q,h);
+   this.setEnergy(q,h,this.fluxMass[q]);
   }
   this.clearFlux();
   let speedIndex=0;
   for(const {i,j,distance,t} of this.edges)for(let k=0;k<AIR_LAYERS;k++){
-   const a=i*AIR_LAYERS+k,b=j*AIR_LAYERS+k,speed=t.reduce((v,x,l)=>v+x*(this.velocity[a*3+l]+this.velocity[b*3+l])*.5,0),d=speed>=0?a:b;
+   const a=i*AIR_LAYERS+k,b=j*AIR_LAYERS+k;let speed=0;for(let l=0;l<3;l++)speed+=t[l]*(this.velocity[a*3+l]+this.velocity[b*3+l])*.5;const d=speed>=0?a:b;
    this.edgeSpeeds[speedIndex++]=speed;
    this.out[d]+=Math.abs(speed)*dt/(distance*AIR_RADIUS*3);
   }
@@ -247,16 +248,16 @@ export class LayeredAtmosphere {
   this.commit();
   this.clearFlux();
   for(let i=0;i<this.grid.count;i++)for(let k=0;k<AIR_LAYERS-1;k++){
-   const a=i*AIR_LAYERS+k,b=a+1;if(this.layerMass(a)<1e-12||this.layerMass(b)<1e-12){this.updraft[i*(AIR_LAYERS-1)+k]=0;continue;}const z=this.height(k+1)-this.height(k);
+   const a=i*AIR_LAYERS+k,b=a+1;if(this.fluxMass[a]<1e-12||this.fluxMass[b]<1e-12){this.updraft[i*(AIR_LAYERS-1)+k]=0;continue;}const z=this.height(k+1)-this.height(k);
    let dryCapacity=0;for(let f=1;f<4;f++)dryCapacity+=this.mass[a*6+f]*cp[f];
-   const ma=this.layerMass(a),mb=this.layerMass(b),mix=-Math.expm1(-PLUME_ENTRAINMENT*z),da=this.dry(a),db=this.dry(b);
+   const ma=this.fluxMass[a],mb=this.fluxMass[b],mix=-Math.expm1(-PLUME_ENTRAINMENT*z),da=this.dry(a),db=this.dry(b);
    // Compensate DRY air, not moist total mass. Otherwise every evaporation /
    // precipitation cycle pumps noncondensable air into the bottom layer.
    // This is the dry-mass-coordinate principle, not the full WRF equations.
    const useDry=da.mass>1e-12&&db.mass>1e-12,referenceA=useDry?da.mass:ma,referenceB=useDry?db.mass:mb,scale=referenceA/referenceB,mixedMass=(1-mix)*ma+mix*scale*mb;
    let envCapacity=0;for(let f=1;f<4;f++)envCapacity+=this.mass[b*6+f]*cp[f];
    const dryMoles=(1-mix)*da.moles+mix*scale*db.moles,water=(1-mix)*(this.mass[a*6]+this.mass[a*6+4]+this.mass[a*6+5])+mix*scale*(this.mass[b*6]+this.mass[b*6+4]+this.mass[b*6+5]),
-    dryMass=(1-mix)*da.mass+mix*scale*db.mass,mixedH=(1-mix)*(this.layerEnergy(a)-ma*this.speed2(a)*.5/1000)+mix*scale*(this.layerEnergy(b)-mb*this.speed2(b)*.5/1000),
+    dryMass=(1-mix)*da.mass+mix*scale*db.mass,mixedH=(1-mix)*(this.layerEnergy(a,ma)-ma*this.speed2(a)*.5/1000)+mix*scale*(this.layerEnergy(b,mb)-mb*this.speed2(b)*.5/1000),
     parcel=parcelEquilibrium((1-mix)*dryCapacity+mix*scale*envCapacity,dryMoles,water,mixedH,this.pressure(i,k+1),mixedMass*9.81*this.gravity*this.height(k+1)/1000),
     parcelGas=dryMass+parcel.vapor,parcelR=8.314462618*(dryMoles+parcel.vapor/.018015)/Math.max(1e-30,parcelGas),parcelVirtual=(parcel.temperature+273.15)*parcelR/287*parcelGas/mixedMass;
    const buoyancy=9.81*this.gravity*(parcelVirtual-this.virtual(b))/Math.max(1,this.virtual(b)),v=i*(AIR_LAYERS-1)+k;
@@ -334,7 +335,11 @@ export class LayeredAtmosphere {
  private precipitation(s:Float32Array,i:number,dt:number,precipitated?:Float32Array){
   const p=i*STRIDE;let rain=0,rainEnergy=0,snow=0,snowEnergy=0;
   for(let k=AIR_LAYERS-1;k>=0;k--){
-   const q=i*AIR_LAYERS+k,a=q*6,fraction=this.layerCloudFraction(i,k),dryMass=this.dry(q).mass,gas=dryMass>1e-12?dryMass:sum(this.mass,a,4),density=gas*COLUMN_KG/this.thickness(k);
+   const q=i*AIR_LAYERS+k,a=q*6;
+   // Clear layers with no incoming precipitation have nothing to convert,
+   // evaporate or settle. Avoid saturation/pressure work over dry sand worlds.
+   if(this.mass[a+4]===0&&this.mass[a+5]===0&&rain===0&&snow===0)continue;
+   const fraction=this.layerCloudFraction(i,k),dryMass=this.dry(q).mass,gas=dryMass>1e-12?dryMass:sum(this.mass,a,4),density=gas*COLUMN_KG/this.thickness(k);
    const convert=(amount:number)=>{if(amount<=0)return;const h=this.layerEnergy(q),carried=amount*(cp[4]*this.temperature[q]+(9.81*this.gravity*this.height(k)+this.speed2(q)*.5)/1000);this.mass[a+4]-=amount;this.setEnergy(q,h-carried);rain+=amount;rainEnergy+=carried;};
    convert(this.mass[a+4]*warmAutoFraction(this.mass[a+4]/Math.max(1e-30,gas*fraction),dt));
    if(rain>0&&gas>0){

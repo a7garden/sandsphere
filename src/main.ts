@@ -51,6 +51,7 @@ import {GASES,atmosphereState,atmosphereReadout} from './sim/atmosphere';
 import {atmosphereOptics} from './sim/optics';
 import {orbitalSun,orbitalPeriod,localSun,orbitalEnvironment,solarEnergy} from './sim/orbit';
 import {GpuSolver} from './sim/gpu';
+import {WorkerSolver} from './sim/workerSolver';
 import {PHYSICS_DT,SimulationClock} from './sim/clock';
 import {heatForTarget} from './sim/toolHeat';
 import {saveSnapshot,loadSnapshot,loadRecord,validSnapshot,upgradeSnapshot} from './sim/storage';
@@ -112,7 +113,10 @@ const weatherReadings=new WeatherReadings();
 let environment={...environmentFor('coast'),climate:true} as Environment,solver:Solver=new CpuSolver(grid,seedWorld(grid));
 let activeCommands:Float32Array|null=null;
 let planets:PlanetRecord[]=[],activeId='planet-1',stock=emptyStock(),transferredIn=0,transferredOut=0,tidallyLocked=false;
-const backgroundWorlds=new BackgroundWorlds(grid);
+const backgroundWorlds=new BackgroundWorlds(grid,async state=>{
+ try{const worker=await WorkerSolver.create(grid,state,true);if(worker)return worker;}catch(error){console.warn('Background planet worker unavailable.',error);}
+ return new CpuSolver(grid,state);
+});
 let overview=false,progress=freshProgress(),mode:GameMode='campaign',otherMode:ModeWorld|undefined,modeSelectionRequired=false;
 let inventory:Inventory;
 let firstSteps:FirstSteps;
@@ -280,12 +284,12 @@ function pour(dt:number,direction:readonly number[],kind=material,rate=Number(ra
   const pieces=Math.max(1,Math.ceil(dt*240/weights.length));
   for(const {index,weight} of weights)for(let k=0;k<pieces;k++)view.emit(index,kind,amount*weight/pieces,(cell,mass)=>deposit(cell,mass,kind),index===center?[...grid.directions.subarray(index*3,index*3+3)]:undefined,index,emitter,true);
 }
-let brushCell:number|null=null,brushHover=false,lastBrushRefresh=0;
+let brushCell:number|null=null,brushHover=false,brushRefreshPending=false,lastBrushRefresh=0;
 function brushSizeUpdate(){
   const rings=Number(radiusInput.value),text=brushCell===null?(rings===0?'1셀':rings+'겹 확장'):selectedBrushWeights(brushCell,rings).length+'셀';
   el('radius-value').textContent=text;radiusInput.setAttribute('aria-valuetext',text);updateRangeControl(radiusInput);
 }
-function hideBrush(){brushHover=false;brushCell=null;view?.setBrushCells([]);el('brush').hidden=true;el('cursor-label').hidden=true;brushSizeUpdate();}
+function hideBrush(){brushHover=false;brushRefreshPending=false;brushCell=null;view?.setBrushCells([]);el('brush').hidden=true;el('cursor-label').hidden=true;brushSizeUpdate();}
 function showBrush(hit:ReturnType<PlanetView['pick']>){
   const visible=!!hit&&!overview&&!view.isSelectingSection&&!observation.selecting&&tool!=='observe';
   if(!visible){hideBrush();return;}
@@ -300,6 +304,7 @@ function showBrush(hit:ReturnType<PlanetView['pick']>){
 function refreshBrush(){const r=view.canvas.getBoundingClientRect();showBrush(view.pick(pointer.x-r.left,pointer.y-r.top));}
 function paint(dt:number) {
   if(operation||overview||view.isSelectingSection||observation.selecting||tool==='observe'||performance.now()<touchPaintReadyAt)return;const rect=view.canvas.getBoundingClientRect(),hit=view.pick(pointer.x-rect.left,pointer.y-rect.top);if(!hit)return;if(!hit.inAir)observation.hover(hit.index);
+  showBrush(hit);lastBrushRefresh=performance.now();brushRefreshPending=false;
   if(tool==='meteor'){pointer.down=false;void meteorImpact(hit.direction);return;}
   if(paused&&(tool==='pour'||!hit.inAir))pausedEdited=true;
   if(tool==='pour')pour(dt,hit.direction,material,Number(rateInput.value),Number(radiusInput.value),hit.emitter,hit.index);
@@ -322,7 +327,14 @@ async function tick(dt:number) {
   const batch=commands;commands=new Float32Array(grid.count*COMMAND_STRIDE);activeCommands=batch;
   const accounting=batch.some((v,i)=>v!==0&&(i%COMMAND_STRIDE===5||i%COMMAND_STRIDE===6));
   const transfer=accounting?snapshotSurface(solver.state,batch,[]):{pendingRemoved:0,collected:emptyStock()},cut=transfer.pendingRemoved;
-  try{await solver.step(dt,batch,environment);}catch(error){console.warn('GPU compute stopped; continuing from the last complete state.',error);const state=solver.state,climate=solver.climate.snapshot();solver.dispose();solver=new CpuSolver(grid,state);solver.climate.restore(climate);await solver.step(dt,batch,environment);el('backend').textContent='CPU';message('CPU 계산으로 계속하고 있어요.',true);}finally{activeCommands=null;}
+  try{await solver.step(dt,batch,environment);}catch(error){
+    console.warn('Compute stopped; continuing from the last complete state.',error);
+    const state=solver.state,climate=solver.climate.checkpoint(),lift=solver.climate.lift.slice();solver.dispose();
+    let replacement:Solver|null=null;
+    try{replacement=await WorkerSolver.create(grid,state,true);}catch(workerError){console.warn('Background CPU compute unavailable.',workerError);}
+    solver=replacement??new CpuSolver(grid,state);solver.climate.restoreCheckpoint(climate);solver.climate.lift.set(lift);
+    await solver.step(dt,batch,environment);el('backend').textContent='CPU';view.setClimate(climateLayer,solver.climate);message('CPU 계산으로 계속하고 있어요.',true);
+  }finally{activeCommands=null;}
   let discoveredByCollection=false;
   for(const id of PRODUCTS){stock[id]+=transfer.collected[id];transferredOut+=transfer.collected[id];if(transfer.collected[id]>.00001&&!discoveries.has(id)){discoveries.add(id);discoveredByCollection=true;}}
   if(discoveredByCollection)renderDiscoveryRecords();
@@ -690,7 +702,7 @@ function setupInteractions() {
   const toolTips={heat:'850°C 이상에서 점토가 소성됩니다.',cool:'염수는 담수보다 더 차가워야 얼어요.',erase:'표면의 물질을 조금씩 제거합니다.',collect:'회수한 물질은 모든 행성에서 함께 쓸 수 있어요.',meteor:'운철 36kg이 들어오고, 충돌 지형과 열이 남습니다.'};
   for(const [id,text] of Object.entries(toolTips))document.querySelector<HTMLButtonElement>('[data-tool="'+id+'"]')!.title=text;
   const canvas=view.canvas,touches=new Map<number,{x:number;y:number}>();let pinGesture:{id:number;x:number;y:number;valid:boolean}|null=null;let gesturing=false,lastTouch:{x:number;y:number;distance:number}|null=null;
-  let lastHoverPick=-Infinity,pausedStrokePoint:{x:number;y:number}|null=null,pendingTouch:number|null=null,pausedTouchEdited=false;
+  let pausedStrokePoint:{x:number;y:number}|null=null,pendingTouch:number|null=null,pausedTouchEdited=false;
   const touchMetrics=()=>{const points=[...touches.values()];return {x:(points[0].x+points[1].x)/2,y:(points[0].y+points[1].y)/2,distance:Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y)};};
   const moveTouchCamera=(dx:number,dy:number)=>{if(view.isSection&&view.sectionNavigation==='pan')view.panSectionPixels(dx,dy);else view.turn(-dx/220,-dy/220);};
   canvas.addEventListener('contextmenu',event=>event.preventDefault());
@@ -720,10 +732,9 @@ function setupInteractions() {
     }
     if(pinGesture&&Math.hypot(event.clientX-pinGesture.x,event.clientY-pinGesture.y)>8)pinGesture.valid=false;
     if(event.buttons===2||event.shiftKey||gesturing||event.buttons!==0&&tool==='observe'&&!observation.selecting){hideBrush();return;}
-    const now=performance.now();if(event.buttons===0&&now-lastHoverPick<33)return;lastHoverPick=now;
-    const rect=canvas.getBoundingClientRect(),hit=view.pick(event.clientX-rect.left,event.clientY-rect.top),hidden=!hit;
-    showBrush(hit);
-    if(hit&&!hidden&&!hit.inAir)observation.hover(hit.index);
+    // High-rate pointer events only update coordinates. Pick the latest position
+    // once in the render loop; paint shares its own hit with the brush display.
+    brushRefreshPending=true;
   });
   canvas.addEventListener('pointerdown',event=>{
     if(event.pointerType==='touch'){touchPaintReadyAt=performance.now()+120;touches.set(event.pointerId,{x:event.clientX,y:event.clientY});canvas.setPointerCapture(event.pointerId);if(touches.size>=2){pendingTouch=null;pinGesture=null;gesturing=true;lastTouch=touchMetrics();pointer.down=false;hideBrush();return;}if(gesturing)return;}
@@ -894,7 +905,11 @@ async function boot() {
   view=await PlanetView.create(el<HTMLCanvasElement>('planet'),grid,solver.state);
   view.setSurfaceStyle(true,1,true);
   view.setCloudStyle('stratus');view.setCloudAppearance(true,.84);
-  if(new URLSearchParams(location.search).get('cpu')!=='1')try{const gpu=await GpuSolver.create(grid,solver.state);if(gpu){gpu.climate.restore(solver.climate.snapshot());solver.dispose();solver=gpu;}}catch(error){console.warn('GPU compute unavailable.',error);}
+  const forceCpu=new URLSearchParams(location.search).get('cpu')==='1';
+  let backgroundSolver:WorkerSolver|null=null;
+  try{backgroundSolver=await WorkerSolver.create(grid,solver.state,forceCpu);}catch(error){console.warn('Background compute unavailable.',error);}
+  if(backgroundSolver){backgroundSolver.climate.restoreCheckpoint(solver.climate.checkpoint());solver.dispose();solver=backgroundSolver;}
+  else if(!forceCpu)try{const gpu=await GpuSolver.create(grid,solver.state);if(gpu){gpu.climate.restoreCheckpoint(solver.climate.checkpoint());solver.dispose();solver=gpu;}}catch(error){console.warn('GPU compute unavailable.',error);}
   el('backend').textContent=solver.backend;view.setClimate(climateLayer,solver.climate);setupInteractions();setupAccount(services);setTool('observe');renderDiscoveryRecords();environmentUpdate();spinUpdate();view.setTime(simTime);appearanceUpdate();view.home();modeUiUpdate();
   if(paused){paused=false;pauseToggle();}
   const hit=view.pick(view.canvas.clientWidth/2,view.canvas.clientHeight/2);observation.switchPlanet(activeId,hit?.index??0);observationUiUpdate();view.onReady(()=>el('boot').hidden=true);
@@ -902,7 +917,7 @@ async function boot() {
   let previous=performance.now(),observerClock=0,frames=0,fpsClock=0,saveClock=0;
   // Hidden tabs suspend simulation; resuming must not enqueue the hidden interval.
   document.addEventListener('visibilitychange',()=>{previous=performance.now();clock.reset();actualGameRate.reset();latestActualRate=null;});
-  const runSteps=async(count:number)=>{for(let n=0;n<count;n++){if(view.cameraDragging)break;if(!paused)await tick(PHYSICS_DT);else if(commands.some(v=>v!==0))await tick(0);backgroundWorlds.step(planets,activeId,PHYSICS_DT,sampleBackgroundPlanet);}};
+  const runSteps=async(count:number)=>{for(let n=0;n<count;n++){if(view.cameraDragging)break;if(!paused)await tick(PHYSICS_DT);else if(commands.some(v=>v!==0))await tick(0);await backgroundWorlds.stepAsync(planets,activeId,PHYSICS_DT,sampleBackgroundPlanet);}};
   view.engine.runRenderLoop(()=>{
     const now=performance.now(),realDt=(now-previous)/1000,dt=Math.min(.05,realDt);previous=now;
     if(!document.hidden){
@@ -912,12 +927,12 @@ async function boot() {
       rotationStick.update(dt);view.animate(overview?Math.min(.25,realDt):dt,Math.min(speed,latestActualRate??1));
       if(!overview&&!busy&&!operation&&!view.cameraDragging){const refreshDt=surfaceRefresh.take(now);if(refreshDt!==null)view.update(solver.state,refreshDt,environment);}
       if(!operation&&!awaitingCreation&&!el<HTMLDialogElement>('placement').open&&!el<HTMLDialogElement>('game-mode').open&&!view.cameraDragging){clock.add(realDt,speed);if(!busy){const count=clock.take(environment.climate?1:4);if(count){busy=true;currentStep=runSteps(count).finally(()=>busy=false);}}}else clock.reset();
-      if(brushHover&&now-lastBrushRefresh>=33){lastBrushRefresh=now;refreshBrush();}
+      if((brushHover||brushRefreshPending)&&now-lastBrushRefresh>=33){lastBrushRefresh=now;brushRefreshPending=false;const r=view.canvas.getBoundingClientRect(),hit=view.pick(pointer.x-r.left,pointer.y-r.top);showBrush(hit);if(hit&&!hit.inAir)observation.hover(hit.index);}
       view.scene.render();selectionControls?.update();updateObservationMarker();if(overview)for(const p of view.systemLabels()){const label=el('system-labels').querySelector<HTMLElement>('[data-scene-planet="'+p.id+'"]');if(label){label.style.left=p.x+'px';label.style.top=(p.y+35)+'px';label.hidden=p.z<0||p.z>1;}}observerClock+=dt;frames++;fpsClock+=realDt;saveClock+=realDt;
       if(observerClock>.2){observerClock=0;el('game-elapsed').textContent=formatPlanetElapsed(simTime);const running=!paused&&!operation&&!awaitingCreation&&!el<HTMLDialogElement>('placement').open&&!el<HTMLDialogElement>('game-mode').open&&!view.cameraDragging;const actual=actualGameRate.sample(now,simTime,activeId,running,speed===SIMULATION_SPEEDS[0]?12:3);latestActualRate=actual;updateSpeedContext();el('game-rate').textContent=running?(actual===null?(currentLocale()==='en'?'Measuring actual speed':'실제 측정 중'):(currentLocale()==='en'?'Actual ':'실제 ')+formatPlanetRate(actual)):currentLocale()==='en'?(view.cameraDragging?'Moving viewpoint':paused?'Paused':'Waiting to calculate'):(view.cameraDragging?'시점 이동 중':paused?'일시정지':'계산 대기');observerUpdate();if(!operation){const active=planets.find(p=>p.id===activeId);if(active)active.snapshot={...active.snapshot,time:simTime,environment:{...environment},paused,transferredIn,state:[...solver.state]};if(mode==='campaign'){const completed=advanceProgress(progress,planets,stock);if(completed.length){inventoryUpdate();message('탐사 완료 · '+completed.map(id=>EXPEDITIONS.find(m=>m.id===id)!.name).join(' · '));}updateExpeditions(progress);}}}if(fpsClock>=1){el('fps').textContent=Math.round(frames/fpsClock)+' fps';frames=0;fpsClock=0;}if(saveClock>=5){saveClock=0;void autosave();}
     }
   });
-  if(import.meta.env.DEV)Object.assign(window,{sandsphere:{stats:()=>({climate:{maxWind:Math.max(...Array.from({length:grid.count},(_,i)=>Math.hypot(...solver.climate.wind.slice(i*3,i*3+3)))),maxCurrent:Math.max(...Array.from({length:grid.count},(_,i)=>Math.hypot(...solver.climate.currents.slice(i*3,i*3+3)))),seedCells:solver.climate.seeds.filter(v=>v>.001).length},backend:solver.backend,time:simTime,mass:totalMass(solver.state),enthalpy:totalEnthalpy(solver.state,solver.climate),lastStepEnergy:[0,1,2,3].map(k=>solver.energyChanges.reduce((sum,v,i)=>sum+(i%4===k?v:0),0)),impactEnergy:[...impactEnergy],inFlightMass:view.deposits().reduce((sum,g)=>sum+g.amount,0),totals:[...totals(solver.state)],supplied,removed,escaped,discoveries:[...discoveries],paused,tool,observation:{cell:observation.cell,pinned:observation.pinned,selecting:observation.selecting},camera:[view.camera.alpha,view.camera.beta,view.camera.radius],renderRotation:view.rotationStats(),spinAngle,spinning,axisTilt,spinPeriod,primary,sun:worldSun(),environment,atmosphere:atmosphereState(solver.state,environment,solver.climate),atmosphereOptics:atmosphereOptics(atmosphereState(solver.state,environment,solver.climate),environment),rainingCells:solver.precipitatedCells.filter((v,i)=>i%2===0&&v>1e-6).length,snowingCells:solver.precipitatedCells.filter((v,i)=>i%2===1&&v>1e-6).length,cloudCells:solver.state.filter((v,i)=>i%STRIDE===F.cloud&&v+solver.state[i+1]>CLOUD_VISIBLE_MASS).length,cloudMass:totals(solver.state)[F.cloud]+totals(solver.state)[F.cloudIce],effects:view.visualStats(),lastSavedAt:lastSaved?.savedAt??null,renderer:view.engine.constructor.name,stock:{...stock},transferredIn,transferredOut,activeId,planets:planets.map(p=>({id:p.id,name:p.name,time:p.id===activeId?simTime:p.snapshot.time,mass:p.id===activeId?totalMass(solver.state):totalMass(new Float32Array(p.snapshot.state)),paused:p.id===activeId?paused:p.snapshot.paused})),tidallyLocked,overview,progress}),state:()=>new Float32Array(solver.state),climate:()=>solver.climate.snapshot(),grid,
+  if(import.meta.env.DEV)Object.assign(window,{sandsphere:{stats:()=>({climate:{maxWind:Math.max(...Array.from({length:grid.count},(_,i)=>Math.hypot(...solver.climate.wind.slice(i*3,i*3+3)))),maxCurrent:Math.max(...Array.from({length:grid.count},(_,i)=>Math.hypot(...solver.climate.currents.slice(i*3,i*3+3)))),seedCells:solver.climate.seeds.filter(v=>v>.001).length},backend:solver.backend,backgroundCompute:solver instanceof WorkerSolver,time:simTime,mass:totalMass(solver.state),enthalpy:totalEnthalpy(solver.state,solver.climate),lastStepEnergy:[0,1,2,3].map(k=>solver.energyChanges.reduce((sum,v,i)=>sum+(i%4===k?v:0),0)),impactEnergy:[...impactEnergy],inFlightMass:view.deposits().reduce((sum,g)=>sum+g.amount,0),totals:[...totals(solver.state)],supplied,removed,escaped,discoveries:[...discoveries],paused,tool,observation:{cell:observation.cell,pinned:observation.pinned,selecting:observation.selecting},camera:[view.camera.alpha,view.camera.beta,view.camera.radius],renderRotation:view.rotationStats(),spinAngle,spinning,axisTilt,spinPeriod,primary,sun:worldSun(),environment,atmosphere:atmosphereState(solver.state,environment,solver.climate),atmosphereOptics:atmosphereOptics(atmosphereState(solver.state,environment,solver.climate),environment),rainingCells:solver.precipitatedCells.filter((v,i)=>i%2===0&&v>1e-6).length,snowingCells:solver.precipitatedCells.filter((v,i)=>i%2===1&&v>1e-6).length,cloudCells:solver.state.filter((v,i)=>i%STRIDE===F.cloud&&v+solver.state[i+1]>CLOUD_VISIBLE_MASS).length,cloudMass:totals(solver.state)[F.cloud]+totals(solver.state)[F.cloudIce],effects:view.visualStats(),lastSavedAt:lastSaved?.savedAt??null,renderer:view.engine.constructor.name,stock:{...stock},transferredIn,transferredOut,activeId,planets:planets.map(p=>({id:p.id,name:p.name,time:p.id===activeId?simTime:p.snapshot.time,mass:p.id===activeId?totalMass(solver.state):totalMass(new Float32Array(p.snapshot.state)),paused:p.id===activeId?paused:p.snapshot.paused})),tidallyLocked,overview,progress}),state:()=>new Float32Array(solver.state),climate:()=>solver.climate.snapshot(),grid,
     compareGpu:async()=>{const state=seedWorld(grid);state[F.vapor]=3;state[STRIDE+F.cloud]=.8;state[2*STRIDE+F.cloudIce]=.6;const cpu=new CpuSolver(grid,new Float32Array(state)),gpu=await GpuSolver.create(grid,new Float32Array(state));if(!gpu)return {supported:false};const c=new Float32Array(grid.count*COMMAND_STRIDE);c[0]=30;c[3]=2;c[8]=10;c[9]=7;c[10]=12;c[12]=5;c[13]=8;c[14]=4;c[15]=30;c[16]=2;c[17]=.3;c[18]=.1;c[19]=5;c[6]=.15;const e={...environmentFor('coast'),gravity:.03};let cpuEscaped=0,gpuEscaped=0,cpuRain=0,gpuRain=0;for(let n=0;n<20;n++){const batch=n?new Float32Array(c.length):c;cpu.advance(.1,batch,e);await gpu.step(.1,batch,e);cpuEscaped+=cpu.escapeCells.reduce((s,v)=>s+v,0);gpuEscaped+=gpu.escapeCells.reduce((s,v)=>s+v,0);cpuRain+=cpu.precipitatedCells.reduce((s,v)=>s+v,0);gpuRain+=gpu.precipitatedCells.reduce((s,v)=>s+v,0);}let maxError=0;for(let i=0;i<state.length;i++)maxError=Math.max(maxError,Math.abs(cpu.state[i]-gpu.state[i]));const result={supported:true,maxError,cpuMass:totalMass(cpu.state),gpuMass:totalMass(gpu.state),cpuEscaped,gpuEscaped,cpuRain,gpuRain};gpu.dispose();return result;}}});
 }
 void boot().catch(error=>{console.error(error);el('boot').querySelector('strong')!.textContent='행성을 불러오지 못했어요.';el('boot-message').textContent=error instanceof Error?error.message:'저장 데이터와 그래픽 초기화를 확인해주세요.';});

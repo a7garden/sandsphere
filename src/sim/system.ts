@@ -1,5 +1,5 @@
 import {EXPEDITIONS,type Progress} from './progress';
-import {CpuSolver,COMMAND_STRIDE,PRODUCTS,emptyStock,isProduct,type Material,type Snapshot,type Stock} from './model';
+import {CpuSolver,COMMAND_STRIDE,PRODUCTS,emptyStock,isProduct,type Material,type Snapshot,type Stock,type Solver} from './model';
 import {validSnapshot,upgradeSnapshot} from './storage';
 import {localSun,orbitalPeriod} from './orbit';
 import type {SphereGrid} from './sphere';
@@ -71,9 +71,10 @@ export function advanceOrbit(snapshot:Snapshot,dt:number) {
  * production rates or wall-clock catch-up are applied while the app is closed. */
 export class BackgroundWorlds {
  private solvers=new Map<string,CpuSolver>();
+ private asyncSolvers=new Map<string,Solver>();
  private empty:Float32Array;
- constructor(private grid:SphereGrid){this.empty=new Float32Array(grid.count*COMMAND_STRIDE);}
- invalidate(id:string){this.solvers.delete(id);}
+ constructor(private grid:SphereGrid,private createAsyncSolver?:(state:Float32Array)=>Promise<Solver>){this.empty=new Float32Array(grid.count*COMMAND_STRIDE);}
+ invalidate(id:string){this.solvers.get(id)?.dispose();this.solvers.delete(id);this.asyncSolvers.get(id)?.dispose();this.asyncSolvers.delete(id);}
  step(planets:PlanetRecord[],activeId:string,dt:number,onStep?:(planet:PlanetRecord,solver:CpuSolver,dt:number)=>void){
   for(const planet of planets){
    const s=planet.snapshot;if(planet.id===activeId||s.paused)continue;
@@ -81,6 +82,29 @@ export class BackgroundWorlds {
    if(!solver){solver=new CpuSolver(this.grid,new Float32Array(s.state));solver.climate.restore(s.climate);this.solvers.set(planet.id,solver);}
    for(const step of physicsSteps(dt)){advanceOrbit(s,step);solver.advance(step,this.empty,s.environment);s.escaped=(s.escaped??0)+solver.escapeCells.reduce((sum,v)=>sum+v,0);onStep?.(planet,solver,step);}
    s.state=Array.from(solver.state);s.climate=solver.climate.snapshot();
+  }
+ }
+ /** Live application path. Offline science/tests retain synchronous advance. */
+ async stepAsync(planets:PlanetRecord[],activeId:string,dt:number,onStep?:(planet:PlanetRecord,solver:Solver,dt:number)=>void){
+  if(!this.createAsyncSolver){this.step(planets,activeId,dt,onStep);return;}
+  for(const planet of planets){
+   const s=planet.snapshot;if(planet.id===activeId||s.paused)continue;
+   let solver=this.asyncSolvers.get(planet.id);
+   if(!solver){solver=await this.createAsyncSolver(new Float32Array(s.state));solver.climate.restore(s.climate);this.asyncSolvers.set(planet.id,solver);}
+   for(const step of physicsSteps(dt)){
+    const next={...s,environment:{...s.environment},spin:s.spin?{...s.spin}:undefined};advanceOrbit(next,step);
+    try{await solver.step(step,this.empty,next.environment);}catch(error){
+     // Recreate from the last committed state, replaying this step once.
+     console.warn('Background planet compute stopped.',error);
+     const state=solver.state.slice(),climate=solver.climate.checkpoint(),lift=solver.climate.lift.slice();solver.dispose();
+     solver=await this.createAsyncSolver(state);solver.climate.restoreCheckpoint(climate);solver.climate.lift.set(lift);this.asyncSolvers.set(planet.id,solver);
+     await solver.step(step,this.empty,next.environment);
+    }
+    // Publish orbit, matter and climate together; saves may run during await.
+    s.time=next.time;s.environment=next.environment;s.spin=next.spin;
+    s.escaped=(s.escaped??0)+solver.escapeCells.reduce((sum,v)=>sum+v,0);
+    s.state=Array.from(solver.state);s.climate=solver.climate.snapshot();onStep?.(planet,solver,step);
+   }
   }
  }
 }

@@ -147,6 +147,13 @@ export class PlanetView {
   private escapedGrains=0;
   private grainMeshes=new Map<SurfaceMaterial,Mesh>();
   private grainMatrices=new Map<SurfaceMaterial,Float32Array>();
+  private grainScale=Vector3.One();
+  private grainPosition=Vector3.Zero();
+  private grainDirection=Vector3.Zero();
+  private grainRotation=Quaternion.Identity();
+  private grainSpin=Quaternion.Identity();
+  private grainMatrix=Matrix.Identity();
+  private grainCounts=new Map(SURFACE_MATERIALS.map(material=>[material,0]));
   private ray=Vector3.Zero();
   private keyLight:DirectionalLight;
   private ground:Mesh;
@@ -360,6 +367,9 @@ export class PlanetView {
     for(const material of SURFACE_MATERIALS) {
       const mesh=materialGrain(this.scene,material,PALETTE[material]);
       mesh.isPickable=false;mesh.alwaysSelectAsActiveMesh=true;
+      // Grains are always active and never picked: rebuilding all instance
+      // bounds after every matrix upload serves no culling or contact purpose.
+      mesh.doNotSyncBoundingInfo=true;
       mesh.parent=this.root;
       const matrices=new Float32Array(2048*16);
       mesh.thinInstanceSetBuffer('matrix',matrices,16,false);mesh.thinInstanceCount=0;
@@ -829,22 +839,25 @@ export class PlanetView {
     this.streamLife=Math.max(0,this.streamLife-dt);
     this.stream.setEnabled(this.streamLife>0&&!!this.streamPath);
     if(this.streamPath&&this.streamLife>0)this.stream=MeshBuilder.CreateTube('continuous water stream',{path:this.streamPath,instance:this.stream},this.scene);
-    const counts=Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,0])) as Record<SurfaceMaterial,number>;
+    const counts=this.grainCounts;for(const material of SURFACE_MATERIALS)counts.set(material,0);
     for(let n=this.grains.length-1;n>=0;n--) {
       const g=this.grains[n];
-      const index=counts[g.material]++;
+      const index=counts.get(g.material)!;counts.set(g.material,index+1);
       if(index<2048) {
-        const rotation=Quaternion.Identity();Quaternion.FromUnitVectorsToRef(Vector3.Up(),g.velocity.normalizeToNew(),rotation);
-        if(g.material!=='water')rotation.multiplyInPlace(Quaternion.RotationYawPitchRoll(g.age*g.spin,g.age*g.spin*.6,g.age*g.spin*.4));
+        const rotation=this.grainRotation;this.grainDirection.copyFrom(g.velocity).normalize();
+        Quaternion.FromUnitVectorsToRef(Vector3.UpReadOnly,this.grainDirection,rotation);
+        if(g.material!=='water'){Quaternion.RotationYawPitchRollToRef(g.age*g.spin,g.age*g.spin*.6,g.age*g.spin*.4,this.grainSpin);rotation.multiplyInPlace(this.grainSpin);}
         const stretch=g.material==='water'?1+Math.min(1.4,g.velocity.length()*.13):g.material==='clay'?.72:1;
-        const matrix=Matrix.Compose(new Vector3(g.size,g.size*stretch,g.size),rotation,this.projectPhysicalPoint(g.position));
-        matrix.copyToArray(this.grainMatrices.get(g.material)!,index*16);
+        this.grainScale.set(g.size,g.size*stretch,g.size);
+        this.projectPhysicalPointToRef(g.position,g.index,this.grainPosition);
+        Matrix.ComposeToRef(this.grainScale,rotation,this.grainPosition,this.grainMatrix);
+        this.grainMatrix.copyToArray(this.grainMatrices.get(g.material)!,index*16);
       }
     }
     for(const material of SURFACE_MATERIALS) {
       const mesh=this.grainMeshes.get(material)!;
-      mesh.setEnabled(counts[material]>0);
-      mesh.thinInstanceCount=Math.min(2048,counts[material]);if(counts[material]>0)mesh.thinInstanceBufferUpdated('matrix');
+      const count=counts.get(material)!;mesh.setEnabled(count>0);
+      mesh.thinInstanceCount=Math.min(2048,count);if(count>0)mesh.thinInstanceBufferUpdated('matrix');
     }
   }
   stepPhysics(dt:number){this.escapedGrains+=advanceFalling(this.grains,this.grid,this.state,dt,this.environment);}
@@ -967,8 +980,11 @@ export class PlanetView {
     }
   }
   private projectPhysicalPoint(point:Vector3){
-    const i=nearestCell(this.grid,point.x,point.y,point.z),column=columnGeometry(this.state,i,this.grid);
-    return point.normalizeToNew().scale(this.renderRadii[i]+point.length()-column.physicalContact);
+    const result=Vector3.Zero();this.projectPhysicalPointToRef(point,0,result);return result;
+  }
+  private projectPhysicalPointToRef(point:Vector3,start:number,result:Vector3){
+    const i=nearestCell(this.grid,point.x,point.y,point.z,start),radius=point.length();
+    result.copyFrom(point).normalize().scaleInPlace(this.renderRadii[i]+radius-physicalContact(this.state,i,this.grid));
   }
   private unprojectDisplayPoint(point:Vector3){const i=nearestCell(this.grid,point.x,point.y,point.z),column=columnGeometry(this.state,i,this.grid);return point.normalizeToNew().scale(column.physicalContact+point.length()-this.renderRadii[i]);}
   dispose() {this.resize.disconnect();this.scene.dispose();this.engine.dispose();}
