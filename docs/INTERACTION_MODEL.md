@@ -1,6 +1,6 @@
 # Material supply and land animal movement
 
-These behaviors are under development in `0.6.0-alpha.2`.
+These behaviors are under development in `0.6.0-alpha.3`.
 
 ## Surface supply
 
@@ -15,12 +15,19 @@ The simulation stores herbivore and predator biomass per cell, rather than a lis
 - Herbivores seek accessible vegetation. Path costs include travel distance, slope, competition, and predator risk.
 - Predators seek accessible herbivore biomass. Travel distance, slope, and competing predators affect the chosen destination.
 - Open surface water and molten ground block incoming movement. Soil-retained moisture permits land travel. Temperature, salt, and ice also constrain the travel habitat.
+- Adding animals to open water kills them in the supply command, including a paused edit. Adding water that floods animals also kills them immediately. Existing submerged populations die before feeding and navigation on the next physical step. Dead biomass becomes organic matter in the same cell; its mass and sensible heat remain in the world. Soil-retained moisture is not open water.
 - Low-rate movement to adjacent suitable cells supports exploration when there is no reachable food. Land bridges can reconnect isolated populations.
 
 The solver transfers donor-bounded biomass and sensible heat simultaneously. CPU and WebGPU use the same transfer implementation after local reactions. Food consumption, predation, reproduction, and mortality still belong to the local food-web reactions. Navigation is reconstructed from the committed state; it adds no save fields or persistent AI timer.
 
 The renderer shows up to 256 representatives per guild, with walking legs and paths restricted to adjacent land cells. Representatives follow the shared navigation field, periodically rest, and explore locally near food. They are a visual sample of population biomass, not individually conserved agents. Visual pursuit does not calculate attacks or determine predation. Pausing stops their walking; flooding or erasing their habitat removes the affected representatives.
 
+## Surface refresh
+
+Hexagonal terrain computes each tile's material blend once per snapshot. The water triangles write directly into reusable upload buffers and use precomputed coast neighbors. Terrain normals are recomputed only when the actual vertex positions change. These optimizations affect rendering only and do not lower simulation resolution or omit physics steps.
+
 ## Reproduce checks
 
 Run `npm test` for transfer, barrier, conservation, display-bound, and pause checks. `tests/animal-lab.html` offers visible pause/flood controls, CPU/WebGPU comparisons, and a dense navigation benchmark. `tests/pour-performance-lab.html` compares immediate surface supply with legacy physical dust on the same 91-cell brush. Both fixtures use their own worlds and do not access application saves. Timings in the pouring fixture cover the supply/render path; they do not measure the entire atmosphere solver or establish a device-independent frame rate.
+
+`tests/ocean-mortality-lab.html` compares paused spawning on water and moist land across CPU, WebGPU and Worker, with and without layered climate. `tests/surface-performance-lab.html` measures wet terrain, forests and atmosphere rendering with a continuously changing 91-cell sand brush. A before/after audit can use `?reference=1` after placing an earlier renderer source at `artifacts/surface-performance/planet-before.ts` and adjusting its relative imports to point at the current `src` tree. The ignored snapshot used for the recorded audit came from commit `9c63d50`. This comparison measures the renderer's surface refresh, not atmosphere computation or the whole application's frame rate.

@@ -1,11 +1,11 @@
 import {capacity,enthalpy,F,STRIDE,solidHeight,type Environment} from './model';
-import {consumerTravelHabitat} from './ecology';
+import {consumerTravelHabitat,openSurfaceWater} from './ecology';
 import {edgeScale} from './materialPhysics';
 import {INVALID,NEIGHBORS,type SphereGrid} from './sphere';
 
 /** Surface water beyond soil's capillary store is a barrier for land animals. */
 export function animalLand(water:number,soil:number,molten:number){
- return Math.max(0,water-Math.min(1.2,soil*.12))<.035&&molten<.01;
+ return !openSurfaceWater(water,soil)&&molten<.01;
 }
 
 /** One navigation field per guild, rather than a graph search for every animal.

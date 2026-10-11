@@ -41,6 +41,7 @@ import {WeatherParticles} from './weather';
 import {PrecipitationLayer} from './precipitationLayer';
 import {materialGrain} from './particles';
 import {SupplyFlow} from './supplyFlow';
+import {writeHexWater} from './surfaceBuffers';
 import {deliverSurfaceSupply,type SupplyCell} from '../sim/supply';
 import {surfaceMaterial} from './materials';
 import type {ShaderMaterial} from '@babylonjs/core/Materials/shaderMaterial';
@@ -130,6 +131,9 @@ export class PlanetView {
   private waterData:Float32Array;
   private colors:Float32Array;
   private surfaceInfo:Float32Array;
+  private tileColors:Float32Array;
+  private tileInfo:Float32Array;
+  private coastNeighbors:Int32Array;
   private waterColors:Float32Array;
   private normals:Float32Array;
   private waterNormals:Float32Array;
@@ -221,6 +225,13 @@ export class PlanetView {
     this.keyLight.intensity=1.0;
     this.biosphere=new Biosphere(this.scene,this.root,grid);
     this.surface=dualSurface(grid,renderRefinement);
+    this.tileColors=new Float32Array(this.surface.tileCount*4);this.tileInfo=new Float32Array(this.surface.tileCount*4);
+    this.coastNeighbors=new Int32Array(this.surface.owners.length).fill(-1);
+    for(let face=0;face<this.surface.owners.length;face++){
+      const owner=this.surface.owners[face],a=this.surface.indices[face*3+1],b=this.surface.indices[face*3+2];
+      for(const cell of [this.surface.parents[a*2],this.surface.parents[a*2+1],this.surface.third[a]])
+        if(cell>=0&&cell!==owner&&(cell===this.surface.parents[b*2]||cell===this.surface.parents[b*2+1]||cell===this.surface.third[b])){this.coastNeighbors[face]=cell;break;}
+    }
     this.cellBrush=new CellBrush(this.scene,this.root,grid,this.surface);
     this.selectionBrush=new CellBrush(this.scene,this.root,grid,this.surface,'selected section cells',0);
     this.selectionLine=MeshBuilder.CreateLines('selected section arc',{points:Array.from({length:65},()=>Vector3.Zero()),updatable:true},this.scene);
@@ -447,6 +458,7 @@ export class PlanetView {
 
     softenShore(this.displayHeights,this.surfaceDepths,surface.neighbors,this.shoreHeight,this.shoreDepth);
     this.updateAtmosphere();this.biosphere.update(state,this.renderRadii,this.surfaceTime,this.groundCover);
+    let normalsDirty=false;
     for(let i=0;i<surface.count;i++){
       const solid=this.displayHeights[i],radius=RADIUS+altitude(solid);
       this.sectionSamples.solidRadii[i]=radius;
@@ -456,45 +468,54 @@ export class PlanetView {
       const waterRadius=RADIUS+altitude(solid+this.surfaceDepths[i])+.008;
       for(let k=0;k<3;k++) {
         const dir=surface.directions[i*3+k];
+        normalsDirty ||= this.vertexTerrain[i*3+k]!==Math.fround(dir*radius);
         this.vertexTerrain[i*3+k]=dir*radius;this.vertexWater[i*3+k]=dir*waterRadius;
       }
     }
     this.waterData.fill(0);this.waterNormals.fill(0);
-    VertexData.ComputeNormals(this.vertexTerrain,surface.indices,this.surfaceNormals);
+    if(normalsDirty)VertexData.ComputeNormals(this.vertexTerrain,surface.indices,this.surfaceNormals);
     const fields=[F.sand,F.clay,F.ceramic,F.glass,F.salt,F.molten,F.soil,F.iron,F.ice];
     const palette=[PALETTE.sand,PALETTE.clay,PALETTE.ceramic,PALETTE.glass,PALETTE.salt,PALETTE.molten,PALETTE.soil,PALETTE.iron,PALETTE.ice];
+    if(this.hexagonalSurface)for(let i=0;i<surface.tileCount;i++){
+      const cell=i*STRIDE,q=i*4;let total=.35,cr=PALETTE.rock[0]*.35,cg=PALETTE.rock[1]*.35,cb=PALETTE.rock[2]*.35;
+      for(let f=0;f<fields.length;f++){const weight=Math.min(8,this.surfaceState[cell+fields[f]]);total+=weight;cr+=palette[f][0]*weight;cg+=palette[f][1]*weight;cb+=palette[f][2]*weight;}
+      this.tileColors[q]=cr/total;this.tileColors[q+1]=cg/total;this.tileColors[q+2]=cb/total;this.tileColors[q+3]=Math.min(.65,this.surfaceState[cell+F.glass]/total*.5+this.surfaceState[cell+F.iron]/total*.3);
+      this.tileInfo[q]=Math.min(8,this.surfaceState[cell+F.sand])/total;this.tileInfo[q+1]=Math.min(8,this.surfaceState[cell+F.clay])/total;this.tileInfo[q+2]=this.groundCover[i];this.tileInfo[q+3]=1-Math.exp(-this.surfaceState[cell+F.water]*2);
+    }
     const bankPositions:number[]=[],bankIndices:number[]=[],bankColors:number[]=[],bankSurface:number[]=[];
     const indices=[0,0,0];
     for(let p=0;p<surface.indices.length;p+=3) {
       indices[0]=surface.indices[p];indices[1]=surface.indices[p+1];indices[2]=surface.indices[p+2];
       const owner=surface.owners[p/3],normalOffset=owner*3;
-      const nx=this.surfaceNormals[normalOffset],ny=this.surfaceNormals[normalOffset+1],nz=this.surfaceNormals[normalOffset+2];
-      const facet=1;
       const inset=this.hexagonalSurface&&this.surfaceDepths[owner]>=.035?.045:0;
       for(let k=0;k<3;k++) {
         const vertex=indices[k];
         for(let c=0;c<3;c++){
           this.terrainData[(p+k)*3+c]=this.vertexTerrain[vertex*3+c]-surface.directions[vertex*3+c]*inset;
-          this.normals[(p+k)*3+c]=this.hexagonalSurface?[nx,ny,nz][c]:[nx,ny,nz][c]*.12+this.surfaceNormals[vertex*3+c]*.88;
+          this.normals[(p+k)*3+c]=this.hexagonalSurface?this.surfaceNormals[normalOffset+c]:this.surfaceNormals[normalOffset+c]*.12+this.surfaceNormals[vertex*3+c]*.88;
           const hotSurface=this.surfaceDepths[vertex]>.035?this.vertexWater:this.vertexTerrain;
           this.heatPositions[(p+k)*3+c]=hotSurface[vertex*3+c]*1.002;
         }
         const materialVertex=this.hexagonalSurface?owner:vertex;
         const rgba=(p+k)*4,cell=materialVertex*STRIDE;
-        // Continuous vertex weights remove triangle-by-triangle material popping.
-        let total=.35,cr=PALETTE.rock[0]*.35,cg=PALETTE.rock[1]*.35,cb=PALETTE.rock[2]*.35;
-        for(let f=0;f<fields.length;f++){const weight=Math.min(8,this.surfaceState[cell+fields[f]]);total+=weight;cr+=palette[f][0]*weight;cg+=palette[f][1]*weight;cb+=palette[f][2]*weight;}
-        const plant=this.groundCover[materialVertex],wet=1-Math.exp(-this.surfaceState[cell+F.water]*2);
-        this.colors[rgba]=cr/total*facet;
-        this.colors[rgba+1]=cg/total*facet;
-        this.colors[rgba+2]=cb/total*facet;
-        this.surfaceInfo[rgba]=Math.min(8,this.surfaceState[cell+F.sand])/total;this.surfaceInfo[rgba+1]=Math.min(8,this.surfaceState[cell+F.clay])/total;this.surfaceInfo[rgba+2]=plant;this.surfaceInfo[rgba+3]=wet;
-        this.colors[rgba+3]=Math.min(.65,this.surfaceState[cell+F.glass]/total*.5+this.surfaceState[cell+F.iron]/total*.3);
+        if(this.hexagonalSurface){
+          const source=owner*4;for(let c=0;c<4;c++){this.colors[rgba+c]=this.tileColors[source+c];this.surfaceInfo[rgba+c]=this.tileInfo[source+c];}
+        }else{
+          // Continuous vertex weights remove triangle-by-triangle material popping.
+          let total=.35,cr=PALETTE.rock[0]*.35,cg=PALETTE.rock[1]*.35,cb=PALETTE.rock[2]*.35;
+          for(let f=0;f<fields.length;f++){const weight=Math.min(8,this.surfaceState[cell+fields[f]]);total+=weight;cr+=palette[f][0]*weight;cg+=palette[f][1]*weight;cb+=palette[f][2]*weight;}
+          const plant=this.groundCover[materialVertex],wet=1-Math.exp(-this.surfaceState[cell+F.water]*2);
+          this.colors[rgba]=cr/total;
+          this.colors[rgba+1]=cg/total;
+          this.colors[rgba+2]=cb/total;
+          this.surfaceInfo[rgba]=Math.min(8,this.surfaceState[cell+F.sand])/total;this.surfaceInfo[rgba+1]=Math.min(8,this.surfaceState[cell+F.clay])/total;this.surfaceInfo[rgba+2]=plant;this.surfaceInfo[rgba+3]=wet;
+          this.colors[rgba+3]=Math.min(.65,this.surfaceState[cell+F.glass]/total*.5+this.surfaceState[cell+F.iron]/total*.3);
+        }
         const temperature=this.surfaceState[vertex*STRIDE+F.temperature];
-        const hot=Math.pow(Math.max(0,Math.min(.9,(temperature-45)/900)),.65),cold=Math.max(0,Math.min(.16,(-temperature-1)/100));
+        const hot=Math.pow(Math.max(0,Math.min(.9,(temperature-45)/900)),.65);
         this.heatColors[rgba]=temperature>45?1:.14;this.heatColors[rgba+1]=temperature>45?.16+hot*.55:.55;this.heatColors[rgba+2]=temperature>45?.025:1;this.heatColors[rgba+3]=temperature>45?hot:0;
       }
-      if(this.facetedSurface){
+      if(this.facetedSurface&&!this.hexagonalSurface){
         // Material ownership belongs to this triangular face, just like its
         // flat normal. All three corners carry the same mineral and plant mix.
         for(const buffer of [this.colors,this.surfaceInfo])for(let component=0;component<4;component++){
@@ -502,19 +523,22 @@ export class PlanetView {
           for(let k=0;k<3;k++)buffer[(p+k)*4+component]=average;
         }
       }
-      const wet=indices.map(v=>({x:this.vertexWater[v*3],y:this.vertexWater[v*3+1],z:this.vertexWater[v*3+2],depth:this.surfaceDepths[this.hexagonalSurface?owner:v],ice:this.surfaceState[(this.hexagonalSurface?owner:v)*STRIDE+F.ice]/Math.max(.001,this.surfaceState[(this.hexagonalSurface?owner:v)*STRIDE+F.ice]+this.surfaceState[(this.hexagonalSurface?owner:v)*STRIDE+F.water])}));
-      const polygon=this.facetedSurface?facetWater(wet,indices.map(v=>Math.hypot(this.vertexTerrain[v*3],this.vertexTerrain[v*3+1],this.vertexTerrain[v*3+2]))):clipWater(wet);
-      if(inset>0)for(const vertex of polygon){
+      let polygon:WetVertex[]|null=null;
+      if(!this.hexagonalSurface){
+        const wet=indices.map(v=>({x:this.vertexWater[v*3],y:this.vertexWater[v*3+1],z:this.vertexWater[v*3+2],depth:this.surfaceDepths[v],ice:this.surfaceState[v*STRIDE+F.ice]/Math.max(.001,this.surfaceState[v*STRIDE+F.ice]+this.surfaceState[v*STRIDE+F.water])}));
+        polygon=this.facetedSurface?facetWater(wet,indices.map(v=>Math.hypot(this.vertexTerrain[v*3],this.vertexTerrain[v*3+1],this.vertexTerrain[v*3+2]))):clipWater(wet);
+      }
+      if(inset>0&&polygon)for(const vertex of polygon){
         const radius=Math.hypot(vertex.x,vertex.y,vertex.z),scale=(radius-inset)/radius;
         vertex.x*=scale;vertex.y*=scale;vertex.z*=scale;
       }
       // The two outer fan vertices identify the adjacent dual cell. Mark only
       // water/land edges, never the internal spokes or water/water tile seams.
       let coastEdge=false;
-      if(this.hexagonalSurface&&polygon.length>=3){
+      if(this.hexagonalSurface&&this.surfaceDepths[owner]>=.035){
         const a=indices[1],b=indices[2];
-        const adjacent=[surface.parents[a*2],surface.parents[a*2+1],surface.third[a]].find(cell=>cell!==owner&&(cell===surface.parents[b*2]||cell===surface.parents[b*2+1]||cell===surface.third[b]));
-        coastEdge=adjacent!==undefined&&this.surfaceDepths[adjacent]<.035;
+        const adjacent=this.coastNeighbors[p/3];
+        coastEdge=adjacent>=0&&this.surfaceDepths[adjacent]<.035;
         if(coastEdge){
           const topA=Vector3.FromArray(this.vertexTerrain,a*3),topB=Vector3.FromArray(this.vertexTerrain,b*3);
           const bottomA=topA.subtract(Vector3.FromArray(surface.directions,a*3).scale(inset));
@@ -527,8 +551,12 @@ export class PlanetView {
           bankIndices.push(...order.map(i=>start+i));
         }
       }
-      if(polygon.length>=3)this.writeWater(p*2,[polygon[0],polygon[1],polygon[2]],this.hexagonalSurface?surface.directions.subarray(owner*3,owner*3+3):undefined,coastEdge);
-      if(polygon.length===4)this.writeWater(p*2+3,[polygon[0],polygon[2],polygon[3]]);
+      if(this.hexagonalSurface){
+        const cell=owner*STRIDE,ice=this.surfaceState[cell+F.ice]/Math.max(.001,this.surfaceState[cell+F.ice]+this.surfaceState[cell+F.water]);
+        writeHexWater(p*2,indices[0],indices[1],indices[2],owner,this.vertexWater,this.vertexTerrain,surface.directions,this.surfaceDepths[owner],ice,inset,coastEdge,this.waterData,this.waterNormals,this.waterColors);
+      }
+      if(polygon&&polygon.length>=3)this.writeWater(p*2,[polygon[0],polygon[1],polygon[2]],this.hexagonalSurface?surface.directions.subarray(owner*3,owner*3+3):undefined,coastEdge);
+      if(polygon&&polygon.length===4)this.writeWater(p*2+3,[polygon[0],polygon[2],polygon[3]]);
 
     }
     this.hexBanks.setEnabled(bankIndices.length>0);

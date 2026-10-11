@@ -1,4 +1,5 @@
 /** Biomass guilds and deliberately broad tolerances, not individual species physiology. */
+export function openSurfaceWater(water:number,soil:number){return Math.max(0,water-Math.min(1.2,soil*.12))>=.035;}
 export function habitat(temperature:number,water:number,salt:number,ice:number,light:number){
  const warmth=Math.max(0,1-Math.abs(temperature-22)/32);
  const moisture=Math.min(1,water/.12)*Math.max(0,1-water/5);

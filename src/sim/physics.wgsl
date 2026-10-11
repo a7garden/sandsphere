@@ -86,6 +86,11 @@ fn equilibrateWater(initial:Cell)->Cell {
   s.c.x=(h-phaseEnergy(s))/capacity(s);return s;
 }
 
+fn drownConsumers(initial:Cell)->Cell {
+  var s=initial;
+  if(max(0.0,s.b.x-min(1.2,s.cloud.z*.12))>=.035){s.cloud.z+=s.life.x+s.life.y;s.life.x=0.0;s.life.y=0.0;}
+  return s;
+}
 @compute @workgroup_size(64)
 fn apply(@builtin(global_invocation_id) gid:vec3u) {
   let i=gid.x;if(i>=u32(params.control.x)){return;}
@@ -103,6 +108,7 @@ fn apply(@builtin(global_invocation_id) gid:vec3u) {
   if(cmd.tools.w<=0.0){s.c.y*=keep;s.d*=keep;s.cloud=vec4f(s.cloud.xy*keep,s.cloud.zw);}
   if(cmd.tools.y>0&&s.a.y<0.001){s.c.z=0.0;}
   let keepProduct=1.0-clamp(cmd.tools.z,0.0,1.0);s.b.y*=keepProduct;s.a.z*=keepProduct;s.a.w*=keepProduct;s.cloud.w*=keepProduct;s.life=vec4f(s.life.xyz*keepProduct,s.life.w);
+  if(cmd.deposit.x>0.0||cmd.life.y>0.0||cmd.life.z>0.0){s=drownConsumers(s);}
   prepared[i]=s;
 }
 
@@ -202,7 +208,7 @@ fn reaction(initial:Cell,i:u32)->Cell {
   }
   s.c.x=t;s=equilibrateWater(s);t=s.c.x;c=capacity(s);
   snowReaching=min(reaching,max(0.0,s.b.y-iceBeforeRain));rainReaching=reaching-snowReaching;
-  s.c.x=t;let suitability=plantHabitat(s,light);let herbHabitat=consumerHabitat(s,false);let carnHabitat=consumerHabitat(s,true);
+  s.c.x=t;s=drownConsumers(s);let suitability=plantHabitat(s,light);let herbHabitat=consumerHabitat(s,false);let carnHabitat=consumerHabitat(s,true);
   let growth=min(s.cloud.z,s.cloud.w*.085*suitability*dt);s.cloud.z-=growth;s.cloud.w+=growth;
   let grazing=min(s.cloud.w,s.life.x*.12*herbHabitat*dt);let hunting=min(s.life.x,s.life.y*.075*carnHabitat*dt);
   s.cloud.w-=grazing;s.life.x+=grazing*.36-hunting;s.life.y+=hunting*.3;s.cloud.z+=grazing*.64+hunting*.7;

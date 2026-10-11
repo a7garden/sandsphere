@@ -1,6 +1,6 @@
 import {WeatherClimate,pioneerRootability,type ClimateSnapshot} from './weatherClimate';
 import {bathHeat,thermalTarget} from './climate';
-import {habitat,consumerHabitat,foodWeb} from './ecology';
+import {habitat,consumerHabitat,foodWeb,openSurfaceWater} from './ecology';
 import {AnimalNavigation} from './animalNavigation';
 import { HEIGHT_SCALE, INVALID, NEIGHBORS, type SphereGrid } from './sphere';
 import {GASES,thermalEscapeFraction} from './gases';
@@ -332,6 +332,14 @@ export class CpuSolver implements Solver {
   }
 }
 
+/** Dead land-animal biomass becomes organic matter at the same temperature.
+ * All three fields share specific heat and have no phase-energy offset. */
+export function drownConsumers(s:Float32Array,i:number){
+  const p=i*STRIDE;
+  if(openSurfaceWater(s[p+F.water],s[p+F.soil])){
+    s[p+F.soil]+=s[p+F.herbivore]+s[p+F.carnivore];s[p+F.herbivore]=0;s[p+F.carnivore]=0;
+  }
+}
 export function applyCommand(s:Float32Array,i:number,commands:Float32Array,collected?:Stock) {
   const p=i*STRIDE,c=i*COMMAND_STRIDE;
   let edited=false;for(let k=0;k<COMMAND_STRIDE;k++)if(commands[c+k]!==0){edited=true;break;}if(!edited)return;
@@ -352,6 +360,7 @@ export function applyCommand(s:Float32Array,i:number,commands:Float32Array,colle
     const f=F[product],before=s[p+f];s[p+f]*=1-collect;
     if(collected)collected[product]+=before-s[p+f];
   }
+  if(commands[c+COMMAND_FIELD.water]>0||commands[c+COMMAND_FIELD.herbivore]>0||commands[c+COMMAND_FIELD.carnivore]>0)drownConsumers(s,i);
 }
 
 export function react(s:Float32Array,i:number,dt:number,e:Environment,grid:SphereGrid,escaped?:Float32Array,condensed?:Float32Array,precipitated?:Float32Array,energyChanges?:Float32Array) {
@@ -435,6 +444,7 @@ export function react(s:Float32Array,i:number,dt:number,e:Environment,grid:Spher
   // Rain, evaporation and salt concentration share the same final ground-phase policy.
   s[p+8]=t;equilibrateWater(s,i);t=s[p+8];c=capacity(s,i);
   if(precipitated){const frozen=Math.min(reaching,Math.max(0,s[p+F.ice]-iceBeforeRain));precipitated[i*2]+=reaching-frozen;precipitated[i*2+1]+=frozen;}
+  drownConsumers(s,i);
   const life=foodWeb(s[p+F.soil],s[p+F.plant],s[p+F.herbivore],s[p+F.carnivore],habitat(t,s[p+F.water],s[p+F.dissolved],s[p+F.ice],light)*(e.climate?pioneerRootability(s,p):1),dt,consumerHabitat(t,s[p+4],s[p+7],s[p+5]),consumerHabitat(t,s[p+4],s[p+7],s[p+5],true));
   s[p+F.soil]=life[0];s[p+F.plant]=life[1];s[p+F.herbivore]=life[2];s[p+F.carnivore]=life[3];
   s[p+8]=Math.max(-100,Math.min(2500,t));
