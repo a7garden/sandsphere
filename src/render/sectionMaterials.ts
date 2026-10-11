@@ -11,7 +11,7 @@ import {particlesPixelShader} from '@babylonjs/core/Shaders/particles.fragment';
 import type {Scene} from '@babylonjs/core/scene';
 import type {TransformNode} from '@babylonjs/core/Meshes/transformNode';
 import {FLAT_GLSL,FLAT_VERTEX_GLSL,FLAT_UNIFORMS,bindFlat,type SectionProjection} from './sectionProjection';
-import {sectionShader} from './sectionClip';
+import {sectionShader,isSectionShader} from './sectionClip';
 
 class FlatMaterial extends MaterialPluginBase {
   constructor(material:StandardMaterial,private projection:SectionProjection,private scene:Scene){super(material,'live flat section',200,{},true,false);this.registerForExtraEvents=true;this._enable(true);}
@@ -27,7 +27,7 @@ export class SectionMaterials {
   update(){
     for(const mesh of this.scene.meshes){if(!mesh.isDescendantOf(this.root))continue;mesh.alwaysSelectAsActiveMesh=true;
       const material=mesh.material;if(material instanceof StandardMaterial&&!this.attached.has(material)){new FlatMaterial(material,this.projection,this.scene);this.attached.add(material);}
-      else if(mesh instanceof LinesMesh&&material instanceof ShaderMaterial&&!this.attached.has(mesh)){
+      else if(mesh instanceof LinesMesh&&material instanceof ShaderMaterial&&!this.attached.has(mesh)&&!isSectionShader(material)){
         const vertexColor=mesh.useVertexColor;
         const next=sectionShader(this.scene,'flat '+mesh.name,{vertexSource:`precision highp float;attribute vec3 position;${vertexColor?'attribute vec4 color;varying vec4 tint;':''}uniform mat4 worldViewProjection;void main(){${vertexColor?'tint=color;':''}gl_Position=worldViewProjection*vec4(position,1.0);}`,fragmentSource:`precision highp float;${vertexColor?'varying vec4 tint;':'uniform vec4 color;'}void main(){gl_FragColor=${vertexColor?'tint':'color'};}`},{attributes:vertexColor?['position','color']:['position'],uniforms:['worldViewProjection','color'],needAlphaBlending:true});
         mesh.material=next;material.dispose();this.attached.add(mesh);

@@ -1,4 +1,4 @@
-import {COMMAND_STRIDE,COMMAND_FIELD,MASS_FIELDS,STRIDE,applyCommand,emptyStock,type Material} from './model';
+import {COMMAND_STRIDE,COMMAND_FIELD,F,MASS_FIELDS,SURFACE_ERASE,SURFACE_ERASE_FIELDS,STRIDE,applyCommand,emptyStock,type Material} from './model';
 
 export interface FallingDeposit {index:number;material:Material;amount:number;}
 
@@ -11,8 +11,9 @@ export function snapshotSurface(live:Float32Array,pending:Float32Array,falling:F
   for(let i=0;i<count;i++) {
     const c=i*COMMAND_STRIDE,fraction=Math.max(0,Math.min(1,pending[c+5]));
     if(fraction) {
-      let mass=Object.values(COMMAND_FIELD).reduce((sum,f)=>sum+pending[c+f],0);
-      for(const f of MASS_FIELDS)mass+=state[i*STRIDE+f];pendingRemoved+=mass*fraction;
+      const fields=pending[c+SURFACE_ERASE]>0?SURFACE_ERASE_FIELDS:MASS_FIELDS;
+      let mass=Object.entries(COMMAND_FIELD).reduce((sum,[material,f])=>sum+(fields.includes(F[material as Material])?pending[c+f]:0),0);
+      for(const f of fields)mass+=state[i*STRIDE+f];pendingRemoved+=mass*fraction;
     }
     applyCommand(state,i,pending,collected);
   }

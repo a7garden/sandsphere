@@ -9,6 +9,14 @@ const cp=(time:number)=>[{id:'p',name:'P',input:input(time)}];
 const worlds=(time:number)=>[{id:'p',name:'Renamed',time}];
 const json=<T>(value:T):T=>JSON.parse(JSON.stringify(value));
 describe('persistent analytics',()=>{
+ it('restores earlier histories without seed observations, preserving their measured values',()=>{
+  const save=json(archiveTelemetry(recordTo(2),cp(2))),before=save.planets[0].points.map(p=>p.values.biomass);
+  for(const p of [save.planets[0].baseline,...save.planets[0].points])delete p.values.seed;
+  const restored=new TelemetryStore();expect(fullTelemetryArchive(save)).toBe(true);
+  expect(restoreTelemetry(restored,save,worlds(2))).toEqual({restored:1,rejected:0});
+  expect(restored.planets.get('p')!.points.map(p=>p.values.biomass)).toEqual(before);
+  expect(restored.planets.get('p')!.baseline.values.seed).toBeUndefined();
+ });
  it('round trips history, baseline, null readings and cumulative counters, then continues integration',()=>{
   const store=recordTo(5),save=json(archiveTelemetry(store,cp(5))),restored=new TelemetryStore();
   expect(fullTelemetryArchive(save)).toBe(true);expect(restoreTelemetry(restored,save,worlds(5))).toEqual({restored:1,rejected:0});

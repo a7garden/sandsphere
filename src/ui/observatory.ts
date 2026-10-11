@@ -7,7 +7,7 @@ import type {SphereGrid} from '../sim/sphere';
 import {EXPEDITIONS,type Progress} from '../sim/progress';
 import {updateDepthProfile} from './depthProfile';
 import {helpTip} from './helpTip';
-import type {WeatherPulse} from './weatherReadings';
+import {formatFlowSpeed,type WeatherPulse} from './weatherReadings';
 export const formatReading=(value:number,digits=1)=>value.toLocaleString('ko-KR',{minimumFractionDigits:digits,maximumFractionDigits:digits});
 export const metricMarkup=(id:string,unit:string)=>`<output id="${id}" class="metric-value"><span class="metric-number">—</span><span class="metric-unit">${unit}</span></output>`;
 export function setMetric(id:string,value:string){document.getElementById(id)!.querySelector('.metric-number')!.textContent=value;}
@@ -21,8 +21,8 @@ export function updateExpeditions(progress:Progress){
  const next=EXPEDITIONS.find(m=>!progress.completed.includes(m.id));document.getElementById('next-expedition')!.textContent=next?.name??'모든 탐사 완료';document.getElementById('next-expedition-note')!.textContent=next?.detail??'다른 환경에서 새로운 균형을 만들어보세요.';
  for(const m of EXPEDITIONS){const row=document.querySelector<HTMLElement>('[data-mission="'+m.id+'"]')!;row.dataset.complete=String(progress.completed.includes(m.id));row.querySelector('small')!.textContent=progress.completed.includes(m.id)?'완료':'진행 중';}
 }
-export function updateObservatory(s:Float32Array,index:number,e:Environment,grid:SphereGrid,climate?:WeatherClimate){
- updateDepthProfile(s,index,grid);
+export function updateObservatory(s:Float32Array,index:number,e:Environment,grid:SphereGrid,climate?:WeatherClimate,hideBedrock=false){
+ updateDepthProfile(s,index,grid,hideBedrock);
  const p=index*STRIDE,items=[...MATERIALS.map(m=>({name:m.name,amount:s[p+F[m.id]]})),{name:'기반암',amount:s[p+F.rock]},{name:'용융 규사',amount:s[p+F.molten]}].filter(m=>m.amount>.005).sort((a,b)=>b.amount-a.amount).slice(0,5);
  const container=document.getElementById('cell-composition')!;container.replaceChildren();
  for(const item of items){const row=document.createElement('div');row.className='composition-row';const label=document.createElement('span');label.textContent=item.name;const value=document.createElement('output');const number=document.createElement('span');number.className='reading-number';number.textContent=formatReading(item.amount,2);const unit=document.createElement('span');unit.className='reading-unit';unit.textContent=' kg';value.append(number,unit);row.append(label,value);container.append(row);}
@@ -32,7 +32,7 @@ export function updateObservatory(s:Float32Array,index:number,e:Environment,grid
  document.getElementById('habitat-value')!.textContent=(suitable*100).toFixed(0)+'%';
  document.getElementById('habitat-note')!.textContent=s[p+F.ice]>.1?'얼음이 녹아야 자랄 수 있어요.':roots===0?'모래·점토·토양이 있어야 뿌리를 내릴 수 있어요.':s[p+F.water]<.02?'소량의 물을 공급하세요.':s[p+F.water]>3?'물이 너무 깊습니다.':light<.05?'햇빛을 기다리고 있어요.':suitable>.4?(s[p+F.plant]>0?'식생이 자랄 수 있는 환경입니다.':(s[p+F.seed]>1e-6||(climate?.seeds[index]??0)>.001)?'씨앗이 정착할 수 있는 환경입니다.':'씨앗이나 식생을 도입하면 정착할 수 있어요.'):'온도와 염분을 확인하세요.';
  document.getElementById('local-seed')!.textContent=formatReading(s[p+F.seed],3)+' kg'+((climate?.seeds[index]??0)>.001?' · 분산 흔적 있음':'');
- if(climate){const air=climate.conditions(s,index,e);document.getElementById('upper-temperature')!.textContent=air.temperature.toFixed(1)+'°C';document.getElementById('local-humidity')!.textContent=air.humidity>=2?'≥200%':(air.humidity*100).toFixed(0)+'%';for(const [id,field] of [['local-wind',climate.wind],['local-current',climate.currents]] as const)document.getElementById(id)!.textContent=flowCellSpeed(field,index,grid.count).toFixed(2)+' 셀/게임초';}
+ if(climate){const air=climate.conditions(s,index,e);document.getElementById('upper-temperature')!.textContent=air.temperature.toFixed(1)+'°C';document.getElementById('local-humidity')!.textContent=air.humidity>=2?'≥200%':(air.humidity*100).toFixed(0)+'%';for(const [id,field] of [['local-wind',climate.wind],['local-current',climate.currents]] as const)document.getElementById(id)!.textContent=formatFlowSpeed(flowCellSpeed(field,index,grid.count))+' 셀/게임초';}
  document.getElementById('local-cloud')!.textContent=formatReading(s[p+F.cloud]+s[p+F.cloudIce],3)+' kg';
  const t=totals(s);for(const [id,value] of [['water',t[F.water]],['ice',t[F.ice]],['plant',t[F.plant]],['life',t[F.herbivore]+t[F.carnivore]]] as const)setMetric('global-'+id,formatReading(value,1));
  let min=Infinity,max=-Infinity;for(let i=0;i<s.length;i+=STRIDE){min=Math.min(min,s[i+F.temperature]);max=Math.max(max,s[i+F.temperature]);}document.getElementById('global-temperature')!.textContent=min.toFixed(0)+' ~ '+max.toFixed(0)+'°C';

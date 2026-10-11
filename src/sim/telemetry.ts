@@ -7,7 +7,7 @@ const mass=(key:string,name:string,group:MetricGroup,color?:string):Metric=>({ke
 export const METRICS:Metric[]=[
  mass('mass','총 질량','matter'),mass('surface','표면 · 대기','matter'),mass('airborne','낙하 · 투입 대기','matter'),
  mass('terrain','지형 고체','matter','#b79a69'),mass('liquid','액체 · 용융체','matter','#4294ae'),mass('ice','표면 얼음','matter','#87bbcb'),
- mass('gas','기체','matter','#9972b1'),mass('cloud','구름 응축물','matter','#7d8a97'),mass('biomass','생물 총량','ecology','#5b956f'),
+ mass('gas','기체','matter','#9972b1'),mass('cloud','구름 응축물','matter','#7d8a97'),{...mass('biomass','생물 총량','ecology','#5b956f'),tip:'식생 + 초식·포식 생물 + 휴면 씨앗 질량. 씨앗 분산 지수는 질량에 포함하지 않습니다.'},
  ...[['rock','기반암'],['sand','모래'],['clay','점토'],['ceramic','도자기'],['glass','유리'],['molten','용융 실리카'],['salt','소금 결정'],['dissolved','용존 소금'],['iron','운철']].map(([key,name])=>mass(key,name,'matter')),
  {key:'tempMean',name:'평균 온도',symbol:'T̄',unit:'°C',group:'thermal',digits:2,tip:'표면 셀의 산술 평균'},
  {key:'tempMin',name:'최저 온도',symbol:'Tmin',unit:'°C',group:'thermal',digits:2,color:'#5a92bd'},

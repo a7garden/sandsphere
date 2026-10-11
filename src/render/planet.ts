@@ -1,4 +1,7 @@
 import {ClimateLayers} from './climateLayers';
+import {arcFromBasis,arcFromCells,snapSectionEndpoint,type SectionArc} from './sectionArc';
+import {buildSectionMesh} from './sectionGeometry';
+import {CellBrush} from './cellBrush';
 import type {WeatherClimate,ClimateLayer} from '../sim/weatherClimate';
 import type {CloudStyle} from './cloudBanks';
 import {vegetationCover} from './vegetation';
@@ -30,7 +33,7 @@ import '@babylonjs/core/Meshes/thinInstanceMesh';
 import '@babylonjs/core/Culling/ray';
 import { F,STRIDE,SURFACE_MATERIALS,solidHeight,gravityMultiplier,type SurfaceMaterial,type GasMaterial,type Environment,DEFAULT_ENVIRONMENT } from '../sim/model';
 import {GASES,atmosphereState,type AtmosphereState} from '../sim/atmosphere';
-import { HEIGHT_SCALE,RADIUS,nearestCell,type SphereGrid } from '../sim/sphere';
+import { HEIGHT_SCALE,RADIUS,nearestCell,NEIGHBORS,INVALID,type SphereGrid } from '../sim/sphere';
 import { dualSurface,shorelineDepths,softenShore,clipWater,facetWater,type WetVertex } from './surface';
 import {SurfaceEffects} from './effects';
 import {SkyLayers} from './sky';
@@ -95,6 +98,7 @@ export class PlanetView {
   private displayHeights:Float32Array;
   private root:TransformNode;
   private heatSurface:Mesh;
+  private cellBrush:CellBrush;
   private heatColors:Float32Array;
   private heatPositions:Float32Array;
   private surfaceNormals:Float32Array;
@@ -156,7 +160,18 @@ export class PlanetView {
   private sectionView:SectionView;
   private sectionProjection:SectionProjection;
   private sectionMaterials:SectionMaterials;
+  private selectionArc:SectionArc|null=null;private selectionControlBasis:SectionArc|null=null;
+  private selectionCells:number[]=[];
+  private selectionEndCells:{a:number;b:number}|null=null;private selectionWindowRange=0;
+  private selectionCellSet=new Set<number>();
+  private selectionEditing=false;
+  private selectionPending=false;private selectionPendingIndex:number|undefined;
+  private selectionBefore:{arc:SectionArc|null;cells:number[];ends:{a:number;b:number}|null;range:number}|null=null;
+  private selectionSpinFrozen=false;
+  private selectionBrush:CellBrush;
+  private selectionLine:LinesMesh;
   private sectionRangeCells=12;
+  private sectionMagnificationMode=0;private sectionHeightTarget=1;private sectionFitPending=true;
   private sectionDirty=true;
   private sectionWidth=-1;
   private sectionNormal=Vector3.Zero();private sectionUp=Vector3.Zero();
@@ -193,6 +208,10 @@ export class PlanetView {
     this.keyLight.intensity=1.0;
     this.biosphere=new Biosphere(this.scene,this.root,grid);
     this.surface=dualSurface(grid,renderRefinement);
+    this.cellBrush=new CellBrush(this.scene,this.root,grid,this.surface);
+    this.selectionBrush=new CellBrush(this.scene,this.root,grid,this.surface,'selected section cells',0);
+    this.selectionLine=MeshBuilder.CreateLines('selected section arc',{points:Array.from({length:65},()=>Vector3.Zero()),updatable:true},this.scene);
+    this.selectionLine.parent=this.root;this.selectionLine.isPickable=false;this.selectionLine.color=new Color3(.4,.85,1);this.selectionLine.alpha=.4;this.selectionLine.setEnabled(false);
     const vertices=this.surface.indices.length;
     this.surfaceState=new Float32Array(this.surface.count*STRIDE);
     this.sectionSamples={cellOwners:new Uint32Array(this.surface.count),baseHeights:new Float32Array(this.surface.count),solidRadii:new Float32Array(this.surface.count),mobileWater:new Float32Array(this.surface.count),triangleVertices:this.surface.indices,bedrockHeights:new Float32Array(this.surface.count)};
@@ -347,7 +366,7 @@ export class PlanetView {
     this.resize=new ResizeObserver(()=>{
       this.camera.fovMode=canvas.clientWidth<canvas.clientHeight?Camera.FOVMODE_HORIZONTAL_FIXED:Camera.FOVMODE_VERTICAL_FIXED;
       engine.setHardwareScalingLevel(renderScaling(canvas.clientWidth,canvas.clientHeight,window.devicePixelRatio||1));
-      engine.resize();
+      engine.resize();this.sectionFitPending=true;if(this.sectionCamera.active)this.sectionCamera.frame('surface');
     });this.resize.observe(canvas);
     let sectionDrag:{id:number;x:number;y:number}|null=null;const sectionTouches=new Set<number>();
     canvas.addEventListener('pointerdown',event=>{
@@ -511,6 +530,7 @@ export class PlanetView {
     this.heatSurface.updateVerticesData(VertexBuffer.PositionKind,this.heatPositions,true);
     this.heatSurface.updateVerticesData(VertexBuffer.ColorKind,this.heatColors);
     this.precipitationLayer.updateSurface(this.heatPositions);
+    this.cellBrush.update(this.heatPositions);this.selectionBrush.update(this.heatPositions);
     for(let i=0;i<this.grid.count;i++) {
       const p=i*STRIDE;
       if(state[p+F.temperature]>28) {
@@ -534,6 +554,7 @@ export class PlanetView {
     }
   }
   pick(x:number,y:number) {
+    if(this.selectionArc&&this.sectionCamera.active&&this.sectionCamera.amount<.999)return null;
     if(this.sectionCamera.amount>.5)return this.pickSection(x,y);
     const result=this.scene.pick(x,y,mesh=>mesh===this.terrain||mesh===this.water);
     if(!result?.hit||!result.pickedPoint)return null;
@@ -542,6 +563,10 @@ export class PlanetView {
     for(let i=0;i<this.grid.count;i++) {
       const v=point.x*this.grid.directions[i*3]+point.y*this.grid.directions[i*3+1]+point.z*this.grid.directions[i*3+2];
       if(v>dot){dot=v;index=i;}
+    }
+    if(this.hexagonalSurface&&result.faceId>=0){
+      const face=result.pickedMesh===this.water?Math.floor(result.faceId/2):result.faceId,owner=this.surface.owners[face];
+      if(owner!==undefined)index=nearestCell(this.grid,this.surface.directions[owner*3],this.surface.directions[owner*3+1],this.surface.directions[owner*3+2]);
     }
     return {index,direction:[point.x,point.y,point.z],inAir:false,emitter:undefined as number[]|undefined};
   }
@@ -578,7 +603,7 @@ export class PlanetView {
     // point alone would differ from their interpolated edges on thin layers.
     const owner=this.sectionView.pickFlat(new Ray(flat.subtract(normal.scale(width+.01)),normal,width*2+.02));
     if(owner>=0)return {index:owner,direction:[...this.grid.directions.slice(owner*3,owner*3+3)],inAir:false,emitter:undefined as number[]|undefined};
-    const index=nearestCell(this.grid,point.x,point.y,point.z);if(point.length()<this.renderRadii[index]-.015)return null;
+    const index=this.selectionArc?this.sectionView.columnOwner(Vector3.Dot(flat,projection.u)):nearestCell(this.grid,point.x,point.y,point.z);if(index<0||point.length()<this.renderRadii[index]-.015)return null;
     return {index,direction:[...this.grid.directions.slice(index*3,index*3+3)],inAir:true,emitter:point.asArray()};
   }
   orbitMode(enabled:boolean) {
@@ -617,7 +642,7 @@ export class PlanetView {
   }
   home() {
     this.focusFlight=null;
-    if(this.sectionCamera.active){this.sectionCamera.home();this.onSectionChange?.();return;}
+    if(this.sectionCamera.active){this.sectionFitPending=true;this.sectionCamera.home();this.onSectionChange?.();return;}
     this.axisAlignment.reset();
     this.camera.inertialAlphaOffset=0;this.camera.inertialBetaOffset=0;this.camera.inertialRadiusOffset=0;
     this.camera.alpha=-1.01;this.camera.beta=1.17;this.camera.radius=Math.min(24,Math.max(16.4,this.atmosphereRadii[0]/Math.sin(this.camera.fov/2)*1.04));
@@ -635,6 +660,8 @@ export class PlanetView {
     const size=this.camera.fovMode===Camera.FOVMODE_HORIZONTAL_FIXED?this.canvas.clientWidth:this.canvas.clientHeight;
     return angle*RADIUS*size/(this.camera.radius*Math.tan(this.camera.fov/2)*(this.sectionCamera.active?this.sectionCamera.viewScale:1));
   }
+  sectionBrushCells(cells:readonly number[]){return this.isSection&&this.selectionArc?cells.filter(i=>this.selectionCellSet.has(i)):[...cells];}
+  setBrushCells(cells:readonly number[],kind='pour'){this.cellBrush.select(cells,this.heatPositions,kind);}
   setDark(dark:boolean) {
     this.themeDark=dark;this.scene.clearColor=new Color4(...(dark?PALETTE.dark:PALETTE.paper),1);
     this.ground.setEnabled(!dark);
@@ -675,7 +702,7 @@ export class PlanetView {
     this.spinAxis.setEnabled(this.showSpinAxis&&!this.sectionCamera.active);
     if(!this.motionDisplay)this.setSun(this.physicalSun);
   }
-  setRenderSpinFrozen(frozen:boolean){this.rotationFrame.frozen=frozen;}
+  setRenderSpinFrozen(frozen:boolean){if(this.selectionEditing)this.selectionSpinFrozen=frozen;else this.rotationFrame.frozen=frozen;}
   resetRenderSpin(angle:number){this.focusFlight=null;this.motion=null;this.motionDisplay=null;this.rotationFrame.reset(angle);this.axisAlignment.reset();}
   rotationStats(){return {frozen:this.rotationFrame.frozen,physicalAngle:this.motion?.spin?.angle??this.rotationFrame.physicalAngle,interpolatedAngle:this.rotationFrame.physicalAngle,displayAngle:this.rotationFrame.displayAngle,sunPosition:this.sun.position.asArray(),axisAligning:this.axisAlignment.moving,axisVisible:this.spinAxis.isEnabled(),cameraUp:this.camera.upVector.asArray(),north:Vector3.TransformNormal(Vector3.Up(),this.root.computeWorldMatrix(true)).normalize().asArray()};}
   setSun(direction:readonly number[]) {
@@ -700,7 +727,7 @@ export class PlanetView {
   setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionDirty=true;}
   clearPrecipitation(){this.precipitationLayer.clear();this.sectionView.clearPrecipitation();this.sectionDirty=true;}
   precipitationStats(){return this.precipitationLayer.stats();}
-  visualStats() {return {climate:this.climateLayers.stats(),section:{enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
+  visualStats() {return {climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
   deposits() {return this.grains.map(g=>({index:g.index,material:g.material,amount:g.amount}));}
   emitGas(index:number,material:GasMaterial,amount:number) {
     const dir=Vector3.FromArray(this.grid.directions,index*3),radius=this.renderRadii[index];
@@ -726,7 +753,7 @@ export class PlanetView {
     }
   }
   takeEscapedGrains() {const amount=this.escapedGrains;this.escapedGrains=0;return amount;}
-  emit(index:number,material:SurfaceMaterial,amount:number,land:Grain['land'],sourceDirection?:readonly number[],sourceIndex=index,emitter?:readonly number[]) {
+  emit(index:number,material:SurfaceMaterial,amount:number,land:Grain['land'],sourceDirection?:readonly number[],sourceIndex=index,emitter?:readonly number[],cellAligned=false) {
     const dir=Vector3.FromArray(this.grid.directions,index*3);
     const radius=physicalContact(this.state,index,this.grid);
     // Visible grains fall under radial gravity; their mass enters the surface at impact.
@@ -734,7 +761,7 @@ export class PlanetView {
     const sourceRadius=physicalContact(this.state,sourceIndex,this.grid);
     const localUp=Math.abs(source.y)>.9?Vector3.Right():Vector3.Up();
     const tangent=localUp.subtract(source.scale(Vector3.Dot(localUp,source))).normalize();
-    const offset=sourceDirection?tangent.scale(.22):Vector3.Zero();
+    const offset=sourceDirection&&!cellAligned?tangent.scale(.22):Vector3.Zero();
     const position=emitter?this.unprojectDisplayPoint(Vector3.FromArray(emitter)):source.scale(sourceRadius+.55+this.physicalRandom.next()*.05).add(offset).add(new Vector3((this.physicalRandom.next()-.5)*.045,(this.physicalRandom.next()-.5)*.045,(this.physicalRandom.next()-.5)*.045));
     const destination=dir.scale(radius),lateral=destination.subtract(source.scale(sourceRadius)).subtract(offset);
     this.grains.push({index,material,amount,land,position,age:0,spin:Math.random()*5+2,
@@ -750,7 +777,7 @@ export class PlanetView {
     this.grains=[];
   }
   async showSystem(planets:PlanetRecord[],activeId:string){
-    this.focusFlight=null;
+    this.cancelSectionSelection();this.focusFlight=null;
     if(this.sectionCamera.active){this.setSection(false);this.sectionCamera.update(1);this.updateSection(0);}
     this.axisAlignment.reset();
     this.precipitationLayer.setInSystem(true);
@@ -773,7 +800,7 @@ export class PlanetView {
   animate(dt:number,speed=1) {
     if(this.systemScene.active){this.systemScene.update(dt,speed);this.sun.position.copyFrom(this.systemScene.starPosition);this.sun.scaling.setAll(Math.max(1,Math.min(3.6,1+(this.camera.radius-24)/30)));return;}
     if(this.motion&&this.motionDisplay){this.motionDisplay.update(this.motion,dt,speed);this.applySpin(this.motionDisplay.spin);this.setSun(orbitalSun(this.motionDisplay.angle));}
-    this.updateSection(dt);
+    this.updateSection(dt);this.updateSelectionPreview();
     this.spinAxis.setEnabled(this.showSpinAxis&&!this.sectionCamera.active);
     if(!this.sectionCamera.active)this.axisAlignment.update(dt);
     this.systemScene.update(dt);this.sun.scaling.setAll(Math.max(1,Math.min(3.6,1+(this.camera.radius-24)/30)));
@@ -787,7 +814,7 @@ export class PlanetView {
     }
     if(this.meteorFlight){const f=this.meteorFlight;f.t=Math.min(1,f.t+dt/.9);f.mesh.position=Vector3.Lerp(f.from,f.to,f.t);MeshBuilder.CreateLines('meteor trail',{points:[Vector3.Lerp(f.from,f.to,Math.max(0,f.t-.25)),f.mesh.position],instance:f.trail as LinesMesh},this.scene);if(f.t===1){f.mesh.dispose(false,true);f.trail.dispose();this.meteorFlight=null;f.resolve();}}
 
-    this.weather.animate(dt);
+    this.sky.animate(dt);this.weather.animate(dt);
     this.streamLife=Math.max(0,this.streamLife-dt);
     this.stream.setEnabled(this.streamLife>0&&!!this.streamPath);
     if(this.streamPath&&this.streamLife>0)this.stream=MeshBuilder.CreateTube('continuous water stream',{path:this.streamPath,instance:this.stream},this.scene);
@@ -810,24 +837,100 @@ export class PlanetView {
     }
   }
   stepPhysics(dt:number){this.escapedGrains+=advanceFalling(this.grains,this.grid,this.state,dt,this.environment);}
+  /** Preview and cap share their intersection and owner mapping; no copied simulation state. */
+  beginSectionSelection(index?:number){
+    if(this.sectionCamera.active){if(!this.sectionCamera.enabled){this.selectionPending=true;this.selectionPendingIndex=index;}return;}
+    if(!this.selectionEditing){this.selectionBefore={arc:this.selectionArc,cells:[...this.selectionCells],ends:this.selectionEndCells,range:this.selectionWindowRange};this.selectionSpinFrozen=this.rotationFrame.frozen;this.rotationFrame.frozen=true;}
+    this.selectionEditing=true;this.focusFlight=null;this.axisAlignment.cancel();
+    this.camera.inertialAlphaOffset=0;this.camera.inertialBetaOffset=0;this.camera.inertialRadiusOffset=0;
+    if(!this.selectionArc||index!==undefined){
+      const picked=this.pick(this.canvas.clientWidth/2,this.canvas.clientHeight/2),local=Vector3.TransformCoordinates(this.camera.position,this.root.computeWorldMatrix(true).clone().invert());
+      const v=index!==undefined?Vector3.FromArray(this.grid.directions,index*3):picked?Vector3.FromArray(picked.direction):local.normalize();
+      const right=Vector3.TransformNormal(Vector3.TransformNormal(Vector3.Right(),this.camera.getViewMatrix().clone().invert()),this.root.computeWorldMatrix(true).clone().invert());
+      this.snapSelectionArc(arcFromBasis(right,v,this.sectionRangeCells*Math.sqrt(4*Math.PI/this.grid.count)/2));
+    }
+    this.cellBrush.select([],this.heatPositions,'pour');this.updateSelectionPreview();this.onSectionChange?.();
+  }
+  private snapSelectionArc(arc:SectionArc){
+    const a=nearestCell(this.grid,arc.a.x,arc.a.y,arc.a.z),requested=nearestCell(this.grid,arc.b.x,arc.b.y,arc.b.z),b=snapSectionEndpoint(this.grid,a,requested);
+    this.selectionEndCells={a,b};this.selectionArc=arcFromCells(this.grid,a,b,arc);this.refreshSelectionCells();
+  }
+  moveSectionEndpoint(end:'a'|'b',direction:readonly number[]){this.moveSectionEndpointCell(end,nearestCell(this.grid,direction[0],direction[1],direction[2]));}
+  moveSectionEndpointCell(end:'a'|'b',requested:number){
+    const ends=this.selectionEndCells;if(!this.selectionEditing||!ends||!Number.isInteger(requested)||requested<0||requested>=this.grid.count)return;
+    const anchor=ends[end==='a'?'b':'a'];if(requested===anchor)return;
+    const cell=snapSectionEndpoint(this.grid,anchor,requested);if(cell===ends[end])return;
+    this.selectionEndCells={...ends,[end]:cell};const {a,b}=this.selectionEndCells;
+    this.selectionArc=arcFromCells(this.grid,a,b,this.selectionArc??undefined);
+    this.refreshSelectionCells();this.updateSelectionPreview();this.onSectionChange?.();
+  }
+  stepSectionEndpoint(end:'a'|'b',dx:number,dy:number,steps=1){
+    for(let step=0;step<steps;step++){
+      const ends=this.selectionEndCells,p=this.sectionEndpointPosition(end);if(!ends||!p)return;
+      let best=ends[end],score=.25;
+      for(let k=0;k<NEIGHBORS;k++){const neighbor=this.grid.neighbors[ends[end]*NEIGHBORS+k];if(neighbor===INVALID||neighbor===ends[end==='a'?'b':'a']||snapSectionEndpoint(this.grid,ends[end==='a'?'b':'a'],neighbor)!==neighbor)continue;
+        const q=this.observationPosition(neighbor),x=q.x-p.x,y=q.y-p.y,length=Math.hypot(x,y);if(!q.visible||length<.1)continue;const alignment=(x*dx+y*dy)/length;if(alignment>score){score=alignment;best=neighbor;}}
+      if(best===ends[end])return;this.moveSectionEndpointCell(end,best);
+    }
+  }
+  cancelSectionSelection(){
+    this.selectionPending=false;if(!this.selectionEditing)return;
+    this.selectionArc=this.selectionBefore?.arc??null;this.selectionCells=this.selectionBefore?.cells??[];this.selectionEndCells=this.selectionBefore?.ends??null;this.selectionWindowRange=this.selectionBefore?.range??0;this.selectionCellSet=new Set(this.selectionCells);
+    this.finishSelectionEditing();this.updateSelectionPreview();this.onSectionChange?.();
+  }
+  private finishSelectionEditing(){if(this.selectionEditing)this.rotationFrame.frozen=this.selectionSpinFrozen;this.selectionEditing=false;this.selectionBefore=null;}
+  clearSectionSelection(){this.selectionPending=false;this.finishSelectionEditing();this.selectionArc=null;this.selectionControlBasis=null;this.selectionEndCells=null;this.selectionWindowRange=0;this.selectionCells=[];this.selectionCellSet.clear();this.updateSelectionPreview();this.onSectionChange?.();}
+  private refreshSelectionCells(){
+    const arc=this.selectionArc;if(!arc)return;
+    const cap=buildSectionMesh(this.terrainData,this.waterData,this.surface.owners,this.surfaceState,this.grid,arc.normal,this.sectionCamera.halfWidth,undefined,1/30,this.sectionSamples,true,arc);
+    this.selectionCells=[...new Set(cap.owners.filter(i=>i>=0))].sort((a,b)=>{const angle=(i:number)=>{const d=Vector3.FromArray(this.grid.directions,i*3);return Math.atan2(Vector3.Dot(d,arc.u),Vector3.Dot(d,arc.v));};return angle(a)-angle(b)||a-b;});
+    if(this.selectionEndCells)for(const cell of [this.selectionEndCells.a,this.selectionEndCells.b])if(!this.selectionCells.includes(cell))this.selectionCells.push(cell);
+    this.selectionCellSet=new Set(this.selectionCells);
+    const whole=buildSectionMesh(this.terrainData,this.waterData,this.surface.owners,this.surfaceState,this.grid,arc.normal,this.sectionCamera.halfWidth,undefined,1/30,this.sectionSamples,true,{...arc,cells:this.selectionCellSet,wholeCells:true});
+    this.selectionWindowRange=arc.halfRange;for(let t=0;t<whole.owners.length;t++)if(whole.owners[t]>=0)for(let k=0;k<3;k++){const p=Vector3.FromArray(whole.positions,t*9+k*3);this.selectionWindowRange=Math.max(this.selectionWindowRange,Math.abs(Math.atan2(Vector3.Dot(p,arc.u),Vector3.Dot(p,arc.v)))+1e-6);}
+    this.sectionDirty=true;
+  }
+  private updateSelectionPreview(){
+    const arc=this.selectionArc,visible=!!arc&&!this.sectionCamera.active&&!this.systemScene.active;
+    this.selectionBrush.select(visible?this.selectionCells:[],this.heatPositions,'cool');
+    this.selectionLine.setEnabled(visible);if(!visible||!arc)return;
+    const points=Array.from({length:65},(_,i)=>{const t=arc.halfRange*(i/32-1),d=arc.v.scale(Math.cos(t)).add(arc.u.scale(Math.sin(t))),cell=nearestCell(this.grid,d.x,d.y,d.z);return d.scale(this.renderRadii[cell]+.05);});
+    MeshBuilder.CreateLines('selected section arc',{points,instance:this.selectionLine},this.scene);
+  }
+  sectionEndpointPosition(end:'a'|'b'){
+    if(!this.selectionArc)return null;
+    const cell=this.selectionEndCells?.[end]??nearestCell(this.grid,...this.selectionArc[end].asArray() as [number,number,number]),d=Vector3.FromArray(this.grid.directions,cell*3),world=this.root.computeWorldMatrix(true),point=Vector3.TransformCoordinates(d.scale(this.renderRadii[cell]+.05),world);
+    const p=Vector3.Project(point,Matrix.Identity(),this.scene.getTransformMatrix(),new Viewport(0,0,this.canvas.clientWidth,this.canvas.clientHeight));
+    const normal=Vector3.TransformNormal(d,world),visible=p.z>=0&&p.z<=1&&p.x>=0&&p.x<=this.canvas.clientWidth&&p.y>=0&&p.y<=this.canvas.clientHeight&&Vector3.Dot(normal,this.camera.globalPosition.subtract(point))>0;
+    const viewport=new Viewport(0,0,this.canvas.clientWidth,this.canvas.clientHeight),outline=this.selectionBrush.boundaryPoints(cell,this.heatPositions).map(q=>Vector3.Project(Vector3.TransformCoordinates(q,world),Matrix.Identity(),this.scene.getTransformMatrix(),viewport));
+    return {index:cell,x:p.x,y:p.y,visible,outline:outline.map(q=>({x:q.x,y:q.y}))};
+  }
+  get isSelectingSection(){return this.selectionEditing;}
+  get sectionSelection(){const a=this.selectionArc;return {editing:this.selectionEditing,cells:[...this.selectionCells],endCells:this.selectionEndCells?{...this.selectionEndCells}:null,windowHalfRange:this.selectionWindowRange,a:a?.a.asArray()??null,b:a?.b.asArray()??null,halfRange:a?.halfRange??null};}
   setSection(enabled:boolean,index?:number){
     this.focusFlight=null;this.axisAlignment.cancel();
     const cell=index??this.pick(this.canvas.clientWidth/2,this.canvas.clientHeight/2)?.index??(()=>{const local=Vector3.TransformCoordinates(this.camera.position,this.root.computeWorldMatrix(true).clone().invert());return nearestCell(this.grid,local.x,local.y,local.z);})();
-    this.sectionCamera.toggle(enabled,Vector3.FromArray(this.grid.directions,cell*3),Math.max(RADIUS, this.renderRadii[cell]));this.sectionDirty=true;
+    if(enabled){this.selectionControlBasis=null;this.finishSelectionEditing();this.sectionFitPending=true;this.sectionCamera.setFlatRange(this.sectionHalfRange);}
+    this.sectionCamera.toggle(enabled,Vector3.FromArray(this.grid.directions,cell*3),Math.max(RADIUS,this.renderRadii[cell]),enabled?this.selectionArc??undefined:undefined);this.sectionDirty=true;
+    this.updateSelectionPreview();this.onSectionChange?.();
   }
+  private restoreSelectionControls(){if(this.selectionArc&&this.selectionControlBasis){this.sectionCamera.u.copyFrom(this.selectionControlBasis.u);this.sectionCamera.v.copyFrom(this.selectionControlBasis.v);this.sectionCamera.normal.copyFrom(this.selectionControlBasis.normal);}}
+  private syncSelectionArc(){if(!this.selectionArc)return;this.selectionControlBasis=arcFromBasis(this.sectionCamera.u,this.sectionCamera.v,this.selectionControlBasis?.halfRange??this.selectionArc.halfRange);this.snapSelectionArc(this.selectionControlBasis);this.sectionCamera.u.copyFrom(this.selectionArc.u);this.sectionCamera.v.copyFrom(this.selectionArc.v);this.sectionCamera.normal.copyFrom(this.selectionArc.normal);this.sectionCamera.flatRange=this.sectionHalfRange;}
   get isSection(){return this.sectionCamera.enabled;}
   get sectionAngle(){return this.sectionCamera.angleDegrees;}
   get sectionTilt(){return this.sectionCamera.tiltDegrees;}
-  private get sectionHalfRange(){return Math.min(Math.PI/3,this.sectionRangeCells*Math.sqrt(4*Math.PI/this.grid.count)/2);}
-  get sectionRange(){return this.sectionRangeCells;}
-  setSectionRange(cells:number){this.sectionRangeCells=Math.max(6,Math.min(36,Math.round(cells)));this.sectionCamera.setFlatRange(this.sectionHalfRange);this.sectionDirty=true;this.onSectionChange?.();}
+  private get sectionHalfRange(){return this.selectionArc?this.selectionWindowRange:Math.min(Math.PI/3,this.sectionRangeCells*Math.sqrt(4*Math.PI/this.grid.count)/2);}
+  get sectionRange(){return this.selectionArc?Math.round(this.selectionArc.halfRange*2/Math.sqrt(4*Math.PI/this.grid.count)):this.sectionRangeCells;}
+  get sectionMagnification(){return this.sectionMagnificationMode;}
+  setSectionMagnification(scale:number){this.sectionMagnificationMode=Number.isFinite(scale)?scale>0?Math.max(1,Math.min(64,scale)):0:0;if(this.sectionMagnificationMode>0)this.sectionHeightTarget=this.sectionMagnificationMode;else this.sectionFitPending=true;this.onSectionChange?.();}
+  setSectionRange(cells:number){this.selectionControlBasis=null;this.sectionRangeCells=Math.max(2,Math.min(36,Math.round(cells)));if(this.selectionArc){this.snapSelectionArc(arcFromBasis(this.sectionCamera.u,this.sectionCamera.v,this.sectionRangeCells*Math.sqrt(4*Math.PI/this.grid.count)/2));this.sectionCamera.u.copyFrom(this.selectionArc.u);this.sectionCamera.v.copyFrom(this.selectionArc.v);this.sectionCamera.normal.copyFrom(this.selectionArc.normal);}this.sectionCamera.setFlatRange(this.sectionHalfRange);this.sectionFitPending=true;this.sectionDirty=true;this.onSectionChange?.();}
   get sectionFraming(){return this.sectionCamera.framing;}
   setSectionNavigation(mode:'rotate'|'pan'){this.sectionNavigation=mode;this.onSectionChange?.();}
-  frameSection(mode:'surface'|'whole'){this.sectionCamera.frame(mode);this.sectionDirty=true;this.onSectionChange?.();}
-  private navigateSection(dx:number,dy:number,pan=false){if(pan||this.sectionNavigation==='pan')this.sectionCamera.move(dx,dy);else this.sectionCamera.rotate(dx,dy);this.onSectionChange?.();}
-  setSectionTilt(degrees:number){this.sectionCamera.setTilt(degrees);this.sectionDirty=true;this.onSectionChange?.();}
-  setSectionWidth(width:number){this.sectionCamera.halfWidth=Math.max(.08,Math.min(.8,width));this.sectionDirty=true;}
-  setSectionAngle(degrees:number){this.sectionCamera.setAngle(degrees);this.sectionDirty=true;this.onSectionChange?.();}
+  frameSection(mode:'surface'|'whole'){this.sectionFitPending=true;this.sectionCamera.frame(mode);this.sectionDirty=true;this.onSectionChange?.();}
+  private navigateSection(dx:number,dy:number,pan=false){if(pan||this.sectionNavigation==='pan')this.sectionCamera.move(dx,dy);else {this.restoreSelectionControls();this.sectionCamera.rotate(dx,dy);this.syncSelectionArc();}this.onSectionChange?.();}
+  setSectionTilt(degrees:number){this.restoreSelectionControls();this.sectionCamera.setTilt(degrees);this.syncSelectionArc();this.sectionDirty=true;this.onSectionChange?.();}
+  setSectionWidth(width:number){this.sectionCamera.halfWidth=Math.max(.08,Math.min(.8,width));if(this.selectionArc)this.refreshSelectionCells();this.sectionDirty=true;this.onSectionChange?.();}
+  setSectionAngle(degrees:number){this.restoreSelectionControls();this.sectionCamera.setAngle(degrees);this.syncSelectionArc();this.sectionDirty=true;this.onSectionChange?.();}
   private updateSection(dt:number){
     if(this.sectionCamera.active){const direction=this.sectionCamera.v,index=nearestCell(this.grid,direction.x,direction.y,direction.z);this.sectionCamera.followSurface(Math.max(RADIUS,this.renderRadii[index]));}
     this.sectionCamera.update(dt);const active=this.sectionCamera.active;
@@ -835,8 +938,15 @@ export class PlanetView {
     if(!active&&this.sectionControlsDetached){this.camera.attachControl(this.canvas,true);this.orbitMode(this.inspectionMode);this.sectionControlsDetached=false;}
     const width=active?this.sectionCamera.clipWidth:1e6,normal=this.sectionCamera.normal;
     this.sectionProjection.configure(this.sectionCamera.u,this.sectionCamera.v,normal,this.root.computeWorldMatrix(true),this.sectionCamera.framing==='surface'?this.sectionCamera.amount*this.sectionCamera.amount*(3-2*this.sectionCamera.amount):0,this.sectionHalfRange);
-    updateSectionClip(this.scene,this.root,normal,width);this.sectionMaterials.update();this.sky.setSection(normal,width,active);this.sectionView.setVisible(active);
-    if(active&&(this.sectionDirty||this.sectionWidth!==width||!this.sectionNormal.equalsWithEpsilon(normal,1e-7)||!this.sectionUp.equalsWithEpsilon(this.sectionCamera.v,1e-7))){const cap=this.sectionView.update(this.terrainData,this.waterData,this.surface.owners,this.surfaceState,normal,width,this.sectionSamples,this.sectionCamera.framing==='surface');this.sectionProjection.updateFoundation(cap);this.sectionView.updateProjection(this.sectionProjection);this.sectionDirty=false;this.sectionWidth=width;this.sectionNormal.copyFrom(normal);this.sectionUp.copyFrom(this.sectionCamera.v);}
+    updateSectionClip(this.scene,this.root,normal,width);this.sectionMaterials.update();this.sectionView.setVisible(active);
+    if(active&&(this.sectionDirty||this.sectionWidth!==width||!this.sectionNormal.equalsWithEpsilon(normal,1e-7)||!this.sectionUp.equalsWithEpsilon(this.sectionCamera.v,1e-7))){const cap=this.sectionView.update(this.terrainData,this.waterData,this.surface.owners,this.surfaceState,normal,width,this.sectionSamples,this.sectionCamera.framing==='surface',this.selectionArc?{...this.selectionArc,cells:this.selectionCellSet,wholeCells:true}:undefined);this.sectionProjection.updateFoundation(cap);this.sectionProjection.stackDepth=Math.max(.001,this.sectionView.profileDepth(this.sectionProjection));this.sectionDirty=false;this.sectionWidth=width;this.sectionNormal.copyFrom(normal);this.sectionUp.copyFrom(this.sectionCamera.v);}
+    if(!active&&this.selectionPending){this.selectionPending=false;this.beginSectionSelection(this.selectionPendingIndex);}
+    if(active){
+      if(this.sectionFitPending&&this.sectionCamera.amount>.999&&this.sectionProjection.stackDepth>.003){if(this.sectionMagnificationMode===0)this.sectionHeightTarget=Math.max(1,Math.min(64,this.sectionCamera.profileHalfHeight*.68/Math.max(.03,this.sectionProjection.stackDepth)));this.sectionFitPending=false;}
+      this.sectionProjection.heightScale+=(this.sectionHeightTarget-this.sectionProjection.heightScale)*(1-Math.exp(-dt/.12));
+      this.sectionView.setPowderSize(Math.max(.003,this.sectionCamera.displayHalfHeight*2/Math.max(1,this.canvas.clientHeight)*5));
+      this.sectionView.updateProjection(this.sectionProjection);
+    }
   }
   private projectPhysicalPoint(point:Vector3){
     const i=nearestCell(this.grid,point.x,point.y,point.z),column=columnGeometry(this.state,i,this.grid);

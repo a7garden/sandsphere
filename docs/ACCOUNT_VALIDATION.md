@@ -14,6 +14,10 @@ format 2 저장 추가 검증: Firestore 분할 조각의 사용자 격리, 변�
 
 운영 검증 추가: `https://sandsphere.app`에서 HTTPS 200과 배포 태그·커밋을 확인했다. 임시 검증 계정으로 운영 Firebase SDK 로그인 → 실제 Firestore 저장 → 다른 UID 접근 거부 → 로그아웃·재로그인 후 원본 복원을 통과했다(`tests/account-live.test.ts`, 명시적 opt-in). 일반 CI에서는 이 운영 테스트를 건너뛴다.
 
-브라우저 범위: 배포한 앱의 초기 화면과 계정 UI는 확인했다. Codex 내장 브라우저에서 Google API의 로그인 POST가 CORS preflight 성공 뒤 `ERR_ABORTED`로 중단되었고, 일반 Chrome 제어는 연결되지 않았다. 따라서 운영 UI의 로그인 완료는 이 도구로 확인하지 못했다. 운영 API 저장·복원 성공과 UI에서의 Google 로그인 완료를 구분한다. Google provider 활성화, 허용 도메인, 인증 handler HTTPS 200은 확인했다.
+2026-10-10 브라우저 범위: 배포한 앱의 초기 화면과 계정 UI는 확인했다. Codex 내장 브라우저에서 Google API의 로그인 POST가 CORS preflight 성공 뒤 `ERR_ABORTED`로 중단되었고, 일반 Chrome 제어는 연결되지 않았다. 당시에는 운영 UI의 로그인 완료를 확인하지 못했다. Google provider 활성화, 허용 도메인, 인증 handler HTTPS 200은 확인했다.
+
+2026-10-11 운영 Google 로그인·저장·재로그인 검증: 실제 macOS Safari에서 `https://sandsphere.app/`의 계정 버튼 → Google 계정 선택 → 기본 이름·프로필·이메일 로그인 동의 → `a7garden@gmail.com` 로그인 완료를 확인했다. 계정에 기존 게임이 없음을 확인한 뒤 물 행성 `Google 복원 확인 1011`을 만들고 일시 정지했다. `지금 저장`을 눌러 `클라우드에 저장했습니다. · 오전 12:27:54` 표시를 확인했다. 로그아웃 후 빈 비회원 생성 화면과 비회원 계정 표시를 확인하고, 동일 Google 계정으로 다시 로그인했다. 별도 복원 선택 없이 같은 행성이 돌아왔으며 다음 값이 저장 전후 일치했다: 행성 이름, 일시 정지 상태, 액체 물 61,476.3 kg, 구름 물·얼음 3.78 kg, 발견 기록 2개. 재로그인 계정과 클라우드 저장 완료 표시도 확인했다. 같은 Safari 프로필에서의 재로그인 검증이며, 브라우저 저장소를 지우거나 새 기기를 사용한 검증은 아니다. 앱 코드나 배포 설정을 변경하지 않았다. 테스트 행성은 해당 계정에 그대로 보관했다.
+
+운영 UI 증거: `artifacts/google-cloud-saved.png`, `artifacts/google-logged-out.png`, `artifacts/google-restored-world.png`, `artifacts/google-restored-account.png`.
 
 최초 배포 직후 Mac mini의 시스템 DNS가 새 도메인의 음성 캐시를 유지해 마지막 상태 검증이 실패했다. 검증 스크립트는 시스템 IPv4 조회 실패 시 Cloudflare 공개 DNS로 조회하고 동일 호스트의 TLS 인증서를 검증한다. 시스템 DNS 설정은 변경하지 않는다.

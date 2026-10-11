@@ -22,6 +22,12 @@ describe('observed depth spectrum',()=>{
   expect(mass(0,'dissolved')+mass(1,'dissolved')).toBeCloseTo(.4);
   layers.forEach(l=>expect(l.components.reduce((sum,c)=>sum+c.fraction,0)).toBeCloseTo(1));
  });
+ it('omits bedrock from both section thickness and mixture while preserving stocks',()=>{
+  const state=new Float32Array(grid.count*STRIDE);state[F.rock]=8;state[F.sand]=2;state[F.water]=3;
+  const before=state.slice(),p=depthProfile(state,0,grid,true);
+  expect(p.depth).toBeCloseTo(5);expect(p.layers[1].components).toEqual([{id:'sand',mass:2,fraction:1}]);expect(state).toEqual(before);
+  state[F.sand]=0;state[F.water]=0;expect(depthProfile(state,0,grid,true)).toEqual({layers:[],depth:0});
+ });
  it('shows only the fixed base for an empty cell and omits a nonexistent water layer',()=>{
   const state=new Float32Array(grid.count*STRIDE);
   expect(depthProfile(state,0,grid)).toEqual({layers:[],depth:0});

@@ -17,9 +17,10 @@ for(let i=0;i<grid.count;i++){
 }
 const solver=new CpuSolver(grid,s),commands=new Float32Array(grid.count*COMMAND_STRIDE),clock=new SimulationClock();
 const view=await PlanetView.create(document.querySelector('canvas')!,grid,s);view.setEnvironment(e);view.setSpin(0,false,0);view.setSun([.7,.4,-.6]);view.setSurfaceStyle(true,1,true);view.setLayers(true,true);view.setCloudStyle('faceted');
-let paused=false,time=0,poured=0,rain=false,style=0,angle=0,width=.22;
+let paused=new URLSearchParams(location.search).get('paused')==='1',time=0,poured=0,rain=false,style=0,angle=0,width=.22;
 view.setSection(true,0);
 const node=(id:string)=>document.getElementById(id) as HTMLButtonElement;
+if(paused)node('pause').textContent='시간 재개';
 node('section').onclick=()=>view.setSection(!view.isSection);
 node('pause').onclick=()=>{paused=!paused;node('pause').textContent=paused?'시간 재개':'시간 정지';};
 node('rain').onclick=()=>{rain=!rain;view.setPrecipitationLayer(rain);};

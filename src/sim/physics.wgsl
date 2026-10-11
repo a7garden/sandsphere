@@ -98,7 +98,9 @@ fn apply(@builtin(global_invocation_id) gid:vec3u) {
   if(added!=0||cmd.tools.x!=0){s.c.x=(s.c.x*old+added*20.0-cmd.products.x*2.1*25.0+cmd.tools.x)/capacity(s);}
   if(cmd.deposit.z!=0){s.c.z=select(0.0,dose/max(.00000001,s.a.y),s.a.y>.00000001);}
   let keep=1.0-clamp(cmd.tools.y,0.0,1.0);
-  s.a*=keep;s.b*=keep;s.c.y*=keep;s.c.w*=keep;s.d*=keep;s.cloud*=keep;s.life*=keep;
+  s.a*=keep;s.b*=keep;s.c.w*=keep;s.cloud=vec4f(s.cloud.xy,s.cloud.zw*keep);s.life*=keep;
+  // Surface-section tools do not touch hidden bedrock or atmospheric reservoirs.
+  if(cmd.tools.w<=0.0){s.c.y*=keep;s.d*=keep;s.cloud=vec4f(s.cloud.xy*keep,s.cloud.zw);}
   if(cmd.tools.y>0&&s.a.y<0.001){s.c.z=0.0;}
   let keepProduct=1.0-clamp(cmd.tools.z,0.0,1.0);s.b.y*=keepProduct;s.a.z*=keepProduct;s.a.w*=keepProduct;s.cloud.w*=keepProduct;s.life=vec4f(s.life.xyz*keepProduct,s.life.w);
   prepared[i]=s;

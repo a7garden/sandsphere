@@ -12,13 +12,13 @@ export class SectionCamera {
   private surfaceRadius=5;private focus=0;private currentFocus=0;private currentScale=1;
   framing:'surface'|'whole'='surface';flatRange:number|null=null;
   constructor(private camera:ArcRotateCamera,private root:TransformNode,private reducedMotion=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches){}
-  toggle(enabled:boolean,direction:Vector3,surfaceRadius=5){
+  toggle(enabled:boolean,direction:Vector3,surfaceRadius=5,basis?:{u:Vector3;v:Vector3;normal:Vector3}){
     if(enabled&&this.amount===0){
       this.globe={position:this.camera.position.clone(),target:this.camera.target.clone(),up:this.camera.upVector.clone(),radius:this.camera.radius};
       const inverse=this.root.computeWorldMatrix(true).clone().invert(),right=Vector3.TransformNormal(Vector3.Right(),this.camera.getViewMatrix().clone().invert());
       const tangent=Vector3.TransformNormal(right,inverse);this.v=direction.normalizeToNew();this.u=tangent.subtract(this.v.scale(Vector3.Dot(tangent,this.v)));
       if(this.u.lengthSquared()<1e-8)this.u=Vector3.Cross(Math.abs(this.v.y)>.9?Vector3.Right():Vector3.Up(),this.v);
-      this.u.normalize();this.normal=Vector3.Cross(this.u,this.v).normalize();this.pan.setAll(0);this.angle=0;this.tilt=0;
+      this.u.normalize();this.normal=Vector3.Cross(this.u,this.v).normalize();if(basis){this.u=basis.u.clone();this.v=basis.v.clone();this.normal=basis.normal.clone();}this.pan.setAll(0);this.angle=0;this.tilt=0;
       this.surfaceRadius=surfaceRadius;this.frame('surface');this.currentPan.setAll(0);this.currentFocus=this.focus;this.currentScale=this.scale;
     }
     this.enabled=enabled;
@@ -28,10 +28,12 @@ export class SectionCamera {
   rotate(x:number,y:number){this.setAngle(this.angle+x*180/Math.PI);this.setTilt(this.tilt+y*180/Math.PI);}
   private wrap(degrees:number){return ((degrees+180)%360+360)%360-180;}
   private halfHeight(){const aspect=this.camera.getEngine().getAspectRatio(this.camera),fov=this.camera.fovMode===Camera.FOVMODE_VERTICAL_FIXED?this.camera.fov:2*Math.atan(Math.tan(this.camera.fov/2)/aspect);return (this.globe?.radius??this.camera.radius)*Math.tan(fov/2);}
+  get profileHalfHeight(){return Math.max(1,RADIUS*(this.flatRange??.45)*1.12/this.camera.getEngine().getAspectRatio(this.camera));}
+  get displayHalfHeight(){return this.halfHeight()*this.currentScale;}
   frame(mode:'surface'|'whole'){
-    this.framing=mode;this.pan.setAll(0);this.focus=mode==='surface'?(this.flatRange!==null?RADIUS+.45:this.surfaceRadius-.15):0;
+    this.framing=mode;this.pan.setAll(0);this.focus=mode==='surface'?(this.flatRange!==null?RADIUS+this.profileHalfHeight*.56:this.surfaceRadius-.15):0;
     const aspect=this.camera.getEngine().getAspectRatio(this.camera);
-    this.scale=(mode==='surface'?(this.flatRange!==null?Math.max(1.0,RADIUS*this.flatRange*1.12/aspect):1.35):Math.max(6.6,this.surfaceRadius)*1.18/Math.min(1,aspect))/this.halfHeight();
+    this.scale=(mode==='surface'?(this.flatRange!==null?this.profileHalfHeight:1.35):Math.max(6.6,this.surfaceRadius)*1.18/Math.min(1,aspect))/this.halfHeight();
   }
   followSurface(radius:number){this.surfaceRadius=radius;if(this.framing==='surface'&&this.flatRange===null)this.focus=radius-.15;}
   setFlatRange(range:number){this.flatRange=range;if(this.framing==='surface')this.frame('surface');}
@@ -56,7 +58,9 @@ export class SectionCamera {
     const perspective=Matrix.PerspectiveFovLH(fov,aspect,this.camera.minZ,this.camera.maxZ,engine.isNDCHalfZRange);
     const ortho=Matrix.OrthoLH(half*2*aspect,half*2,this.camera.minZ,this.camera.maxZ,engine.isNDCHalfZRange);
     this.camera.freezeProjectionMatrix(blendedProjection(perspective,ortho,a));
-    if(!this.active){this.camera.upVector=this.globe.up;this.camera.setTarget(this.globe.target);this.camera.setPosition(this.globe.position);this.camera.unfreezeProjectionMatrix();this.globe=null;}
+    if(!this.active){this.camera.upVector=this.globe.up;this.camera.setTarget(this.globe.target);this.camera.setPosition(this.globe.position);
+      // setPosition skips equal positions; the restored up vector still needs new orbit angles.
+      this.camera.rebuildAnglesAndRadius();this.camera.unfreezeProjectionMatrix();this.globe=null;}
     return true;
   }
   get viewScale(){return this.currentScale;}

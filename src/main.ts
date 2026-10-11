@@ -22,6 +22,7 @@ import {ObservationPoint} from './ui/observationPoint';
 import {sceneLayersMarkup,updateClimateLegend,updateSceneLayerLegend,keepSceneLayersVisible,setupClimatePicker,updateClimatePicker} from './ui/sceneLayers';
 import {SurfaceRefreshClock} from './render/budget';
 import {spinPeriodSelection,updateSyncPeriodMarker,validSpinSpeed} from './ui/spinPeriod';
+import {SectionSelectionControls,sectionSelectionMarkup} from './ui/sectionSelection';
 import {planetControlsMarkup,sectionControlsMarkup,setPlanetSettings} from './ui/planetControls';
 import {inspectorMarkup} from './ui/inspector';
 import {expeditionMarkup,updateObservatory,updateExpeditions,setMetric,formatReading,updateWeatherReadout} from './ui/observatory';
@@ -34,15 +35,14 @@ import '@fontsource/space-grotesk/latin-600.css';
 import './style.css';
 import './ui/planetDashboard.css';
 import {PlanetView} from './render/planet';
-import {createSphere,brushWeights} from './sim/sphere';
-import {F,STRIDE,PRODUCTS,emptyStock,isProduct,COMMAND_STRIDE,COMMAND_FIELD,CpuSolver,seedWorld,seedPlanet,environmentFor,totalMass,totalEnthalpy,cellPressure,totals,isGas,gravityMultiplier,
+import {createSphere,cellBrushWeights,cellBrushAngle,nearestCell} from './sim/sphere';
+import {F,STRIDE,PRODUCTS,emptyStock,isProduct,COMMAND_STRIDE,SURFACE_ERASE,COMMAND_FIELD,CpuSolver,seedWorld,seedPlanet,environmentFor,totalMass,totalEnthalpy,cellPressure,totals,isGas,gravityMultiplier,
   type Stock,type Product,type Solver,type Material,type Tool,type Snapshot,type Environment,type PlanetMaterial,type GasMaterial} from './sim/model';
 import {GASES,atmosphereState,atmosphereReadout} from './sim/atmosphere';
 import {atmosphereOptics} from './sim/optics';
 import {orbitalSun,orbitalPeriod,localSun,orbitalEnvironment,solarEnergy} from './sim/orbit';
 import {GpuSolver} from './sim/gpu';
 import {PHYSICS_DT,SimulationClock} from './sim/clock';
-import {SimulationRandom} from './sim/random';
 import {heatForTarget} from './sim/toolHeat';
 import {saveSnapshot,loadSnapshot,loadRecord,validSnapshot,upgradeSnapshot} from './sim/storage';
 import {snapshotSurface} from './sim/session';
@@ -65,14 +65,14 @@ app.innerHTML=`<div class="app">
 <header class="topbar"><div class="brand-group"><div class="brand"><span class="brand-mark">${icon('planet')}</span>sandsphere<span class="brand-version">0.4</span></div></div>${planetNavigationMarkup()}
 <nav class="top-actions" aria-label="실험실 메뉴"><button id="overview-open" aria-label="항성계" class="text-button" aria-pressed="false">${icon('orbit')}<span>항성계</span></button><button id="wide-view" class="icon-button" aria-label="넓게 보기" aria-pressed="false" title="넓게 보기 · Esc로 돌아오기">${icon('expand')}</button><button id="research-open" class="text-button" aria-haspopup="dialog">${icon('book')}<span>발견 기록</span><span id="discovery-count">0</span></button><button id="dashboard-open" class="icon-button" aria-label="행성 대시보드" title="행성 대시보드" aria-haspopup="dialog">${icon('chart')}</button><button id="notifications-open" class="icon-button notification-button" aria-label="알림 센터" aria-haspopup="dialog">${icon('bell')}<span id="notification-badge" class="notification-badge" aria-hidden="true" hidden>0</span></button><button id="account-open" class="icon-button" aria-label="계정과 저장" title="계정과 저장" aria-haspopup="dialog">${icon('save')}</button><button id="settings-open" class="icon-button" aria-label="설정" title="설정" aria-haspopup="dialog">${icon('settings')}</button></nav></header>
 <main class="view" data-sky="black" aria-label="구형 행성 실험"><canvas id="planet" tabindex="0" aria-label="행성. 기본은 그랩 모드입니다. 재료 선택 후 왼쪽 드래그로 붓기. 오른쪽 드래그로 회전. 휠로 확대. 터치에서는 한 손가락으로 붓고 두 손가락으로 회전합니다."></canvas>
-<div id="system-labels" class="system-labels" hidden></div><div class="scene-heading"><div class="scene-mode-toolbar" role="toolbar" aria-label="행성 편집 모드"><button data-mode="grab" data-tool="observe" aria-pressed="true" aria-label="그랩" title="그랩 · 드래그로 시점 회전">${icon('hand')}</button><button id="observation-pin" data-mode="pin" aria-pressed="false" aria-describedby="observation-instruction" aria-label="관찰 핀" title="핀 · 표면을 눌러 관찰 지점 고정">${icon('pin')}</button><button id="material-mode" data-mode="material" aria-pressed="false" aria-label="재료 붓기" title="재료 · 선택한 재료 붓기">${icon('pour')}</button></div><p id="scene-caption">모래를 부어보세요.</p>${sectionControlsMarkup()}<p id="observation-instruction" class="observation-instruction" role="status" hidden>행성 표면을 눌러 관찰 지점을 고정하세요. Esc로 취소</p></div><div id="observation-marker" class="observation-marker" hidden><button id="observation-focus" class="map-pin" aria-label="관찰 핀으로 시점 이동" title="이 핀 방향으로 시점 이동">${icon('pin')}</button><span class="pin-direction" aria-hidden="true">${icon('arrow')}</span><span id="observation-marker-location" class="pin-location" hidden></span><button id="observation-clear" aria-label="관찰 핀 삭제" title="관찰 핀 삭제">${icon('close')}</button></div><div id="solar-position" class="solar-position" role="img" aria-label="화면 밖 태양 방향" title="태양 방향 · 화면 밖" hidden>${icon('sun')}</div>
+<div id="system-labels" class="system-labels" hidden></div><div class="scene-heading"><div class="scene-mode-toolbar" role="toolbar" aria-label="행성 편집 모드"><button data-mode="grab" data-tool="observe" aria-pressed="true" aria-label="그랩" title="그랩 · 드래그로 시점 회전">${icon('hand')}</button><button id="observation-pin" data-mode="pin" aria-pressed="false" aria-describedby="observation-instruction" aria-label="관찰 핀" title="핀 · 표면을 눌러 관찰 지점 고정">${icon('pin')}</button><button id="material-mode" data-mode="material" aria-pressed="false" aria-label="재료 붓기" title="재료 · 선택한 재료 붓기">${icon('pour')}</button></div><p id="scene-caption">모래를 부어보세요.</p>${sectionControlsMarkup()}${sectionSelectionMarkup()}<p id="observation-instruction" class="observation-instruction" role="status" hidden>행성 표면을 눌러 관찰 지점을 고정하세요. Esc로 취소</p></div><div id="observation-marker" class="observation-marker" hidden><button id="observation-focus" class="map-pin" aria-label="관찰 핀으로 시점 이동" title="이 핀 방향으로 시점 이동">${icon('pin')}</button><span class="pin-direction" aria-hidden="true">${icon('arrow')}</span><span id="observation-marker-location" class="pin-location" hidden></span><button id="observation-clear" aria-label="관찰 핀 삭제" title="관찰 핀 삭제">${icon('close')}</button></div><div id="solar-position" class="solar-position" role="img" aria-label="화면 밖 태양 방향" title="태양 방향 · 화면 밖" hidden>${icon('sun')}</div>
 
 <div class="sun-label">${icon('sun')}<span>태양 에너지</span><output id="solar-energy">1.00×</output></div>
 ${sceneLayersMarkup()}${rotationStickMarkup()}</main>
 <aside class="materials-panel" aria-label="물질과 도구"><div class="panel-title"><h2>빠른 선택</h2><button id="quick-edit" class="quick-edit" aria-pressed="false">편집</button><button id="inventory-open" class="inventory-open">전체 인벤토리 <span>↗</span></button><button id="settings-toggle" class="icon-button mobile-only" aria-label="도구 설정" aria-expanded="false">${icon('settings')}</button></div>
 <div class="material-categories" role="group" aria-label="물질 종류"><button data-category="surface" aria-pressed="true">표면 물질</button><button data-category="gas" aria-pressed="false">기체</button><button data-category="crafted" aria-pressed="false">발견</button></div>
 <p id="selected-material-label" class="selected-material-label" role="status" hidden></p><div class="material-list" data-category="surface">${MATERIALS.map(m=>`<div class="quick-material" data-quick-material="${m.id}"><button class="material" data-material="${m.id}" data-material-category="${m.category}" aria-pressed="false" ${m.category!=='surface'?'hidden':''}><span class="material-icon" aria-hidden="true"></span><span><span class="material-name">${m.name}</span><span class="material-type">${m.type}</span></span><span class="material-supply${isProduct(m.id)?'':' supply-unlimited'}" data-supply="${m.id}" ${isProduct(m.id)?'':'aria-label="무제한"'}>${isProduct(m.id)?'0.0 kg':'∞'}</span></button><button class="quick-remove" data-quick-remove="${m.id}" aria-label="${m.name} 빠른 선택에서 제외" hidden>${icon('close')}</button></div>`).join('')}<button id="quick-add" class="quick-add" hidden>+ 추가</button></div>
-<div class="controls"><div class="control"><label for="radius" class="control-label">넓이<output id="radius-value">보통</output></label><input id="radius" type="range" min="0.06" max="0.30" step="0.01" value="0.12"></div>
+<div class="controls"><div class="control"><label for="radius" class="control-label">브러시 크기<output id="radius-value">1셀</output></label><input id="radius" type="range" min="0" max="5" step="1" value="0" aria-valuetext="1셀"></div>
 <div id="pour-controls" class="control"><label for="rate" class="control-label"><span id="pour-rate-label">흐르는 양</span><output id="rate-value">80 kg/s</output></label><input id="rate" type="range" min="10" max="200" step="10" value="80"></div>
 <div id="thermal-controls" class="control" hidden><label for="target" class="control-label">목표 온도<output id="target-value">950°C</output></label><input id="target" type="range" min="100" max="2100" step="50" value="950"></div>
 <div class="tool-list">${[['heat','heat','가열'],['cool','snow','냉각'],['erase','erase','깎기'],['collect','collect','회수'],['meteor','planet','운석']].map(([tool,glyph,name])=>`<button class="tool" data-tool="${tool}" aria-label="${name}" aria-pressed="false">${icon(glyph)}<span>${name}</span></button>`).join('')}</div></div>${expeditionMarkup()}</aside>
@@ -82,7 +82,7 @@ ${planetControlsMarkup()}
 <div id="brush" class="brush" hidden></div><div id="cursor-label" class="cursor-label" hidden></div><p id="message" class="message" role="status" hidden></p>
 <div id="boot" class="boot" role="status"><div class="loading-orb"></div><strong>작은 세계를 준비하고 있어요.</strong><p id="boot-message">지형과 물질을 불러오는 중</p></div>
 <dialog id="research"><div class="dialog-header"><h2>발견 기록</h2><button class="icon-button dialog-close" aria-label="발견 기록 닫기">${icon('close')}</button></div><div class="dialog-body"><p class="dialog-lead">행성에서 발견한 물질과 현상입니다.<br>관측 조건과 과학적 근거를 함께 기록합니다.</p>${RESEARCH.map(r=>`<article class="research-entry" data-discovery="${r.id}"><h3>${icon(r.icon)}${r.name}<span class="discovery-state">미관측</span></h3><p>${r.science}</p><p>${r.rule}</p><p>${r.url?`<a href="${r.url}" target="_blank" rel="noopener noreferrer">${r.source} ↗</a>`:`<span>${r.source}</span>`}</p></article>`).join('')}<article class="research-entry"><h3>행성의 물질량</h3><div class="mass-grid"><div><p>액체 물</p><output id="mass-water">—</output></div><div><p>얼음</p><output id="mass-ice">—</output></div><div><p>수증기</p><output id="mass-vapor">—</output></div><div><p>구름 · 물방울과 얼음</p><output id="mass-cloud">—</output></div><div><p>소금 · 고체와 용액</p><output id="mass-salt">—</output></div></div><p>사라진 물은 수증기나 얼음으로 이동합니다. 수증기는 구름 속 물방울·얼음이 되고, 충분히 모이면 비·눈으로 내려옵니다. 붓기·깎기·우주로의 탈출은 외부와의 물질 교환입니다.</p></article><p class="dialog-lead">구면 표면층 모델입니다. 생태계는 토양·식생·초식·포식 생물의 질량과 먹이 관계로 계산합니다. 개체별 행동과 내부 동굴은 포함하지 않습니다.</p></div></dialog>
-<dialog id="help"><div class="dialog-header"><h2>작은 세계 다루기</h2><button class="icon-button dialog-close" aria-label="조작 방법 닫기">${icon('close')}</button></div><div class="dialog-body"><p class="dialog-lead">물질을 골라 행성에 부어보세요.<br>실험은 자동으로 저장되고, 다음에 열면 이어집니다.</p>${[['그랩','기본 상태에서는 클릭해도 재료가 부어지지 않습니다. 왼쪽·오른쪽 드래그로 회전하세요.'],['붓기','재료를 선택한 뒤 왼쪽 버튼으로 누르거나 드래그. 그랩 또는 Esc로 해제'],['관찰 핀','행성 화면 좌상단의 핀을 누르고 표면을 눌러 고정하세요. 표면을 다시 누르거나 핀 해제로 관측 지점을 바꿀 수 있습니다.'],['회전','오른쪽 드래그 · 화면 오른쪽 아래 조이스틱'],['확대 · 축소','휠 또는 화면의 + / − 버튼'],['터치','한 손가락 붓기 · 두 손가락 회전'],['물질 · 작업 도구','물질과 가열·냉각·깎기·회수 버튼을 선택하세요.'],['생성물 재사용','생성물과 생물을 회수하고 전체 인벤토리에서 꺼내 쓰세요.'],['행성 이동','항성계에서 행성을 누르면 카메라가 해당 행성으로 이동합니다.'],['시간 · 시점','구면·단면 버튼으로 같은 세계를 연속 전환하세요. 단면은 표면을 확대해 보여줍니다. 그랩·오른쪽 드래그로 절단면을 두 축으로 돌리고 이동 버튼 또는 Shift+드래그로 화면을 옮기세요. 전체 버튼으로 행성 전체 단면을 볼 수 있습니다. 행성 조정에서 절단 방향·기울기·띠 폭도 바꿀 수 있어요. 정지 중에는 클릭·드래그한 지점만 편집하며 반응과 낙하는 한 단계 또는 재생으로 진행합니다.'],['공전 · 자전','궤도 거리는 생성 후 고정되고 공전 주기를 정합니다. 하단의 행성 조정을 펼쳐 자전축과 자전 주기를 조절하세요. 동기 자전은 한쪽 면이 계속 태양을 보게 합니다. 화면 회전 고정은 관찰 화면만 멈추며, 실제 자전은 속도를 0으로 설정해야 멈춥니다.'],['행성 생성','항성계의 행성 만들기 버튼에서 주요 물질·궤도·대기·중력을 정하세요.'],['자연 현상','수증기 → 구름 → 비·눈. 구름은 이동하거나 다시 증발해요.'],['표시 레이어','화면 좌하단의 대기·구름·강수 버튼으로 숨기거나 표시하세요. 숨겨도 물질의 순환은 계속됩니다.'],['우주 배경','검정 · 흰색 선택. 인터페이스 테마와 별개예요.']].map(([a,b])=>`<div class="key-row"><span>${a}</span><span>${b}</span></div>`).join('')}<details class="keyboard-help"><summary>키보드 보조 조작</summary><p>1–4 물질 선택 · G 가열 · C 냉각 · X 깎기 · Esc 그랩<br>Space 재생 · R 처음 시점 · P 관찰 핀 지정 · Shift+드래그 구면 회전 / 단면 이동<br>행성에 초점을 두면 방향키 회전 · Enter 붓기 (핀 지정 중에는 화면 중앙에 핀)</p></details><p class="dialog-lead help-example">점토를 붓고 가열 도구로 850°C 이상을 유지하면 도자기가 됩니다. 모래는 1,700°C 위에서 녹고 식으면 유리가 됩니다. 시간 속도를 높이면 변화를 빨리 볼 수 있어요.</p></div></dialog>
+<dialog id="help"><div class="dialog-header"><h2>작은 세계 다루기</h2><button class="icon-button dialog-close" aria-label="조작 방법 닫기">${icon('close')}</button></div><div class="dialog-body"><p class="dialog-lead">물질을 골라 행성에 부어보세요.<br>실험은 자동으로 저장되고, 다음에 열면 이어집니다.</p>${[['그랩','기본 상태에서는 클릭해도 재료가 부어지지 않습니다. 왼쪽·오른쪽 드래그로 회전하세요.'],['붓기','재료를 선택한 뒤 왼쪽 버튼으로 누르거나 드래그. 그랩 또는 Esc로 해제'],['관찰 핀','행성 화면 좌상단의 핀을 누르고 표면을 눌러 고정하세요. 표면을 다시 누르거나 핀 해제로 관측 지점을 바꿀 수 있습니다.'],['회전','오른쪽 드래그 · 화면 오른쪽 아래 조이스틱'],['확대 · 축소','휠 또는 화면의 + / − 버튼'],['터치','한 손가락 붓기 · 두 손가락 회전'],['물질 · 작업 도구','물질과 가열·냉각·깎기·회수 버튼을 선택하세요.'],['생성물 재사용','생성물과 생물을 회수하고 전체 인벤토리에서 꺼내 쓰세요.'],['행성 이동','항성계에서 행성을 누르면 카메라가 해당 행성으로 이동합니다.'],['시간 · 시점','구면·단면 버튼으로 같은 세계를 연속 전환하세요. 단면은 표면을 확대해 보여줍니다. 그랩·오른쪽 드래그로 절단면을 두 축으로 돌리고 이동 버튼 또는 Shift+드래그로 화면을 옮기세요. 구면에서 단면을 누르면 절단선과 선택 셀이 나타납니다. A·B를 드래그하고 선택한 단면 열기를 누르세요. 끝점에 초점을 두고 방향키로도 조정할 수 있습니다. 행성 조정에서 절단 방향·기울기·띠 폭도 바꿀 수 있어요. 정지 중에는 클릭·드래그한 지점만 편집하며 반응과 낙하는 한 단계 또는 재생으로 진행합니다.'],['공전 · 자전','궤도 거리는 생성 후 고정되고 공전 주기를 정합니다. 하단의 행성 조정을 펼쳐 자전축과 자전 주기를 조절하세요. 동기 자전은 한쪽 면이 계속 태양을 보게 합니다. 화면 회전 고정은 관찰 화면만 멈추며, 실제 자전은 속도를 0으로 설정해야 멈춥니다.'],['행성 생성','항성계의 행성 만들기 버튼에서 주요 물질·궤도·대기·중력을 정하세요.'],['자연 현상','수증기 → 구름 → 비·눈. 구름은 이동하거나 다시 증발해요.'],['표시 레이어','화면 좌하단의 대기·구름·강수 버튼으로 숨기거나 표시하세요. 숨겨도 물질의 순환은 계속됩니다.'],['우주 배경','검정 · 흰색 선택. 인터페이스 테마와 별개예요.']].map(([a,b])=>`<div class="key-row"><span>${a}</span><span>${b}</span></div>`).join('')}<details class="keyboard-help"><summary>키보드 보조 조작</summary><p>1–4 물질 선택 · G 가열 · C 냉각 · X 깎기 · Esc 그랩<br>Space 재생 · R 처음 시점 · P 관찰 핀 지정 · Shift+드래그 구면 회전 / 단면 이동<br>행성에 초점을 두면 방향키 회전 · Enter 붓기 (핀 지정 중에는 화면 중앙에 핀)</p></details><p class="dialog-lead help-example">점토를 붓고 가열 도구로 850°C 이상을 유지하면 도자기가 됩니다. 모래는 1,700°C 위에서 녹고 식으면 유리가 됩니다. 시간 속도를 높이면 변화를 빨리 볼 수 있어요.</p></div></dialog>
 <dialog id="placement"><div class="dialog-header"><h2>행성 만들기</h2><button id="placement-account" class="text-button">계정과 저장</button><button class="icon-button dialog-close" aria-label="행성 만들기 닫기">${icon('close')}</button></div><div class="dialog-body"><label class="planet-name-field placement-name" for="placement-name">행성 이름<input id="placement-name" maxlength="28" required autocomplete="off"></label><p class="dialog-lead">무엇으로 이루어진 행성을 만들까요?</p><fieldset class="planet-materials"><legend>주요 구성 물질</legend>${[['rock','planet','암석'],['sand','sand','모래'],['clay','clay','점토'],['water','water','물'],['ice','snow','얼음']].map(([id,glyph,name])=>`<button type="button" data-primary="${id}" aria-pressed="${id==='rock'}">${icon(glyph)}<span>${name}</span></button>`).join('')}</fieldset><p class="placement-note">선택한 물질을 중심으로 지형과 표면층을 만듭니다. 얼음과 물의 상태는 배치한 궤도의 온도에 따라 변해요.</p>
 <section class="orbit-placement"><h3>태양에서의 위치</h3><div class="orbit-spectrum" aria-hidden="true"><span class="placement-sun">${icon('sun')}</span><span id="placement-planet">${icon('planet')}</span></div><label for="placement-distance" class="control-label"><span>태양과의 거리</span><output id="placement-distance-value">1.00 AU</output></label><input id="placement-distance" type="range" min="0.65" max="2.4" step="0.05" value="1"><div class="placement-zones"><button data-distance="0.7">뜨겁게</button><button data-distance="1">온화하게</button><button data-distance="1.8">차갑게</button></div><div class="placement-readout"><span>받는 에너지 <output id="placement-energy">1.00×</output></span><span>초기 온도 <output id="placement-temperature">18°C</output></span><span>공전 주기 <output id="placement-period">240초</output></span></div><p class="placement-note">궤도 거리는 생성 후 고정됩니다. 거리가 두 배면 에너지는 ¼. 온도와 시간은 게임용 근사값입니다.</p></section>
 <details class="initial-atmosphere"><summary>초기 대기와 중력</summary><label for="placement-gas" class="control-label">대기 주성분</label><select id="placement-gas"><option value="nitrogen">질소 · N₂</option><option value="methane">메탄 · CH₄</option><option value="carbonDioxide">이산화탄소 · CO₂</option><option value="none">초기 대기 없음</option></select><div class="control"><label for="placement-gas-amount" class="control-label">초기 기체량<output id="placement-gas-value">1.0×</output></label><input id="placement-gas-amount" type="range" min="0.1" max="4" step="0.1" value="1"></div><div class="control"><label for="placement-gravity" class="control-label">중력 · 지구 기준<output id="placement-gravity-value">1.00×</output></label><input id="placement-gravity" type="range" min="0.01" max="3" step="0.01" value="1"></div></details><label class="placement-life"><input id="placement-life" type="checkbox">씨앗이 있는 행성</label><p class="placement-note">휴면 씨앗과 소량의 탄소원을 포함합니다. 물·빛·온도가 맞는 모래나 점토에서도 식생이 정착합니다.</p><button id="create-planet" class="create-planet">이 조건으로 행성 만들기</button><p id="placement-replace" class="placement-note">기존 행성을 보존하고 새 행성을 추가합니다. 최대 4개까지 함께 실험할 수 있어요.</p></div></dialog>
@@ -105,6 +105,7 @@ let rotationStick:RotationStick;
 let commands=new Float32Array(grid.count*COMMAND_STRIDE),currentStep:Promise<void>=Promise.resolve();
 const observation=new ObservationPoint();
 const surfaceRefresh=new SurfaceRefreshClock();
+let selectionControls:SectionSelectionControls;
 let view:PlanetView,lastObserver=-1,history:number[]=[],spinAngle=0,spinning=true,axisTilt=0,spinPeriod=120,primary:PlanetMaterial='rock',placementPrimary:PlanetMaterial='rock';
 let blackSpace=true,darkUI=false,showAtmosphere=true,showClouds=true,showPrecipitation=false,renderSpinFrozen=false,showAxis=true,lastSaved:Snapshot|null=null,saving=false,awaitingCreation=false;
 let pointer={x:0,y:0,down:false};
@@ -160,7 +161,7 @@ function saveAppearance(){
 }
 function setTool(next:Tool) {
   observation.selecting=false;
-  tool=next;pointer.down=false;el('brush').hidden=true;el('cursor-label').hidden=true;
+  tool=next;pointer.down=false;hideBrush();
   document.querySelectorAll<HTMLButtonElement>('button[data-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tool===tool)));
   el('planet').dataset.tool=tool;view?.orbitMode(tool==='observe');
   el('planet').setAttribute('aria-label',tool==='observe'?'행성 그랩. 클릭해 관찰하고 드래그로 회전하세요. 재료를 선택해야 물질이 부어집니다.':'행성 작업. 선택한 재료나 도구로 표면을 수정합니다. 그랩 또는 Esc로 작업을 해제하세요.');
@@ -227,29 +228,49 @@ function clearRotationErrors() {
     el(input).removeAttribute('aria-invalid');el<HTMLInputElement>(input).setCustomValidity('');el(error).hidden=true;
   }
 }
+function selectedBrushWeights(center:number,rings:number){
+  const weights=cellBrushWeights(grid,center,rings),allowed=new Set(view.sectionBrushCells(weights.map(w=>w.index))),selected=weights.filter(w=>allowed.has(w.index)),sum=selected.reduce((s,w)=>s+w.weight,0);
+  return selected.map(w=>({...w,weight:w.weight/sum}));
+}
 function deposit(index:number,mass:number,kind:Material) {commands[index*COMMAND_STRIDE+COMMAND_FIELD[kind]]+=mass;}
-const supplyRandom=new SimulationRandom();
-function choose(weights:{index:number;weight:number}[]) {let r=supplyRandom.next();for(const w of weights){r-=w.weight;if(r<=0)return w.index;}return weights[weights.length-1].index;}
-function pour(dt:number,direction:readonly number[],kind=material,rate=Number(rateInput.value),angle=Number(radiusInput.value),emitter?:readonly number[]) {
+function pour(dt:number,direction:readonly number[],kind=material,rate=Number(rateInput.value),rings=Number(radiusInput.value),emitter?:readonly number[],center=nearestCell(grid,direction[0],direction[1],direction[2])) {
+  const weights=selectedBrushWeights(center,rings);if(!weights.length)return;
   const requested=rate*dt,amount=isProduct(kind)?Math.min(stock[kind],requested):requested;
   if(isProduct(kind)){
     if(amount<=0)return;
     stock[kind]-=amount;transferredIn+=amount;inventoryUpdate();
   }else supplied+=amount;
-  const weights=brushWeights(grid,direction,angle),n=Math.max(1,Math.round(dt*240));
-  const centre=weights.reduce((a,b)=>a.weight>b.weight?a:b).index;
-  if(isGas(kind)){for(const {index,weight} of weights)deposit(index,amount*weight,kind);view.emitGas(centre,kind,amount);return;}
-  for(let k=0;k<n;k++)view.emit(choose(weights),kind,amount/n,(index,mass)=>deposit(index,mass,kind),direction,centre,emitter);
+  if(isGas(kind)){for(const {index,weight} of weights)deposit(index,amount*weight,kind);view.emitGas(center,kind,amount);return;}
+  const pieces=Math.max(1,Math.ceil(dt*240/weights.length));
+  for(const {index,weight} of weights)for(let k=0;k<pieces;k++)view.emit(index,kind,amount*weight/pieces,(cell,mass)=>deposit(cell,mass,kind),index===center?[...grid.directions.subarray(index*3,index*3+3)]:undefined,index,emitter,true);
 }
+let brushCell:number|null=null,brushHover=false,lastBrushRefresh=0;
+function brushSizeUpdate(){
+  const rings=Number(radiusInput.value),text=brushCell===null?(rings===0?'1셀':rings+'겹 확장'):selectedBrushWeights(brushCell,rings).length+'셀';
+  el('radius-value').textContent=text;radiusInput.setAttribute('aria-valuetext',text);updateRangeControl(radiusInput);
+}
+function hideBrush(){brushHover=false;brushCell=null;view?.setBrushCells([]);el('brush').hidden=true;el('cursor-label').hidden=true;brushSizeUpdate();}
+function showBrush(hit:ReturnType<PlanetView['pick']>){
+  const visible=!!hit&&!overview&&!view.isSelectingSection&&!observation.selecting&&tool!=='observe';
+  if(!visible){hideBrush();return;}
+  brushHover=true;brushCell=hit!.index;brushSizeUpdate();
+  const cells=selectedBrushWeights(hit!.index,Number(radiusInput.value)),surface=!hit!.inAir&&tool!=='meteor';
+  view.setBrushCells(surface?cells.map(c=>c.index):[],tool);
+  const brush=el('brush'),label=el('cursor-label'),size=Math.max(12,view.brushPixels(cellBrushAngle(grid,hit!.index,Number(radiusInput.value))));
+  brush.hidden=surface;brush.dataset.kind=tool;brush.style.left=pointer.x+'px';brush.style.top=pointer.y+'px';brush.style.width=size+'px';brush.style.height=size+'px';
+  label.hidden=false;label.textContent=(tool==='heat'||tool==='cool'?el<HTMLInputElement>('target').value+'°C':tool==='erase'?'깎기':tool==='collect'?'회수':tool==='meteor'?'운석':MATERIALS.find(m=>m.id===material)!.name)+(tool==='meteor'?'':' · '+cells.length+'셀');
+  label.style.left=pointer.x+18+'px';label.style.top=pointer.y+'px';
+}
+function refreshBrush(){const r=view.canvas.getBoundingClientRect();showBrush(view.pick(pointer.x-r.left,pointer.y-r.top));}
 function paint(dt:number) {
-  if(operation||overview||observation.selecting||tool==='observe')return;const rect=view.canvas.getBoundingClientRect(),hit=view.pick(pointer.x-rect.left,pointer.y-rect.top);if(!hit)return;if(!hit.inAir)observation.hover(hit.index);
+  if(operation||overview||view.isSelectingSection||observation.selecting||tool==='observe')return;const rect=view.canvas.getBoundingClientRect(),hit=view.pick(pointer.x-rect.left,pointer.y-rect.top);if(!hit)return;if(!hit.inAir)observation.hover(hit.index);
   if(tool==='meteor'){pointer.down=false;void meteorImpact(hit.direction);return;}
   if(paused&&(tool==='pour'||!hit.inAir))pausedEdited=true;
-  if(tool==='pour')pour(dt,hit.direction,material,Number(rateInput.value),Number(radiusInput.value),hit.emitter);
-  else {if(hit.inAir)return;const weights=brushWeights(grid,hit.direction,Number(radiusInput.value));
+  if(tool==='pour')pour(dt,hit.direction,material,Number(rateInput.value),Number(radiusInput.value),hit.emitter,hit.index);
+  else {if(hit.inAir)return;const weights=selectedBrushWeights(hit.index,Number(radiusInput.value));
     if(tool==='heat'||tool==='cool'){const target=Number(el<HTMLInputElement>('target').value);for(const {index,weight} of weights){const heat=heatForTarget(solver.state,index,target,tool,commands,activeCommands);commands[index*COMMAND_STRIDE+4]+=heat*(paused?1:Math.min(1,dt*8))*Math.min(1,weight*weights.length);}}
     if(tool==='collect')for(const {index,weight} of weights){const c=index*COMMAND_STRIDE+6,amount=Math.min(.95,dt*2*Math.min(1,weight*weights.length));commands[c]=1-(1-commands[c])*(1-amount);}
-    if(tool==='erase')for(const {index,weight} of weights){const c=index*COMMAND_STRIDE+5,amount=Math.min(.95,dt*2*Math.min(1,weight*weights.length));commands[c]=1-(1-commands[c])*(1-amount);}
+    if(tool==='erase')for(const {index,weight} of weights){if(view.isSection)commands[index*COMMAND_STRIDE+SURFACE_ERASE]=1;const c=index*COMMAND_STRIDE+5,amount=Math.min(.95,dt*2*Math.min(1,weight*weights.length));commands[c]=1-(1-commands[c])*(1-amount);}
   }
 }
 async function tick(dt:number) {
@@ -278,7 +299,7 @@ function observerUpdate() {
   planetNavigationUpdate();
   if(overview){updateSystemUi(planets,stock);return;}
   spinUpdate();
-  const observed=observation.cell,p=observed*STRIDE,s=solver.state;updateObservatory(s,observed,environment,grid,solver.climate);let name='기반암',phase='고체';
+  const observed=observation.cell,p=observed*STRIDE,s=solver.state;updateObservatory(s,observed,environment,grid,solver.climate,view.isSection);let name='기반암',phase='고체';
   if(s[p+F.sand]>.3)name=s[p+F.water]>.03?'젖은 모래':'모래';if(s[p+F.clay]>.5)name=s[p+F.water]>.03?'젖은 점토':'점토';
   if(s[p+F.soil]>.3)name='유기 토양';if(s[p+F.plant]>.1)name='식생';if(s[p+F.iron]>.3)name='운철';
   if(s[p+F.ceramic]>.5)name='도자기';if(s[p+F.glass]>.5)name='유리';if(s[p+F.salt]>.4)name='소금 결정';if(s[p+F.water]>.3){name=s[p+F.dissolved]>.01?'염수':'물';phase='액체';}if(s[p+F.ice]>.3){name='얼음';phase='고체';}if(s[p+F.molten]>.3){name='용융 실리카';phase='용융';}
@@ -422,7 +443,7 @@ async function switchPlanet(id:string){
  try{
   await currentStep;stashCurrent(true);
   if(overview)await view.approachPlanet(id);
-  activeId=id;backgroundWorlds.invalidate(id);resume(destination.snapshot);view.leaveSystem();overview=false;el('system-labels').hidden=true;
+  view.clearSectionSelection();activeId=id;backgroundWorlds.invalidate(id);resume(destination.snapshot);view.leaveSystem();overview=false;el('system-labels').hidden=true;
   document.querySelector('.app')!.classList.remove('system-view');el('system-dialog').hidden=true;el('overview-open').setAttribute('aria-pressed','false');refreshWorld(false);
  }finally{operation=false;}void autosave();
 }
@@ -492,11 +513,12 @@ function openPlacement(first=false) {if(planets.length>=PLANET_LIMIT){openSystem
 function rateUpdate(){el('rate-value').textContent=paused?(Number(rateInput.value)*PHYSICS_DT).toFixed(2)+' kg/번':rateInput.value+' kg/s';el('pour-rate-label').textContent=paused?'한 번에 붓는 양':'흐르는 양';}
 function pauseToggle() {paused=!paused;if(paused)pointer.down=false;rateUpdate();el('pause').innerHTML=icon(paused?'play':'pause');el('pause').setAttribute('aria-label',paused?'시뮬레이션 재생':'일시 정지');el('pause').setAttribute('aria-pressed',String(paused));planetNavigationUpdate();el<HTMLButtonElement>('single-step').disabled=!paused;}
 function cameraViewUpdate(){
+  selectionControls?.refresh();
   const section=view.isSection;
   el<HTMLButtonElement>('axis-align').disabled=section;
   el('axis-align').title=section?'자전축 정렬 · 구면 화면에서 사용':'자전축으로 정렬 · 현재 시점에서 한 번 맞추기';
   for(const [id,value] of [['section-angle',view.sectionAngle],['section-tilt',view.sectionTilt]] as const){el<HTMLInputElement>(id).value=String(value);el(id+'-value').textContent=Math.round(value)+'°';updateRangeControl(el<HTMLInputElement>(id));}
-  el('section-controls').hidden=!section;el<HTMLInputElement>('section-range').value=String(view.sectionRange);el('section-range-value').textContent='약 '+view.sectionRange+'셀';updateRangeControl(el<HTMLInputElement>('section-range'));
+  el<HTMLSelectElement>('section-magnification').value=String(view.sectionMagnification);el('section-controls').hidden=!section;el<HTMLInputElement>('section-range').value=String(view.sectionRange);el('section-range-value').textContent=view.sectionSelection.a?view.sectionSelection.cells.length+'셀':'약 '+view.sectionRange+'셀';updateRangeControl(el<HTMLInputElement>('section-range'));
   document.querySelectorAll<HTMLButtonElement>('[data-section-navigation]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sectionNavigation===view.sectionNavigation)));
   document.querySelectorAll<HTMLButtonElement>('[data-section-framing]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sectionFraming===view.sectionFraming)));
   el('section-tilt').toggleAttribute('disabled',!section);
@@ -546,7 +568,7 @@ function observationUiUpdate(){
   el('observation-heading').textContent=observation.pinned?'고정한 지점':'지금 이 지점';
   el('observation-status').hidden=!observation.pinned;
   el('planet').classList.toggle('selecting-observation',observation.selecting);
-  el('brush').hidden=true;el('cursor-label').hidden=true;
+  hideBrush();
   if(!observation.pinned)el('observation-marker').hidden=true;
 }
 function toggleObservationSelection(){
@@ -603,21 +625,19 @@ function setupInteractions() {
     if(event.pointerType==='touch'&&touches.has(event.pointerId)){touches.set(event.pointerId,{x:event.clientX,y:event.clientY});if(touches.size>=2){const m=touchMetrics();if(lastTouch){view.turn(-(m.x-lastTouch.x)/220,-(m.y-lastTouch.y)/220);if(m.distance>10)view.zoom(lastTouch.distance/m.distance);}lastTouch=m;pointer.down=false;return;}}
     pointer.x=event.clientX;pointer.y=event.clientY;
     if(paused&&pointer.down&&!gesturing&&event.buttons===1&&!event.shiftKey){
-      const spacing=Math.max(4,view.brushPixels(Number(radiusInput.value))*.25);
+      const spacing=Math.max(4,view.brushPixels(cellBrushAngle(grid,brushCell??0,Number(radiusInput.value)))*.25);
       if(!pausedStrokePoint||Math.hypot(pointer.x-pausedStrokePoint.x,pointer.y-pausedStrokePoint.y)>=spacing){paint(PHYSICS_DT);pausedTouchEdited=true;pausedStrokePoint={x:pointer.x,y:pointer.y};}
     }
     if(pinGesture&&Math.hypot(event.clientX-pinGesture.x,event.clientY-pinGesture.y)>8)pinGesture.valid=false;
-    if(event.buttons===2||event.shiftKey||gesturing||event.buttons!==0&&tool==='observe'&&!observation.selecting){el('brush').hidden=true;el('cursor-label').hidden=true;return;}
+    if(event.buttons===2||event.shiftKey||gesturing||event.buttons!==0&&tool==='observe'&&!observation.selecting){hideBrush();return;}
     const now=performance.now();if(event.buttons===0&&now-lastHoverPick<33)return;lastHoverPick=now;
     const rect=canvas.getBoundingClientRect(),hit=view.pick(event.clientX-rect.left,event.clientY-rect.top),hidden=!hit;
-    const brush=el('brush'),label=el('cursor-label');brush.hidden=hidden||observation.selecting||tool==='observe';label.hidden=hidden||observation.selecting||tool==='observe';
-    brush.dataset.kind=tool;brush.style.left=event.clientX+'px';brush.style.top=event.clientY+'px';const size=Math.max(12,view.brushPixels(Number(radiusInput.value)));brush.style.width=size+'px';brush.style.height=size+'px';
-    label.textContent=tool==='heat'||tool==='cool'?el<HTMLInputElement>('target').value+'°C':tool==='erase'?'깎기':tool==='collect'?'회수':MATERIALS.find(m=>m.id===material)!.name;
-    label.style.left=event.clientX+size/2+10+'px';label.style.top=event.clientY+'px';if(hit&&!hidden&&!hit.inAir)observation.hover(hit.index);
+    showBrush(hit);
+    if(hit&&!hidden&&!hit.inAir)observation.hover(hit.index);
   });
   canvas.addEventListener('pointerdown',event=>{
     if(event.pointerType==='touch'){touches.set(event.pointerId,{x:event.clientX,y:event.clientY});canvas.setPointerCapture(event.pointerId);if(touches.size>=2){pendingTouch=null;pinGesture=null;gesturing=true;lastTouch=touchMetrics();pointer.down=false;return;}if(gesturing)return;}
-    if(overview)return;
+    if(overview||view.isSelectingSection)return;
     if(event.button!==0||event.shiftKey)return;
     if(observation.selecting){pinGesture={id:event.pointerId,x:event.clientX,y:event.clientY,valid:true};canvas.setPointerCapture(event.pointerId);canvas.focus({preventScroll:true});return;}
     pointer={x:event.clientX,y:event.clientY,down:tool!=='observe'};canvas.setPointerCapture(event.pointerId);canvas.focus({preventScroll:true});
@@ -627,10 +647,10 @@ function setupInteractions() {
   const release=(event:PointerEvent)=>{pointer.down=false;pausedStrokePoint=null;pendingTouch=null;touches.delete(event.pointerId);if(touches.size===0){gesturing=false;lastTouch=null;}if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);};
   canvas.addEventListener('click',event=>{if(overview){const r=canvas.getBoundingClientRect(),id=view.pickPlanet(event.clientX-r.x,event.clientY-r.y);if(id)void switchPlanet(id);}});
   canvas.addEventListener('pointerup',event=>{if(pendingTouch===event.pointerId&&!gesturing&&pointer.down&&(tool==='meteor'||paused&&!pausedTouchEdited)){pointer.x=event.clientX;pointer.y=event.clientY;paint(PHYSICS_DT);}if(pinGesture?.id===event.pointerId){const gesture=pinGesture;pinGesture=null;if(gesture.valid&&Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)<=8&&observation.selecting&&!gesturing)pinObservationAt(event.clientX,event.clientY);}release(event);});canvas.addEventListener('pointercancel',event=>{pinGesture=null;release(event);});canvas.addEventListener('lostpointercapture',()=>pointer.down=false);
-  canvas.addEventListener('pointerleave',()=>{el('brush').hidden=true;el('cursor-label').hidden=true;});
+  canvas.addEventListener('pointerleave',()=>{hideBrush();});
   el('observation-pin').addEventListener('click',toggleObservationSelection);
   const pinMarker=el('observation-marker');
-  pinMarker.addEventListener('pointerenter',()=>{pointer.down=false;el('brush').hidden=true;el('cursor-label').hidden=true;});
+  pinMarker.addEventListener('pointerenter',()=>{pointer.down=false;hideBrush();});
   pinMarker.addEventListener('pointerdown',event=>event.stopPropagation());
   pinMarker.addEventListener('click',event=>{
     if((event.target as Element).closest('#observation-clear')||!observation.pinned||overview||operation||pinMarker.dataset.offscreen!=='true')return;
@@ -654,7 +674,7 @@ function setupInteractions() {
   document.querySelectorAll<HTMLButtonElement>('[data-distance]').forEach(b=>b.addEventListener('click',()=>{el<HTMLInputElement>('placement-distance').value=b.dataset.distance!;placementUpdate();}));
   el<HTMLInputElement>('placement-name').addEventListener('input',()=>el<HTMLInputElement>('placement-name').setCustomValidity(''));
   el('create-planet').addEventListener('click',()=>{const input=el<HTMLInputElement>('placement-name'),name=input.value.trim();input.setCustomValidity(name?'':'행성 이름을 입력하세요.');if(!input.reportValidity())return;void newWorld(Number(el<HTMLInputElement>('placement-distance').value),Number(el<HTMLInputElement>('placement-gravity').value),el<HTMLSelectElement>('placement-gas').value as GasMaterial|'none',Number(el<HTMLInputElement>('placement-gas-amount').value),name);});
-  radiusInput.addEventListener('input',()=>{const v=Number(radiusInput.value);el('radius-value').textContent=v<.10?'작게':v<.21?'보통':'크게';});rateInput.addEventListener('input',rateUpdate);
+  radiusInput.addEventListener('input',()=>{brushSizeUpdate();if(brushHover)refreshBrush();});rateInput.addEventListener('input',rateUpdate);
   el<HTMLInputElement>('target').addEventListener('input',()=>el('target-value').textContent=el<HTMLInputElement>('target').value+'°C');
   el<HTMLInputElement>('axis-tilt').addEventListener('input',()=>{el('axis-number').removeAttribute('aria-invalid');el('axis-error').hidden=true;tidallyLocked=false;axisTilt=Number(el<HTMLInputElement>('axis-tilt').value);updateSun();spinUpdate();});
   const periodSlider=el<HTMLInputElement>('spin-period');let draggingPeriod=false;
@@ -692,12 +712,14 @@ function setupInteractions() {
   el('zoom-in').addEventListener('click',()=>view.zoom(.88));el('zoom-out').addEventListener('click',()=>view.zoom(1.12));
   el('axis-align').addEventListener('click',()=>view.alignSpinAxis());
   el('layer-axis').addEventListener('click',()=>{showAxis=!showAxis;appearanceUpdate();});
-  document.querySelectorAll<HTMLButtonElement>('[data-camera-view]').forEach(b=>b.addEventListener('click',()=>{if(overview||operation)return;view.setSection(b.dataset.cameraView==='section',observation.pinned?observation.cell:undefined);cameraViewUpdate();}));
+  document.querySelectorAll<HTMLButtonElement>('[data-camera-view]').forEach(b=>b.addEventListener('click',()=>{if(overview||operation)return;pointer.down=false;hideBrush();if(b.dataset.cameraView==='section'){if(!view.isSection){setTool('observe');observation.selecting=false;observationUiUpdate();view.beginSectionSelection(view.sectionSelection.a?undefined:observation.pinned?observation.cell:undefined);}}else{view.cancelSectionSelection();view.setSection(false);}cameraViewUpdate();}));
+  selectionControls=new SectionSelectionControls(view,view.canvas.parentElement!);
   view.onSectionChange=cameraViewUpdate;
   document.querySelectorAll<HTMLButtonElement>('[data-section-navigation]').forEach(b=>b.addEventListener('click',()=>view.setSectionNavigation(b.dataset.sectionNavigation as 'rotate'|'pan')));
   document.querySelectorAll<HTMLButtonElement>('[data-section-framing]').forEach(b=>b.addEventListener('click',()=>view.frameSection(b.dataset.sectionFraming as 'surface'|'whole')));
   el<HTMLInputElement>('section-tilt').addEventListener('input',event=>view.setSectionTilt(Number((event.target as HTMLInputElement).value)));
   el<HTMLInputElement>('section-angle').addEventListener('input',event=>{const angle=Number((event.target as HTMLInputElement).value);view.setSectionAngle(angle);el('section-angle-value').textContent=angle+'°';});
+  el<HTMLSelectElement>('section-magnification').addEventListener('change',event=>view.setSectionMagnification(Number((event.target as HTMLSelectElement).value)));
   el<HTMLInputElement>('section-range').addEventListener('input',event=>view.setSectionRange(Number((event.target as HTMLInputElement).value)));
   el<HTMLInputElement>('section-width').addEventListener('input',event=>{const width=Number((event.target as HTMLInputElement).value);view.setSectionWidth(width);el('section-width-value').textContent=width<.16?'좁게':width>.4?'넓게':'보통';});
   el('single-step').addEventListener('click',()=>{if(!paused||busy||operation||overview)return;busy=true;currentStep=tick(PHYSICS_DT).finally(()=>busy=false);});
@@ -728,7 +750,7 @@ function setupInteractions() {
     if(e.target instanceof HTMLInputElement||document.querySelector('dialog[open]'))return;
     if((e.ctrlKey||e.metaKey)&&e.code==='KeyS'){e.preventDefault();void autosave();return;}
     const materials:Record<string,Material>={Digit1:'sand',Digit2:'water',Digit3:'clay',Digit4:'salt'},tools:Record<string,Tool>={KeyG:'heat',KeyC:'cool',KeyX:'erase'};
-    if(materials[e.code])setMaterial(materials[e.code]);if(tools[e.code])setTool(tools[e.code]);if(e.code==='Escape'){if(overview)void switchPlanet(activeId);inventory.close();setWide(false);setTool('observe');}
+    if(materials[e.code])setMaterial(materials[e.code]);if(tools[e.code])setTool(tools[e.code]);if(e.code==='Escape'){view.cancelSectionSelection();if(overview)void switchPlanet(activeId);inventory.close();setWide(false);setTool('observe');}
     if(e.code==='KeyP'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!overview&&!operation){e.preventDefault();toggleObservationSelection();}
     if(e.code==='Space'&&!(e.target instanceof HTMLButtonElement)){e.preventDefault();if(!e.repeat)pauseToggle();}if(e.code==='KeyR'){if(overview)void switchPlanet(activeId);else view.home();}if(e.code.startsWith('Shift')){pointer.down=false;view.orbitMode(true);}
     if(document.activeElement===canvas){const turns:Record<string,number[]>={ArrowLeft:[-.08,0],ArrowRight:[.08,0],ArrowUp:[0,-.08],ArrowDown:[0,.08]};if(turns[e.code]){e.preventDefault();view.turn(turns[e.code][0],turns[e.code][1]);}if(e.code==='Enter'){const r=canvas.getBoundingClientRect();pointer.x=r.x+r.width/2;pointer.y=r.y+r.height/2;if(observation.selecting)pinObservationAt(pointer.x,pointer.y);else paint(paused?PHYSICS_DT:.1);}}
@@ -779,7 +801,7 @@ async function boot() {
   inventory=new Inventory(setMaterial,stock,resupply);
   view=await PlanetView.create(el<HTMLCanvasElement>('planet'),grid,solver.state);
   view.setSurfaceStyle(true,1,true);
-  view.setCloudStyle('faceted');view.setCloudAppearance(true,.84);
+  view.setCloudStyle('stratus');view.setCloudAppearance(true,.84);
   if(new URLSearchParams(location.search).get('cpu')!=='1')try{const gpu=await GpuSolver.create(grid,solver.state);if(gpu){gpu.climate.restore(solver.climate.snapshot());solver.dispose();solver=gpu;}}catch(error){console.warn('GPU compute unavailable.',error);}
   el('backend').textContent=solver.backend;view.setClimate(climateLayer,solver.climate);setupInteractions();setupAccount(services);setTool('observe');renderDiscoveryRecords();environmentUpdate();spinUpdate();view.setTime(simTime);appearanceUpdate();view.home();inventoryUpdate();
   if(paused){paused=false;pauseToggle();}
@@ -799,7 +821,8 @@ async function boot() {
       rotationStick.update(dt);view.animate(overview?Math.min(.25,realDt):dt,speed);
       if(!overview&&!busy&&!operation){const refreshDt=surfaceRefresh.take(now);if(refreshDt!==null)view.update(solver.state,refreshDt,environment);}
       if(!operation&&!el<HTMLDialogElement>('placement').open){clock.add(realDt,speed);if(!busy){const count=clock.take(4);if(count){busy=true;currentStep=runSteps(count).finally(()=>busy=false);}}}else clock.reset();
-      view.scene.render();updateObservationMarker();if(overview)for(const p of view.systemLabels()){const label=el('system-labels').querySelector<HTMLElement>('[data-scene-planet="'+p.id+'"]');if(label){label.style.left=p.x+'px';label.style.top=(p.y+35)+'px';label.hidden=p.z<0||p.z>1;}}observerClock+=dt;frames++;fpsClock+=realDt;saveClock+=realDt;
+      if(brushHover&&now-lastBrushRefresh>=33){lastBrushRefresh=now;refreshBrush();}
+      view.scene.render();selectionControls?.update();updateObservationMarker();if(overview)for(const p of view.systemLabels()){const label=el('system-labels').querySelector<HTMLElement>('[data-scene-planet="'+p.id+'"]');if(label){label.style.left=p.x+'px';label.style.top=(p.y+35)+'px';label.hidden=p.z<0||p.z>1;}}observerClock+=dt;frames++;fpsClock+=realDt;saveClock+=realDt;
       if(observerClock>.2){observerClock=0;observerUpdate();if(!operation){const active=planets.find(p=>p.id===activeId);if(active)active.snapshot={...active.snapshot,time:simTime,environment:{...environment},paused,transferredIn,state:[...solver.state]};const completed=advanceProgress(progress,planets,stock);if(completed.length){inventoryUpdate();message('탐사 완료 · '+completed.map(id=>EXPEDITIONS.find(m=>m.id===id)!.name).join(' · '));}updateExpeditions(progress);}}if(fpsClock>=1){el('fps').textContent=Math.round(frames/fpsClock)+' fps';frames=0;fpsClock=0;}if(saveClock>=5){saveClock=0;void autosave();}
     }
   });

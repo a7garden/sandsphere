@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="ko" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sandsphere · 구름 3안 비교</title></head><body>
+<header><div><a href="/">sandsphere</a><h1>구름 표현 비교</h1></div><p>같은 구름량 · 같은 조명 · 시점 동기화</p><button id="reset" disabled>시점 초기화</button></header>
+<nav aria-label="비교할 구름 분포"><button data-source="saved" disabled>내 행성</button><button data-source="mixed" aria-pressed="true" disabled>지역별 구름</button><button data-source="thin" disabled>적은 구름</button><button data-source="dense" disabled>많은 구름</button><label><input id="air" type="checkbox" disabled>대기 함께 보기</label><button id="all" hidden>세 안 함께 보기</button></nav>
+<main id="comparisons">
+<article data-look="stratus"><div class="canvas-wrap"><canvas aria-label="A 층운 · 드래그로 모든 시점 회전, 휠로 확대"></canvas></div><footer><div><h2><span>A</span> 얇고 흐르는 층운</h2><p>낮은 두께 · 넓은 연결 · 옅은 음영</p></div><button data-focus="stratus" disabled>크게 보기</button></footer></article>
+<article data-look="cumulus"><div class="canvas-wrap"><canvas aria-label="B 적운 · 드래그로 모든 시점 회전, 휠로 확대"></canvas></div><footer><div><h2><span>B</span> 둥글고 포근한 적운</h2><p>완만한 볼륨 · 부드러운 덩어리</p></div><button data-focus="cumulus" disabled>크게 보기</button></footer></article>
+<article data-look="faceted"><div class="canvas-wrap"><canvas aria-label="C 그래픽 구름 · 드래그로 모든 시점 회전, 휠로 확대"></canvas></div><footer><div><h2><span>C</span> 단정한 그래픽 구름</h2><p>얕은 두께 · 또렷한 윤곽 · 균일한 음영</p></div><button data-focus="faceted" disabled>크게 보기</button></footer></article>
+</main><div class="status-line"><output id="status" aria-live="polite">세 가지 안을 준비하고 있습니다…</output><span>드래그 회전 · 휠 확대 · 원본 데이터 유지</span></div>
+<script type="module" src="/src/cloudComparison.ts"></script></body></html>

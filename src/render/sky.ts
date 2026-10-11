@@ -52,7 +52,7 @@ void main(){
  vec2 groundHit=sphereHit(origin,ray,surfaceRadius-.08);if(sectionHalfWidth>surfaceRadius&&groundHit.x>0.0)end=min(end,groundHit.x);
  vec2 slab=sectionInterval(sectionRayOrigin(),sectionRayDirection(),vec2(start,end));start=slab.x;end=slab.y;
  if(end<=start)discard;
- // Only the atmospheric veil is integrated here; clouds are opaque chunk meshes.
+ // Only the atmospheric veil is integrated here; the connected cloud envelope uses solver stock.
  vec3 result=vec3(0.0);float trans=1.0;
  for(int i=0;i<4;i++){
   float stepAir=(end-start)/4.0;vec3 p=origin+ray*(start+(float(i)+.5)*stepAir);vec4 stock=column(p);
@@ -124,9 +124,9 @@ export class SkyLayers {
     this.banks.update(state,radii);this.mesh.setEnabled(this.atmosphereVisible&&info.mass>.01);
   }
   get densityTexture(){return this.texture;}
-  setSection(normal:Vector3,width:number,enabled:boolean){this.banks.setSection(normal,width,enabled);}
   setCloudAppearance(flat:boolean,opacity:number){this.banks.setAppearance(flat,opacity);}
   setCloudStyle(style:CloudStyle){this.banks.setStyle(style);}
+  animate(dt:number){this.banks.animate(dt);}
   setTime(time:number){this.material.setFloat('cloudTime',time);}
   setSun(sun:readonly number[]){this.sun.copyFromFloats(sun[0],sun[1],sun[2]);this.banks.setSun(sun);}
   setVisible(atmosphere:boolean,clouds:boolean){this.atmosphereVisible=atmosphere;this.cloudsVisible=clouds;this.material.setFloat('showAir',atmosphere?1:0);this.material.setFloat('showClouds',clouds?1:0);this.banks.setVisible(clouds);if(this.mesh)this.mesh.setEnabled(atmosphere);}

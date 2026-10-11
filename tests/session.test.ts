@@ -15,6 +15,13 @@ describe('automatic session persistence',()=>{
     expect(result.state[F.salt]).toBe(1);
     expect(live).toEqual(before);expect(pending).toEqual(commands);
   });
+  it('settles section erasure and pending supply with the same removed-mass budget used at resume',()=>{
+    const live=new Float32Array(STRIDE),pending=new Float32Array(COMMAND_STRIDE);live[F.rock]=8;live[F.sand]=4;live[F.nitrogen]=10;live[F.cloud]=5;live[F.temperature]=20;
+    pending[1]=2;pending[8]=2;pending[5]=.5;pending[7]=1;
+    const saved=snapshotSurface(live,pending,[]);
+    expect(saved.pendingRemoved).toBe(3);expect(saved.state[F.sand]).toBe(3);expect(saved.state[F.rock]).toBe(8);expect(saved.state[F.nitrogen]).toBe(12);expect(saved.state[F.cloud]).toBe(5);
+    expect(totalMass(saved.state)+saved.pendingRemoved).toBe(totalMass(live)+4);expect(new Float32Array(JSON.parse(JSON.stringify([...saved.state])))).toEqual(saved.state);
+  });
   it('reads earlier worlds and rejects a corrupt rotation state',()=>{
     const snapshot:Snapshot={version:1,preset:'coast',state:Array(STRIDE).fill(0),time:10,discoveries:[],environment:{ambient:18,sunlight:1,sun:[0,1,0]},supplied:0,removed:0};
     expect(validSnapshot(snapshot,1)).toBe(true);

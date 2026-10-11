@@ -830,3 +830,41 @@ summary:focus-visible{outline:2px solid var(--color-focus);outline-offset:3px}
 .climate-picker-menu button:hover,.climate-picker-menu button:focus-visible{background:var(--color-scene-rule)}
 #climate-map-toggle:focus-visible,.climate-picker-menu button:focus-visible{outline:1px solid var(--scene-ink);outline-offset:1px}
 @media(max-width:960px){.climate-picker-label{display:none}.climate-picker-menu{top:calc(100% + var(--space-xs));bottom:auto;left:auto;right:0}#climate-map-toggle{min-height:40px}.scene-layer-dock{max-width:calc(100% - 100px)}.scene-layer-controls{flex-wrap:wrap}}
+
+.section-dimensions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.section-height-control{display:flex;align-items:center;gap:8px;font-size:var(--text-xs)}.section-height-control select{min-height:44px;padding:0 8px;border:1px solid var(--color-scene-rule);border-radius:var(--radius-sm);background:var(--scene-panel);color:inherit;font:inherit;color-scheme:dark}.section-height-control select:focus-visible{outline:2px solid var(--color-focus);outline-offset:3px}
+
+@media(max-width:960px){
+ .scene-heading:has(.section-controls:not([hidden])){display:grid;grid-template-columns:1fr auto;gap:8px}
+ .section-controls:not([hidden]){display:contents}
+ .section-controls .section-actions{grid-column:2;grid-row:1}
+ .section-controls .section-dimensions{grid-column:1/-1;gap:8px;flex-wrap:nowrap}
+ .section-controls .section-foundation-note{grid-column:1/-1;margin-top:0}
+ .section-controls .section-range-name{display:none}
+ .section-controls .section-range-control input{width:80px}
+ .section-controls .section-height-control{white-space:nowrap}
+}
+.view[data-sky='white'] .section-height-control select{color-scheme:light}
+
+@media(max-width:960px){.view:has(.section-controls:not([hidden])) .climate-map-controls{top:120px}}
+
+.section-selection-controls{pointer-events:auto;margin-top:8px;padding:12px;background:var(--scene-panel);color:var(--scene-ink);border:1px solid var(--color-rule);border-radius:var(--radius-sm);width:fit-content;max-width:100%}
+.section-selection-controls[hidden],.section-endpoint[hidden]{display:none}
+.section-selection-controls>div:first-child{display:flex;align-items:center;gap:16px;justify-content:space-between}
+.section-selection-controls output{color:var(--color-cold);font-variant-numeric:tabular-nums}
+.section-selection-controls p{font-size:var(--text-sm);margin:6px 0 8px}
+.section-selection-actions{display:flex;gap:8px}
+.section-selection-actions button{min-height:44px;padding:0 12px;border-radius:var(--radius-sm)}
+#section-selection-open{background:var(--color-ink);color:var(--color-inverse)}
+.section-endpoint{position:absolute;z-index:4;min-width:0;min-height:0;border:0;padding:0;border-radius:0;background:transparent;cursor:grab;touch-action:none}
+.section-endpoint svg{display:block;width:100%;height:100%;overflow:visible}
+.section-endpoint polygon{fill:#ffd166;fill-opacity:.35;stroke:#ffd166;stroke-width:1.4;vector-effect:non-scaling-stroke}
+.section-endpoint:hover polygon,.section-endpoint:active polygon{fill-opacity:.55}
+.section-endpoint:active{cursor:grabbing}
+.section-endpoint:focus-visible{outline:0}.section-endpoint:focus-visible polygon{stroke:#fff;stroke-width:2}
+@media(max-width:960px){.view:has(.section-selection-controls:not([hidden])) .climate-map-controls{top:170px}}
+@media(max-width:960px){
+ .app:has(.section-selection-controls:not([hidden])) .materials-panel{visibility:hidden}
+ .view:has(.section-selection-controls:not([hidden])) .section-selection-controls{position:fixed;left:15px;right:15px;bottom:130px;width:auto;max-width:none;background:var(--color-surface);color:var(--color-ink);z-index:5}
+ .scene-heading .section-selection-controls p{display:block;font-size:var(--text-sm);color:var(--color-muted)}
+ .section-selection-actions #section-selection-open{flex:1}
+}

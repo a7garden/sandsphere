@@ -11,11 +11,14 @@ import {BASE_CAPACITY,SPECIFIC_HEAT,PHASE_ENERGY,SUPPLY_TEMPERATURE,ENERGY_CHANN
 
 export const STRIDE = 24;
 export const COMMAND_STRIDE = 20;
+/** Command slot 7 limits erasure to editable surface matter. Zero keeps legacy whole-cell erasure. */
+export const SURFACE_ERASE = 7;
 export const F = {
   sand:0, clay:1, ceramic:2, glass:3, water:4, ice:5, salt:6,
   dissolved:7, temperature:8, vapor:9, firing:10, molten:11, rock:12,
   nitrogen:13, methane:14, carbonDioxide:15, cloud:16, cloudIce:17, soil:18, plant:19, herbivore:20, carnivore:21, iron:22, seed:23,
 } as const;
+export const SURFACE_ERASE_FIELDS = [F.sand,F.clay,F.ceramic,F.glass,F.water,F.ice,F.salt,F.dissolved,F.molten,F.soil,F.plant,F.herbivore,F.carnivore,F.iron,F.seed];
 export const PRODUCTS=['ice','ceramic','glass','plant','herbivore','carnivore','iron'] as const;
 export type Product=typeof PRODUCTS[number];
 export type Stock=Record<Product,number>;
@@ -293,7 +296,7 @@ export function applyCommand(s:Float32Array,i:number,commands:Float32Array,colle
   if(commands[c+2]!==0)s[p+F.firing]=s[p+F.clay]>1e-8?dose/s[p+F.clay]:0;
   const erase=Math.max(0,Math.min(1,commands[c+5]));
   if(erase>0) {
-    for(const f of MASS_FIELDS) s[p+f]*=1-erase;
+    for(const f of commands[c+SURFACE_ERASE]>0?SURFACE_ERASE_FIELDS:MASS_FIELDS) s[p+f]*=1-erase;
     if(s[p+1]<0.001) s[p+10]=0;
   }
   const collect=Math.max(0,Math.min(1,commands[c+6]));

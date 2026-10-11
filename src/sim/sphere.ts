@@ -94,6 +94,34 @@ export function brushWeights(grid:SphereGrid, direction:readonly number[], radiu
   return indices.map((index,k) => ({index,weight:weights[k]/sum}));
 }
 
+/** Discrete rings on the simulation grid. Radius zero always owns one cell,
+ * including the twelve pentagons. Each included cell receives the same share. */
+export function cellBrushWeights(grid:SphereGrid,center:number,rings:number){
+  if(!Number.isInteger(center)||center<0||center>=grid.count)return [];
+  const depth=Math.max(0,Math.min(grid.count,Math.floor(rings))),cells=[center],seen=new Set(cells);
+  let start=0,end=1;
+  for(let ring=0;ring<depth&&start<end;ring++){
+    for(let p=start;p<end;p++)for(let k=0;k<NEIGHBORS;k++){
+      const index=grid.neighbors[cells[p]*NEIGHBORS+k];
+      if(index===INVALID||seen.has(index))continue;
+      seen.add(index);cells.push(index);
+    }
+    start=end;end=cells.length;
+  }
+  return cells.map(index=>({index,weight:1/cells.length}));
+}
+
+/** Screen-space fallback for air tools and stroke spacing, never delivery. */
+export function cellBrushAngle(grid:SphereGrid,center:number,rings:number){
+  let angle=0,count=0;
+  for(let k=0;k<NEIGHBORS;k++){
+    const index=grid.neighbors[center*NEIGHBORS+k];if(index===INVALID)continue;
+    const chord=grid.distances[center*NEIGHBORS+k]*HEIGHT_SCALE/RADIUS;
+    angle+=2*Math.asin(Math.min(1,chord/2));count++;
+  }
+  return angle/Math.max(1,count)*(rings+.5);
+}
+
 /** Walk the closed convex grid from a nearby cell. Used for actual particle
  * contact, rather than depositing into a preselected destination off its path. */
 export function nearestCell(grid:SphereGrid,x:number,y:number,z:number,start=0) {

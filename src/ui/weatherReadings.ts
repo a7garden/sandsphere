@@ -11,3 +11,5 @@ export class WeatherReadings {
  }
  reset(){this.pulse=null;}
 }
+/** Keep weak but real currents distinguishable from a motionless reservoir. */
+export function formatFlowSpeed(speed:number){return speed===0?'0.00':speed<.0001?'<0.0001':speed<.01?speed.toFixed(4):speed.toFixed(2);}

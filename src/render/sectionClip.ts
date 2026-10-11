@@ -9,6 +9,7 @@ import {ParticleSystem} from '@babylonjs/core/Particles/particleSystem';
 
 interface ClipState {projection?:SectionProjection;normal:Vector3;width:number;front:Plane;back:Plane;}
 const states=new WeakMap<Scene,ClipState>(),custom=new WeakSet<ShaderMaterial>();
+export function isSectionShader(material:ShaderMaterial){return custom.has(material);}
 function state(scene:Scene){let s=states.get(scene);if(!s){s={normal:Vector3.Forward(),width:1e6,front:new Plane(0,0,1,-1e6),back:new Plane(0,0,-1,-1e6)};states.set(scene,s);}return s;}
 export const SECTION_GLSL=`
 uniform vec4 sectionPlane;uniform float sectionHalfWidth;

@@ -17,6 +17,10 @@ export const CLIMATE_LAYERS:Record<ClimateLayer,{name:string;legend:string}>= {
 };
 const mobileWater=(s:Float32Array,p:number)=>Math.max(0,s[p+F.water]-Math.min(1.2,s[p+F.soil]*.12));
 const clamp=(x:number,a=0,b=1)=>Math.max(a,Math.min(b,x));
+/** A thin surface reservoir loses current mobility smoothly. The 0.2–0.5 kg
+ * interval is a game column scale, not an ocean depth in metres. Smoothstep
+ * avoids a finite velocity jump at a Float32 ice/liquid threshold. */
+export function currentMobility(s:Float32Array,p:number){const x=clamp((mobileWater(s,p)-.2)/.3);return x*x*(3-2*x);}
 /** Grey-body TOA energy balance in game kJ and time, not an Earth forecast.
  * Implicit longwave cooling is monotone even for furnace temperatures. */
 export function radiativeHeat(c:number,t:number,shortwave:number,opticalDepth:number,dt:number){
@@ -79,11 +83,11 @@ export class WeatherClimate {
    // Thermal thickness gradient represents unresolved vertical expansion.
    const potential=Math.log(Math.max(1e-6,this.pressure[j]))-Math.log(Math.max(1e-6,this.pressure[i]))+.003*(s[pj+F.temperature]-s[pi+F.temperature]);
    const force=-.008*clamp(potential,-2,2)/distance;
-   const wet=mobileWater(s,pi)>.2&&mobileWater(s,pj)>.2;
+   const wet=Math.min(currentMobility(s,pi),currentMobility(s,pj));
    const head=(solidHeight(s,j,g)+s[pj+F.water]-solidHeight(s,i,g)-s[pi+F.water])*HEIGHT_SCALE/RADIUS;
    // Surface head + temperature/salinity density contrast, no deep overturning.
    const density=-.0002*(s[pj+F.temperature]-s[pi+F.temperature])+.008*(s[pj+F.dissolved]/Math.max(.2,s[pj+F.water])-s[pi+F.dissolved]/Math.max(.2,s[pi+F.water]));
-   const ocean=wet?-.006*((e.gravity??1)*head+density)/distance:0;
+   const ocean=-.006*wet*((e.gravity??1)*head+density)/distance;
    for(let k=0;k<3;k++){acc[i*3+k]+=force*t[k]/3;acc[j*3+k]+=force*t[k]/3;sea[i*3+k]+=ocean*t[k]/3;sea[j*3+k]+=ocean*t[k]/3;}
   }
   for(let i=0;i<n;i++){
@@ -91,7 +95,7 @@ export class WeatherClimate {
    for(const [field,forcing,drag,maxSpeed] of [[this.wind,acc,.15,.12],[this.currents,sea,.10,.035]] as const){
     let vec=[0,1,2].map(k=>(field[v+k]+dt*(forcing[v+k]+(field===this.currents?this.wind[v+k]*.035:0)))*Math.exp(-drag*dt));
     const dot=vec.reduce((a,b,k)=>a+b*normal[k],0);vec=vec.map((x,k)=>x-dot*normal[k]);vec=rotateCoriolis(vec,normal,e.rotationRate??0,dt);
-    const scale=Math.min(1,maxSpeed/Math.max(1e-12,Math.hypot(...vec)));
+    const limit=maxSpeed*(field===this.currents?currentMobility(s,p):1),scale=Math.min(1,limit/Math.max(1e-12,Math.hypot(...vec)));
     for(let k=0;k<3;k++)field[v+k]=(field===this.wind?gas>1e-6:mobileWater(s,p)>.2)?vec[k]*scale:0;
    }
   }
@@ -122,7 +126,7 @@ export class WeatherClimate {
    const respiration=s[p+F.soil]*(1-Math.exp(-dt*.001*clamp((s[p+F.temperature]+10)/32)));s[p+F.soil]-=respiration;s[p+F.carbonDioxide]+=respiration;
    s[p+F.temperature]=(heat-phaseEnergy(s,i))/capacity(s,i);this.roundoff[i]+=enthalpy(s,i)-heat;const beforeEquilibrium=enthalpy(s,i);equilibrateWater(s,i);this.roundoff[i]+=enthalpy(s,i)-beforeEquilibrium;energy[i*4+3]+=this.roundoff[i];
    // Phase/biomass changes can remove the flowing reservoir in this same step.
-   if(mobileWater(s,p)<=.2)this.currents.fill(0,i*3,i*3+3);
+   const v=i*3,limit=.035*currentMobility(s,p),scale=Math.min(1,limit/Math.max(1e-12,Math.hypot(this.currents[v],this.currents[v+1],this.currents[v+2])));for(let k=0;k<3;k++)this.currents[v+k]*=scale;
    if(s[p+F.vapor]+s[p+F.nitrogen]+s[p+F.methane]+s[p+F.carbonDioxide]<=1e-6)this.wind.fill(0,i*3,i*3+3);
   }
  }
@@ -136,7 +140,7 @@ export class WeatherClimate {
   s[p+F.temperature]=(h-phaseEnergy(s,i))/capacity(s,i);
  }
  private transport(s:Float32Array,dt:number,velocity:Float32Array,fields:number[],ocean=false){
-  const out=new Float64Array(this.grid.count),flows=this.edges.map(({i,j,distance,t})=>{const speed=t.reduce((a,b,k)=>a+b*(velocity[i*3+k]+velocity[j*3+k])*.5,0),donor=speed>=0?i:j,receiver=speed>=0?j:i,fraction=ocean&&(mobileWater(s,i*STRIDE)<=.2||mobileWater(s,j*STRIDE)<=.2)?0:Math.abs(speed)*dt/(distance*3);out[donor]+=fraction;return {donor,receiver,fraction};});
+  const out=new Float64Array(this.grid.count),flows=this.edges.map(({i,j,distance,t})=>{const speed=t.reduce((a,b,k)=>a+b*(velocity[i*3+k]+velocity[j*3+k])*.5,0),donor=speed>=0?i:j,receiver=speed>=0?j:i,fraction=Math.abs(speed)*dt/(distance*3)*(ocean?Math.min(currentMobility(s,i*STRIDE),currentMobility(s,j*STRIDE)):1);out[donor]+=fraction;return {donor,receiver,fraction};});
   this.delta.fill(0);this.heat.fill(0);
   for(const {donor,receiver,fraction} of flows){const dp=donor*STRIDE,rp=receiver*STRIDE,rate=fraction*Math.min(1,.25/Math.max(1e-12,out[donor]));for(const field of fields){const retained=ocean&&field===F.water?Math.min(1.2,s[dp+F.soil]*.12):0,m=Math.max(0,s[dp+field]-retained)*rate*(ocean&&field===F.dissolved?mobileWater(s,dp)/Math.max(1e-12,s[dp+F.water]):field===F.seed?.04:1),h=m*(SPECIFIC_HEAT[field]*s[dp+F.temperature]+PHASE_ENERGY[field]);this.delta[dp+field]-=m;this.delta[rp+field]+=m;this.heat[donor]-=h;this.heat[receiver]+=h;}}
   for(let i=0;i<this.grid.count;i++){const p=i*STRIDE,h=enthalpy(s,i)+this.heat[i];for(const field of fields)s[p+field]+=this.delta[p+field];s[p+F.temperature]=(h-phaseEnergy(s,i))/capacity(s,i);this.roundoff[i]+=enthalpy(s,i)-h;}

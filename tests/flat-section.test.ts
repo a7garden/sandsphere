@@ -9,8 +9,18 @@ import {RADIUS,createSphere} from '../src/sim/sphere';
 import {F,STRIDE,seedWorld,totalMass,totalEnthalpy} from '../src/sim/model';
 import {MeshBuilder} from '@babylonjs/core/Meshes/meshBuilder';
 import {sectionShader,setSectionProjection} from '../src/render/sectionClip';
+import {ArcRotateCamera} from '@babylonjs/core/Cameras/arcRotateCamera';
+import {TransformNode} from '@babylonjs/core/Meshes/transformNode';
+import {SectionCamera} from '../src/render/sectionCamera';
 
 describe('unfolded live section',()=>{
+ it('restores orbit angles after a rotated section returns to the same globe position',()=>{
+  const engine=new NullEngine(),scene=new Scene(engine),camera=new ArcRotateCamera('camera',-1.01,1.17,18,Vector3.Zero(),scene),root=new TransformNode('root',scene),section=new SectionCamera(camera,root,false);
+  camera.getViewMatrix(true);const before=camera.position.clone();section.toggle(true,Vector3.Up(),RADIUS);section.setAngle(73);section.setTilt(-48);
+  section.update(1);camera.getViewMatrix(true);section.toggle(false,Vector3.Up());section.update(1);camera.getViewMatrix(true);
+  expect(Vector3.Distance(before,camera.position)).toBeLessThan(1e-4);expect(camera.upVector.equalsWithEpsilon(Vector3.Up(),1e-7)).toBe(true);
+  scene.dispose();engine.dispose();
+ });
  it('waits for the shared foundation texture before the first globe draw',()=>{
   const engine=new NullEngine(),scene=new Scene(engine),projection=new SectionProjection(scene);
   setSectionProjection(scene,projection);
@@ -60,6 +70,18 @@ describe('unfolded live section',()=>{
   for(let t=1;t<3;t++){const a=Vector3.FromArray(cap.positions,t*9),b=Vector3.FromArray(cap.positions,t*9+3),c=Vector3.FromArray(cap.positions,t*9+6);expect(Vector3.Cross(b.subtract(a),c.subtract(a)).length()).toBeLessThan(1e-6);}
   state[F.sand]=20;const color=columnColor(state,0,true);for(let c=0;c<3;c++)expect(Math.abs(color[c]-MATERIAL_COLORS.sand[c])).toBeLessThan(.001);
   expect(state[F.rock]).toBe(8);
+ });
+ it('magnifies only the editable stack and round trips materials and air over a varying rotated foundation',()=>{
+  const engine=new NullEngine(),scene=new Scene(engine),p=new SectionProjection(scene);
+  const v=new Vector3(.3,.8,.4).normalize(),u=Vector3.Cross(Vector3.Up(),v).normalize(),n=Vector3.Cross(u,v);
+  p.configure(u,v,n,Matrix.RotationY(.7),1,.8);p.stackDepth=.3;
+  for(let i=0;i<p.bases.length;i++)p.bases[i]=RADIUS+.12*Math.sin(i/p.bases.length*Math.PI*2);
+  for(const scale of [1,4,16,64]){p.heightScale=scale;for(const a of [-.7,0,.7])for(const h of [0,.1,.3,.3001,.9]){
+   const source=u.scale(Math.sin(a)*(p.base(a)+h)).add(v.scale(Math.cos(a)*(p.base(a)+h))).add(n.scale(.2)),display=p.forward(source);
+   expect(Vector3.Distance(p.backward(display),source)).toBeLessThan(1e-6);
+   expect(Vector3.Dot(display,v)-RADIUS).toBeCloseTo(Math.min(h,.3)*scale+Math.max(0,h-.3),5);
+  }}
+  p.heightScale=16;expect(p.displayDepth(.8)-p.displayDepth(.3)).toBeCloseTo(.5);scene.dispose();engine.dispose();
  });
  it('maps a straight display depth ray to a straight physical cut ray',()=>{
   const engine=new NullEngine(),scene=new Scene(engine),projection=new SectionProjection(scene),a=projection.backward(new Vector3(.9,RADIUS+.5,-.22)),b=projection.backward(new Vector3(.9,RADIUS+.5,.22));

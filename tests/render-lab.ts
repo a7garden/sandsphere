@@ -5,11 +5,11 @@ import {createSphere} from '../src/sim/sphere';
 import {F,STRIDE,seedPlanet,seedWorld,totals} from '../src/sim/model';
 import {orbitalEnvironment} from '../src/sim/orbit';
 const grid=createSphere(4),environment=orbitalEnvironment(1);
-const kinds=['모래','점토','식생','구름','해안','빙결','풍경'] as const;
+const kinds=['모래','점토','식생','구름','흐린 하늘','해안','빙결','풍경'] as const;
 let cloudStyle:CloudStyle='faceted',cloudPreset='translucent';
 let selected:string='풍경',faceted=true,hexagonal=true,blended=1,refinement=0;
 function fixture(kind:string){
- const s=kind==='구름'||kind==='해안'||kind==='빙결'||kind==='풍경'?seedWorld(grid):seedPlanet(grid,kind==='점토'?'clay':kind==='식생'?'rock':'sand',22);
+ const s=kind==='구름'||kind==='흐린 하늘'||kind==='해안'||kind==='빙결'||kind==='풍경'?seedWorld(grid):seedPlanet(grid,kind==='점토'?'clay':kind==='식생'?'rock':'sand',22);
  for(let i=0;i<grid.count;i++){
   const p=i*STRIDE,x=grid.directions[i*3],y=grid.directions[i*3+1],z=grid.directions[i*3+2];
   if(kind==='빙결'){s[p+F.ice]=s[p+F.water];s[p+F.water]=0;s[p+F.temperature]=-20;}
@@ -22,6 +22,7 @@ function fixture(kind:string){
    const cloud=Math.max(0,(Math.sin(x*5+y*7)+Math.cos(z*7-x*3))*.16+.06);
    s[p+F.cloud]=cloud;s[p+F.cloudIce]=cloud*.15;
   }
+  if(kind==='흐린 하늘'){s[p+F.cloud]=.6;s[p+F.cloudIce]=.06;}
  }
  return s;
 }

@@ -1,11 +1,12 @@
 import {createSphere} from '../src/sim/sphere';
-import {F,STRIDE,COMMAND_STRIDE,CpuSolver,seedPlanet,totalMass,totalEnthalpy} from '../src/sim/model';
+import {F,STRIDE,COMMAND_STRIDE,CpuSolver,seedPlanet,totalMass,totalEnthalpy,type Environment} from '../src/sim/model';
 import {GpuSolver} from '../src/sim/gpu';
 import {validSnapshot,saveSnapshot,loadRecord} from '../src/sim/storage';
-import {CLIMATE_LAYERS} from '../src/sim/weatherClimate';
+import {CLIMATE_LAYERS,climateColor,type WeatherClimate} from '../src/sim/weatherClimate';
 import type {PlanetView} from '../src/render/planet';
 import {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
 import {ShaderLanguage} from '@babylonjs/core/Materials/shaderLanguage';
+import {ShaderMaterial} from '@babylonjs/core/Materials/shaderMaterial';
 import type {TransformNode} from '@babylonjs/core/Meshes/transformNode';
 const emptyEnv={ambient:18,sunlight:1,sun:[1,0,0],gravity:1,rotationRate:.06,climate:true};
 export async function verifyClimateGpu(){
@@ -29,14 +30,21 @@ export async function verifyClimateGpu(){
   return {...result,passed:saveExact&&result.finite&&result.nonnegative&&maxT<.003&&maxSwitchT<.003&&maxMass<1e-4&&maxWind<1e-5&&result.energyResidualCpuRelative<2e-5&&result.energyResidualGpuRelative<2e-5&&Math.abs(massResidualCpu)<.005&&Math.abs(massResidualGpu)<.005};
  }finally{gpu.dispose();resumeGpu?.dispose();}
 }
-export async function verifyClimateLayers(view:PlanetView,state:()=>Float32Array){
- const before=state(),grid=(view as unknown as {grid:ReturnType<typeof createSphere>}).grid,cpu=new CpuSolver(grid,before.slice());cpu.climate.seedLife();cpu.advance(1/30,new Float32Array(grid.count*COMMAND_STRIDE),emptyEnv);const canvas=view.engine.getRenderingCanvas(),results=[];
+export async function verifyClimateLayers(view:PlanetView,state:()=>Float32Array,climate?:WeatherClimate,environment:Environment=emptyEnv){
+ const before=state(),grid=(view as unknown as {grid:ReturnType<typeof createSphere>}).grid,cpu=new CpuSolver(grid,before.slice());
+ if(!climate){cpu.climate.seedLife();cpu.advance(1/30,new Float32Array(grid.count*COMMAND_STRIDE),environment);climate=cpu.climate;}
+ const canvas=view.engine.getRenderingCanvas(),results=[];
  for(const section of [false,true]){view.setSection(section,0);for(let i=0;i<45;i++)await new Promise<void>(r=>requestAnimationFrame(()=>r()));
-  for(const layer of Object.keys(CLIMATE_LAYERS) as (keyof typeof CLIMATE_LAYERS)[]){view.setClimate(layer,cpu.climate);view.update(before,0,emptyEnv);for(let frame=0;frame<120;frame++){await new Promise<void>(r=>requestAnimationFrame(()=>r()));if(view.scene.isReady())break;}const map=view.scene.getMeshByName('climate cell map')!,colors=map.getVerticesData('color')??[],cap=view.scene.getMeshByName('live material cross section')!.getVerticesData('climateColor')??[];
-   results.push({section,layer,ready:view.scene.isReady(),enabled:map.isEnabled(),finite:colors.every(Number.isFinite)&&cap.every(Number.isFinite),capColored:!section||layer==='none'||cap.some((v,i)=>i%4===3&&v>0),arrows:view.visualStats().climate.arrows});
+  for(const layer of Object.keys(CLIMATE_LAYERS) as (keyof typeof CLIMATE_LAYERS)[]){view.setClimate(layer,climate);view.update(before,0,environment);for(let frame=0;frame<120;frame++){await new Promise<void>(r=>requestAnimationFrame(()=>r()));if(view.scene.isReady())break;}const map=view.scene.getMeshByName('climate cell map')!,colors=map.getVerticesData('color')??[],cap=view.scene.getMeshByName('live material cross section')!.getVerticesData('climateColor')??[];
+   const internals=view as unknown as {climateLayers:{cellColors:Float32Array};sectionView:{owner(face:number):number}},expected=Float32Array.from(Array.from({length:grid.count},(_,i)=>climateColor(layer,before,i,environment,climate!)).flat());
+   const surfaceExact=internals.climateLayers.cellColors.every((v,i)=>v===expected[i]);
+   const capExact=cap.every((v,i)=>{const owner=internals.sectionView.owner(Math.floor(i/12));return v===(owner<0?0:expected[owner*4+i%4]);});
+   const arrow=view.scene.getMeshByName('climate velocity arrows')!,arrowEffect=arrow.material instanceof ShaderMaterial?arrow.material.getEffect():null;
+   const arrowProjection=!(layer==='wind'||layer==='currents')||!view.visualStats().climate.arrows||!!(arrowEffect?.vertexSourceCodeBeforeMigration.includes('flatWorldPosition')&&arrowEffect.fragmentSourceCodeBeforeMigration.includes('sectionInside'));
+   results.push({section,layer,ready:view.scene.isReady(),enabled:map.isEnabled(),finite:colors.every(Number.isFinite)&&cap.every(Number.isFinite),surfaceExact,capExact,arrowProjection,capColored:!section||layer==='none'||cap.some((v,i)=>i%4===3&&v>0),arrows:view.visualStats().climate.arrows});
   }
  }
- view.setClimate('temperature',cpu.climate);
+ view.setClimate('temperature',climate);
  const root=(view as unknown as {root:TransformNode}).root,shaderCompatible=view.scene.meshes.filter(m=>m.isDescendantOf(root)&&m.material instanceof StandardMaterial).every(m=>m.material!.shaderLanguage===ShaderLanguage.GLSL);
- return {passed:shaderCompatible&&before.every((v,i)=>v===state()[i])&&canvas===view.engine.getRenderingCanvas()&&results.every(r=>r.ready&&r.enabled===(r.layer!=='none')&&r.finite&&r.capColored),shaderCompatible,stateUnchanged:before.every((v,i)=>v===state()[i]),sameCanvas:canvas===view.engine.getRenderingCanvas(),results};
+ return {passed:shaderCompatible&&before.every((v,i)=>v===state()[i])&&canvas===view.engine.getRenderingCanvas()&&results.every(r=>r.ready&&r.enabled===(r.layer!=='none')&&r.finite&&r.capColored&&r.surfaceExact&&r.capExact&&r.arrowProjection),shaderCompatible,stateUnchanged:before.every((v,i)=>v===state()[i]),sameCanvas:canvas===view.engine.getRenderingCanvas(),results};
 }
