@@ -11,7 +11,7 @@
 .entry-account-choice[hidden], .entry-mode-choice[hidden] { display: none; }
 .mode-options strong small { font-size: var(--text-xs); font-weight: 500; color: var(--color-muted); margin-left: 4px; }
 #placement.first-choice { width: min(520px, calc(100vw - 28px)); }
-#placement.first-choice .dialog-body > :not(#first-experiment) { display: none; }
+#placement.first-choice .dialog-body > :not(#first-experiment):not(.placement-storage) { display: none; }
 .first-experiment { padding: 12px 0 4px; }
 .first-experiment h3 { margin: 10px 0 12px; font-size: 23px; line-height: 1.2; letter-spacing: -.03em; }
 .first-experiment p { color: var(--color-muted); font-size: var(--text-sm); line-height: 1.7; }
@@ -29,3 +29,12 @@
 #first-steps-skip { color: var(--color-muted); font-size: var(--text-xs); }
 @media (max-width: 960px) { .first-steps { top: 80px; right: 16px; bottom: auto; max-height: calc(100dvh - 160px); } }
 @media (max-width: 414px) { .first-steps { right: 14px; width: min(294px, calc(100vw - 28px)); } }
+
+.placement-storage { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--color-rule); }
+.placement-storage p { flex: 1 1 220px; margin: 0; color: var(--color-muted); font-size: var(--text-sm); line-height: 1.6; }
+.placement-storage button { flex-shrink: 0; padding-inline: 0; text-decoration: underline; text-underline-offset: 3px; }
+.placement-storage button[hidden] { display: none; }
+#placement.first-choice .placement-storage { margin: 20px 0 0; padding: 16px 0 0; border-bottom: 0; border-top: 1px solid var(--color-rule); }
+
+.mode-options strong .mode-current { color: var(--color-ink); font-weight: 600; }
+.mode-current[hidden], #game-mode.first-entry .mode-current { display: none; }

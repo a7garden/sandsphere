@@ -17,6 +17,13 @@ export class AccountPanel {
     document.getElementById('account-open')!.addEventListener('click',event=>this.open(event.currentTarget as HTMLElement));
     this.dialog.addEventListener('close',()=>{(this.opener?.getClientRects().length?this.opener:document.getElementById('account-open'))?.focus();this.opener=null;});
     const auth=services?.auth;
+    const placementAccount=document.getElementById('placement-account')!;
+    placementAccount.textContent=auth?.currentUser?'클라우드 저장 관리':'로그인·회원가입';
+    placementAccount.hidden=!auth;
+    document.getElementById('placement-storage-copy')!.textContent=auth?.currentUser
+      ?'로그인한 계정에 자동 저장됩니다.'
+      :auth?'이 브라우저에 자동 저장됩니다. 로그인하면 다른 기기에서도 이어할 수 있어요.'
+      :'이 브라우저에 자동 저장됩니다.';
     document.getElementById('account-identity')!.textContent=auth?.currentUser?.email??(auth?.currentUser?'로그인됨':'비회원 · 이 브라우저에 저장');
     (document.getElementById('account-form') as HTMLFormElement).hidden=!!auth?.currentUser||!auth;
     document.getElementById('account-signed-in')!.hidden=!auth?.currentUser;
