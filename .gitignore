@@ -12,3 +12,7 @@ firestore-debug.log
 storage-debug.log
 release/
 artifacts/
+
+# Local agent instructions
+AGENTS.md
+AGETNS.md
