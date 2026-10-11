@@ -503,10 +503,10 @@ html:lang(en) .scene-display-controls .scene-layer-controls { grid-template-colu
 @media (max-width: 960px) {
   .app { --edge: 12px; --chrome-top: 64px; --scene-inset: var(--edge); }
   .app > .topbar {
-    top: 12px; display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px;
+    top: 12px; display: grid; grid-template-columns: auto minmax(0, 1fr) 40px;
     gap: 8px; height: 40px; align-items: center;
   }
-  .app .brand-group { padding: 0; width: 40px; height: 40px; justify-content: center; }
+  .app .brand-group { padding: 0; width: max-content; height: 40px; justify-content: flex-start; }
   .app .brand { font-size: 0; gap: 0; }
   .app .brand-mark { display: flex; width: 22px; height: 22px; }
   .app .brand-version { display: none; }
