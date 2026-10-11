@@ -1,10 +1,12 @@
 # Material supply and land animal movement
 
-These behaviors are under development in `0.6.0-alpha.4`.
+These behaviors are under development in `0.6.0-alpha.5`.
 
 ## Surface supply
 
-The surface brush adds each cell's weighted share to the next solver command batch immediately. It retains the brush footprint, material inventory rules, and total supplied mass. Paused edits can commit with a zero-duration step. Supply cues are cosmetic: at most six appear per stroke, and the reusable pool holds at most 48 across all materials. They expire in display time and never appear in pending mass or saved material inventories.
+The surface brush adds each cell's weighted share to the next solver command batch immediately. It retains the brush footprint, material inventory rules, and total supplied mass. Paused edits can commit with a zero-duration step.
+
+Supply feedback uses the existing terrain and water shaders. Each supplied cell gets a material-colored interior tint and a short emissive polygon boundary; the fan's inner spokes are not outlined. The pulse fades over 0.24 display seconds, including during simulation pause. One texel per physical cell stores its latest color/intensity and emission time, so repeated strokes replace effects rather than accumulating particles. Dirty strokes share one texture upload per display frame; fading changes only shader time and uploads no cell buffers. Idle shading skips the pulse texture sample. A 2,562-cell world uses a 41,984-byte reusable effect texture and static vertex coordinates. The effect adds no meshes or draw calls, holds no physical mass, and is excluded from saves. Nonhexagonal styles retain the interior tint without polygon borders.
 
 Picks in open air use the same immediate brush delivery at the selected surface cells. They do not create airborne material, wait for gravity, or accumulate physical dust during paused strokes. Gas delivery continues to use the atmosphere command fields. The legacy falling-parcel solver remains available to physical test fixtures; the application brush does not call it.
 
@@ -34,4 +36,6 @@ Freezing the displayed rotation applies within the current session. It is not re
 
 Run `npm test` for transfer, barrier, conservation, display-bound, and pause checks. `tests/animal-lab.html` offers visible pause/flood controls, CPU/WebGPU comparisons, and a dense navigation benchmark. `tests/pour-performance-lab.html` compares immediate surface supply with legacy physical dust on the same 91-cell brush. Both fixtures use their own worlds and do not access application saves. Timings in the pouring fixture cover the supply/render path; they do not measure the entire atmosphere solver or establish a device-independent frame rate.
 
-`tests/ocean-mortality-lab.html` compares paused spawning on water and moist land across CPU, WebGPU and Worker, with and without layered climate. `tests/surface-performance-lab.html` measures wet terrain, forests and atmosphere rendering with a continuously changing 91-cell sand brush. A before/after audit can use `?reference=1` after placing an earlier renderer source at `artifacts/surface-performance/planet-before.ts` and adjusting its relative imports to point at the current `src` tree. The ignored snapshot used for the recorded audit came from commit `9c63d50`. This comparison measures the renderer's surface refresh, not atmosphere computation or the whole application's frame rate.
+`tests/ocean-mortality-lab.html` compares paused spawning on water and moist land across CPU, WebGPU and Worker, with and without layered climate. `tests/surface-performance-lab.html` measures wet terrain, forests and atmosphere rendering with a continuously changing 91-cell sand brush. A before/after audit can use `?reference=1` with an ignored snapshot at `artifacts/surface-performance/planet-before.ts`; preserve its shader and cosmetic-effect dependencies from the same revision when adjusting imports. The earlier surface-refresh audit compared commit `9c63d50` against `0.6.0-alpha.3`, before supply shading changed. This comparison measures the renderer's surface refresh, not atmosphere computation or the whole application's frame rate.
+
+`tests/supply-pulse-lab.html` offers material previews and compares idle/effect CPU work, render submission, frame intervals and draw calls. Add `?cpu=1` to test WebGL. It also checks that fading requires no uploads, physical grains or new meshes. The fixture does not run the atmosphere solver and does not establish a device-independent frame rate.

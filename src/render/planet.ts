@@ -26,6 +26,8 @@ import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { VertexBuffer } from '@babylonjs/core/Buffers/buffer';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture';
+import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
+import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
 import { Constants } from '@babylonjs/core/Engines/constants';
@@ -40,7 +42,7 @@ import {SkyLayers} from './sky';
 import {WeatherParticles} from './weather';
 import {PrecipitationLayer} from './precipitationLayer';
 import {materialGrain} from './particles';
-import {SupplyFlow} from './supplyFlow';
+import {SupplyPulse,supplyPulseCoordinates} from './supplyPulse';
 import {writeHexWater} from './surfaceBuffers';
 import {deliverSurfaceSupply,type SupplyCell} from '../sim/supply';
 import {surfaceMaterial} from './materials';
@@ -80,7 +82,9 @@ export class PlanetView {
   private physicalSun:readonly number[]=[1,0,0];
   private spinTilt=0;
   private focusFlight:{cell:number;time:number;alpha:number;beta:number}|null=null;
-  private supplyFlow=new SupplyFlow();
+  private supplyPulse:SupplyPulse;
+  private supplyTexture:RawTexture;
+  private supplyUploads=0;
   private physicalRandom=new SimulationRandom(0x971fc31);
   readonly engine:AbstractEngine;
   readonly scene:Scene;
@@ -225,6 +229,8 @@ export class PlanetView {
     this.keyLight.intensity=1.0;
     this.biosphere=new Biosphere(this.scene,this.root,grid);
     this.surface=dualSurface(grid,renderRefinement);
+    this.supplyPulse=new SupplyPulse(grid.count);
+    this.supplyTexture=new RawTexture(this.supplyPulse.pixels,this.supplyPulse.width,this.supplyPulse.height,Constants.TEXTUREFORMAT_RGBA,this.scene,false,false,Texture.NEAREST_SAMPLINGMODE,Constants.TEXTURETYPE_FLOAT);
     this.tileColors=new Float32Array(this.surface.tileCount*4);this.tileInfo=new Float32Array(this.surface.tileCount*4);
     this.coastNeighbors=new Int32Array(this.surface.owners.length).fill(-1);
     for(let face=0;face<this.surface.owners.length;face++){
@@ -266,10 +272,12 @@ export class PlanetView {
     this.terrain.material=material;this.terrain.useVertexColors=true;
     this.hexBanks=new Mesh('hexagonal coastal banks',this.scene);this.hexBanks.parent=this.root;this.hexBanks.material=material;this.hexBanks.useVertexColors=true;this.hexBanks.isPickable=false;
     const liquid=this.waterMaterial=surfaceMaterial(this.scene,'water');
+    material.setTexture('supplyMap',this.supplyTexture);liquid.setTexture('supplyMap',this.supplyTexture);
     this.water.material=liquid;this.water.useVertexColors=true;this.water.hasVertexAlpha=false;
     this.water.isPickable=true;this.water.renderingGroupId=1;
     this.scene.setRenderingAutoClearDepthStencil(1,false);
     this.scene.setRenderingAutoClearDepthStencil(2,false);
+    const pulseOwners=renderRefinement?Uint32Array.from(this.surface.owners,owner=>{const p=owner*3,d=this.surface.directions;return nearestCell(grid,d[p],d[p+1],d[p+2]);}):this.surface.owners;
     for(const mesh of [this.terrain,this.water]) {
       const data=new VertexData();
       const isWater=mesh===this.water;
@@ -290,6 +298,7 @@ export class PlanetView {
         data.uvs=uv;
       }
       data.applyToMesh(mesh,true);
+      mesh.setVerticesData('supplyCoord',supplyPulseCoordinates(pulseOwners,this.supplyPulse,isWater),false,3);
     }
     this.heatSurface=new Mesh('surface temperature',this.scene);this.heatSurface.parent=this.root;
     const heatMat=new StandardMaterial('heat emission',this.scene,true);
@@ -565,6 +574,8 @@ export class PlanetView {
       VertexData.ComputeNormals(bankPositions,bankIndices,normals);
       data.positions=bankPositions;data.indices=bankIndices;data.normals=normals;data.colors=bankColors;
       data.applyToMesh(this.hexBanks,true);this.hexBanks.setVerticesData('surfaceInfo',bankSurface,true,4);
+      // Zero coordinates keep the vertical coastal banks out of the pulse.
+      if(this.hexBanks.getVerticesData('supplyCoord')?.length!==bankPositions.length)this.hexBanks.setVerticesData('supplyCoord',new Float32Array(bankPositions.length),false,3);
     }
     this.terrain.updateVerticesData(VertexBuffer.PositionKind,this.terrainData,true);
     this.terrain.updateVerticesData(VertexBuffer.NormalKind,this.normals);
@@ -779,11 +790,11 @@ export class PlanetView {
   setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionDirty=true;}
   clearPrecipitation(){this.precipitationLayer.clear();this.sectionView.clearPrecipitation();this.sectionDirty=true;}
   precipitationStats(){return this.precipitationLayer.stats();}
-  visualStats() {return {climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:this.supplyFlow.traces.filter(t=>this.supplyFlow.active(t)).length,grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
+  visualStats() {return {climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:0,supplyPulse:{activeCells:this.supplyPulse.activeCells(),bytes:this.supplyPulse.pixels.byteLength,uploads:this.supplyUploads},grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
   deposits() {return this.grains.map(g=>({index:g.index,material:g.material,amount:g.amount}));}
   supplySurface(cells:readonly SupplyCell[],material:SurfaceMaterial,amount:number,land:Grain['land']) {
     deliverSurfaceSupply(cells,amount,land);
-    if(amount>0)this.supplyFlow.emit(cells,material);
+    this.supplyPulse.emit(cells,PALETTE[material],amount);
   }
   emitGas(index:number,material:GasMaterial,amount:number) {
     const dir=Vector3.FromArray(this.grid.directions,index*3),radius=this.renderRadii[index];
@@ -827,7 +838,7 @@ export class PlanetView {
       this.streamPath=Array.from({length:13},(_,i)=>{const t=i/12;return start.scale((1-t)*(1-t)).add(control.scale(2*t*(1-t))).add(end.scale(t*t));});this.streamLife=.38;
     }
   }
-  clearGrains() {this.supplyFlow.clear();this.grains=[];this.escapedGrains=0;this.streamLife=0;this.stream.setEnabled(false);this.effects.clear();this.weather.clear();}
+  clearGrains() {this.supplyPulse.clear();this.grains=[];this.escapedGrains=0;this.streamLife=0;this.stream.setEnabled(false);this.effects.clear();this.weather.clear();}
   settleGrains() {
     for(const grain of this.grains)grain.land(grain.index,grain.amount);
     this.grains=[];
@@ -854,6 +865,9 @@ export class PlanetView {
     await new Promise<void>(resolve=>this.meteorFlight={mesh,trail,from,to,t:0,resolve});
   }
   animate(dt:number,speed=1) {
+    this.supplyPulse.advance(dt);
+    if(this.supplyPulse.dirty){this.supplyTexture.update(this.supplyPulse.pixels);this.supplyPulse.dirty=false;this.supplyUploads++;}
+    for(const material of [this.terrainMaterial,this.waterMaterial]){material.setFloat('supplyTime',this.supplyPulse.time);material.setFloat('supplyActive',this.supplyPulse.active?1:0);}
     if(this.systemScene.active){this.systemScene.update(dt,speed);this.sun.position.copyFrom(this.systemScene.starPosition);this.sun.scaling.setAll(Math.max(1,Math.min(3.6,1+(this.camera.radius-24)/30)));return;}
     if(this.motion&&this.motionDisplay){this.motionDisplay.update(this.motion,dt,speed);this.applySpin(this.motionDisplay.spin);this.setSun(orbitalSun(this.motionDisplay.angle));}
     this.updateSection(dt);this.updateSelectionPreview();
@@ -889,19 +903,6 @@ export class PlanetView {
         Matrix.ComposeToRef(this.grainScale,rotation,this.grainPosition,this.grainMatrix);
         this.grainMatrix.copyToArray(this.grainMatrices.get(g.material)!,index*16);
       }
-    }
-    this.supplyFlow.animate(dt);
-    for(const trace of this.supplyFlow.traces){
-      if(!this.supplyFlow.active(trace))continue;
-      const index=counts.get(trace.material)!;if(index>=2048)continue;
-      const t=this.supplyFlow.progress(trace),i=trace.index*3;
-      this.grainDirection.set(this.grid.directions[i],this.grid.directions[i+1],this.grid.directions[i+2]);
-      this.grainPosition.copyFrom(this.grainDirection).scaleInPlace(this.renderRadii[trace.index]+.025+.32*(1-t));
-      Quaternion.FromUnitVectorsToRef(Vector3.UpReadOnly,this.grainDirection,this.grainRotation);
-      const size=(.035+trace.phase*.015)*Math.min(1,(1-t)*5);
-      this.grainScale.set(size,size*2.5,size);
-      Matrix.ComposeToRef(this.grainScale,this.grainRotation,this.grainPosition,this.grainMatrix);
-      this.grainMatrix.copyToArray(this.grainMatrices.get(trace.material)!,index*16);counts.set(trace.material,index+1);
     }
     for(const material of SURFACE_MATERIALS) {
       const mesh=this.grainMeshes.get(material)!;

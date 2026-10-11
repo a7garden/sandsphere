@@ -7,13 +7,20 @@ const vertexSource=`precision highp float;
 attribute vec3 position;
 attribute vec3 normal;
 attribute vec4 color;
+attribute vec3 supplyCoord;
+uniform sampler2D supplyMap;
+uniform float supplyActive;
 uniform mat4 world;
 uniform mat4 worldViewProjection;
 varying vec3 vPosition;
 varying vec3 vWorld;
 varying vec3 vNormal;
 varying vec4 vColor;
+varying vec4 vSupply;
+varying float vSupplyEdge;
 void main(){
+ vSupply=vec4(0.0);vSupplyEdge=supplyCoord.z;
+ if(supplyActive>.5&&supplyCoord.x>0.0)vSupply=texture2D(supplyMap,supplyCoord.xy);
  vPosition=position;vWorld=(world*vec4(position,1.0)).xyz;
  vNormal=normalize(mat3(world)*normal);vColor=color;
  gl_Position=worldViewProjection*vec4(position,1.0);
@@ -33,7 +40,20 @@ varying vec3 vPosition;
 varying vec3 vWorld;
 varying vec3 vNormal;
 varying vec4 vColor;
+varying vec4 vSupply;
+varying float vSupplyEdge;
+uniform float supplyTime;
 
+`;
+
+const supplyGlow=`
+vec3 supplyGlow(vec3 shade){
+ float age=max(0.0,supplyTime-vSupply.a);
+ float fade=1.0-smoothstep(0.0,.24,age);
+ float border=(1.0-smoothstep(0.0,max(.0001,fwidth(vSupplyEdge)*1.7),vSupplyEdge))*hexagonalSurface;
+ // A gentle interior tint and a crisp emissive boundary remain visible at night.
+ return shade+vSupply.rgb*fade*(.16+border*.75);
+}
 `;
 
 const cloudLight=`
@@ -44,7 +64,7 @@ float cloudLightAt(vec3 p){
  return 1.0-cloudShadow*min(.34,(stock.r+stock.g)*.28);
 }
 `;
-const terrainFragment=common+cloudLight+`
+const terrainFragment=common+cloudLight+supplyGlow+`
 varying vec4 vSurface;
 float edgeHash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 float edgeNoise(vec3 p){
@@ -83,12 +103,12 @@ void main(){
  float rim=pow(1.0-max(0.0,dot(n,eye)),4.0);
  vec3 halfway=normalize(eye+sunDirection);
  float polish=pow(max(0.0,dot(n,halfway)),55.0)*vColor.a*lit*.18;
- gl_FragColor=vec4(base*light+vec3(.11,.17,.20)*rim*lit+polish,1.0);
+ gl_FragColor=vec4(supplyGlow(base*light+vec3(.11,.17,.20)*rim*lit+polish),1.0);
 }`;
 
 // Color alpha carries interpolated water stock, not transparency. The mesh stays
 // opaque; the continuous wet/dry contour is clipped inside the underlying grid.
-const waterFragment=common+cloudLight+`
+const waterFragment=common+cloudLight+supplyGlow+`
 void main(){
  vec3 n=normalize(vNormal),eye=normalize(cameraPosition-vWorld);
  vec3 face=normalize(cross(dFdx(vWorld),dFdy(vWorld)));
@@ -116,16 +136,17 @@ void main(){
  vec3 base=mix(sea,ice,smoothstep(.04,.65,vColor.r));
  vec3 light=vec3(.24,.29,.35)+vec3(.94,.85,.68)*lit*.84*cloudLightAt(vPosition);
  float rim=pow(1.0-max(0.0,dot(n,eye)),4.0);
- gl_FragColor=vec4(base*light+vec3(.06,.11,.14)*rim*lit,1.0);
+ gl_FragColor=vec4(supplyGlow(base*light+vec3(.06,.11,.14)*rim*lit),1.0);
 }`;
 
 export function surfaceMaterial(scene:Scene,kind:'terrain'|'water') {
  const material=sectionShader(scene,kind==='water'?'sunlit water':'mineral relief',
   {vertexSource:kind==='terrain'?vertexSource.replace('attribute vec4 color;','attribute vec4 color;attribute vec4 surfaceInfo;varying vec4 vSurface;').replace('vPosition=position;','vSurface=surfaceInfo;vPosition=position;'):vertexSource,fragmentSource:kind==='water'?waterFragment:terrainFragment},
-  {attributes:kind==='terrain'?['position','normal','color','surfaceInfo']:['position','normal','color'],uniforms:['world','worldViewProjection','cameraPosition','sunDirection','surfaceTime','cloudShadow','surfaceFaceting','hexagonalSurface','boundaryBlend'],samplers:['densityMap']});
+  {attributes:kind==='terrain'?['position','normal','color','surfaceInfo','supplyCoord']:['position','normal','color','supplyCoord'],uniforms:['world','worldViewProjection','cameraPosition','sunDirection','surfaceTime','cloudShadow','surfaceFaceting','hexagonalSurface','boundaryBlend','supplyTime','supplyActive'],samplers:['densityMap','supplyMap']});
  material.setVector3('sunDirection',new Vector3(-.65,.72,.35).normalize());
  material.setFloat('surfaceFaceting',0);material.setFloat('hexagonalSurface',0);material.setFloat('boundaryBlend',0);
  material.setFloat('surfaceTime',0);material.setFloat('cloudShadow',1);
+ material.setFloat('supplyTime',0);material.setFloat('supplyActive',0);
  material.onBindObservable.add(()=>{
   if(scene.activeCamera)material.setVector3('cameraPosition',scene.activeCamera.globalPosition);
  });
