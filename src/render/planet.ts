@@ -190,6 +190,8 @@ export class PlanetView {
     this.camera.lowerBetaLimit=0.12;this.camera.upperBetaLimit=Math.PI-0.12;
     this.camera.wheelPrecision=38;this.camera.pinchPrecision=50;
     this.camera.inertia=0.65;this.camera.panningSensibility=0;
+    // The application owns touch navigation and editing. Babylon keeps mouse/wheel input.
+    this.scene.onPrePointerObservable.add(info=>{if('pointerType' in info.event&&info.event.pointerType==='touch')info.skipOnPointerObservable=true;});
     this.camera.attachControl(canvas,true);
     // Babylon 9 maps right drag to pan independently of the pointer button filter.
     // Bind both allowed inspection gestures to rotation; painting keeps button 0 disabled.
@@ -371,7 +373,7 @@ export class PlanetView {
     });this.resize.observe(canvas);
     let sectionDrag:{id:number;x:number;y:number}|null=null;const sectionTouches=new Set<number>();
     canvas.addEventListener('pointerdown',event=>{
-      this.focusFlight=null;this.axisAlignment.cancel();if(event.pointerType==='touch')sectionTouches.add(event.pointerId);
+      this.focusFlight=null;this.axisAlignment.cancel();if(event.pointerType==='touch'){sectionTouches.add(event.pointerId);this.cameraDragPointers.add(event.pointerId);return;}
       if(event.button===2||event.button===0&&(this.inspectionMode||event.shiftKey||this.sectionCamera.active)){
         this.cameraDragPointers.add(event.pointerId);canvas.setPointerCapture(event.pointerId);
       }
@@ -382,6 +384,9 @@ export class PlanetView {
     canvas.addEventListener('pointermove',event=>{if(sectionDrag?.id===event.pointerId){if(this.sectionCamera.active){const dx=event.clientX-sectionDrag.x,dy=event.clientY-sectionDrag.y;if(event.shiftKey||this.sectionNavigation==='pan')this.panSectionPixels(dx,dy);else this.navigateSection(dx/220,dy/220);}sectionDrag={id:event.pointerId,x:event.clientX,y:event.clientY};}});
     const releaseSection=(event:PointerEvent)=>{sectionTouches.delete(event.pointerId);this.cameraDragPointers.delete(event.pointerId);if(sectionDrag?.id===event.pointerId)sectionDrag=null;};
     canvas.addEventListener('pointerup',releaseSection);canvas.addEventListener('pointercancel',releaseSection);canvas.addEventListener('lostpointercapture',releaseSection);
+    const clearCameraDrag=()=>{sectionTouches.clear();this.cameraDragPointers.clear();sectionDrag=null;};
+    window.addEventListener('blur',clearCameraDrag);
+    this.scene.onDisposeObservable.add(()=>window.removeEventListener('blur',clearCameraDrag));
     canvas.addEventListener('wheel',event=>{if(this.sectionCamera.active){event.preventDefault();const rect=canvas.getBoundingClientRect();this.sectionCamera.zoomAt(Math.exp(event.deltaY*.001),event.clientX-rect.left,event.clientY-rect.top,rect.width,rect.height);}},{passive:false});
     updateSectionClip(this.scene,this.root,Vector3.Forward(),1e6);
     this.update(state,0);this.setSpace();this.setSun([-0.65,0.72,0.35]);this.scene.executeWhenReady(()=>this.readyCallback());

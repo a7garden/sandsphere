@@ -1,0 +1,102 @@
+/* Mobile chrome shares the actual transport height and the device's safe edges. */
+@media (max-width: 960px) {
+  .app {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-left: max(12px, env(safe-area-inset-left, 0px));
+    --mobile-right: max(12px, env(safe-area-inset-right, 0px));
+    --mobile-dock-bottom: calc(12px + var(--safe-bottom) + var(--mobile-transport-height, 148px) + 12px);
+  }
+  .app > .topbar { top: calc(12px + var(--safe-top)); left: var(--mobile-left); right: var(--mobile-right); height: 44px; grid-template-columns: auto minmax(0, 1fr) 44px; }
+  .app .brand-group, .app .topbar > .header-planets { height: 44px; }
+  .app .topbar > .header-planets { padding-inline: 4px; min-width: 0; }
+  .app .header-planets > svg { display: none; }
+  #app .app button:not(.section-endpoint), #app .app select, #app .app summary { min-height: 44px; min-width: 44px; }
+  #app .app :is(.icon-button, .speed-step, #workbench-menu-toggle, #planet-rename, #planet-name-apply, #planet-name-cancel, .help-tip-button) { width: 44px; height: 44px; }
+  .app .mode-switch { margin-left: 4px; padding-inline: 6px; }
+  .app .brand-mark { display: flex; width: 18px; }
+  #app .app :is(input:not([type='range']):not([type='checkbox']), select, textarea) { font-size: 16px; }
+  #app .app input[type='range'] { min-height: 44px; }
+  .app .scene-heading { top: calc(68px + var(--safe-top)); left: var(--mobile-left); max-width: calc(100% - var(--mobile-left) - var(--mobile-right) - 56px); }
+  .app .scene-stick { top: calc(68px + var(--safe-top)); right: var(--mobile-right); }
+  .app > .planet-controls, .app.wide-view > .planet-controls {
+    left: var(--mobile-left); right: var(--mobile-right); bottom: calc(12px + var(--safe-bottom)); height: auto;
+  }
+  .app .view-transport-dock {
+    position: relative; left: auto; bottom: auto; transform: none; width: 100%; max-width: 100%;
+    display: flex; flex-direction: column; gap: 4px; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none;
+  }
+  .app .view-transport-dock :is(.camera-bar, .simulation-bar) {
+    width: 100%; max-width: 100%; padding: 2px; border: 1px solid var(--color-glass-edge);
+    border-radius: var(--radius-workbench); background: var(--color-glass); backdrop-filter: blur(var(--glass-blur));
+  }
+  .app .view-transport-dock .camera-bar { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+  .app .view-transport-dock .planet-view-controls { width: max-content; min-width: 100%; justify-content: center; gap: 0; }
+  .app .view-transport-dock .camera-view-controls { padding: 0; gap: 0; flex-shrink: 0; }
+  .app .view-transport-dock .camera-view-controls button { padding-inline: 8px; }
+  .app .view-transport-dock .time-controls { display: flex; flex-wrap: wrap; width: 100%; justify-content: center; gap: 0; }
+  .app .view-transport-dock .speed-control { gap: 0; }
+  .app .view-transport-dock .game-time-readout {
+    order: 2; position: static; flex-basis: 100%; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; padding: 4px 48px; white-space: normal; text-align: center;
+  }
+  .app .view-transport-dock #game-rate { position: static; width: auto; height: auto; overflow: visible; clip: auto; border: 0; padding: 0; }
+  .app .workspace-toggle { bottom: 0; z-index: 5; }
+  .scene-display-controls { left: var(--mobile-left); right: var(--mobile-right); bottom: var(--mobile-dock-bottom); width: auto; }
+  .app[data-mobile-panel='materials'] > .materials-panel,
+  .app[data-mobile-panel='observation'] > .inspector {
+    top: calc(120px + var(--safe-top)); bottom: var(--mobile-dock-bottom);
+    left: var(--mobile-left); right: var(--mobile-right); max-height: none;
+    overscroll-behavior: contain; scrollbar-gutter: stable;
+  }
+  .materials-panel .panel-title, .inspector .inspector-heading { flex-shrink: 0; flex-wrap: wrap; }
+  .materials-panel .material-list { flex-shrink: 0; }
+  .materials-panel .tool-list { grid-template-columns: repeat(auto-fit, minmax(54px, 1fr)); }
+  .inspector-details { flex: 1; min-height: 0; }
+  #app .planet-settings-panel, #app .catalog {
+    top: calc(68px + var(--safe-top)); bottom: var(--mobile-dock-bottom); max-height: none;
+    width: auto; left: var(--mobile-left); right: var(--mobile-right); transform: none; overscroll-behavior: contain;
+  }
+  .app .scene-heading:has(.section-controls:not([hidden])) .section-controls {
+    top: calc(120px + var(--safe-top)); bottom: auto; left: var(--mobile-left); width: calc(100% - var(--mobile-left) - var(--mobile-right));
+    max-height: calc(100dvh - 132px - var(--safe-top) - var(--mobile-dock-bottom)); overflow-y: auto;
+  }
+  .app .scene-heading:has(.section-selection-controls:not([hidden])) .section-selection-controls {
+    left: var(--mobile-left); right: var(--mobile-right); bottom: var(--mobile-dock-bottom);
+    max-height: calc(100dvh - 120px - var(--safe-top) - var(--mobile-dock-bottom)); overflow-y: auto;
+  }
+  #app dialog { max-width: calc(100% - var(--mobile-left) - var(--mobile-right)); max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px); }
+  #app :is(.planet-dashboard, .notification-center) { height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px); }
+  #app .notification-center { top: calc(12px + var(--safe-top)); bottom: calc(12px + var(--safe-bottom)); right: var(--mobile-right); }
+  #app .app .scene-display-controls .climate-picker-menu {
+    position: fixed; top: calc(68px + var(--safe-top)); bottom: var(--mobile-dock-bottom);
+    left: var(--mobile-left); right: var(--mobile-right); width: auto; max-height: none; overflow-y: auto; overscroll-behavior: contain;
+  }
+  #app dialog { margin: calc(12px + var(--safe-top)) auto calc(12px + var(--safe-bottom)); }
+  #app .notification-center { margin: 0; }
+  .dashboard-header { flex-wrap: wrap; gap: 8px; }
+  .dashboard-header-actions { margin-left: auto; }
+  .dashboard-toolbar, .dashboard-header, .dashboard-footer { padding: 8px 12px; }
+  .dashboard-time-window { flex-wrap: wrap; }
+  .dashboard-time-window button { padding-inline: 6px; }
+  .dashboard-nav { padding-block: 4px; }
+  .dashboard-nav button > span:first-child { display: inline; }
+  .dashboard-content, .dashboard-table-scroll { overscroll-behavior: contain; }
+  .first-steps { top: calc(68px + var(--safe-top)); right: var(--mobile-right); max-height: calc(100dvh - 80px - var(--safe-top) - var(--mobile-dock-bottom)); }
+}
+@media (min-width: 601px) and (max-width: 960px) {
+  .app .view-transport-dock { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 4px; }
+  .app .view-transport-dock .camera-bar { width: max-content; flex-shrink: 0; }
+  .app .view-transport-dock .simulation-bar { flex: 1; width: auto; min-width: 0; }
+  .app .view-transport-dock .time-controls { flex-wrap: nowrap; }
+  .app .view-transport-dock .game-time-readout { position: static; flex-basis: 100%; }
+  .scene-display-controls { width: min(280px, calc(50% - 24px)); right: auto; }
+}
+@media (min-width: 601px) and (max-width: 960px) and (max-height: 600px) {
+  .scene-display-controls { top: calc(120px + var(--safe-top)); bottom: auto; width: 200px; }
+  .scene-display-controls .scene-layer-controls, html:lang(en) .scene-display-controls .scene-layer-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app[data-mobile-panel] > :is(.materials-panel, .inspector) { top: calc(68px + var(--safe-top)); }
+  .dashboard-toolbar { flex-wrap: wrap; }
+  .dashboard-workspace { min-height: 100px; }
+  #app .planet-dashboard { overflow-y: auto; }
+}

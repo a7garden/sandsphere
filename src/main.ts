@@ -40,6 +40,7 @@ import './ui/planetDashboard.css';
 import './ui/glassWorkbench.css';
 import './ui/workbench.css';
 import './ui/onboarding.css';
+import './ui/mobileWorkbench.css';
 import {setupWorkbench} from './ui/workbench';
 import {FirstSteps,firstExperimentMarkup,firstStepsMarkup} from './ui/onboarding';
 import {PlanetView} from './render/planet';
@@ -123,6 +124,8 @@ let selectionControls:SectionSelectionControls;
 let view:PlanetView,lastObserver=-1,history:number[]=[],spinAngle=0,spinning=true,axisTilt=0,spinPeriod=120,primary:PlanetMaterial='rock',placementPrimary:PlanetMaterial='rock';
 let showAtmosphere=true,showClouds=true,showPrecipitation=false,renderSpinFrozen=false,showAxis=true,lastSaved:Snapshot|null=null,saving=false,awaitingCreation=false;
 let pointer={x:0,y:0,down:false};
+// Briefly reserve the first contact for a possible two-finger camera gesture.
+let touchPaintReadyAt=0;
 const impactEnergy=new Float64Array(4);
 const telemetry=new TelemetryStore();
 let dashboard:PlanetDashboard|undefined;
@@ -296,7 +299,7 @@ function showBrush(hit:ReturnType<PlanetView['pick']>){
 }
 function refreshBrush(){const r=view.canvas.getBoundingClientRect();showBrush(view.pick(pointer.x-r.left,pointer.y-r.top));}
 function paint(dt:number) {
-  if(operation||overview||view.isSelectingSection||observation.selecting||tool==='observe')return;const rect=view.canvas.getBoundingClientRect(),hit=view.pick(pointer.x-rect.left,pointer.y-rect.top);if(!hit)return;if(!hit.inAir)observation.hover(hit.index);
+  if(operation||overview||view.isSelectingSection||observation.selecting||tool==='observe'||performance.now()<touchPaintReadyAt)return;const rect=view.canvas.getBoundingClientRect(),hit=view.pick(pointer.x-rect.left,pointer.y-rect.top);if(!hit)return;if(!hit.inAir)observation.hover(hit.index);
   if(tool==='meteor'){pointer.down=false;void meteorImpact(hit.direction);return;}
   if(paused&&(tool==='pour'||!hit.inAir))pausedEdited=true;
   if(tool==='pour')pour(dt,hit.direction,material,Number(rateInput.value),Number(radiusInput.value),hit.emitter,hit.index);
@@ -686,11 +689,29 @@ function setupInteractions() {
   const canvas=view.canvas,touches=new Map<number,{x:number;y:number}>();let pinGesture:{id:number;x:number;y:number;valid:boolean}|null=null;let gesturing=false,lastTouch:{x:number;y:number;distance:number}|null=null;
   let lastHoverPick=-Infinity,pausedStrokePoint:{x:number;y:number}|null=null,pendingTouch:number|null=null,pausedTouchEdited=false;
   const touchMetrics=()=>{const points=[...touches.values()];return {x:(points[0].x+points[1].x)/2,y:(points[0].y+points[1].y)/2,distance:Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y)};};
+  const moveTouchCamera=(dx:number,dy:number)=>{if(view.isSection&&view.sectionNavigation==='pan')view.panSectionPixels(dx,dy);else view.turn(-dx/220,-dy/220);};
   canvas.addEventListener('contextmenu',event=>event.preventDefault());
   canvas.addEventListener('pointermove',event=>{
-    if(event.pointerType==='touch'&&touches.has(event.pointerId)){touches.set(event.pointerId,{x:event.clientX,y:event.clientY});if(touches.size>=2){const m=touchMetrics();if(lastTouch){if(view.isSection&&view.sectionNavigation==='pan')view.panSectionPixels(m.x-lastTouch.x,m.y-lastTouch.y);else view.turn(-(m.x-lastTouch.x)/220,-(m.y-lastTouch.y)/220);if(m.distance>10)view.zoom(lastTouch.distance/m.distance);}lastTouch=m;pointer.down=false;return;}}
+    if(event.pointerType==='touch'&&touches.has(event.pointerId)){
+      const previous=touches.get(event.pointerId);
+      touches.set(event.pointerId,{x:event.clientX,y:event.clientY});
+      if(touches.size>=2){
+        const m=touchMetrics();
+        if(lastTouch){
+          moveTouchCamera(m.x-lastTouch.x,m.y-lastTouch.y);
+          if(m.distance>10&&lastTouch.distance>10)view.zoom(lastTouch.distance/m.distance);
+        }
+        lastTouch=m;pointer.down=false;hideBrush();return;
+      }
+      // Once navigation starts, every contact must end before editing can resume.
+      if(gesturing)return;
+      if(previous&&(overview||tool==='observe'&&!observation.selecting)){
+        moveTouchCamera(event.clientX-previous.x,event.clientY-previous.y);
+        hideBrush();return;
+      }
+    }
     pointer.x=event.clientX;pointer.y=event.clientY;
-    if(paused&&pointer.down&&!gesturing&&event.buttons===1&&!event.shiftKey){
+    if(paused&&pointer.down&&!gesturing&&event.buttons===1&&!event.shiftKey&&performance.now()>=touchPaintReadyAt){
       const spacing=Math.max(4,view.brushPixels(cellBrushAngle(grid,brushCell??0,Number(radiusInput.value)))*.25);
       if(!pausedStrokePoint||Math.hypot(pointer.x-pausedStrokePoint.x,pointer.y-pausedStrokePoint.y)>=spacing){paint(PHYSICS_DT);pausedTouchEdited=true;pausedStrokePoint={x:pointer.x,y:pointer.y};}
     }
@@ -702,17 +723,17 @@ function setupInteractions() {
     if(hit&&!hidden&&!hit.inAir)observation.hover(hit.index);
   });
   canvas.addEventListener('pointerdown',event=>{
-    if(event.pointerType==='touch'){touches.set(event.pointerId,{x:event.clientX,y:event.clientY});canvas.setPointerCapture(event.pointerId);if(touches.size>=2){pendingTouch=null;pinGesture=null;gesturing=true;lastTouch=touchMetrics();pointer.down=false;return;}if(gesturing)return;}
+    if(event.pointerType==='touch'){touchPaintReadyAt=performance.now()+120;touches.set(event.pointerId,{x:event.clientX,y:event.clientY});canvas.setPointerCapture(event.pointerId);if(touches.size>=2){pendingTouch=null;pinGesture=null;gesturing=true;lastTouch=touchMetrics();pointer.down=false;hideBrush();return;}if(gesturing)return;}
     if(overview||view.isSelectingSection)return;
     if(event.button!==0||event.shiftKey)return;
     if(observation.selecting){pinGesture={id:event.pointerId,x:event.clientX,y:event.clientY,valid:true};canvas.setPointerCapture(event.pointerId);canvas.focus({preventScroll:true});return;}
     pointer={x:event.clientX,y:event.clientY,down:tool!=='observe'};canvas.setPointerCapture(event.pointerId);canvas.focus({preventScroll:true});
     pausedStrokePoint={x:pointer.x,y:pointer.y};pausedTouchEdited=false;
-    if(pointer.down&&(paused||tool==='meteor')){if(event.pointerType==='touch')pendingTouch=event.pointerId;else paint(PHYSICS_DT);}
+    if(pointer.down){if(event.pointerType==='touch')pendingTouch=event.pointerId;else if(paused||tool==='meteor')paint(PHYSICS_DT);}
   });
-  const release=(event:PointerEvent)=>{pointer.down=false;pausedStrokePoint=null;pendingTouch=null;touches.delete(event.pointerId);if(touches.size===0){gesturing=false;lastTouch=null;}if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);};
+  const release=(event:PointerEvent)=>{pointer.down=false;pausedStrokePoint=null;pendingTouch=null;touches.delete(event.pointerId);lastTouch=touches.size>=2?touchMetrics():null;if(touches.size===0){gesturing=false;lastTouch=null;touchPaintReadyAt=0;}if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);};
   canvas.addEventListener('click',event=>{if(overview){const r=canvas.getBoundingClientRect(),id=view.pickPlanet(event.clientX-r.x,event.clientY-r.y);if(id)void switchPlanet(id);}});
-  canvas.addEventListener('pointerup',event=>{if(pendingTouch===event.pointerId&&!gesturing&&pointer.down&&(tool==='meteor'||paused&&!pausedTouchEdited)){pointer.x=event.clientX;pointer.y=event.clientY;paint(PHYSICS_DT);}if(pinGesture?.id===event.pointerId){const gesture=pinGesture;pinGesture=null;if(gesture.valid&&Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)<=8&&observation.selecting&&!gesturing)pinObservationAt(event.clientX,event.clientY);}release(event);});canvas.addEventListener('pointercancel',event=>{pinGesture=null;release(event);});canvas.addEventListener('lostpointercapture',()=>pointer.down=false);
+  canvas.addEventListener('pointerup',event=>{if(pendingTouch===event.pointerId&&!gesturing&&pointer.down&&(tool==='meteor'||paused&&!pausedTouchEdited||!paused&&performance.now()<touchPaintReadyAt)){pointer.x=event.clientX;pointer.y=event.clientY;touchPaintReadyAt=0;paint(PHYSICS_DT);}if(pinGesture?.id===event.pointerId){const gesture=pinGesture;pinGesture=null;if(gesture.valid&&Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)<=8&&observation.selecting&&!gesturing)pinObservationAt(event.clientX,event.clientY);}release(event);});canvas.addEventListener('pointercancel',event=>{pinGesture=null;release(event);});canvas.addEventListener('lostpointercapture',event=>{pinGesture=null;release(event);});
   canvas.addEventListener('pointerleave',()=>{hideBrush();});
   el('observation-pin').addEventListener('click',toggleObservationSelection);
   const pinMarker=el('observation-marker');
@@ -809,7 +830,7 @@ function setupInteractions() {
   el('placement').addEventListener('cancel',e=>{if(awaitingCreation)e.preventDefault();});
   document.querySelectorAll<HTMLDialogElement>('dialog').forEach(d=>d.addEventListener('click',e=>{if(d.id==='placement'&&awaitingCreation||d.id==='game-mode'&&modeSelectionRequired)return;if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();}}));
   setupWorkbench();
-  window.addEventListener('blur',()=>{pointer.down=false;touches.clear();gesturing=false;lastTouch=null;view.orbitMode(overview||tool==='observe'&&!observation.selecting);});document.addEventListener('visibilitychange',()=>{if(document.hidden){pointer.down=false;void autosave();}});
+  window.addEventListener('blur',()=>{pointer.down=false;touches.clear();gesturing=false;lastTouch=null;pendingTouch=null;pinGesture=null;touchPaintReadyAt=0;view.orbitMode(overview||tool==='observe'&&!observation.selecting);});document.addEventListener('visibilitychange',()=>{if(document.hidden){pointer.down=false;void autosave();}});
   window.addEventListener('pagehide',()=>{if(replacingSession||awaitingCreation||!planets.length)return;try{localStorage.setItem(systemResumeKey,JSON.stringify(capturePersistedSystem(true)));}catch(error){console.warn('Immediate resume checkpoint unavailable; the last automatic save is retained.',error);}});
   window.addEventListener('keydown',e=>{
     if(e.target instanceof HTMLInputElement||document.querySelector('dialog[open]'))return;

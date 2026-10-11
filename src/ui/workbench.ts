@@ -4,6 +4,7 @@ export function setupWorkbench() {
   const viewDock = document.querySelector<HTMLElement>('.view-transport-dock')!;
   const displayControls = document.querySelector<HTMLElement>('.scene-display-controls')!;
   const sizeChrome = new ResizeObserver(() => {
+    app.style.setProperty('--mobile-transport-height', `${viewDock.getBoundingClientRect().height}px`);
     app.style.setProperty('--view-dock-width', `${viewDock.getBoundingClientRect().width}px`);
     app.style.setProperty('--display-controls-height', `${displayControls.getBoundingClientRect().height}px`);
   });
@@ -31,6 +32,11 @@ export function setupWorkbench() {
   });
 
   const mobile = matchMedia('(max-width: 960px)');
+  const timeControls = document.querySelector<HTMLElement>('.time-controls')!;
+  const timeReadout = document.querySelector<HTMLElement>('.game-time-readout')!;
+  const placeReadout = () => (mobile.matches ? viewDock : timeControls).append(timeReadout);
+  placeReadout();
+  mobile.addEventListener('change', placeReadout);
   const menuToggle = document.getElementById('workbench-menu-toggle')!;
   const menu = document.getElementById('workbench-menu')!;
   const setMenu = (open: boolean, restoreFocus = false) => {
