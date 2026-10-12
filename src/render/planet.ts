@@ -2,6 +2,7 @@ import {ClimateLayers} from './climateLayers';
 import {arcFromBasis,arcFromCells,snapSectionEndpoint,type SectionArc} from './sectionArc';
 import {buildSectionMesh} from './sectionGeometry';
 import {CellBrush} from './cellBrush';
+import {CameraGestures} from './cameraGestures';
 import type {WeatherClimate,ClimateLayer} from '../sim/weatherClimate';
 import type {CloudStyle} from './cloudBanks';
 import {vegetationCover} from './vegetation';
@@ -195,7 +196,7 @@ export class PlanetView {
   private sectionWidth=-1;
   private sectionNormal=Vector3.Zero();private sectionUp=Vector3.Zero();
   private inspectionMode=true;
-  private cameraDragPointers=new Set<number>();
+  private cameraGestures=new CameraGestures();
   private sectionControlsDetached=false;
   private constructor(readonly canvas:HTMLCanvasElement,readonly grid:SphereGrid,state:Float32Array,engine:AbstractEngine,renderRefinement=0) {
     this.state=state;this.atmosphereInfo=atmosphereState(state,this.environment);this.engine=engine;this.scene=new Scene(engine);this.root=new TransformNode('rotating planet',this.scene);
@@ -405,20 +406,19 @@ export class PlanetView {
       engine.setHardwareScalingLevel(renderScaling(canvas.clientWidth,canvas.clientHeight,window.devicePixelRatio||1));
       engine.resize();this.sectionFitPending=true;if(this.sectionCamera.active)this.sectionCamera.frame('surface');
     });this.resize.observe(canvas);
-    let sectionDrag:{id:number;x:number;y:number}|null=null;const sectionTouches=new Set<number>();
+    let sectionDrag:{id:number;x:number;y:number}|null=null;
     canvas.addEventListener('pointerdown',event=>{
-      this.focusFlight=null;this.axisAlignment.cancel();if(event.pointerType==='touch'){sectionTouches.add(event.pointerId);this.cameraDragPointers.add(event.pointerId);return;}
-      if(event.button===2||event.button===0&&(this.inspectionMode||event.shiftKey||this.sectionCamera.active)){
-        this.cameraDragPointers.add(event.pointerId);canvas.setPointerCapture(event.pointerId);
-      }
+      this.focusFlight=null;this.axisAlignment.cancel();
+      this.cameraGestures.down(event,this.inspectionMode);
+      if(event.pointerType==='touch')return;
+      if(this.cameraGestures.active)canvas.setPointerCapture(event.pointerId);
       // Two-finger navigation belongs to the common pinch/centroid handler.
-      if(sectionTouches.size>1){sectionDrag=null;return;}
       if(this.sectionCamera.active&&(event.button===2||(event.button===0&&(this.inspectionMode||event.shiftKey)))){sectionDrag={id:event.pointerId,x:event.clientX,y:event.clientY};canvas.setPointerCapture(event.pointerId);}
     });
     canvas.addEventListener('pointermove',event=>{if(sectionDrag?.id===event.pointerId){if(this.sectionCamera.active){const dx=event.clientX-sectionDrag.x,dy=event.clientY-sectionDrag.y;if(event.shiftKey||this.sectionNavigation==='pan')this.panSectionPixels(dx,dy);else this.navigateSection(dx/220,dy/220);}sectionDrag={id:event.pointerId,x:event.clientX,y:event.clientY};}});
-    const releaseSection=(event:PointerEvent)=>{sectionTouches.delete(event.pointerId);this.cameraDragPointers.delete(event.pointerId);if(sectionDrag?.id===event.pointerId)sectionDrag=null;};
+    const releaseSection=(event:PointerEvent)=>{this.cameraGestures.release(event.pointerId);if(sectionDrag?.id===event.pointerId)sectionDrag=null;};
     canvas.addEventListener('pointerup',releaseSection);canvas.addEventListener('pointercancel',releaseSection);canvas.addEventListener('lostpointercapture',releaseSection);
-    const clearCameraDrag=()=>{sectionTouches.clear();this.cameraDragPointers.clear();sectionDrag=null;};
+    const clearCameraDrag=()=>{this.cameraGestures.clear();sectionDrag=null;};
     window.addEventListener('blur',clearCameraDrag);
     this.scene.onDisposeObservable.add(()=>window.removeEventListener('blur',clearCameraDrag));
     canvas.addEventListener('wheel',event=>{if(this.sectionCamera.active){event.preventDefault();const rect=canvas.getBoundingClientRect();this.sectionCamera.zoomAt(Math.exp(event.deltaY*.001),event.clientX-rect.left,event.clientY-rect.top,rect.width,rect.height);}},{passive:false});
@@ -675,7 +675,8 @@ export class PlanetView {
     const pointers=this.camera.inputs.attached.pointers;
     if(pointers && 'buttons' in pointers)(pointers as {buttons:number[]}).buttons=enabled?[0,2]:[2];
   }
-  get cameraDragging(){return this.cameraDragPointers.size>0;}
+  setTouchNavigation(active:boolean){this.cameraGestures.setTouchNavigation(active);}
+  get cameraDragging(){return this.cameraGestures.active;}
   observationPosition(index:number){
     const direction=Vector3.FromArray(this.grid.directions,index*3);
     const radius=Math.max(Vector3.FromArray(this.vertexTerrain,index*3).length(),Vector3.FromArray(this.vertexWater,index*3).length())+.03;

@@ -747,7 +747,7 @@ function setupInteractions() {
     brushRefreshPending=true;
   });
   canvas.addEventListener('pointerdown',event=>{
-    if(event.pointerType==='touch'){touchPaintReadyAt=performance.now()+120;touches.set(event.pointerId,{x:event.clientX,y:event.clientY});canvas.setPointerCapture(event.pointerId);if(touches.size>=2){pendingTouch=null;pinGesture=null;gesturing=true;lastTouch=touchMetrics();pointer.down=false;hideBrush();return;}if(gesturing)return;}
+    if(event.pointerType==='touch'){touchPaintReadyAt=performance.now()+120;touches.set(event.pointerId,{x:event.clientX,y:event.clientY});canvas.setPointerCapture(event.pointerId);view.setTouchNavigation(gesturing||touches.size>=2||overview||tool==='observe'&&!observation.selecting&&!view.isSelectingSection);if(touches.size>=2){pendingTouch=null;pinGesture=null;gesturing=true;lastTouch=touchMetrics();pointer.down=false;hideBrush();return;}if(gesturing)return;}
     if(overview||view.isSelectingSection)return;
     if(event.button!==0||event.shiftKey)return;
     if(observation.selecting){pinGesture={id:event.pointerId,x:event.clientX,y:event.clientY,valid:true};canvas.setPointerCapture(event.pointerId);canvas.focus({preventScroll:true});return;}
@@ -755,7 +755,7 @@ function setupInteractions() {
     pausedStrokePoint={x:pointer.x,y:pointer.y};pausedTouchEdited=false;
     if(pointer.down){if(event.pointerType==='touch')pendingTouch=event.pointerId;else if(paused||tool==='meteor')paint(PHYSICS_DT);}
   });
-  const release=(event:PointerEvent)=>{pointer.down=false;pausedStrokePoint=null;pendingTouch=null;touches.delete(event.pointerId);lastTouch=touches.size>=2?touchMetrics():null;if(touches.size===0){gesturing=false;lastTouch=null;touchPaintReadyAt=0;}if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);};
+  const release=(event:PointerEvent)=>{pointer.down=false;pausedStrokePoint=null;pendingTouch=null;touches.delete(event.pointerId);lastTouch=touches.size>=2?touchMetrics():null;if(touches.size===0){gesturing=false;lastTouch=null;touchPaintReadyAt=0;view.setTouchNavigation(false);}if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);};
   canvas.addEventListener('click',event=>{if(overview){const r=canvas.getBoundingClientRect(),id=view.pickPlanet(event.clientX-r.x,event.clientY-r.y);if(id)void switchPlanet(id);}});
   canvas.addEventListener('pointerup',event=>{if(pendingTouch===event.pointerId&&!gesturing&&pointer.down&&(tool==='meteor'||paused&&!pausedTouchEdited||!paused&&performance.now()<touchPaintReadyAt)){pointer.x=event.clientX;pointer.y=event.clientY;touchPaintReadyAt=0;paint(PHYSICS_DT);}if(pinGesture?.id===event.pointerId){const gesture=pinGesture;pinGesture=null;if(gesture.valid&&Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)<=8&&observation.selecting&&!gesturing)pinObservationAt(event.clientX,event.clientY);}release(event);});canvas.addEventListener('pointercancel',event=>{pinGesture=null;release(event);});canvas.addEventListener('lostpointercapture',event=>{pinGesture=null;release(event);});
   canvas.addEventListener('pointerleave',()=>{hideBrush();});
@@ -854,7 +854,7 @@ function setupInteractions() {
   el('placement').addEventListener('cancel',e=>{if(awaitingCreation)e.preventDefault();});
   document.querySelectorAll<HTMLDialogElement>('dialog').forEach(d=>d.addEventListener('click',e=>{if(d.id==='placement'&&awaitingCreation||d.id==='game-mode'&&modeSelectionRequired)return;if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();}}));
   setupWorkbench();
-  window.addEventListener('blur',()=>{pointer.down=false;touches.clear();gesturing=false;lastTouch=null;pendingTouch=null;pinGesture=null;touchPaintReadyAt=0;view.orbitMode(overview||tool==='observe'&&!observation.selecting);});document.addEventListener('visibilitychange',()=>{if(document.hidden){pointer.down=false;void autosave();}});
+  window.addEventListener('blur',()=>{pointer.down=false;touches.clear();gesturing=false;lastTouch=null;pendingTouch=null;pinGesture=null;touchPaintReadyAt=0;view.setTouchNavigation(false);view.orbitMode(overview||tool==='observe'&&!observation.selecting);});document.addEventListener('visibilitychange',()=>{if(document.hidden){pointer.down=false;void autosave();}});
   window.addEventListener('pagehide',()=>{if(replacingSession||awaitingCreation||!planets.length)return;try{localStorage.setItem(systemResumeKey,JSON.stringify(capturePersistedSystem(true)));}catch(error){console.warn('Immediate resume checkpoint unavailable; the last automatic save is retained.',error);}});
   window.addEventListener('keydown',e=>{
     if(e.target instanceof HTMLInputElement||document.querySelector('dialog[open]'))return;

@@ -1,3 +1,5 @@
+import {setPlanetSettings} from './planetControls';
+
 /** UI-only navigation; the same live readouts stay mounted in every tab. */
 export function setupWorkbench() {
   const app = document.querySelector<HTMLElement>('.app')!;
@@ -102,9 +104,22 @@ export function setupWorkbench() {
     document.getElementById(`toggle-${panel}`)!.addEventListener('click', () => setDesktopPanel(panel, !expanded[panel]));
   }
   let active: Panel | undefined;
+  const viewToggle = document.getElementById('mobile-view-toggle')!;
+  const setViewControls = (open: boolean, restoreFocus = false) => {
+    app.dataset.mobileView = String(open);
+    viewToggle.setAttribute('aria-expanded', String(open));
+    if (!open) {
+      setPlanetSettings(false);
+      const mapToggle = document.getElementById('climate-map-toggle')!;
+      if (mapToggle.getAttribute('aria-expanded') === 'true') mapToggle.click();
+    }
+    if (restoreFocus) viewToggle.focus();
+  };
+  setViewControls(false);
   const setPanel = (next?: Panel, restoreFocus = false) => {
     const previous = active;
     active = next;
+    if (next && mobile.matches) setViewControls(false);
     app.dataset.mobilePanel = next ?? '';
     for (const panel of panels) {
       document.getElementById(`workspace-${panel}`)!.setAttribute('aria-expanded', String(panel === next));
@@ -113,6 +128,14 @@ export function setupWorkbench() {
     if (restoreFocus && previous) document.getElementById(`workspace-${previous}`)!.focus();
     else if (next) document.getElementById(next === 'materials' ? 'settings-toggle' : 'inspector-toggle')!.focus();
   };
+  viewToggle.addEventListener('click', () => {
+    const open = app.dataset.mobileView !== 'true';
+    if (open) setPanel();
+    setViewControls(open);
+  });
+  document.getElementById('planet')!.addEventListener('pointerdown', () => {
+    if (mobile.matches) { setPanel(); setViewControls(false); }
+  });
   for (const panel of panels) {
     document.getElementById(`workspace-${panel}`)!.addEventListener('click', () => setPanel(active === panel ? undefined : panel));
   }
@@ -132,6 +155,12 @@ export function setupWorkbench() {
   });
   // A drawer is non-modal: the planet and transport remain usable.
   document.addEventListener('keydown', event => {
+    if (!event.defaultPrevented && event.key === 'Escape' && mobile.matches && app.dataset.mobileView === 'true' && !document.querySelector('dialog[open]')) {
+      event.preventDefault();
+      event.stopPropagation();
+      setViewControls(false, true);
+      return;
+    }
     if (event.defaultPrevented || event.key !== 'Escape' || !mobile.matches || !active || document.querySelector('dialog[open]')) return;
     event.preventDefault();
     event.stopPropagation();
@@ -151,6 +180,7 @@ export function setupWorkbench() {
     const focused = document.activeElement;
     setMenu(false);
     setPanel();
+    setViewControls(false);
     if (focused instanceof HTMLElement && !focused.getClientRects().length) document.getElementById('planet')!.focus();
   });
 }

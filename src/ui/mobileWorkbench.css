@@ -5,7 +5,7 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --mobile-left: max(12px, env(safe-area-inset-left, 0px));
     --mobile-right: max(12px, env(safe-area-inset-right, 0px));
-    --mobile-dock-bottom: calc(12px + var(--safe-bottom) + var(--mobile-transport-height, 148px) + 12px);
+    --mobile-dock-bottom: calc(12px + var(--safe-bottom) + var(--mobile-transport-height, 76px) + 12px);
   }
   .app > .topbar { top: calc(12px + var(--safe-top)); left: var(--mobile-left); right: var(--mobile-right); height: 44px; grid-template-columns: auto minmax(0, 1fr) 44px; }
   .app .brand-group, .app .topbar > .header-planets { height: 44px; }
@@ -17,36 +17,52 @@
   .app .brand-mark { display: flex; width: 18px; }
   #app .app :is(input:not([type='range']):not([type='checkbox']), select, textarea) { font-size: 16px; }
   #app .app input[type='range'] { min-height: 44px; }
-  .app .scene-heading { top: calc(68px + var(--safe-top)); left: var(--mobile-left); max-width: calc(100% - var(--mobile-left) - var(--mobile-right) - 56px); }
-  .app .scene-stick { top: calc(68px + var(--safe-top)); right: var(--mobile-right); }
+  .app .scene-heading { top: calc(68px + var(--safe-top)); left: var(--mobile-left); width: max-content; max-width: calc(100% - var(--mobile-left) - var(--mobile-right)); }
+  .app .scene-mode-toolbar { max-width: 100%; overflow-x: auto; }
+  .app .scene-mode-toolbar button { flex: none; padding-inline: 8px; }
+  .app .scene-stick { display: none; }
   .app > .planet-controls, .app.wide-view > .planet-controls {
     left: var(--mobile-left); right: var(--mobile-right); bottom: calc(12px + var(--safe-bottom)); height: auto;
   }
   .app .view-transport-dock {
     position: relative; left: auto; bottom: auto; transform: none; width: 100%; max-width: 100%;
-    display: flex; flex-direction: column; gap: 4px; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none;
+    display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px;
+    padding: 0 52px; border: 0; background: transparent; box-shadow: none; backdrop-filter: none;
   }
   .app .view-transport-dock :is(.camera-bar, .simulation-bar) {
     width: 100%; max-width: 100%; padding: 2px; border: 1px solid var(--color-glass-edge);
     border-radius: var(--radius-workbench); background: var(--color-glass); backdrop-filter: blur(var(--glass-blur));
   }
-  .app .view-transport-dock .camera-bar { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+  .app .view-transport-dock .camera-bar {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
+    overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin;
+  }
+  .app[data-mobile-view='true'] .view-transport-dock .camera-bar { display: block; }
+  .app .view-transport-dock .simulation-bar { order: 0; width: auto; border: 0; background: transparent; backdrop-filter: none; }
+  #app .app #mobile-view-toggle { display: grid; place-items: center; order: 1; flex-shrink: 0; border: 1px solid var(--color-glass-edge); background: var(--color-glass); border-radius: var(--radius-control); }
+  #app .app #mobile-view-toggle[aria-expanded='true'] { background: var(--color-glass-selection); }
   .app .view-transport-dock .planet-view-controls { width: max-content; min-width: 100%; justify-content: center; gap: 0; }
   .app .view-transport-dock .camera-view-controls { padding: 0; gap: 0; flex-shrink: 0; }
   .app .view-transport-dock .camera-view-controls button { padding-inline: 8px; }
-  .app .view-transport-dock .time-controls { display: flex; flex-wrap: wrap; width: 100%; justify-content: center; gap: 0; }
+  .app .view-transport-dock .time-controls { display: flex; flex-wrap: nowrap; width: auto; justify-content: center; gap: 0; }
   .app .view-transport-dock .speed-control { gap: 0; }
+  .app .view-transport-dock :where(.speed-step, .speed-control .help-tip, #single-step:disabled) { display: none; }
+  .app[data-mobile-view='true'] .view-transport-dock .speed-step { display: flex; align-items: center; justify-content: center; }
+  .app[data-mobile-view='true'] .view-transport-dock { padding-inline: 0; padding-top: 48px; }
   .app .view-transport-dock .game-time-readout {
-    order: 2; position: static; flex-basis: 100%; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 4px; padding: 4px 48px; white-space: normal; text-align: center;
+    order: 2; position: static; flex: 0 0 calc(100% + 104px); min-height: 24px; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center;
+    gap: 4px 8px; margin-inline: -52px; padding: 4px 0; white-space: normal; text-align: center;
   }
+  .app[data-mobile-view='true'] .view-transport-dock .game-time-readout { flex-basis: 100%; margin-inline: 0; }
   .app .view-transport-dock #game-rate { position: static; width: auto; height: auto; overflow: visible; clip: auto; border: 0; padding: 0; }
-  .app .workspace-toggle { bottom: 0; z-index: 5; }
-  .scene-display-controls { left: var(--mobile-left); right: var(--mobile-right); bottom: var(--mobile-dock-bottom); width: auto; }
+  .app .workspace-toggle { top: 0; bottom: auto; z-index: 5; }
+  .app .scene-display-controls { display: none; left: var(--mobile-left); right: var(--mobile-right); bottom: calc(var(--mobile-dock-bottom) + 54px); width: auto; }
+  .app[data-mobile-view='true']:not(.system-view) .scene-display-controls { display: flex; }
   .app[data-mobile-panel='materials'] > .materials-panel,
   .app[data-mobile-panel='observation'] > .inspector {
-    top: calc(120px + var(--safe-top)); bottom: var(--mobile-dock-bottom);
-    left: var(--mobile-left); right: var(--mobile-right); max-height: none;
+    top: auto; bottom: var(--mobile-dock-bottom);
+    left: var(--mobile-left); right: var(--mobile-right);
+    max-height: min(46dvh, calc(100dvh - 132px - var(--safe-top) - var(--mobile-dock-bottom)));
     overscroll-behavior: contain; scrollbar-gutter: stable;
   }
   .materials-panel .panel-title, .inspector .inspector-heading { flex-shrink: 0; flex-wrap: wrap; }
@@ -85,17 +101,11 @@
   .first-steps { top: calc(68px + var(--safe-top)); right: var(--mobile-right); max-height: calc(100dvh - 80px - var(--safe-top) - var(--mobile-dock-bottom)); }
 }
 @media (min-width: 601px) and (max-width: 960px) {
-  .app .view-transport-dock { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 4px; }
-  .app .view-transport-dock .camera-bar { width: max-content; flex-shrink: 0; }
-  .app .view-transport-dock .simulation-bar { flex: 1; width: auto; min-width: 0; }
-  .app .view-transport-dock .time-controls { flex-wrap: nowrap; }
-  .app .view-transport-dock .game-time-readout { position: static; flex-basis: 100%; }
-  .scene-display-controls { width: min(280px, calc(50% - 24px)); right: auto; }
+  .app .view-transport-dock .camera-bar { width: max-content; left: 50%; right: auto; transform: translateX(-50%); }
+  .app .scene-display-controls { width: min(340px, calc(100% - 24px)); left: 50%; right: auto; transform: translateX(-50%); }
 }
 @media (min-width: 601px) and (max-width: 960px) and (max-height: 600px) {
-  .scene-display-controls { top: calc(120px + var(--safe-top)); bottom: auto; width: 200px; }
-  .scene-display-controls .scene-layer-controls, html:lang(en) .scene-display-controls .scene-layer-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .app[data-mobile-panel] > :is(.materials-panel, .inspector) { top: calc(68px + var(--safe-top)); }
+  .app[data-mobile-view='true'] .scene-display-controls { max-height: calc(100dvh - 80px - var(--safe-top) - var(--mobile-dock-bottom) - 54px); overflow-y: auto; pointer-events: auto; }
   .dashboard-toolbar { flex-wrap: wrap; }
   .dashboard-workspace { min-height: 100px; }
   #app .planet-dashboard { overflow-y: auto; }
