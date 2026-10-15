@@ -1,0 +1,42 @@
+{
+  "method": "Same Vite SSR module execution, deterministic numeric/telemetry-like input, 3 sync trials and one cooperative run; not browser Long Tasks",
+  "rows": [
+    {
+      "name": "before",
+      "bytes": 29400632,
+      "digest": "deb0d62cf159ed10ad539c8e19fe3fa3f3300f61e35da420e2650aa9829817a7",
+      "packMs": [
+        199.56116699999995,
+        125.81216699999993,
+        126.13124999999991
+      ],
+      "unpackMs": [
+        111.455375,
+        97.13262499999996,
+        90.3760000000002
+      ],
+      "asyncMs": 295.86758299999997,
+      "maxEventLoopGapMs": 10.409791000000041,
+      "asyncExact": true
+    },
+    {
+      "name": "after",
+      "bytes": 29400632,
+      "digest": "deb0d62cf159ed10ad539c8e19fe3fa3f3300f61e35da420e2650aa9829817a7",
+      "packMs": [
+        75.18570900000009,
+        76.49000000000001,
+        103.23970800000006
+      ],
+      "unpackMs": [
+        47.26841599999989,
+        58.862290999999914,
+        62.27366600000005
+      ],
+      "asyncMs": 171.19754199999988,
+      "maxEventLoopGapMs": 21.707291999999597,
+      "asyncExact": true
+    }
+  ],
+  "wireEqual": true
+}

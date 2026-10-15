@@ -9,6 +9,15 @@ async function nextTurn(){const scheduler=(globalThis as typeof globalThis&{sche
 function finish<T>(steps:Generator<void,T>):T{let result=steps.next();while(!result.done)result=steps.next();return result.value;}
 async function finishAsync<T>(steps:Generator<void,T>):Promise<T>{let result=steps.next();while(!result.done){await nextTurn();result=steps.next();}return result.value;}
 
+// Keep tight byte/numeric loops outside the generator so they can be optimized.
+// Cooperative callers yield between bounded chunks; the wire bytes are unchanged.
+function finiteNumbers(a:ArrayLike<unknown>,from:number,to:number){for(let i=from;i<to;i++)if(typeof a[i]!=='number'||!Number.isFinite(a[i]))return false;return true;}
+function shuffleLane(source:Uint8Array,target:Uint8Array,start:number,numbers:number,lane:number,from:number,to:number,inverse:boolean){
+ if(inverse)for(let i=from;i<to;i++)target[i*8+lane]=source[start+lane*numbers+i];
+ else for(let i=from;i<to;i++)target[start+lane*numbers+i]=source[i*8+lane];
+}
+function readNumbers(source:DataView,target:number[],offset:number,from:number,to:number){for(let i=from;i<to;i++)target[i]=source.getFloat64((offset+i)*8,true);}
+
 function* packing(value:unknown,cooperative:boolean):Generator<void,ArrayBuffer> {
  const arrays:ArrayLike<number>[]=[],offsets:number[]=[],schemas:string[][]=[],schemaIds=new Map<string,number>();let numbers=0,turn=performance.now();
  const due=()=>cooperative&&performance.now()-turn>=5;
@@ -17,7 +26,7 @@ function* packing(value:unknown,cooperative:boolean):Generator<void,ArrayBuffer>
   if(depth>64)throw new Error('저장 데이터의 중첩이 너무 깊습니다.');
   if(Array.isArray(v)||v instanceof Float32Array||v instanceof Float64Array){
    const a=v as number[];let numeric=a.length>=16;
-   if(numeric)for(let i=0;i<a.length;i++){if(typeof a[i]!=='number'||!Number.isFinite(a[i])){numeric=false;break;}if((i&8191)===0&&due()){yield;turn=performance.now();}}
+   if(numeric)for(let from=0;from<a.length;from+=8192){if(!finiteNumbers(a,from,Math.min(a.length,from+8192))){numeric=false;break;}if(due()){yield;turn=performance.now();}}
    if(numeric)return {[TAG]:[add(a),a.length]};
    const copy:unknown[]=[];for(const x of a)copy.push(yield* visit(x,depth+1));return copy;
   }
@@ -39,7 +48,7 @@ function* packing(value:unknown,cooperative:boolean):Generator<void,ArrayBuffer>
  for(let i=0;i<arrays.length;i++){if(numeric)numeric.set(arrays[i],offsets[i]);else for(let n=0;n<arrays[i].length;n++)view.setFloat64(start+(offsets[i]+n)*8,arrays[i][n],true);if(due()){yield;turn=performance.now();}}
  // Adjacent exponent/high-mantissa bytes compress together, without changing a bit.
  const original=bytes.slice(start);
- for(let lane=0;lane<8;lane++)for(let i=0;i<numbers;i++){bytes[start+lane*numbers+i]=original[i*8+lane];if((i&65535)===0&&due()){yield;turn=performance.now();}}
+ for(let lane=0;lane<8;lane++)for(let from=0;from<numbers;from+=65536){shuffleLane(original,bytes,start,numbers,lane,from,Math.min(numbers,from+65536),false);if(due()){yield;turn=performance.now();}}
  return buffer;
 }
 export function packSave(value:unknown){return finish(packing(value,false));}
@@ -56,11 +65,11 @@ function* unpacking(buffer:ArrayBuffer,cooperative:boolean):Generator<void,unkno
  const metadata=JSON.parse(decoder.decode(bytes.subarray(HEADER,HEADER+metadataLength))) as unknown;
  let turn=performance.now();const due=()=>cooperative&&performance.now()-turn>=5;
  let numeric=new DataView(buffer,start);
- if(version===50){const decoded=new Uint8Array(numbers*8);for(let lane=0;lane<8;lane++)for(let i=0;i<numbers;i++){decoded[i*8+lane]=bytes[start+lane*numbers+i];if((i&65535)===0&&due()){yield;turn=performance.now();}}numeric=new DataView(decoded.buffer);}
+ if(version===50){const decoded=new Uint8Array(numbers*8);for(let lane=0;lane<8;lane++)for(let from=0;from<numbers;from+=65536){shuffleLane(bytes,decoded,start,numbers,lane,from,Math.min(numbers,from+65536),true);if(due()){yield;turn=performance.now();}}numeric=new DataView(decoded.buffer);}
  const wrapper=metadata as {data:unknown;schemas:unknown},schemas=version===50?wrapper.schemas:[];
  if(version===50&&!Array.isArray(schemas))throw new Error('저장 데이터의 숫자 열 정의가 올바르지 않습니다.');
  const bounds=(offset:unknown,length:unknown)=>{if(!Number.isSafeInteger(offset)||!Number.isSafeInteger(length)||(offset as number)<0||(length as number)<0||(offset as number)+(length as number)>numbers)throw new Error('저장 데이터의 배열 범위가 올바르지 않습니다.');};
- function* readArray(offset:number,length:number):Generator<void,number[]>{bounds(offset,length);const a=new Array<number>(length);for(let i=0;i<length;i++){a[i]=numeric.getFloat64((offset+i)*8,true);if((i&8191)===0&&due()){yield;turn=performance.now();}}return a;}
+ function* readArray(offset:number,length:number):Generator<void,number[]>{bounds(offset,length);const a=new Array<number>(length);for(let from=0;from<length;from+=8192){readNumbers(numeric,a,offset,from,Math.min(length,from+8192));if(due()){yield;turn=performance.now();}}return a;}
  function* visit(v:unknown,depth:number):Generator<void,unknown>{
   if(depth>64)throw new Error('저장 데이터의 중첩이 너무 깊습니다.');
   if(Array.isArray(v)){const a:unknown[]=[];for(const x of v)a.push(yield* visit(x,depth+1));return a;}
