@@ -86,3 +86,9 @@ export function restoreTelemetry(store:TelemetryStore,value:unknown,worlds:{id:s
  }
  return result;
 }
+
+/** Freeze the ledger at the same completed world state before asynchronous save
+ * preparation. Published points are immutable; later samples replace entries. */
+export function snapshotTelemetryStore(store:TelemetryStore){
+ const copy=new TelemetryStore();for(const [id,record] of store.planets)copy.planets.set(id,{...record,points:record.points.slice(),energy:record.energy.slice(),...(record.gaps?{gaps:record.gaps.map(g=>({...g}))}:{})});return copy;
+}

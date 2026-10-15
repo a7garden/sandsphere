@@ -1,0 +1,9 @@
+{
+  "prepareMs": 239.83394399999997,
+  "packMs": 142.32756933333317,
+  "unpackMs": 73.65061133333317,
+  "packedBytes": 31331504,
+  "gzipBytes": 12564191,
+  "encodeElapsedMs": 778.019292,
+  "jsonEqual": true
+}

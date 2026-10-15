@@ -3,7 +3,8 @@ import {getAuth,connectAuthEmulator,type Auth} from 'firebase/auth';
 import {getFirestore,connectFirestoreEmulator,doc,getDocFromServer,runTransaction,writeBatch,Bytes,type Firestore} from 'firebase/firestore';
 import {getStorage,connectStorageEmulator,ref,getBytes,type FirebaseStorage} from 'firebase/storage';
 import {validSystem,type SystemSave} from '../sim/system';
-import {packSave,unpackSave,SAVE_RAW_LIMIT} from '../sim/saveCodec';
+import {packSaveAsync,unpackSaveAsync,SAVE_RAW_LIMIT} from '../sim/saveCodec';
+import {validateSystemSaveAsync} from '../sim/savePreparation';
 import {SaveConflict,type RemoteSave} from './sync';
 
 export interface FirebaseServices {auth:Auth;db:Firestore;storage:FirebaseStorage|null;}
@@ -24,7 +25,7 @@ export function firebaseServices(){
 }
 const RAW_LIMIT=SAVE_RAW_LIMIT,COMPRESSED_LIMIT=20*1024*1024;
 export async function encodeSave(system:SystemSave){
-  const bytes=packSave(system);
+  const bytes=await packSaveAsync(system);
   if(bytes.byteLength>RAW_LIMIT)throw new Error('저장 데이터가 최대 크기(64MB)를 넘었습니다.');
   const blob=await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
   if(blob.size>COMPRESSED_LIMIT)throw new Error('압축한 저장 데이터가 최대 크기(20MB)를 넘었습니다.');
@@ -36,7 +37,7 @@ export async function decodeSave(bytes:ArrayBuffer,count:number):Promise<SystemS
   const chunks:Uint8Array<ArrayBuffer>[]=[];let size=0;
   try{while(true){const next=await reader.read();if(next.done)break;size+=next.value.length;if(size>RAW_LIMIT){await reader.cancel();throw new Error('클라우드 저장본이 너무 큽니다.');}chunks.push(new Uint8Array(next.value));}}
   finally{reader.releaseLock();}
-  const value=unpackSave(await new Blob(chunks).arrayBuffer());
+  const value=await unpackSaveAsync(await new Blob(chunks).arrayBuffer());
   if(!validSystem(value,count)||value.telemetry?.baseSavedAt!==undefined)throw new Error('클라우드 저장본의 형식이 맞지 않습니다.');
   return value;
 }
@@ -98,7 +99,7 @@ export class FirebaseSaveStore {
       return buffer.buffer;
   }
   async write(system:SystemSave,expectedRevision:string|null):Promise<string>{
-    this.assertOwner();if(!validSystem(system,this.count)||system.telemetry?.baseSavedAt!==undefined)throw new Error('완전한 저장본만 업로드할 수 있습니다.');
+    this.assertOwner();await validateSystemSaveAsync(system,this.count);if(system.telemetry?.baseSavedAt!==undefined)throw new Error('완전한 저장본만 업로드할 수 있습니다.');
     const revision=crypto.randomUUID(),bytes=new Uint8Array(await (await encodeSave(system)).arrayBuffer());this.assertOwner();
     const info:RevisionInfo={revision,parts:Math.ceil(bytes.length/PART_SIZE),bytes:bytes.length};
     let prune:RevisionInfo|null=null;

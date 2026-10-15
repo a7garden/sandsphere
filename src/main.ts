@@ -16,7 +16,7 @@ import {ActivityCenter,appDialogsMarkup} from './ui/appChrome';
 import {PlanetNavigation,planetNavigationMarkup} from './ui/planetNavigation';
 import {TelemetryStore} from './sim/telemetry';
 import {parseTelemetryCsv,prependTelemetryCsv} from './sim/telemetryCsvImport';
-import {archiveTelemetry,restoreTelemetry,fullTelemetryArchive,type TelemetryArchive} from './sim/telemetryPersistence';
+import {archiveTelemetry,restoreTelemetry,fullTelemetryArchive,snapshotTelemetryStore,type TelemetryArchive} from './sim/telemetryPersistence';
 import {PlanetDashboard,dashboardMarkup} from './ui/planetDashboard';
 import {ActualGameRate,formatPlanetDuration,formatPlanetElapsed,formatPlanetRate,realDurationForPlanetPeriod,SIMULATION_SPEEDS,speedLabel,type SimulationSpeed} from './ui/simulationTime';
 import {APP_VERSION_LABEL} from './version';
@@ -58,8 +58,9 @@ import {GpuSolver} from './sim/gpu';
 import {WorkerSolver} from './sim/workerSolver';
 import {PHYSICS_DT,SimulationClock} from './sim/clock';
 import {heatForTarget} from './sim/toolHeat';
-import {saveSnapshot,loadSnapshot,loadRecord,validSnapshot,upgradeSnapshot} from './sim/storage';
+import {saveSnapshot,loadSnapshot,loadRecord,validSnapshot,upgradeSnapshot,copySnapshot} from './sim/storage';
 import {snapshotSurface} from './sim/session';
+import {prepareSystemSaveAsync} from './sim/savePreparation';
 import {BackgroundWorlds,PLANET_LIMIT,validSystem,prepareSystemSave,migrateWorld,switchSystemMode,materialSupply,type GameMode,type ModeWorld,type SystemSave,type PlanetRecord} from './sim/system';
 import {systemDialog,renderSystemUi,updateSystemUi} from './ui/system';
 import {icon} from './ui/icons';
@@ -72,7 +73,7 @@ let cloud:FirebaseSaveStore|null=null,checkpoint:SyncCheckpoint|null=null,remote
 let cloudReady=false,cloudConflict=false,cloudMessage='',cloudLastAttempt=0,cloudTask:Promise<void>|null=null;
 let accountPanel:AccountPanel|undefined;
 let replacingSession=false;
-let persistenceStamp=0;
+let persistenceStamp=0,stateRevision=0,lastPeriodicSaveKey:string|null=null;
 function persistenceTime(){return persistenceStamp=Math.max(Date.now(),persistenceStamp+1);}
 const resumeKey='sandsphere-resume'+(testing?'-test':'');
 const app=document.querySelector<HTMLDivElement>('#app')!;
@@ -364,7 +365,7 @@ async function tick(dt:number) {
   for(const id of PRODUCTS){stock[id]+=transfer.collected[id];transferredOut+=transfer.collected[id];if(transfer.collected[id]>.00001&&!discoveries.has(id)){discoveries.add(id);discoveredByCollection=true;}}
   if(discoveredByCollection)renderDiscoveryRecords();
   if(accounting)inventoryUpdate();
-  removed+=cut;escaped+=solver.escapeCells.reduce((sum,v)=>sum+v,0);simTime+=dt;view.setTime(simTime);view.syncState(solver.state,environment);surfaceRefresh.mark(dt);view.showEscape(solver.escapeCells);if(dt>0){view.showRain(solver.precipitatedCells,dt);view.showFeeding(solver.feedingCells,dt);}discover();
+  stateRevision++;removed+=cut;escaped+=solver.escapeCells.reduce((sum,v)=>sum+v,0);simTime+=dt;view.setTime(simTime);view.syncState(solver.state,environment);surfaceRefresh.mark(dt);view.showEscape(solver.escapeCells);if(dt>0){view.showRain(solver.precipitatedCells,dt);view.showFeeding(solver.feedingCells,dt);}discover();
   weatherReadings.record(dt,solver.condensedCells,solver.precipitatedCells);telemetry.step(activeId,dt,solver.energyChanges,solver.precipitatedCells);
   if(dt>0)sampleActivePlanet();else if(performance.now()-lastTelemetryEditSample>=500){lastTelemetryEditSample=performance.now();sampleActivePlanet(true);}
 }
@@ -409,16 +410,28 @@ function capture(settled?:ReturnType<typeof snapshotSurface>):Snapshot {
 }
 function captureSystem():SystemSave {
   const settled=snapshotSurface(solver.state,commands,view.deposits(),activeCommands,solver.climate,environment),snapshot=capture(settled),collected=settled.collected;
-  return {version:3,mode,other:otherMode?structuredClone(otherMode):undefined,progress:structuredClone(progress),activeId,planets:planets.map(p=>p.id===activeId?{...p,snapshot}:structuredClone(p)),stock:Object.fromEntries(PRODUCTS.map(id=>[id,stock[id]+collected[id]])) as typeof stock,savedAt:persistenceTime()};
+  return {version:3,mode,other:otherMode?{...otherMode,stock:{...otherMode.stock},progress:structuredClone(otherMode.progress),planets:otherMode.planets.map(p=>({...p,snapshot:copySnapshot(p.snapshot)}))}:undefined,progress:structuredClone(progress),activeId,planets:planets.map(p=>p.id===activeId?{...p,snapshot}:{...p,snapshot:copySnapshot(p.snapshot)}),stock:Object.fromEntries(PRODUCTS.map(id=>[id,stock[id]+collected[id]])) as typeof stock,savedAt:persistenceTime()};
 }
-function capturePersistedSystem(journal=false):SystemSave {
- const system=prepareSystemSave(captureSystem(),grid.count);
- system.telemetry=archiveTelemetry(telemetry,system.planets.map(p=>{const s=p.snapshot,state=new Float32Array(s.state);return {id:p.id,name:p.name,input:{...s,directions:grid.directions,state,escaped:s.escaped??0,transferredIn:s.transferredIn??0,transferredOut:s.transferredOut??0},settledEnergy:p.id===activeId?totalEnthalpy(state,s.climate)-totalEnthalpy(solver.state,solver.climate):0};}),journal?savedTelemetry:undefined);
+function archiveCapturedSystem(system:SystemSave,store:TelemetryStore,liveEnergy:number,journal=false):SystemSave {
+ system.telemetry=archiveTelemetry(store,system.planets.map(p=>{const s=p.snapshot,state=new Float32Array(s.state);return {id:p.id,name:p.name,input:{...s,directions:grid.directions,state,escaped:s.escaped??0,transferredIn:s.transferredIn??0,transferredOut:s.transferredOut??0},settledEnergy:p.id===system.activeId?totalEnthalpy(state,s.climate)-liveEnergy:0};}),journal?savedTelemetry:undefined);
  return system;
 }
-async function autosave() {
+function capturePersistedSystem(journal=false):SystemSave {return archiveCapturedSystem(prepareSystemSave(captureSystem(),grid.count),telemetry,totalEnthalpy(solver.state,solver.climate),journal);}
+async function capturePersistedSystemAsync(){
+ const captured=captureSystem(),ledger=snapshotTelemetryStore(telemetry),liveEnergy=totalEnthalpy(solver.state,solver.climate);
+ return archiveCapturedSystem(await prepareSystemSaveAsync(captured,grid.count),ledger,liveEnergy);
+}
+/** Small metadata fingerprint; pending material is always saved. State mutations
+ * carry a revision even for zero-duration edits. A completed save records only
+ * its captured key, so edits made during an await remain dirty. */
+function periodicSaveKey():string|null {
+ if(commands.some(v=>v!==0)||view.deposits().length)return null;
+ return JSON.stringify({stateRevision,mode,activeId,simTime,supplied,removed,escaped,transferredIn,transferredOut,primary,paused,spinAngle,spinning,spinPeriod,axisTilt,tidallyLocked,environment,stock,progress,discoveries:[...discoveries],planets:planets.map(p=>({id:p.id,name:p.name,time:p.snapshot.time,paused:p.snapshot.paused,environment:p.snapshot.environment,spin:p.snapshot.spin})),telemetry:[...telemetry.planets].map(([id,r])=>[id,r.lastSample,r.points.length,r.rain,r.snow,...r.energy])});
+}
+
+async function autosave(force=true) {
   if(!view||saving||operation||awaitingCreation||!planets.length)return;saving=true;
-  try{await currentStep;const system=capturePersistedSystem();await saveSnapshot(system,systemSlot,savedTelemetry?{slot:systemSlot+'-telemetry-base',value:savedTelemetry}:undefined);savedTelemetry={savedAt:system.savedAt,archive:system.telemetry!};lastSaved=system.planets.find(p=>p.id===activeId)!.snapshot;if(cloud&&cloudReady&&!cloudConflict&&Date.now()-cloudLastAttempt>=60000)void uploadCloud(system).catch(cloudError);el('save-state').textContent='· 이어짐';el('save-state').title='행성과 대시보드 기록이 이 브라우저에 자동 저장됨';if(saveFailureNotified)activity?.add({kind:'system',title:'자동 저장이 다시 정상 동작합니다.',detail:'',glyph:'save'});saveFailureNotified=false;}
+  try{await currentStep;const key=periodicSaveKey();if(!force&&key!==null&&key===lastPeriodicSaveKey)return;const system=await capturePersistedSystemAsync();await saveSnapshot(system,systemSlot,savedTelemetry?{slot:systemSlot+'-telemetry-base',value:savedTelemetry}:undefined);lastPeriodicSaveKey=key;savedTelemetry={savedAt:system.savedAt,archive:system.telemetry!};lastSaved=system.planets.find(p=>p.id===system.activeId)!.snapshot;if(cloud&&cloudReady&&!cloudConflict&&Date.now()-cloudLastAttempt>=60000)void uploadCloud(system).catch(cloudError);el('save-state').textContent='· 이어짐';el('save-state').title='행성과 대시보드 기록이 이 브라우저에 자동 저장됨';if(saveFailureNotified)activity?.add({kind:'system',title:'자동 저장이 다시 정상 동작합니다.',detail:'',glyph:'save'});saveFailureNotified=false;}
   catch(error){el('save-state').textContent='· 저장 불가';if(!saveFailureNotified){activity?.add({kind:'error',title:'자동 저장하지 못했습니다.',detail:'브라우저의 저장 공간과 저장 권한을 확인하세요.',glyph:'save'});saveFailureNotified=true;}console.warn('Automatic persistence unavailable.',error);}finally{saving=false;}
 }
 function setCheckpoint(revision:string|null,syncedAt:number){
@@ -525,6 +538,7 @@ function setupAccount(services:ReturnType<typeof firebaseServices>){
  el('placement-account').addEventListener('click',()=>accountPanel?.open());
 }
 function resume(snapshot:Snapshot) {
+  stateRevision++;
   snapshot=upgradeSnapshot(snapshot,grid.count);
   spherizeLegacyRockPlanet(snapshot,grid);
   solver.replace(new Float32Array(snapshot.state));solver.climate.restore(snapshot.climate);simTime=snapshot.time;supplied=snapshot.supplied;removed=snapshot.removed;escaped=snapshot.escaped??0;transferredIn=snapshot.transferredIn??0;transferredOut=snapshot.transferredOut??0;tidallyLocked=snapshot.spin?.locked??false;environment={...snapshot.environment,climate:true};for(const id of snapshot.discoveries)discoveries.add(id);
@@ -966,7 +980,7 @@ async function boot() {
       if(!operation&&!awaitingCreation&&!el<HTMLDialogElement>('placement').open&&!el<HTMLDialogElement>('game-mode').open&&!view.cameraDragging){clock.add(realDt,speed);if(!busy){const count=clock.take(environment.climate?1:4);if(count){busy=true;currentStep=runSteps(count).finally(()=>busy=false);}}}else clock.reset();
       if((brushHover||brushRefreshPending)&&now-lastBrushRefresh>=33){lastBrushRefresh=now;brushRefreshPending=false;const r=view.canvas.getBoundingClientRect(),hit=view.pick(pointer.x-r.left,pointer.y-r.top);showBrush(hit);if(hit&&!hit.inAir)observation.hover(hit.index);}
       view.scene.render();selectionControls?.update();updateObservationMarker();if(overview)for(const p of view.systemLabels()){const label=el('system-labels').querySelector<HTMLElement>('[data-scene-planet="'+p.id+'"]');if(label){label.style.left=p.x+'px';label.style.top=(p.y+35)+'px';label.hidden=p.z<0||p.z>1;}}observerClock+=dt;frames++;fpsClock+=realDt;saveClock+=realDt;
-      if(observerClock>.2){observerClock=0;el('game-elapsed').textContent=formatPlanetElapsed(simTime);const running=!paused&&!operation&&!awaitingCreation&&!el<HTMLDialogElement>('placement').open&&!el<HTMLDialogElement>('game-mode').open&&!view.cameraDragging;const actual=actualGameRate.sample(now,simTime,activeId,running,speed===SIMULATION_SPEEDS[0]?12:3);latestActualRate=actual;updateSpeedContext();el('game-rate').textContent=running?(actual===null?(currentLocale()==='en'?'Measuring actual speed':'실제 측정 중'):(currentLocale()==='en'?'Actual ':'실제 ')+formatPlanetRate(actual)):currentLocale()==='en'?(view.cameraDragging?'Moving viewpoint':paused?'Paused':'Waiting to calculate'):(view.cameraDragging?'시점 이동 중':paused?'일시정지':'계산 대기');observerUpdate();if(!operation){const active=planets.find(p=>p.id===activeId);if(active)active.snapshot={...active.snapshot,time:simTime,environment:{...environment},paused,transferredIn,state:[...solver.state]};if(mode==='campaign'){const completed=advanceProgress(progress,planets,stock);if(completed.length){inventoryUpdate();message('탐사 완료 · '+completed.map(id=>EXPEDITIONS.find(m=>m.id===id)!.name).join(' · '));}updateExpeditions(progress,planets,stock);inventory.refreshCampaign(progress,planets);}}}if(fpsClock>=1){el('fps').textContent=Math.round(frames/fpsClock)+' fps';frames=0;fpsClock=0;}if(saveClock>=5){saveClock=0;void autosave();}
+      if(observerClock>.2){observerClock=0;el('game-elapsed').textContent=formatPlanetElapsed(simTime);const running=!paused&&!operation&&!awaitingCreation&&!el<HTMLDialogElement>('placement').open&&!el<HTMLDialogElement>('game-mode').open&&!view.cameraDragging;const actual=actualGameRate.sample(now,simTime,activeId,running,speed===SIMULATION_SPEEDS[0]?12:3);latestActualRate=actual;updateSpeedContext();el('game-rate').textContent=running?(actual===null?(currentLocale()==='en'?'Measuring actual speed':'실제 측정 중'):(currentLocale()==='en'?'Actual ':'실제 ')+formatPlanetRate(actual)):currentLocale()==='en'?(view.cameraDragging?'Moving viewpoint':paused?'Paused':'Waiting to calculate'):(view.cameraDragging?'시점 이동 중':paused?'일시정지':'계산 대기');observerUpdate();if(!operation){const active=planets.find(p=>p.id===activeId);if(active)active.snapshot={...active.snapshot,time:simTime,environment:{...environment},paused,transferredIn,state:[...solver.state]};if(mode==='campaign'){const completed=advanceProgress(progress,planets,stock);if(completed.length){inventoryUpdate();message('탐사 완료 · '+completed.map(id=>EXPEDITIONS.find(m=>m.id===id)!.name).join(' · '));}updateExpeditions(progress,planets,stock);inventory.refreshCampaign(progress,planets);}}}if(fpsClock>=1){el('fps').textContent=Math.round(frames/fpsClock)+' fps';frames=0;fpsClock=0;}if(saveClock>=5){saveClock=0;void autosave(false);}
     }
   });
   if(import.meta.env.DEV)Object.assign(window,{sandsphere:{stats:()=>({cursor:{...pointer,brushCell,brushHover,brushRefreshPending,selectingSection:view.isSelectingSection},climate:{maxWind:Math.max(...Array.from({length:grid.count},(_,i)=>Math.hypot(...solver.climate.wind.slice(i*3,i*3+3)))),maxCurrent:Math.max(...Array.from({length:grid.count},(_,i)=>Math.hypot(...solver.climate.currents.slice(i*3,i*3+3)))),seedCells:solver.climate.seeds.filter(v=>v>.001).length},backend:solver.backend,backgroundCompute:solver instanceof WorkerSolver,time:simTime,mass:totalMass(solver.state,solver.climate),enthalpy:totalEnthalpy(solver.state,solver.climate),lastStepEnergy:[0,1,2,3].map(k=>solver.energyChanges.reduce((sum,v,i)=>sum+(i%4===k?v:0),0)),impactEnergy:[...impactEnergy],inFlightMass:view.deposits().reduce((sum,g)=>sum+g.amount,0),totals:[...totals(solver.state)],supplied,removed,escaped,discoveries:[...discoveries],paused,tool,observation:{cell:observation.cell,pinned:observation.pinned,selecting:observation.selecting},camera:[view.camera.alpha,view.camera.beta,view.camera.radius],renderRotation:view.rotationStats(),spinAngle,spinning,axisTilt,spinPeriod,primary,sun:worldSun(),environment,atmosphere:atmosphereState(solver.state,environment,solver.climate),atmosphereOptics:atmosphereOptics(atmosphereState(solver.state,environment,solver.climate),environment),rainingCells:solver.precipitatedCells.filter((v,i)=>i%2===0&&v>1e-6).length,snowingCells:solver.precipitatedCells.filter((v,i)=>i%2===1&&v>1e-6).length,cloudCells:solver.state.filter((v,i)=>i%STRIDE===F.cloud&&v+solver.state[i+1]>CLOUD_VISIBLE_MASS).length,cloudMass:totals(solver.state)[F.cloud]+totals(solver.state)[F.cloudIce],effects:view.visualStats(),lastSavedAt:lastSaved?.savedAt??null,renderer:view.engine.constructor.name,stock:{...stock},transferredIn,transferredOut,activeId,planets:planets.map(p=>({id:p.id,name:p.name,time:p.id===activeId?simTime:p.snapshot.time,mass:p.id===activeId?totalMass(solver.state):totalMass(new Float32Array(p.snapshot.state)),paused:p.id===activeId?paused:p.snapshot.paused})),tidallyLocked,overview,progress}),state:()=>new Float32Array(solver.state),climate:()=>solver.climate.snapshot(),grid,

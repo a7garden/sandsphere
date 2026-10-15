@@ -1,5 +1,5 @@
 import {validClimate} from './weatherClimate';
-import {packSave,unpackSave} from './saveCodec';
+import {packSaveAsync,unpackSaveAsync} from './saveCodec';
 import {airMassWidth,AIR_FIELDS,AIR_LAYERS,LEGACY_AIR_LAYERS} from './layeredAtmosphere';
 import { F,STRIDE,type Snapshot } from './model';
 import { RESEARCH } from '../ui/content';
@@ -42,7 +42,7 @@ function openDatabase():Promise<IDBDatabase> {
   });
 }
 export async function saveSnapshot(snapshot:unknown,slot='latest',companion?:{slot:string;value:unknown}) {
-  const stored=snapshot&&typeof snapshot==='object'&&'planets' in snapshot?packSave(snapshot):snapshot;
+  const stored=snapshot&&typeof snapshot==='object'&&'planets' in snapshot?await packSaveAsync(snapshot):snapshot;
   const db=await openDatabase();
   try {
     await new Promise<void>((resolve,reject)=>{
@@ -57,7 +57,7 @@ export async function loadRecord(slot:string):Promise<unknown> {
   const db=await openDatabase();
   try{return await new Promise<unknown>((resolve,reject)=>{
     const tx=db.transaction('snapshots','readonly'),req=tx.objectStore('snapshots').get(slot);
-    req.onsuccess=()=>{try{resolve(req.result instanceof ArrayBuffer?unpackSave(req.result):req.result);}catch(error){reject(error);}};req.onerror=()=>reject(req.error);
+    req.onsuccess=()=>{try{resolve(req.result instanceof ArrayBuffer?unpackSaveAsync(req.result):req.result);}catch(error){reject(error);}};req.onerror=()=>reject(req.error);
   });}finally{db.close();}
 }
 export async function loadSnapshot(count:number,slot='latest'):Promise<Snapshot|null> {
@@ -131,12 +131,17 @@ export function validSnapshot(value:unknown,count:number):value is Snapshot {
     &&Array.isArray(e.sun)&&e.sun.length===3&&e.sun.every(v=>Number.isFinite(v)&&Math.abs(v)<=1);
 }
 
+/** Numeric climate arrays are flat and immutable after publication. Clone them
+ * directly; structuredClone's per-element traversal is unnecessary here. */
+export function copySnapshot(snapshot:Snapshot):Snapshot {
+ const {state,climate,...metadata}=snapshot;
+ const copyClimate=(v:unknown):unknown=>Array.isArray(v)?v.slice():v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,copyClimate(x)])):v;
+ return {...structuredClone(metadata),state:state.slice(),...(climate?{climate:copyClimate(climate) as Snapshot['climate']}:{})};
+}
 /** Zero-extend legacy cells and deep v1 without adding physical stocks. */
 export function upgradeSnapshot(snapshot:Snapshot,count:number):Snapshot {
   if(snapshot.version===11&&snapshot.environment.body&&snapshot.state.length===count*STRIDE&&!snapshot.state.some((v,i)=>i%STRIDE!==F.temperature&&v<0)){
-    const {state,climate,...metadata}=snapshot;
-    const copyClimate=(v:unknown):unknown=>Array.isArray(v)?v.slice():v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,copyClimate(x)])):v;
-    return {...structuredClone(metadata),state:state.slice(),...(climate?{climate:copyClimate(climate) as Snapshot['climate']}:{})};
+    return copySnapshot(snapshot);
   }
   const oldStride=snapshot.state.length/count;
   const state=new Float32Array(count*STRIDE);
