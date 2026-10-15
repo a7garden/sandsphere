@@ -1,11 +1,15 @@
+import {GASES} from './gases';
 import {WeatherClimate} from './weatherClimate';
-import shader from './physics.wgsl?raw';
-import { COMMAND_STRIDE, gravityMultiplier, type Environment, type Solver,applyCommand,enthalpy } from './model';
+import {physicsShader} from './physicsShader';
+import { gravityMultiplier, type Environment, type Solver,prepareSurfaceStep,finishSurfaceStep } from './model';
 import { NEIGHBORS, type SphereGrid } from './sphere';
 import {physicsSteps} from './clock';
 import {AnimalNavigation} from './animalNavigation';
+import {assertPlanetSupport,isDeepAtmosphere,physicalRadius,temperatureLimits} from './planetDefinition';
+import {hasDeepGas} from './deepAtmosphere';
 
-/** GPU storage is authoritative; a compact readback updates the surface renderer. */
+/** GPU transports the surface inventory; shared host laws commit reactions and
+ * atmosphere before publishing the next authoritative state. */
 export class GpuSolver implements Solver {
   readonly backend='WebGPU';
   readonly climate:WeatherClimate;
@@ -29,7 +33,7 @@ export class GpuSolver implements Solver {
     this.climate=new WeatherClimate(grid);
     this.animalNavigation=new AnimalNavigation(grid);
     this.device=device;this.buffers=buffers;this.staging=staging;this.layout=layout;this.pipelines=pipelines;
-    this.escapeCells=new Float32Array(grid.count*4);
+    this.escapeCells=new Float32Array(grid.count*GASES.length);
     this.condensedCells=new Float32Array(grid.count);this.precipitatedCells=new Float32Array(grid.count*2);
     this.energyChanges=new Float32Array(grid.count*4);
     this.feedingCells=new Float32Array(grid.count*2);
@@ -41,7 +45,7 @@ export class GpuSolver implements Solver {
     const adapter=await navigator.gpu.requestAdapter();
     if(!adapter) return null;
     const device=await adapter.requestDevice();
-    const module=device.createShaderModule({label:'Sandsphere conservative transport',code:shader});
+    const module=device.createShaderModule({label:'Sandsphere conservative transport',code:physicsShader()});
     const info=await module.getCompilationInfo();
     const errors=info.messages.filter(m=>m.type==='error');
     if(errors.length) {device.destroy();throw new Error(errors.map(m=>m.lineNum+': '+m.message).join('\n'));}
@@ -51,22 +55,21 @@ export class GpuSolver implements Solver {
       buffer('state A',state.byteLength),buffer('prepared state',state.byteLength),
       buffer('edge fluxes',grid.count*NEIGHBORS*8*4),buffer('state B',state.byteLength),
       buffer('spherical geometry',grid.geometry.byteLength),buffer('neighbors',grid.neighbors.byteLength),
-      buffer('queued brush commands',grid.count*COMMAND_STRIDE*4),
       buffer('environment',48,GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST),
-      buffer('mass, energy and feeding transfers',grid.count*16*4),
+      buffer('transport roundoff',grid.count*4),
     ];
     device.queue.writeBuffer(buffers[0],0,state as Float32Array<ArrayBuffer>);
     device.queue.writeBuffer(buffers[4],0,grid.geometry as Float32Array<ArrayBuffer>);
     device.queue.writeBuffer(buffers[5],0,grid.neighbors as Uint32Array<ArrayBuffer>);
     const entries:GPUBindGroupLayoutEntry[]=buffers.map((_,binding)=>({
       binding,visibility:GPUShaderStage.COMPUTE,
-      buffer:{type:binding===7?'uniform':[0,4,5,6].includes(binding)?'read-only-storage':'storage'},
+      buffer:{type:binding===6?'uniform':[0,4,5,6].includes(binding)?'read-only-storage':'storage'},
     }));
     const layout=device.createBindGroupLayout({entries});
     const pipelineLayout=device.createPipelineLayout({bindGroupLayouts:[layout]});
     const pipelines=await Promise.all(['apply','flux','advance'].map(entryPoint =>
       device.createComputePipelineAsync({layout:pipelineLayout,compute:{module,entryPoint}})));
-    const staging=buffer('surface and transfers readback',state.byteLength+grid.count*16*4,GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ);
+    const staging=buffer('surface and transfers readback',state.byteLength+grid.count*4,GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ);
     return new GpuSolver(grid,state,device,buffers,staging,layout,pipelines);
   }
   private bind(swapped:boolean) {
@@ -81,26 +84,23 @@ export class GpuSolver implements Solver {
     this.device.queue.writeBuffer(this.buffers[this.parity===0?0:3],0,this.state as Float32Array<ArrayBuffer>);
   }
   async step(dt:number,commands:Float32Array,environment:Environment) {
+    assertPlanetSupport(environment.body);
+    if(!isDeepAtmosphere(environment.body)&&hasDeepGas(this.state))throw new Error('수소·헬륨 상태는 깊은 대기 경계가 필요합니다.');
     const before=this.state,parity=this.parity,climate=this.climate.checkpoint();
     this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);
     if(dt<=0&&!commands.some(v=>v!==0))return;
     const steps=physicsSteps(dt),empty=new Float32Array(commands.length);
-    try{for(let n=0;n<steps.length;n++)await this.stepSingle(steps[n],n===0?commands:empty,environment);}
+    try{if(isDeepAtmosphere(environment.body))this.state=this.state.slice();for(let n=0;n<steps.length;n++)await this.stepSingle(steps[n],n===0?commands:empty,environment);}
     catch(error){this.state=before;this.parity=parity;this.climate.restoreCheckpoint(climate);this.escapeCells.fill(0);this.condensedCells.fill(0);this.precipitatedCells.fill(0);this.energyChanges.fill(0);this.feedingCells.fill(0);throw error;}
   }
   private async stepSingle(dt:number,commands:Float32Array,environment:Environment) {
     if(this.loss) throw this.loss;
-    const params=new Float32Array([this.grid.count,dt,environment.ambient,environment.sunlight,...environment.sun,gravityMultiplier(environment),environment.rotationRate??0,environment.climate?1:0,0,0]);
-    let kernelCommands=commands;
-    if(environment.climate){
-      const surface=this.state.slice();this.climate.prepareSurface(surface,environment);
-      for(let i=0;i<this.grid.count;i++){const before=enthalpy(surface,i);applyCommand(surface,i,commands);this.energyChanges[i*4+1]+=enthalpy(surface,i)-before;}
-      this.climate.surfaceSupplies(surface,commands,COMMAND_STRIDE,this.energyChanges);
-      this.device.queue.writeBuffer(this.buffers[this.parity===0?0:3],0,surface as Float32Array<ArrayBuffer>);
-      kernelCommands=new Float32Array(commands.length);
-    }
-    this.device.queue.writeBuffer(this.buffers[6],0,kernelCommands as Float32Array<ArrayBuffer>);
-    this.device.queue.writeBuffer(this.buffers[7],0,params);
+    if(isDeepAtmosphere(environment.body)){this.climate.stepGiant(this.state,dt,commands,environment,this.energyChanges);this.device.queue.writeBuffer(this.buffers[this.parity===0?0:3],0,this.state as Float32Array<ArrayBuffer>);return;}
+    const params=new Float32Array([this.grid.count,dt,environment.ambient,environment.sunlight,...environment.sun,gravityMultiplier(environment),environment.rotationRate??0,environment.climate?1:0,temperatureLimits(environment.body).surfaceMin,physicalRadius(environment.body)]);
+    const surface=this.state.slice();
+    prepareSurfaceStep(surface,commands,environment,this.climate,this.energyChanges);
+    this.device.queue.writeBuffer(this.buffers[this.parity===0?0:3],0,surface as Float32Array<ArrayBuffer>);
+    this.device.queue.writeBuffer(this.buffers[6],0,params);
     const encoder=this.device.createCommandEncoder();
     for(const pipeline of this.pipelines) {
       const pass=encoder.beginComputePass();
@@ -109,7 +109,7 @@ export class GpuSolver implements Solver {
     }
     const out=this.buffers[this.parity===0?3:0];
     encoder.copyBufferToBuffer(out,0,this.staging,0,this.state.byteLength);
-    encoder.copyBufferToBuffer(this.buffers[8],0,this.staging,this.state.byteLength,this.grid.count*16*4);
+    encoder.copyBufferToBuffer(this.buffers[7],0,this.staging,this.state.byteLength,this.grid.count*4);
     this.device.queue.submit([encoder.finish()]);
     await this.staging.mapAsync(GPUMapMode.READ);
     const data=new Float32Array(this.staging.getMappedRange());
@@ -117,12 +117,11 @@ export class GpuSolver implements Solver {
     // the fallback replays this step's command batch exactly once.
     if(this.loss){this.staging.unmap();throw this.loss;}
     const changes=data.subarray(this.state.length);
-    for(let i=0;i<this.grid.count;i++){for(let k=0;k<4;k++){this.escapeCells[i*4+k]+=changes[i*16+k];this.energyChanges[i*4+k]+=changes[i*16+8+k];}this.condensedCells[i]+=changes[i*16+4];this.precipitatedCells[i*2]+=changes[i*16+5];this.precipitatedCells[i*2+1]+=changes[i*16+6];this.feedingCells[i*2]+=changes[i*16+12];this.feedingCells[i*2+1]+=changes[i*16+13];}
+    for(let i=0;i<this.grid.count;i++)this.energyChanges[i*4+3]+=changes[i];
     this.state=data.slice(0,this.state.length);
     this.staging.unmap();
-    const moved=this.animalNavigation.move(this.state,dt,environment,this.energyChanges);
-    if(environment.climate)this.climate.step(this.state,dt,environment,this.energyChanges,this.condensedCells,this.precipitatedCells,this.escapeCells);
-    if(environment.climate||moved)this.device.queue.writeBuffer(out,0,this.state as Float32Array<ArrayBuffer>);
+    finishSurfaceStep(this.state,dt,environment,this.grid,this,this.animalNavigation);
+    this.device.queue.writeBuffer(out,0,this.state as Float32Array<ArrayBuffer>);
     this.parity=1-this.parity;
   }
   dispose() {

@@ -1,4 +1,5 @@
 import {saturationPressure} from './waterPhysics';
+import {waterEquilibrium} from './phaseEquilibrium';
 
 export const STEFAN_BOLTZMANN=5.670374419e-8;
 export const PLUME_ENTRAINMENT=2e-4; // m^-1; sensitivity parameter, not observationally fitted
@@ -44,37 +45,11 @@ function maximumRandomMasks(fraction:ArrayLike<number>){
  };
  visit(0,1);return columns;
 }
-const WATER_CP=[2,4.18,2.1], WATER_LATENT=[2475,0,-334]; // existing enthalpy convention, kJ/kg
-
-/** Reversible parcel saturation adjustment at prescribed p,z. Retains all
- * condensate, including its loading/heat capacity. Conserves moist static
- * enthalpy rather than applying a dry lapse to an already saturated parcel. */
+/** Reversible moist parcel adjustment uses the same material and energy law
+ * as stored atmospheric layers; a diagnostic lift may approach absolute zero. */
 export function parcelEquilibrium(dryCapacity:number,dryMoles:number,water:number,
-  enthalpy:number,pressure:number,potential:number){
- const at=(t:number)=>{
-  const ice=t<0,es=saturationPressure(t,ice?'ice':'water');
-  const vapor=es>=pressure?water:Math.min(water,.018015*dryMoles*es/(pressure-es));
-  const liquid=ice?0:water-vapor,frozen=ice?water-vapor:0;
-  return {temperature:t,vapor,liquid,ice:frozen,energy:(dryCapacity+vapor*WATER_CP[0]+liquid*WATER_CP[1]+frozen*WATER_CP[2])*t+vapor*WATER_LATENT[0]+frozen*WATER_LATENT[2]+potential};
- };
- const dryTemperature=(enthalpy-water*WATER_LATENT[0]-potential)/Math.max(1e-30,dryCapacity+water*WATER_CP[0]);
- // An attempted lift into the upper atmosphere may be colder than the
- // stored-state range. It is a diagnostic parcel, often strongly negatively
- // buoyant, not a new prognostic layer. Do not abort a stable cold column.
- if(dryTemperature>=-273.14&&dryTemperature<=2500){const r=at(dryTemperature);if(r.vapor===water)return r;}
- const cold=at(-1e-9),warm=at(1e-9);
- if(enthalpy>=cold.energy&&enthalpy<=warm.energy){const r=at(0),frozen=Math.min(water-r.vapor,Math.max(0,(warm.energy-enthalpy)/334));return {...r,temperature:0,liquid:water-r.vapor-frozen,ice:frozen,energy:enthalpy};}
- let lo=enthalpy<cold.energy?-273.14:0,hi=enthalpy<cold.energy?0:2500;
- if(enthalpy<at(lo).energy||enthalpy>at(hi).energy)throw new Error('상승 공기 온도가 열역학 모델 범위를 벗어났습니다.');
- let t=Math.max(lo,Math.min(hi,dryTemperature));
- for(let n=0;n<12;n++){
-  const r=at(t),error=r.energy-enthalpy;if(Math.abs(error)<1e-10*Math.max(1,Math.abs(enthalpy)))return r;
-  if(error>0)hi=t;else lo=t;
-  const epsilon=t+.01<hi?.01:-.01,derivative=(at(t+epsilon).energy-r.energy)/epsilon,candidate=t-error/derivative;
-  t=Number.isFinite(candidate)&&candidate>lo&&candidate<hi?candidate:(lo+hi)/2;
- }
- for(let n=0;n<38;n++){const t=(lo+hi)/2;if(at(t).energy>enthalpy)hi=t;else lo=t;}
- return at((lo+hi)/2);
+ enthalpy:number,pressure:number,potential:number){
+ return waterEquilibrium(dryCapacity,dryMoles,water,enthalpy,pressure,potential);
 }
 
 /** Isca BYRNE scheme: dτ/d(p/1e5)=0.8678+1997.9q+0.17ln(CO2/360).

@@ -16,7 +16,7 @@ export type SolverWorkerReply=
 
 /** Only copied buffers cross the boundary; committed state remains readable. */
 export function climateTransferBuffers(c:ClimateCheckpoint):ArrayBuffer[]{
- return [c.wind,c.currents,c.seeds,c.air.mass,c.air.temperature,c.air.velocity,c.air.updraft,c.air.roundoff,c.air.radiationCache].map(a=>a.buffer as ArrayBuffer);
+ return [c.wind,c.currents,c.seeds,c.air.dustMass,c.air.dustRadiationCache,c.air.dustLiftCarry,c.air.mass,c.air.temperature,c.air.velocity,c.air.updraft,c.air.roundoff,c.air.radiationCache,...(c.giant?[c.giant.mass,c.giant.temperature,c.giant.velocity,c.giant.height]:[])].map(a=>a.buffer as ArrayBuffer);
 }
 export function resultTransferBuffers(s:WorkerStepState):ArrayBuffer[]{
  return [s.state,s.lift,s.escapeCells,s.condensedCells,s.precipitatedCells,s.energyChanges,s.feedingCells].map(a=>a.buffer as ArrayBuffer).concat(climateTransferBuffers(s.climate));

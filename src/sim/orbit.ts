@@ -1,7 +1,8 @@
 import type {Environment} from './model';
+import {planetOrbitPeriod} from './planetDefinition';
 
 export const FIXED_SUN=[1,0,0];
-export const orbitalPeriod=(distance:number)=>240*Math.pow(distance,1.5);
+export const orbitalPeriod=planetOrbitPeriod;
 export const orbitalSun=(angle=0)=>[Math.cos(angle),0,-Math.sin(angle)];
 export const solarEnergy=(distance:number)=>1/(distance*distance);
 /** Distance follows inverse-square irradiance. Temperature is a game calibration at 18°C/1 AU. */

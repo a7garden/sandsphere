@@ -3,6 +3,7 @@ import {PRODUCTS,totals,F,STRIDE,type Stock} from '../sim/model';
 import {orbitalPeriod} from '../sim/orbit';
 import {formatPlanetDuration} from './simulationTime';
 import type {GameMode,PlanetRecord} from '../sim/system';
+import {isDeepAtmosphere} from '../sim/planetDefinition';
 import {PRODUCT_NAMES} from './content';
 import {currentLocale,translatePhrase} from './i18n';
 
@@ -32,9 +33,10 @@ export function updateSystemUi(planets:PlanetRecord[],stock:Stock,mode:GameMode=
   let temperature=0;for(let i=F.temperature;i<s.state.length;i+=STRIDE)temperature+=s.state[i];temperature/=s.state.length/STRIDE;
   summary.textContent=currentLocale()==='en'?`${dist.toFixed(2)} AU · ${temperature.toFixed(0)}°C · ${s.paused?'Paused':'Changing'}`:dist.toFixed(2)+' AU · '+temperature.toFixed(0)+'°C · '+(s.paused?'일시 정지':'변화 중');
   const t=totals(new Float32Array(s.state));
-  document.querySelector<HTMLElement>('[data-planet-production="'+p.id+'"]')!.textContent=PRODUCTS.filter(id=>t[F[id]]>.05).map(id=>(currentLocale()==='en'?translatePhrase(PRODUCT_NAMES[id]):PRODUCT_NAMES[id])+' '+t[F[id]].toFixed(1)+' kg').join(' · ')||(currentLocale()==='en'?'No surface products':'표면 생성물 없음');
-  const radius=13+dist/2.4*32,track=document.querySelector<HTMLElement>('[data-orbit-track="'+p.id+'"]')!,marker=document.querySelector<HTMLElement>('[data-orbit-marker="'+p.id+'"]')!;
+  if(isDeepAtmosphere(e.body))document.querySelector<HTMLElement>('[data-planet-production="'+p.id+'"]')!.textContent=translatePhrase('수소·헬륨 대기');
+  if(!isDeepAtmosphere(e.body))document.querySelector<HTMLElement>('[data-planet-production="'+p.id+'"]')!.textContent=PRODUCTS.filter(id=>t[F[id]]>.05).map(id=>(currentLocale()==='en'?translatePhrase(PRODUCT_NAMES[id]):PRODUCT_NAMES[id])+' '+t[F[id]].toFixed(1)+' kg').join(' · ')||(currentLocale()==='en'?'No surface products':'표면 생성물 없음');
+  const radius=13+Math.log1p(dist)/Math.log1p(Math.max(2.4,...planets.map(p=>p.snapshot.environment.orbitDistance??1)))*32,track=document.querySelector<HTMLElement>('[data-orbit-track="'+p.id+'"]')!,marker=document.querySelector<HTMLElement>('[data-orbit-marker="'+p.id+'"]')!;
   marker.setAttribute('aria-label',currentLocale()==='en'?`Go to ${p.name}`:p.name+'로 이동');
-  track.style.width=track.style.height=(radius*2)+'%';marker.style.left=(50+Math.cos(phase)*radius)+'%';marker.style.top=(50+Math.sin(phase)*radius)+'%';marker.title=currentLocale()==='en'?`${p.name} · Orbital period ${formatPlanetDuration(orbitalPeriod(dist))}`:p.name+' · 공전 '+formatPlanetDuration(orbitalPeriod(dist));
+  track.style.width=track.style.height=(radius*2)+'%';marker.style.left=(50+Math.cos(phase)*radius)+'%';marker.style.top=(50+Math.sin(phase)*radius)+'%';marker.title=currentLocale()==='en'?`${p.name} · Orbital period ${formatPlanetDuration(orbitalPeriod(dist,e.body))}`:p.name+' · 공전 '+formatPlanetDuration(orbitalPeriod(dist,e.body));
  }
 }

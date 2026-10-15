@@ -4,7 +4,7 @@ import type {SphereGrid} from '../sim/sphere';
 import {columnGeometry} from '../render/columnGeometry';
 import {currentLocale,translatePhrase} from './i18n';
 
-export const DEPTH_MATERIALS={water:'물',dissolved:'녹은 소금',rock:'기반암',sand:'모래',clay:'점토',ceramic:'도자기',glass:'유리',ice:'얼음',salt:'소금',molten:'용융 규사',soil:'유기물',iron:'운철'} as const;
+export const DEPTH_MATERIALS={charcoal:'숯',water:'물',dissolved:'녹은 소금',rock:'기반암',sand:'모래',clay:'점토',ceramic:'도자기',glass:'유리',ice:'얼음',salt:'소금',molten:'용융 규사',soil:'유기물',iron:'운철',carbonDioxideIce:'CO₂ 얼음',surfaceDust:'지표 먼지'} as const;
 type Component={id:keyof typeof DEPTH_MATERIALS;mass:number;fraction:number};
 export function depthProfile(state:Float32Array,index:number,grid:SphereGrid,hideBedrock=false){
  const p=index*STRIDE,c=columnGeometry(state,index,grid),liquid=state[p+F.water];
@@ -17,7 +17,7 @@ export function depthProfile(state:Float32Array,index:number,grid:SphereGrid,hid
  if(c.water>1e-6)layers.push({id:'water',name:'물층',top:0,bottom:c.water,components:components([['water',c.water],['dissolved',dissolved*(1-retainedShare)]])});
  const thickness=Math.max(0,c.solid-c.base-(hideBedrock?state[p+F.rock]:0));
  if(thickness>1e-6)layers.push({id:'solid',name:'고체 혼합층',top:c.water,bottom:c.water+thickness,components:components([
-  ...(['rock','sand','clay','ceramic','glass','ice','salt','molten','soil','iron'] as const).filter(id=>!hideBedrock||id!=='rock').map(id=>[id,state[p+F[id]]] as [Component['id'],number]),
+  ...(['rock','sand','clay','ceramic','glass','ice','salt','molten','soil','iron','carbonDioxideIce','surfaceDust','charcoal'] as const).filter(id=>!hideBedrock||id!=='rock').map(id=>[id,state[p+F[id]]] as [Component['id'],number]),
   ['water',c.retained],['dissolved',dissolved*retainedShare],
  ])});
  return {layers,depth:c.water+thickness};

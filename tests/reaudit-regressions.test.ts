@@ -82,13 +82,13 @@ describe('R01/R02: conservative, reversible water/ice/salt equilibrium',()=>{
  });
 });
 describe('R04: warehouse destination and persisted completion',()=>{
- it('requires the second-created planet rather than the first or third recipient',()=>{
+ it('requires another planet and preserves completion after inventory is removed',()=>{
   const system=envelope(snapshot(cold()));system.planets[0].snapshot.transferredIn=1;
   const p=freshProgress(),stock=emptyStock();expect(advanceProgress(p,system.planets,stock)).not.toContain('transfer');
   system.planets.push({id:'planet-second',name:'Second',snapshot:snapshot(cold())},{id:'planet-third',name:'Third',snapshot:{...snapshot(cold()),transferredIn:2}});
-  expect(advanceProgress(p,system.planets,stock)).not.toContain('transfer');
-  system.planets[1].snapshot.transferredIn=.1;expect(advanceProgress(p,system.planets,stock)).toContain('transfer');
-  const persisted=JSON.parse(JSON.stringify(p));system.planets[1].snapshot.transferredIn=0;
+  expect(advanceProgress(p,system.planets,stock)).toContain('transfer');
+  system.planets[1].snapshot.transferredIn=.1;expect(advanceProgress(p,system.planets,stock)).not.toContain('transfer');
+  const persisted=JSON.parse(JSON.stringify(p));system.planets[1].snapshot.transferredIn=0;system.planets[2].snapshot.transferredIn=0;
   expect(advanceProgress(persisted,system.planets,stock)).not.toContain('transfer');expect(persisted.completed).toContain('transfer');
  });
 });

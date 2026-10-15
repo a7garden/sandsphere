@@ -5,8 +5,8 @@ import {Vector3} from '@babylonjs/core/Maths/math.vector';
 import type {Scene} from '@babylonjs/core/scene';
 import type {TransformNode} from '@babylonjs/core/Meshes/transformNode';
 import {Mesh} from '@babylonjs/core/Meshes/mesh';
-import {GASES} from '../sim/atmosphere';
-import type {GasMaterial} from '../sim/model';
+import {GASES} from '../sim/gases';
+type EffectGas=Exclude<typeof GASES[number]['id'],'vapor'>;
 
 /** Sparse fine tracers and wisps; the solver owns every material transfer. */
 export class SurfaceEffects {
@@ -14,7 +14,7 @@ export class SurfaceEffects {
   private sparkSystem:ParticleSystem;
   private steamQueue:Vector3[]=[];
   private sparkQueue:Vector3[]=[];
-  private gasSystems=new Map<GasMaterial,{system:ParticleSystem;queue:Vector3[];color:readonly number[]}>();
+  private gasSystems=new Map<EffectGas,{system:ParticleSystem;queue:Vector3[];color:readonly number[]}>();
   private escapeSystems=new Map<typeof GASES[number]['id'],{system:ParticleSystem;queue:Vector3[];color:readonly number[]}>();
   constructor(scene:Scene,root:TransformNode) {
     const emitter=new Mesh('surface transfer origin',scene);emitter.parent=root;emitter.isPickable=false;
@@ -60,7 +60,7 @@ export class SurfaceEffects {
     if(temperature<450||Math.random()>dt*Math.min(1,temperature/1800)||this.sparkQueue.length>30)return;
     this.sparkQueue.push(point);this.sparkSystem.manualEmitCount=this.sparkQueue.length;
   }
-  gas(point:Vector3,kind:GasMaterial,amount:number){
+  gas(point:Vector3,kind:EffectGas,amount:number){
     const {system,queue}=this.gasSystems.get(kind)!,expected=Math.min(3,amount*.5),count=Math.floor(expected)+(Math.random()<expected%1?1:0);
     for(let n=0;n<count&&queue.length<25;n++)queue.push(point);system.manualEmitCount=queue.length;
   }

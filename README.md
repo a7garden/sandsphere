@@ -1,8 +1,8 @@
 <h1 align="center">Sandsphere</h1>
 
 <p align="center">
-  A tiny planet sandbox.<br>
-  Shape the land, pour water, and make a world of your own.
+  A spherical powder sandbox.<br>
+  Combine materials, add heat, and watch a world take shape.
 </p>
 
 <p align="center">
@@ -107,6 +107,7 @@ Sandsphere uses a discrete spherical grid and simplified material, climate, and 
 | Reference | Contents |
 | --- | --- |
 | [Changelog](CHANGELOG.md) | Version history and verified changes. |
+| [Simulation principles](docs/SIMULATION_PRINCIPLES.md) | Shared laws, emergent behavior, current gaps, and implementation acceptance criteria (Korean). |
 | [Interaction model](docs/INTERACTION_MODEL.md) | Surface supply, land navigation, and population display limits (English). |
 | [Climate and ecology](docs/CLIMATE_ECOLOGY_DESIGN.md) | Scientific basis and model scope. |
 | [Layered atmosphere](docs/LAYERED_CLIMATE.md) | Equations, units, and limitations. |

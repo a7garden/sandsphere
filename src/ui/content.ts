@@ -5,13 +5,14 @@ export const MATERIALS:{id:Material;name:string;type:string;note:string;key:stri
   {id:'clay',name:'점토',type:'광물 혼합물',note:'물과 섞으면 부드러워지고, 충분히 구우면 도자기가 됩니다.',key:'3',category:'surface'},
   {id:'salt',name:'소금',type:'NaCl · 결정',note:'물에 녹고, 물이 줄면 결정으로 남습니다.',key:'4',category:'surface'},
   {id:'nitrogen',name:'질소',type:'N₂ · 기체',note:'대기에 공급되어 주변으로 퍼집니다. 새 행성의 기본 대기입니다.',key:'',category:'gas'},
+  {id:'oxygen',name:'산소',type:'O₂ · 기체',note:'광합성으로 생기며, 뜨거운 메탄·유기물을 태우는 데 소모됩니다.',key:'',category:'gas'},
   {id:'methane',name:'메탄',type:'CH₄ · 기체',note:'질소보다 가볍습니다. 같은 온도와 중력에서 더 높이 퍼집니다.',key:'',category:'gas'},
   {id:'carbonDioxide',name:'이산화탄소',type:'CO₂ · 기체',note:'질소보다 무겁습니다. 같은 온도와 중력에서 더 낮게 모입니다.',key:'',category:'gas'},
 ];
 export const PRODUCT_NAMES={ice:'얼음',ceramic:'도자기',glass:'유리',plant:'식생',herbivore:'초식 생물',carnivore:'포식 생물',iron:'운철'} as const;
 MATERIALS.push(
- {id:'soil',name:'유기물',type:'생물 잔해 · 보수력',note:'물을 붙잡고 식생 성장을 돕습니다. 죽은 생물과 씨앗도 유기물로 돌아옵니다. 모래·점토에서 식생이 자라는 데 필수는 아닙니다.',key:'',category:'life'},
- {id:'plant',name:'식생',type:'생물량 · 생산자',note:'씨앗·탄소원·수분·햇빛이 맞으면 모래나 점토에서도 자랍니다. 얼음·깊은 물·염분·고온에서는 쇠퇴합니다.',key:'',category:'life'},
+ {id:'soil',name:'유기물',type:'생물 잔해 · 보수력',note:'물을 붙잡고 식생의 재료가 됩니다. 따뜻하고 젖은 무산소 환경에서는 발효합니다. 산소가 부족한 채 가열하면 숯·그을음·CO가 생깁니다. 바람에 실린 그을음도 뜨거운 산소와 만나면 다시 탑니다.',key:'',category:'life'},
+ {id:'plant',name:'식생',type:'생물량 · 생산자',note:'실제 식생·씨앗과 탄소원·물이 있어야 자랍니다. 흡수한 햇빛의 일부를 화학 에너지로 저장하므로 빛이 약하면 재료가 많아도 성장이 느립니다.',key:'',category:'life'},
  {id:'herbivore',name:'초식 생물',type:'생물량 · 소비자',note:'식생을 먹고 성장하며 주변으로 이동합니다. 먹이가 없으면 생물량이 유기물로 돌아갑니다.',key:'',category:'life'},
  {id:'carnivore',name:'포식 생물',type:'생물량 · 소비자',note:'초식 생물을 먹습니다. 작은 양으로 시작하고 먹이의 균형을 관찰하세요.',key:'',category:'life'},
  {id:'iron',name:'운철',type:'금속 · 운석',note:'운석 충돌로 얻는 금속입니다. 캠페인에서는 회수한 양을 다른 행성에 쓸 수 있어요.',key:'',category:'crafted'},
@@ -55,12 +56,12 @@ export const RESEARCH=[
     url:'https://www.corning.com/worldwide/en/innovation/materials-science/glass/how-glass-made.html',source:'Corning · 유리 제조'},
   {id:'atmosphere',name:'기체 대기',icon:'gas',
     science:'대기는 여러 기체의 혼합물입니다. 같은 조건에서 온도가 높거나 중력이 약하거나 평균 분자량이 작을수록 더 높이 퍼집니다.',
-    rule:'수증기·질소·메탄·이산화탄소를 따로 기록합니다. 이상기체·등온 대기로 높이를 근사하고, 약한 중력에서 빠져나간 질량도 기록합니다. 메탄의 빛 흡수·햇빛에 따른 연무를 색과 불투명도로 근사합니다. 복사에 의한 온실효과는 기후 모델에서 계산하며, 메탄 화학 반응은 포함하지 않습니다.',
+    rule:'광합성은 물과 CO₂로 식생과 산소를 만듭니다. 산소는 뜨거운 메탄·유기물과 반응해 CO₂·물과 열을 내보냅니다. 생성물과 열은 수송·증발·응결·복사에 이어집니다.',
     url:'https://ntrs.nasa.gov/citations/20070032693',source:'NASA · 행성 대기와 스케일 높이'},
 ];
 
 RESEARCH.push(...[
- {id:'plant',name:'식생',icon:'sand',science:'생산자 생물량을 나타냅니다.',rule:'씨앗이 있는 곳에서는 모래·점토에도 정착합니다. 탄소원과 재활용 유기물에서 질량을 얻고 빛·물·온도·염분 조건에 따라 성장합니다. 쇠퇴하면 유기물로 돌아갑니다.',url:'',source:'생태계 게임 규칙'},
+ {id:'plant',name:'식생',icon:'sand',science:'생산자 생물량을 나타냅니다.',rule:'광합성은 CO₂·물·빛을 소비하고 산소를 만듭니다. 유기물 흡수·섭식·쇠퇴는 같은 원소 조성의 생체량을 옮깁니다. 산소와 열이 충분하면 생체량도 타며 열·CO₂·물이 생깁니다.',url:'',source:'생태계 게임 규칙'},
  {id:'herbivore',name:'초식 생물',icon:'sand',science:'식생을 먹는 소비자 생물량입니다.',rule:'온도·물·염분·얼음이 섭식·이동·생존을 제한합니다. 섭식한 식생 일부는 초식 생물로, 나머지는 유기물로 이동합니다.',url:'',source:'생태계 게임 규칙'},
  {id:'carnivore',name:'포식 생물',icon:'sand',science:'초식 생물을 먹는 소비자 생물량입니다.',rule:'먹이와 온도·물·염분·얼음 조건이 생존과 이동을 제한합니다. 감소한 생물량은 유기물로 돌아갑니다.',url:'',source:'생태계 게임 규칙'},
  {id:'iron',name:'운철',icon:'heat',science:'외부에서 들어오는 운석의 금속 물질입니다.',rule:'충돌은 열과 운철을 추가하고 기반 물질을 분화구 둘레로 옮깁니다.',url:'',source:'충돌 게임 규칙'},

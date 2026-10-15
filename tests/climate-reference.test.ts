@@ -1,3 +1,4 @@
+import {AIR_SPECIES} from '../src/sim/layeredAtmosphere';
 import {it,expect} from 'vitest';
 import {writeFileSync,mkdirSync} from 'node:fs';
 import reference from './fixtures/nasa-power-climatology.json';
@@ -22,8 +23,8 @@ function column(ts:number,ta:number,rh:number,ps:number,lapse=6.5){
  // this assumption is reported, never called an observed sounding.
  for(let k=0;k<AIR_LAYERS;k++){
   air.temperature[k]=Math.max(-150,ta-lapse*Math.min(AIR_Z[k],11000)/1000+.001*Math.max(0,AIR_Z[k]-20000));
-  const moles=air.mass[k*6+1]/.028014+air.mass[k*6+3]/.04401,es=saturationPressure(air.temperature[k],air.temperature[k]<0?'ice':'water'),partial=es*rh/100,p=air.pressure(0,k);
-  air.mass[k*6]=partial<p?.018015*moles*partial/(p-partial):0;
+  const moles=air.mass[k*AIR_SPECIES+1]/.028014+air.mass[k*AIR_SPECIES+3]/.04401,es=saturationPressure(air.temperature[k],air.temperature[k]<0?'ice':'water'),partial=es*rh/100,p=air.pressure(0,k);
+  air.mass[k*AIR_SPECIES]=partial<p?.018015*moles*partial/(p-partial):0;
  }
  air.attach(state);return {state,air,env};
 }

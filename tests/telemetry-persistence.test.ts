@@ -9,6 +9,12 @@ const cp=(time:number)=>[{id:'p',name:'P',input:input(time)}];
 const worlds=(time:number)=>[{id:'p',name:'Renamed',time}];
 const json=<T>(value:T):T=>JSON.parse(JSON.stringify(value));
 describe('persistent analytics',()=>{
+ it('retains pre-Mars metrics and marks absent frost/dust observations as unknown',()=>{
+  const save=json(archiveTelemetry(recordTo(2),cp(2))),before=save.planets[0].points.map(p=>p.values.mass);
+  for(const p of [save.planets[0].baseline,...save.planets[0].points])for(const key of ['carbonDioxideIce','surfaceDust','airborneDust'])delete p.values[key];
+  const restored=new TelemetryStore();expect(fullTelemetryArchive(save)).toBe(true);expect(restoreTelemetry(restored,save,worlds(2))).toEqual({restored:1,rejected:0});
+  expect(restored.planets.get('p')!.points.map(p=>p.values.mass)).toEqual(before);expect(restored.planets.get('p')!.baseline.values.carbonDioxideIce).toBeNull();
+ });
  it('restores earlier histories without seed observations, preserving their measured values',()=>{
   const save=json(archiveTelemetry(recordTo(2),cp(2))),before=save.planets[0].points.map(p=>p.values.biomass);
   for(const p of [save.planets[0].baseline,...save.planets[0].points])delete p.values.seed;

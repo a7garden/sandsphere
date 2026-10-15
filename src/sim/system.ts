@@ -59,8 +59,8 @@ export function migrateWorld(snapshot:Snapshot,count:number):SystemSave {
 
 export function advanceOrbit(snapshot:Snapshot,dt:number) {
  const e=snapshot.environment,spin=snapshot.spin;
- e.orbitAngle=((e.orbitAngle??0)+dt*Math.PI*2/orbitalPeriod(e.orbitDistance??1))%(Math.PI*2);
- if(spin?.locked){spin.angle=e.orbitAngle;spin.period=orbitalPeriod(e.orbitDistance??1);spin.tilt=0;spin.running=true;}
+ e.orbitAngle=((e.orbitAngle??0)+dt*Math.PI*2/orbitalPeriod(e.orbitDistance??1,e.body))%(Math.PI*2);
+ if(spin?.locked){spin.angle=e.orbitAngle;spin.period=orbitalPeriod(e.orbitDistance??1,e.body);spin.tilt=0;spin.running=true;}
  else if(spin?.running)spin.angle=(spin.angle+dt*Math.PI*2/(spin.period??120))%(Math.PI*2);
  e.sun=localSun(spin?.angle??0,spin?.tilt??0,e.orbitAngle);
  e.rotationRate=spin?.running?Math.PI*2/(spin.period??120):0;
@@ -85,7 +85,7 @@ export class BackgroundWorlds {
   }
  }
  /** Live application path. Offline science/tests retain synchronous advance. */
- async stepAsync(planets:PlanetRecord[],activeId:string,dt:number,onStep?:(planet:PlanetRecord,solver:Solver,dt:number)=>void){
+ async stepAsync(planets:PlanetRecord[],activeId:string,dt:number,onStep?:(planet:PlanetRecord,solver:Solver,dt:number)=>void,onFailure?:(planet:PlanetRecord,error:unknown)=>void){
   if(!this.createAsyncSolver){this.step(planets,activeId,dt,onStep);return;}
   for(const planet of planets){
    const s=planet.snapshot;if(planet.id===activeId||s.paused)continue;
@@ -93,12 +93,17 @@ export class BackgroundWorlds {
    if(!solver){solver=await this.createAsyncSolver(new Float32Array(s.state));solver.climate.restore(s.climate);this.asyncSolvers.set(planet.id,solver);}
    for(const step of physicsSteps(dt)){
     const next={...s,environment:{...s.environment},spin:s.spin?{...s.spin}:undefined};advanceOrbit(next,step);
-    try{await solver.step(step,this.empty,next.environment);}catch(error){
+    try{try{await solver.step(step,this.empty,next.environment);}catch(error){
      // Recreate from the last committed state, replaying this step once.
      console.warn('Background planet compute stopped.',error);
      const state=solver.state.slice(),climate=solver.climate.checkpoint(),lift=solver.climate.lift.slice();solver.dispose();
      solver=await this.createAsyncSolver(state);solver.climate.restoreCheckpoint(climate);solver.climate.lift.set(lift);this.asyncSolvers.set(planet.id,solver);
      await solver.step(step,this.empty,next.environment);
+    }}catch(error){
+     if(!onFailure)throw error;
+     // Keep the last published orbit, matter and climate. A failed inactive
+     // world must not poison the active world's save or the remaining worlds.
+     s.paused=true;this.invalidate(planet.id);onFailure(planet,error);break;
     }
     // Publish orbit, matter and climate together; saves may run during await.
     s.time=next.time;s.environment=next.environment;s.spin=next.spin;

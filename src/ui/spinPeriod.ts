@@ -8,12 +8,13 @@ export function spinPeriodSelection(value:number,orbitalSeconds:number,snapSecon
  return {locked,period:locked?orbitalSeconds:value};
 }
 
-export function validSpinSpeed(value:number){return Number.isFinite(value)&&(value===0||value>=.3&&value<=18);}
+export function validSpinSpeed(value:number,maximumPeriod=1200){return Number.isFinite(value)&&(value===0||value>=360/maximumPeriod&&value<=18);}
 
 export function updateSyncPeriodMarker(orbitalSeconds:number,locked:boolean,spinning=true){
  const range=document.getElementById('spin-period') as HTMLInputElement;
  const marker=document.getElementById('sync-period-marker')!;
  const position=(Math.round(orbitalSeconds)-Number(range.min))/(Number(range.max)-Number(range.min));
+ marker.hidden=position<0||position>1;
  const duration=formatPlanetDuration(orbitalSeconds);
  if(marker.dataset.period!==String(orbitalSeconds)){
   marker.dataset.period=String(orbitalSeconds);

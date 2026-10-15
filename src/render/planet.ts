@@ -1,4 +1,5 @@
 import {ClimateLayers} from './climateLayers';
+import {giantCloudColor} from './giantCloudColor';
 import {arcFromBasis,arcFromCells,snapSectionEndpoint,type SectionArc} from './sectionArc';
 import {buildSectionMesh} from './sectionGeometry';
 import {CellBrush} from './cellBrush';
@@ -36,6 +37,7 @@ import '@babylonjs/core/Meshes/thinInstanceMesh';
 import '@babylonjs/core/Culling/ray';
 import { F,STRIDE,SURFACE_MATERIALS,solidHeight,gravityMultiplier,type SurfaceMaterial,type GasMaterial,type Environment,DEFAULT_ENVIRONMENT } from '../sim/model';
 import {GASES,atmosphereState,type AtmosphereState} from '../sim/atmosphere';
+import {GASES as ESCAPE_GASES} from '../sim/gases';
 import { HEIGHT_SCALE,RADIUS,nearestCell,NEIGHBORS,INVALID,type SphereGrid } from '../sim/sphere';
 import { dualSurface,shorelineDepths,softenShore,clipWater,facetWater,type WetVertex } from './surface';
 import {SurfaceEffects} from './effects';
@@ -177,6 +179,7 @@ export class PlanetView {
   private sectionCamera:SectionCamera;
   private climateLayers!:ClimateLayers;
   private climateState:WeatherClimate|null=null;
+  private giantCloudsVisible=true;
   private sectionView:SectionView;
   private sectionProjection:SectionProjection;
   private sectionMaterials:SectionMaterials;
@@ -484,8 +487,8 @@ export class PlanetView {
     }
     this.waterData.fill(0);this.waterNormals.fill(0);
     if(normalsDirty)VertexData.ComputeNormals(this.vertexTerrain,surface.indices,this.surfaceNormals);
-    const fields=[F.sand,F.clay,F.ceramic,F.glass,F.salt,F.molten,F.soil,F.iron,F.ice];
-    const palette=[PALETTE.sand,PALETTE.clay,PALETTE.ceramic,PALETTE.glass,PALETTE.salt,PALETTE.molten,PALETTE.soil,PALETTE.iron,PALETTE.ice];
+    const fields=[F.sand,F.clay,F.ceramic,F.glass,F.salt,F.molten,F.soil,F.iron,F.ice,F.charcoal];
+    const palette=[PALETTE.sand,PALETTE.clay,PALETTE.ceramic,PALETTE.glass,PALETTE.salt,PALETTE.molten,PALETTE.soil,PALETTE.iron,PALETTE.ice,[.12,.11,.10]];
     if(this.hexagonalSurface)for(let i=0;i<surface.tileCount;i++){
       const cell=i*STRIDE,q=i*4;let total=.35,cr=PALETTE.rock[0]*.35,cg=PALETTE.rock[1]*.35,cb=PALETTE.rock[2]*.35;
       for(let f=0;f<fields.length;f++){const weight=Math.min(8,this.surfaceState[cell+fields[f]]);total+=weight;cr+=palette[f][0]*weight;cg+=palette[f][1]*weight;cb+=palette[f][2]*weight;}
@@ -493,6 +496,8 @@ export class PlanetView {
       this.tileInfo[q]=Math.min(8,this.surfaceState[cell+F.sand])/total;this.tileInfo[q+1]=Math.min(8,this.surfaceState[cell+F.clay])/total;this.tileInfo[q+2]=this.groundCover[i];this.tileInfo[q+3]=1-Math.exp(-this.surfaceState[cell+F.water]*2);
     }
     const bankPositions:number[]=[],bankIndices:number[]=[],bankColors:number[]=[],bankSurface:number[]=[];
+    const giant=this.climateState?.giant.ready&&this.environment.body?.lowerBoundary.kind==='deep-atmosphere'?this.climateState.giant:null;
+    const giantColors=giant?Array.from({length:this.grid.count},(_,i)=>giantCloudColor(giant.cloudOptics(i),this.giantCloudsVisible)):null;
     const indices=[0,0,0];
     for(let p=0;p<surface.indices.length;p+=3) {
       indices[0]=surface.indices[p];indices[1]=surface.indices[p+1];indices[2]=surface.indices[p+2];
@@ -524,6 +529,7 @@ export class PlanetView {
         const temperature=this.surfaceState[vertex*STRIDE+F.temperature];
         const hot=Math.pow(Math.max(0,Math.min(.9,(temperature-45)/900)),.65);
         this.heatColors[rgba]=temperature>45?1:.14;this.heatColors[rgba+1]=temperature>45?.16+hot*.55:.55;this.heatColors[rgba+2]=temperature>45?.025:1;this.heatColors[rgba+3]=temperature>45?hot:0;
+        if(giantColors){for(let c=0;c<3;c++)this.colors[rgba+c]=giantColors[owner][c];this.colors[rgba+3]=0;this.surfaceInfo.fill(0,rgba,rgba+4);this.heatColors[rgba+3]=0;}
       }
       if(this.facetedSurface&&!this.hexagonalSurface){
         // Material ownership belongs to this triangular face, just like its
@@ -754,7 +760,7 @@ export class PlanetView {
       line.color=new Color3(optics.color[0]*shade,optics.color[1]*shade,optics.color[2]*shade);
       line.alpha=.24*Math.min(1,info.pressure/.08);
     }
-    this.sky.update(this.state,this.renderRadii,info,this.environment,this.atmosphereRadii[0]);
+    this.sky.update(this.state,this.renderRadii,info,this.environment,this.atmosphereRadii[0],this.climateState?.giant.ready?this.climateState.giant:undefined,this.climateState?.air);
   }
   setSpin(angle:number,_running:boolean,tiltDegrees=0) {
     this.spinTilt=tiltDegrees;
@@ -789,7 +795,7 @@ export class PlanetView {
     if(rebuild)this.update(this.state);
   }
   setTime(time:number){this.surfaceTime=time;this.sectionView.setTime(time);this.solar.setFloat('time',time);this.sky.setTime(time);this.waterMaterial.setFloat('surfaceTime',time);}
-  setLayers(atmosphere:boolean,clouds:boolean) {this.terrainMaterial.setFloat('cloudShadow',clouds?1:0);this.waterMaterial.setFloat('cloudShadow',clouds?1:0);this.atmosphereVisible=atmosphere;this.sky.setVisible(atmosphere,clouds);this.weather.setVisible(clouds);for(const line of this.atmosphere)if(!atmosphere)line.setEnabled(false);}
+  setLayers(atmosphere:boolean,clouds:boolean) {this.giantCloudsVisible=clouds;this.terrainMaterial.setFloat('cloudShadow',clouds?1:0);this.waterMaterial.setFloat('cloudShadow',clouds?1:0);this.atmosphereVisible=atmosphere;this.sky.setVisible(atmosphere,clouds);this.weather.setVisible(clouds);for(const line of this.atmosphere)if(!atmosphere)line.setEnabled(false);if(this.environment.body?.lowerBoundary.kind==='deep-atmosphere')this.update(this.state,0,this.environment);}
   setClimate(layer:ClimateLayer,climate:WeatherClimate){this.climateState=climate;this.climateLayers.layer=layer;this.updateClimate();}
   private updateClimate(){if(!this.climateState)return;this.climateLayers.update(this.surfaceState,this.environment,this.climateState,this.heatPositions,this.heatPositions,this.surface.owners);this.sectionView.setClimateColors(this.climateLayers.layer==='none'?null:this.climateLayers.cellColors);}
   setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionDirty=true;}
@@ -807,10 +813,10 @@ export class PlanetView {
   }
   showEscape(cells:Float32Array) {
     if(this.systemScene.active)return;
-    for(let i=0;i<this.grid.count;i++)for(let k=0;k<GASES.length;k++) {
-      if(cells[i*4+k]<=0)continue;
+    for(let i=0;i<this.grid.count;i++)for(let k=0;k<ESCAPE_GASES.length;k++) {
+      if(cells[i*ESCAPE_GASES.length+k]<=0)continue;
       const dir=Vector3.FromArray(this.grid.directions,i*3),radius=this.renderRadii[i];
-      this.effects.escape(dir.scale(radius+.12),GASES[k].id,cells[i*4+k]);
+      this.effects.escape(dir.scale(radius+.12),ESCAPE_GASES[k].id,cells[i*ESCAPE_GASES.length+k]);
     }
   }
   showRain(precipitated:Float32Array,dt:number) {

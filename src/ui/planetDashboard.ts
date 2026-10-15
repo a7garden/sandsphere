@@ -1,4 +1,4 @@
-import {METRICS,metricByKey,delta,massResidual,energyResidual,telemetryCsv,type MetricGroup,type PlanetTelemetry,type TelemetryPoint,TelemetryStore} from '../sim/telemetry';
+import {energyBasis,METRICS,metricByKey,delta,massResidual,energyResidual,telemetryCsv,type MetricGroup,type PlanetTelemetry,type TelemetryPoint,TelemetryStore} from '../sim/telemetry';
 import {icon} from './icons';
 import {formatPlanetElapsed} from './simulationTime';
 import {currentLocale,translatePhrase} from './i18n';
@@ -13,8 +13,8 @@ const CHARTS:Record<string,Chart>={
  water:{id:'water',title:'H₂O 상 분포',unit:'kg',keys:['water','waterIce','vapor','cloudWater','cloudIce']},
  rain:{id:'rain',title:'강수율 · 실제값',unit:'kg/행성분',keys:['rainRate','snowRate'],absolute:true},
  pressure:{id:'pressure',title:'대기 압력',unit:'atm',keys:['pressure']},
- atmosphere:{id:'atmosphere',title:'기체 몰 분율',unit:'%',keys:['mole_nitrogen','mole_methane','mole_carbonDioxide','mole_vapor']},
- matter:{id:'matter',title:'질량 분포',unit:'kg',keys:['terrain','liquid','ice','gas','cloud','biomass']},
+ atmosphere:{id:'atmosphere',title:'기체 몰 분율',unit:'%',keys:['mole_carbonMonoxide','mole_oxygen','mole_nitrogen','mole_methane','mole_carbonDioxide','mole_vapor']},
+ matter:{id:'matter',title:'질량 분포',unit:'kg',keys:['terrain','liquid','ice','gas','cloud','soot','biomass']},
  biology:{id:'biology',title:'먹이망 · 질량',unit:'kg',keys:['plant','herbivore','carnivore','soil']},
  coverage:{id:'coverage',title:'셀 점유율',unit:'%',keys:['plantCover','cloudCover','rainCover','snowCover']},
  energy:{id:'energy',title:'누적 에너지 교환 · 기준 대비',unit:'kJ',keys:['energy0','energy1','energy2','energy3'],relative:true},
@@ -95,7 +95,7 @@ export class PlanetDashboard {
     '';
   const massOutput=document.getElementById('dashboard-mass-residual'),energyOutput=document.getElementById('dashboard-energy-residual');
   if(massOutput){massOutput.textContent=format(massResidual(p,r.baseline),5,true)+' kg';massOutput.title=en?'Includes falling particles and pending input. Floating-point residual from the surface model.':'낙하 입자와 미처리 공급 포함. 표면 모델 부동소수점 잔차.';}
-  if(energyOutput){energyOutput.textContent=r.gaps?.length?(en?'— · observation gap':'— · 관측 공백'):format(energyResidual(p,r.baseline),5,true)+' kJ';energyOutput.title=r.gaps?.length?(en?'Energy exchange during the gap was not recorded, so the full budget cannot be calculated.':'공백 구간의 에너지 교환이 기록되지 않아 전체 수지를 계산할 수 없습니다.'):(en?'Residual after subtracting the four integrated energy channels from surface enthalpy.':'표면 엔탈피에서 실제 적분된 네 에너지 채널의 합을 뺀 잔차.');}
+  if(energyOutput){energyOutput.textContent=energyBasis(p)!==energyBasis(r.baseline)?(en?'— · energy definition changed':'— · 에너지 기준 변경'):r.gaps?.length?(en?'— · observation gap':'— · 관측 공백'):format(energyResidual(p,r.baseline),5,true)+' kJ';energyOutput.title=r.gaps?.length?(en?'Energy exchange during the gap was not recorded, so the full budget cannot be calculated.':'공백 구간의 에너지 교환이 기록되지 않아 전체 수지를 계산할 수 없습니다.'):(en?'Residual after subtracting the four integrated energy channels from surface enthalpy.':'표면 엔탈피에서 실제 적분된 네 에너지 채널의 합을 뺀 잔차.');}
   const points=this.window===null?r.points:r.points.filter(point=>point.time>=p.time-this.window!);
   this.content.querySelectorAll<HTMLElement>('[data-dashboard-chart]').forEach(plot=>this.plot(plot,points,r));
   if(this.page==='thermal')this.histogram(p);
@@ -113,7 +113,7 @@ export class PlanetDashboard {
   const x=(time:number)=>54+(time-first)/Math.max(last-first,1)*(width-70),y=(v:number)=>152-(v-low)/(high-low)*130;
   const digits=Math.min(6,Math.max(0,Math.ceil(-Math.log10((high-low)/2))+1));
   const grid=[0,.5,1].map(f=>{const value=low+(high-low)*f,cy=y(value),label=Math.abs(value)>=1e4?value.toExponential(1):format(value,digits);return `<path d="M54 ${cy}H${end}" class="chart-grid"/><text x="46" y="${cy+4}" text-anchor="end">${label}</text>`;}).join('');
-  const paths=c.keys.map((key,k)=>{let path='',connected=false,previousTime:number|undefined;for(const p of points){if(previousTime!==undefined&&r.gaps?.some(g=>previousTime!<=g.start&&p.time>=g.end))connected=false;previousTime=p.time;const v=this.value(p,key,r,relative);if(v==null||!Number.isFinite(v)){connected=false;continue;}path+=(connected?'L':'M')+x(p.time).toFixed(2)+' '+y(v).toFixed(2)+' ';connected=true;}
+  const paths=c.keys.map((key,k)=>{let path='',connected=false,previousTime:number|undefined,previousChem:number|undefined;for(const p of points){if(key==='enthalpy'&&previousChem!==undefined&&previousChem!==energyBasis(p))connected=false;previousChem=energyBasis(p);if(previousTime!==undefined&&r.gaps?.some(g=>previousTime!<=g.start&&p.time>=g.end))connected=false;previousTime=p.time;const v=this.value(p,key,r,relative);if(v==null||!Number.isFinite(v)){connected=false;continue;}path+=(connected?'L':'M')+x(p.time).toFixed(2)+' '+y(v).toFixed(2)+' ';connected=true;}
    const latest=points.at(-1),v=latest?this.value(latest,key,r,relative):null,color=metricByKey.get(key)?.color??COLORS[k];return `<path d="${path}" stroke="${color}" stroke-width="1.8" fill="none" vector-effect="non-scaling-stroke"/>${v!=null?`<circle cx="${x(last)}" cy="${y(v)}" r="2.5" fill="${color}"/>`:''}`;}).join('');
   el.querySelector('svg')!.innerHTML=`${grid}${paths}<text x="54" y="177">${elapsed(first)}</text><text x="${end}" y="177" text-anchor="end">${elapsed(last)}</text>${!all.length?`<text x="${width/2}" y="91" text-anchor="middle" class="chart-waiting">${currentLocale()==='en'?'No observations':'관측값 없음'}</text>`:points.length<2?`<text x="${width/2}" y="91" text-anchor="middle" class="chart-waiting">${currentLocale()==='en'?'First observation · collecting history':'첫 관측 · 기록 수집 중'}</text>`:''}`;
   this.chartPoints.set(c.id,points);el.setAttribute('aria-label',`${translatePhrase(c.title)} · ${points.length} ${currentLocale()==='en'?'observations':'개 관측'} · ${relative?(currentLocale()==='en'?'change from baseline':'기준 대비 변화'):(currentLocale()==='en'?'absolute values':'실제값')}`);
@@ -134,7 +134,7 @@ export class PlanetDashboard {
   svg.innerHTML=`${[0,.5,1].map(f=>`<text x="46" y="${y(max*f)+4}" text-anchor="end">${format(max*f,1)}</text><path d="M54 ${y(max*f)}H${end}" class="chart-grid"/>`).join('')}${p.histogram.map((v,i)=>`<rect x="${x(i)+2}" y="${y(v)}" width="${plotWidth/24-4}" height="${126-y(v)}" fill="#4294ae"><title>${format(p.bins[i],1)}–${format(p.bins[i+1],1)}°C · ${format(v,2)}%</title></rect>`).join('')}<text x="54" y="151">${format(p.bins[0],1)}°C</text><text x="${end}" y="151" text-anchor="end">${format(p.bins.at(-1),1)}°C</text>`;
  }
  private composition(p:TelemetryPoint){
-  const keys=this.page==='matter'?['terrain','liquid','ice','gas','cloud','biomass']:['mole_nitrogen','mole_methane','mole_carbonDioxide','mole_vapor'],sum=keys.reduce((s,k)=>s+(p.values[k]??0),0);
+  const keys=this.page==='matter'?['terrain','liquid','ice','gas','cloud','soot','biomass']:['mole_carbonMonoxide','mole_oxygen','mole_nitrogen','mole_methane','mole_carbonDioxide','mole_vapor'],sum=keys.reduce((s,k)=>s+(p.values[k]??0),0);
   document.getElementById('dashboard-composition')!.innerHTML=`<div class="composition-track">${keys.map((key,k)=>`<span style="width:${sum?(p.values[key]??0)/sum*100:0}%;background:${metricByKey.get(key)?.color??COLORS[k]}"></span>`).join('')}</div><div class="composition-legend">${keys.map((key,k)=>{const m=metricByKey.get(key)!;return `<span><i style="background:${m.color??COLORS[k]}"></i>${m.name}<b>${format(p.values[key],m.digits)} ${m.unit}</b></span>`;}).join('')}</div>`;
  }
 }

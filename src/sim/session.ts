@@ -1,6 +1,7 @@
 import {WeatherClimate,type ClimateSnapshot} from './weatherClimate';
 import type {Environment} from './model';
-import {AIR_FIELDS} from './layeredAtmosphere';
+import {isDeepAtmosphere} from './planetDefinition';
+import {AIR_LAYERS} from './layeredAtmosphere';
 import {COMMAND_STRIDE,COMMAND_FIELD,F,MASS_FIELDS,SURFACE_ERASE,SURFACE_ERASE_FIELDS,STRIDE,applyCommand,emptyStock,type Material} from './model';
 
 export interface FallingDeposit {index:number;material:Material;amount:number;}
@@ -12,6 +13,7 @@ export function snapshotSurface(live:Float32Array,pending:Float32Array,falling:F
   const shadow=climate&&environment?new WeatherClimate(climate.grid):undefined;
   if(shadow){shadow.restore(prior?.climate??climate!.snapshot());shadow.prepareSurface(state,environment!);}
   const energy=new Float32Array(count*4);
+  if(shadow&&isDeepAtmosphere(environment?.body)){if(falling.length)throw new Error('가스형 행성에는 낙하 재료를 저장할 수 없습니다.');shadow.stepGiant(state,0,pending,environment!,energy);return {state,pendingRemoved:0,collected:emptyStock(),climate:shadow.snapshot()};}
   let pendingRemoved=prior?.pendingRemoved??0;
   const collected=prior?.collected??emptyStock();
   for(let i=0;i<count;i++) {
@@ -20,7 +22,7 @@ export function snapshotSurface(live:Float32Array,pending:Float32Array,falling:F
       const fields=pending[c+SURFACE_ERASE]>0?SURFACE_ERASE_FIELDS:MASS_FIELDS;
       let mass=Object.entries(COMMAND_FIELD).reduce((sum,[material,f])=>sum+(fields.includes(F[material as Material])?pending[c+f]:0),0);
       for(const f of fields)mass+=state[i*STRIDE+f];
-      if(shadow&&pending[c+SURFACE_ERASE]===0)for(let k=0;k<5;k++)mass+=shadow.air.layerMass(i*5+k);
+      if(shadow&&pending[c+SURFACE_ERASE]===0)for(let k=0;k<AIR_LAYERS;k++)mass+=shadow.air.layerMass(i*AIR_LAYERS+k);
       pendingRemoved+=mass*fraction;
     }
     applyCommand(state,i,pending,collected);

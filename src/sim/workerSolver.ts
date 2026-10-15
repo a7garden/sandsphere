@@ -1,7 +1,9 @@
+import {GASES} from './gases';
 import {WeatherClimate} from './weatherClimate';
 import type {SphereGrid} from './sphere';
 import type {Environment,Solver} from './model';
 import {climateTransferBuffers,type SolverWorkerRequest,type SolverWorkerReply} from './solverWorkerProtocol';
+import {assertPlanetSupport} from './planetDefinition';
 
 /** Surface, atmosphere and ecology compute off the UI thread. The UI sees only
  * complete steps, so rendering, edits and save accounting share one snapshot. */
@@ -16,7 +18,7 @@ export class WorkerSolver implements Solver {
  private pending=new Map<number,{resolve:(reply:SolverWorkerReply)=>void;reject:(error:Error)=>void;timer:ReturnType<typeof setTimeout>}>();
  private constructor(readonly grid:SphereGrid,public state:Float32Array,private worker:Worker){
   this.climate=new WeatherClimate(grid);
-  this.escapeCells=new Float32Array(grid.count*4);this.condensedCells=new Float32Array(grid.count);
+  this.escapeCells=new Float32Array(grid.count*GASES.length);this.condensedCells=new Float32Array(grid.count);
   this.precipitatedCells=new Float32Array(grid.count*2);this.energyChanges=new Float32Array(grid.count*4);
   this.feedingCells=new Float32Array(grid.count*2);
   worker.onmessage=({data}:MessageEvent<SolverWorkerReply>)=>{
@@ -46,6 +48,7 @@ export class WorkerSolver implements Solver {
   });
  }
  async step(dt:number,commands:Float32Array,environment:Environment){
+  assertPlanetSupport(environment.body);
   if(this.stopped)throw new Error('Simulation worker is disposed');
   if(this.inFlight)throw new Error('A simulation step is already running');
   if(dt<=0&&!commands.some(v=>v!==0)){this.clearTransfers();return;}

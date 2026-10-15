@@ -1,3 +1,4 @@
+import {MATERIAL_ENERGY} from './thermodynamics';
 import {capacity,enthalpy,F,STRIDE,solidHeight,type Environment} from './model';
 import {consumerTravelHabitat,openSurfaceWater} from './ecology';
 import {edgeScale} from './materialPhysics';
@@ -92,7 +93,8 @@ export class AnimalNavigation {
    changed=true;
    const p=i*STRIDE,before=enthalpy(state,i),sensible=capacity(state,i)*state[p+F.temperature]+this.heat[i];
    state[p+F.herbivore]=Math.max(0,state[p+F.herbivore]+this.changes[i*2]);state[p+F.carnivore]=Math.max(0,state[p+F.carnivore]+this.changes[i*2+1]);state[p+F.temperature]=sensible/capacity(state,i);
-   energyChanges[i*4+3]+=enthalpy(state,i)-before-this.heat[i];
+   const chemical=this.changes[i*2]*MATERIAL_ENERGY[F.herbivore]+this.changes[i*2+1]*MATERIAL_ENERGY[F.carnivore];
+   energyChanges[i*4+3]+=enthalpy(state,i)-before-this.heat[i]-chemical;
   }
   return changed;
  }

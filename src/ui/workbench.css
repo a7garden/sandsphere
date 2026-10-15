@@ -760,3 +760,26 @@ html:lang(en) .scene-display-controls .scene-layer-controls { grid-template-colu
     to { opacity: 1; }
   }
 }
+
+/* Campaign readouts and acquisition notes remain readable when a supply is empty. */
+.catalog-guide, #sample-recovery p { font-size: var(--text-xs); line-height: 1.7; color: var(--color-muted); margin: 12px 0; }
+.catalog-material-detail { grid-column: 1 / -1; display: grid; gap: 6px; font-size: var(--text-xs); line-height: 1.7; }
+.catalog-material-detail small { color: var(--color-muted); }
+.catalog-material-detail p { margin: 0; }
+.catalog-material-detail output { color: var(--color-muted); font-variant-numeric: tabular-nums; }
+#sample-recovery { border-top: 1px solid var(--color-rule); margin-top: 16px; padding-top: 16px; }
+#sample-recovery h3 { font-size: var(--text-sm); }
+#sample-status { list-style: none; padding: 0; display: grid; gap: 8px; font-size: var(--text-xs); line-height: 1.7; margin-top: 12px; }
+#sample-resupply { width: 100%; }
+.expeditions .expedition-chapter { margin-top: 8px; font-size: var(--text-xs); font-weight: 600; }
+#next-expedition-chapter { display: block; color: var(--color-muted); font-size: var(--text-xs); margin-bottom: 8px; }
+.expeditions li details p { margin: 8px 0; font-size: var(--text-xs); line-height: 1.7; color: var(--color-muted); }
+.expedition-metrics { display: grid; gap: 8px; margin: 10px 0; }
+.expedition-metrics > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; align-items: baseline; font-size: var(--text-xs); }
+.expedition-metrics progress { grid-column: 1 / -1; width: 100%; height: 4px; accent-color: var(--color-success); }
+.expedition-metrics output { font-variant-numeric: tabular-nums; }
+.expeditions li[data-ready='false'] > small { color: var(--color-muted); }
+.catalog-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.catalog-scroll { overflow-y: auto; flex: 1; min-height: 0; overscroll-behavior: contain; }
+#catalog-list { overflow: visible; }
+.catalog > :not(.catalog-scroll) { flex-shrink: 0; }

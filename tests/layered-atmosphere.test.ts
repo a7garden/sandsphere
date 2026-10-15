@@ -1,3 +1,4 @@
+import {AIR_SPECIES} from '../src/sim/layeredAtmosphere';
 import {describe,it,expect,vi} from 'vitest';
 import {createSphere} from '../src/sim/sphere';
 import {F,STRIDE,COMMAND_STRIDE,CpuSolver,seedPlanet,totalMass,totalEnthalpy} from '../src/sim/model';
@@ -60,10 +61,10 @@ describe('layered moist atmosphere',()=>{
  });
  it('triggers saturated moist instability that would be stable under a dry-parcel test',()=>{
   const s=world(),c=new WeatherClimate(g);c.prepareSurface(s,env);c.air.attach(s);
-  for(let q=0;q<c.air.temperature.length;q++){c.air.mass[q*6]=0;c.air.mass[q*6+4]=0;c.air.mass[q*6+5]=0;}
+  for(let q=0;q<c.air.temperature.length;q++){c.air.mass[q*AIR_SPECIES]=0;c.air.mass[q*AIR_SPECIES+4]=0;c.air.mass[q*AIR_SPECIES+5]=0;}
   for(let i=0;i<g.count;i++){
    const q=i*AIR_LAYERS;c.air.temperature[q]=25;c.air.temperature[q+1]=20;
-   const moles=c.air.mass[q*6+1]/.028014;c.air.mass[q*6]=saturatedVapor(c.air.mass[q*6+1],moles,25,c.air.pressure(i,0));
+   const moles=c.air.mass[q*AIR_SPECIES+1]/.028014;c.air.mass[q*AIR_SPECIES]=saturatedVapor(c.air.mass[q*AIR_SPECIES+1],moles,25,c.air.pressure(i,0));
   }
   c.air.attach(s);expect(liftedTemperature(25,1000,9.81,1040)).toBeLessThan(20);
   c.air.advance(s,1/60,{...env,sunlight:0},new Float32Array(g.count*4));

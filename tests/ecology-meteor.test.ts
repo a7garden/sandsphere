@@ -61,7 +61,7 @@ describe('impact and persisted worlds',()=>{
   const s={version:2 as const,preset:'coast' as const,time:10,state:Array(40).fill(0),discoveries:[],supplied:0,removed:0,environment:orbitalEnvironment(1)};
   s.state[5]=3;s.state[20+16]=.2;s.state[8]=-20;s.state[28]=18;
   expect(validSnapshot(s,2)).toBe(true);const migrated=upgradeSnapshot(s,2);
-  expect(migrated.state.length).toBe(48);expect(migrated.state[5]).toBe(3);expect(migrated.state[STRIDE+16]).toBeCloseTo(.2);
+  expect(migrated.state.length).toBe(2*STRIDE);expect(migrated.state[5]).toBe(3);expect(migrated.state[STRIDE+16]).toBeCloseTo(.2);
   expect(migrated.state[STRIDE+8]).toBe(18);expect(migrated.state[F.plant]).toBe(0);expect(s.state.length).toBe(40);
  });
  it('rounds coasts while preserving a flat lake head and simulation data',()=>{

@@ -4,6 +4,7 @@ import {currentLocale, setupLocalization, translatePhrase} from '../src/ui/i18n'
 import {MATERIALS, RESEARCH} from '../src/ui/content';
 import {CLIMATE_LAYERS} from '../src/sim/weatherClimate';
 import {METRICS} from '../src/sim/telemetry';
+import {MATERIAL_SOURCES} from '../src/ui/materialSupply';
 import {EXPEDITIONS} from '../src/sim/progress';
 
 let dispose: (() => void) | undefined;
@@ -85,7 +86,8 @@ describe('localization', () => {
       ...RESEARCH.flatMap(r => [r.name, r.science, r.rule, r.source]),
       ...Object.values(CLIMATE_LAYERS).flatMap(layer => [layer.name, layer.legend]),
       ...METRICS.flatMap(m => [m.name, m.tip ?? '', m.unit]),
-      ...EXPEDITIONS.flatMap(e => [e.name, e.detail]),
+      ...EXPEDITIONS.flatMap(e => [e.name, e.detail, e.chapter, e.hint]),
+      ...Object.values(MATERIAL_SOURCES),
     ].filter(Boolean);
     const missing = phrases.filter(p => /[가-힣]/.test(translatePhrase(p)));
     expect([...new Set(missing)]).toEqual([]);

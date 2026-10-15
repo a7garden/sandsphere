@@ -1,3 +1,4 @@
+import {AIR_SPECIES} from '../src/sim/layeredAtmosphere';
 import {it,expect} from 'vitest';
 import {statisticalCloud,fractionalCloudDepth,radiativeFluxes,surfaceSolarDown,maximumRandomCloudArea} from '../src/sim/climatePhysics';
 import {AIR_LAYERS,AIR_Z,AIR_DZ,LayeredAtmosphere,validLayered,surfaceEnthalpy,climateSurfaceAlbedo} from '../src/sim/layeredAtmosphere';
@@ -40,9 +41,9 @@ it('extends new columns to the stratosphere and migrates five-layer inventories 
  expect(AIR_Z.at(-1)!+AIR_DZ.at(-1)!/2).toBe(42000);
  const grid=createSphere(0),state=seedPlanet(grid,'sand',22),env={ambient:22,sunlight:0,sun:[1,0,0],gravity:1};
  const air=new LayeredAtmosphere(grid,[]);air.initialize(state,env);
- expect(air.mass[(AIR_LAYERS-1)*6+1]).toBeGreaterThan(0);
+ expect(air.mass[(AIR_LAYERS-1)*AIR_SPECIES+1]).toBeGreaterThan(0);
  const modern=air.snapshot()!,take=(data:number[],stride:number,n:number)=>Array.from({length:grid.count},(_,i)=>data.slice(i*AIR_LAYERS*stride,(i*AIR_LAYERS+n)*stride)).flat();
- const legacy={version:1 as const,mass:take(modern.mass,6,5),temperature:take(modern.temperature,1,5),velocity:take(modern.velocity,3,5),updraft:Array.from({length:grid.count},(_,i)=>modern.updraft.slice(i*(AIR_LAYERS-1),i*(AIR_LAYERS-1)+4)).flat(),gravity:1};
+ const legacy={version:1 as const,mass:Array.from({length:grid.count},(_,i)=>Array.from({length:5},(_,k)=>modern.mass.slice((i*AIR_LAYERS+k)*AIR_SPECIES,(i*AIR_LAYERS+k)*AIR_SPECIES+6)).flat()).flat(),temperature:take(modern.temperature,1,5),velocity:take(modern.velocity,3,5),updraft:Array.from({length:grid.count},(_,i)=>modern.updraft.slice(i*(AIR_LAYERS-1),i*(AIR_LAYERS-1)+4)).flat(),gravity:1};
  expect(validLayered(legacy,grid.count)).toBe(true);
  const before=legacy.mass.reduce((a,b)=>a+b,0),oldHeat=legacy.temperature.reduce((h,t,q)=>{
   const cp=[2,1.04,2.22,.85,4.18,2.1],latent=[2475,0,0,0,0,-334];
@@ -50,13 +51,13 @@ it('extends new columns to the stratosphere and migrates five-layer inventories 
  },0);
  const restored=new LayeredAtmosphere(grid,[]);restored.restore(legacy);
  expect(restored.mass.reduce((a,b)=>a+b,0)).toBeCloseTo(before,12);expect(restored.totalEnergy()).toBeCloseTo(oldHeat,10);
- expect(restored.snapshot()!.version).toBe(2);expect(validLayered(restored.snapshot(),grid.count)).toBe(true);
+ expect(restored.snapshot()!.version).toBe(6);expect(validLayered(restored.snapshot(),grid.count)).toBe(true);
 });
 
 it('conserves latent energy while creating partial cloud below mean saturation',()=>{
  const grid=createSphere(0),s=seedPlanet(grid,'sand',20),env={ambient:20,sunlight:0,sun:[1,0,0],gravity:1};
  const a=new LayeredAtmosphere(grid,[]);a.initialize(s,env);a.attach(s);
- for(let i=0;i<grid.count;i++)for(let k=0;k<AIR_LAYERS;k++){a.mass[(i*AIR_LAYERS+k)*6]=0;a.temperature[i*AIR_LAYERS+k]=20;}
+ for(let i=0;i<grid.count;i++)for(let k=0;k<AIR_LAYERS;k++){a.mass[(i*AIR_LAYERS+k)*AIR_SPECIES]=0;a.temperature[i*AIR_LAYERS+k]=20;}
  const p=a.pressure(0,0),es=2339.1937366227544,moles=a.mass[1]/.028014;a.mass[0]=.9*.018015*moles*es/(p-es);a.attach(s);
  a.advance(s,0,env,new Float32Array(grid.count*4));
  const initial=surfaceEnthalpy(s,0)+a.columnEnergy(0),energy=new Float32Array(grid.count*4);

@@ -1,16 +1,17 @@
-import {METRICS,measurePlanet,TelemetryStore,type PlanetTelemetry,type TelemetryInput,type TelemetryPoint} from './telemetry';
+import {METRICS,SMOKE_METRICS,COMBUSTION_METRICS,CHEMISTRY_METRICS,GIANT_CLOUD_METRICS,measurePlanet,TelemetryStore,type PlanetTelemetry,type TelemetryInput,type TelemetryPoint} from './telemetry';
 
 export interface SavedPlanetTelemetry extends Omit<PlanetTelemetry,'energy'> {energy:number[];historyMode?:'append';}
 export interface TelemetryArchive {version:1;planets:SavedPlanetTelemetry[];baseSavedAt?:number;}
 export interface TelemetryCheckpoint {id:string;name:string;input:TelemetryInput;settledEnergy?:number;}
-const nullable=new Set(['seed','gasTemp','scaleHeight','boundary','binding','rainRate','snowRate','rainCover','snowCover',...METRICS.filter(m=>m.key.startsWith('mole_')).map(m=>m.key)]);
+const marsMetrics=[...SMOKE_METRICS,...COMBUSTION_METRICS,...CHEMISTRY_METRICS,'chemicalEnergy','carbonDioxideIce','surfaceDust','airborneDust','hydrogen','helium','mole_hydrogen','mole_helium',...GIANT_CLOUD_METRICS];
+const nullable=new Set(['seed',...marsMetrics,'gasTemp','scaleHeight','boundary','binding','rainRate','snowRate','rainCover','snowCover',...METRICS.filter(m=>m.key.startsWith('mole_')).map(m=>m.key)]);
 const finite=(value:unknown):value is number=>typeof value==='number'&&Number.isFinite(value);
 const nonnegative=(value:unknown):value is number=>finite(value)&&value>=0;
 export function pointValid(value:unknown):value is TelemetryPoint {
  if(!value||typeof value!=='object')return false;
  const p=value as TelemetryPoint;
  return nonnegative(p.time)&&typeof p.profileValid==='boolean'&&!!p.values&&typeof p.values==='object'
-  &&METRICS.every(m=>finite(p.values[m.key])||nullable.has(m.key)&&p.values[m.key]===null||m.key==='seed'&&p.values.seed===undefined)
+  &&METRICS.every(m=>finite(p.values[m.key])||nullable.has(m.key)&&p.values[m.key]===null||[...marsMetrics,'seed'].includes(m.key)&&p.values[m.key]===undefined)
   &&(p.detailsUnavailable===true?Array.isArray(p.histogram)&&!p.histogram.length&&Array.isArray(p.bins)&&!p.bins.length:
    p.detailsUnavailable===undefined&&Array.isArray(p.histogram)&&p.histogram.length===24&&p.histogram.every(v=>nonnegative(v)&&v<=100)
    &&Array.isArray(p.bins)&&p.bins.length===25&&p.bins.every((v,i)=>finite(v)&&(!i||v>p.bins[i-1])));
@@ -34,7 +35,7 @@ export function compact(points:TelemetryPoint[]){
  while(points.length>2048)points=[...points.slice(0,1024).filter((_,i)=>i%2===0),...points.slice(1024)];
  return points;
 }
-function sameBaseline(a:TelemetryPoint,b:TelemetryPoint){return a.time===b.time&&METRICS.every(m=>a.values[m.key]===b.values[m.key]);}
+function sameBaseline(a:TelemetryPoint,b:TelemetryPoint){return a.time===b.time&&METRICS.every(m=>marsMetrics.includes(m.key)?(a.values[m.key]??null)===(b.values[m.key]??null):a.values[m.key]===b.values[m.key]);}
 export function fullTelemetryArchive(value:unknown):value is TelemetryArchive {
  if(!value||typeof value!=='object')return false;
  const a=value as TelemetryArchive;
@@ -79,7 +80,8 @@ export function restoreTelemetry(store:TelemetryStore,value:unknown,worlds:{id:s
    points=compact([...merged.values()].sort((a,b)=>a.time-b.time));
   }
   const {historyMode:_mode,...record}=raw;
-  store.planets.set(raw.id,{...record,name:world.name,points:structuredClone(points),baseline:structuredClone(raw.baseline),energy:new Float64Array(raw.energy)});
+  const normalize=(p:TelemetryPoint)=>{const copy=structuredClone(p);for(const key of marsMetrics)if(copy.values[key]===undefined)copy.values[key]=null;return copy;};
+  store.planets.set(raw.id,{...record,name:world.name,points:points.map(normalize),baseline:normalize(raw.baseline),energy:new Float64Array(raw.energy)});
   result.restored++;
  }
  return result;
