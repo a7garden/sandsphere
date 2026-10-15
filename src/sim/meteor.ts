@@ -6,7 +6,7 @@ import {surfaceCapacity} from './layeredAtmosphere';
 /** Redistribute excavated solid stock into a raised rim, then add the incoming
  * iron body and its heat. No crater mass is deleted or invented. */
 export function impactMeteor(state:Float32Array,grid:SphereGrid,direction:readonly number[],mass=36,energyChanges?:Float64Array,climate?:WeatherClimate){
- const heatCapacity=climate?.air.ready?surfaceCapacity:capacity;
+ const heatCapacity=climate?.airReady?surfaceCapacity:capacity;
  const result=new Float32Array(state),rim:number[]=[],weights:number[]=[],pool=new Float64Array(STRIDE);
  const fields=[F.sand,F.clay,F.ceramic,F.glass,F.salt,F.rock,F.soil,F.iron,F.ice,F.molten];
  let weightTotal=0,carriedHeat=0,carriedDose=0;

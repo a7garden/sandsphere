@@ -395,7 +395,7 @@ function observerUpdate() {
   el('atmosphere-summary').textContent=atmosphere.mass>.01?GASES.find(g=>g.id===dominant.id)!.name+' '+(dominant.fraction*100).toFixed(0)+'%':'기체 없음';
   el('escaped-mass').textContent=escaped.toFixed(1)+' kg';setMetric('atmosphere-mass',formatReading(atmosphere.mass,1));setMetric('atmosphere-pressure',formatReading(atmosphere.pressure,3));el('atmosphere-pressure').previousElementSibling!.textContent=translatePhrase(deep?'아래 경계 기압':'지표 기압');el('atmosphere-height').textContent=atmosphereReadout(atmosphere).height;el('atmosphere-model').textContent=atmosphereReadout(atmosphere).regime;el('atmosphere-boundary-note').textContent=atmosphereReadout(atmosphere).note;el('atmosphere-binding').textContent=atmosphere.mass>0?atmosphere.minimumBinding.toFixed(2):'—';el('gas-temperature').textContent=atmosphere.mass>0?atmosphere.temperature.toFixed(1)+'°C':'—';
   const exposure=Math.max(0,grid.directions[observed*3]*environment.sun[0]+grid.directions[observed*3+1]*environment.sun[1]+grid.directions[observed*3+2]*environment.sun[2]);
-  el('bath-target').textContent=environment.climate?(solver.climate.air.ready?solver.climate.air.surfaceRadiativeTarget(s,observed,environment).toFixed(1)+'°C':'—'):thermalTarget(environment.ambient,environment.sunlight,transmittedLight(exposure,environment.sunlight,s[p+F.cloud],s[p+F.cloudIce]),albedo(s,p)).toFixed(1)+'°C';
+  el('bath-target').textContent=environment.climate?(solver.climate.airReady?solver.climate.air.surfaceRadiativeTarget(s,observed,environment).toFixed(1)+'°C':'—'):thermalTarget(environment.ambient,environment.sunlight,transmittedLight(exposure,environment.sunlight,s[p+F.cloud],s[p+F.cloudIce]),albedo(s,p)).toFixed(1)+'°C';
   for(const [k,id] of ['energy-environment','energy-command','energy-escape','energy-numerical'].entries())el(id).textContent=solver.energyChanges[observed*4+k].toFixed(4)+' kJ';
   el('energy-command').previousElementSibling!.textContent=translatePhrase(deep?'내부 열·도구':'도구·물질 공급');
   el('local-escaped').textContent=solver.escapeCells.slice(observed*ESCAPE_GASES.length,(observed+1)*ESCAPE_GASES.length).reduce((a,b)=>a+b,0).toPrecision(3)+' kg';
@@ -968,7 +968,7 @@ async function boot() {
   let previous=performance.now(),observerClock=0,frames=0,fpsClock=0,saveClock=0;
   // Hidden tabs suspend simulation; resuming must not enqueue the hidden interval.
   document.addEventListener('visibilitychange',()=>{previous=performance.now();clock.reset();actualGameRate.reset();latestActualRate=null;});
-  const runSteps=async(count:number)=>{for(let n=0;n<count;n++){if(view.cameraDragging)break;if(!paused)await tick(PHYSICS_DT);else if(commands.some(v=>v!==0))await tick(0);await backgroundWorlds.stepAsync(planets,activeId,PHYSICS_DT,sampleBackgroundPlanet,planet=>message(planet.name+' · '+translatePhrase('계산 범위를 벗어나 일시정지했습니다. 마지막 완료 상태를 보존합니다.'),true));}};
+  const runSteps=async(count:number)=>{for(let n=0;n<count;n++){if(view.cameraDragging)break;const active=!paused?tick(PHYSICS_DT):commands.some(v=>v!==0)?tick(0):Promise.resolve(),background=backgroundWorlds.stepAsync(planets,activeId,PHYSICS_DT,sampleBackgroundPlanet,planet=>message(planet.name+' · '+translatePhrase('계산 범위를 벗어나 일시정지했습니다. 마지막 완료 상태를 보존합니다.'),true));const results=await Promise.allSettled([active,background]),failed=results.find(r=>r.status==='rejected');if(failed?.status==='rejected')throw failed.reason;}};
   view.engine.runRenderLoop(()=>{
     const now=performance.now(),realDt=(now-previous)/1000,dt=Math.min(.05,realDt);previous=now;
     if(!document.hidden){

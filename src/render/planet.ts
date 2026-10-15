@@ -496,7 +496,7 @@ export class PlanetView {
       this.tileInfo[q]=Math.min(8,this.surfaceState[cell+F.sand])/total;this.tileInfo[q+1]=Math.min(8,this.surfaceState[cell+F.clay])/total;this.tileInfo[q+2]=this.groundCover[i];this.tileInfo[q+3]=1-Math.exp(-this.surfaceState[cell+F.water]*2);
     }
     const bankPositions:number[]=[],bankIndices:number[]=[],bankColors:number[]=[],bankSurface:number[]=[];
-    const giant=this.climateState?.giant.ready&&this.environment.body?.lowerBoundary.kind==='deep-atmosphere'?this.climateState.giant:null;
+    const giant=this.climateState?.giantReady&&this.environment.body?.lowerBoundary.kind==='deep-atmosphere'?this.climateState.giant:null;
     const giantColors=giant?Array.from({length:this.grid.count},(_,i)=>giantCloudColor(giant.cloudOptics(i),this.giantCloudsVisible)):null;
     const indices=[0,0,0];
     for(let p=0;p<surface.indices.length;p+=3) {
@@ -760,7 +760,7 @@ export class PlanetView {
       line.color=new Color3(optics.color[0]*shade,optics.color[1]*shade,optics.color[2]*shade);
       line.alpha=.24*Math.min(1,info.pressure/.08);
     }
-    this.sky.update(this.state,this.renderRadii,info,this.environment,this.atmosphereRadii[0],this.climateState?.giant.ready?this.climateState.giant:undefined,this.climateState?.air);
+    this.sky.update(this.state,this.renderRadii,info,this.environment,this.atmosphereRadii[0],this.climateState?.giantReady?this.climateState.giant:undefined,this.climateState?.airReady?this.climateState.air:undefined);
   }
   setSpin(angle:number,_running:boolean,tiltDegrees=0) {
     this.spinTilt=tiltDegrees;

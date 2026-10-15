@@ -5,7 +5,7 @@ import {columnPressure,saturationMass} from './waterPhysics';
 import {reactEcosystem} from './ecology';
 import {outgoingScale} from './conservativeTransport';
 import {dustOpticalDepth} from './dustPhysics';
-import {LayeredAtmosphere,COLUMN_KG,AIR_RADIUS,AIR_SECONDS,validLayered,surfaceCapacity,surfaceEnthalpy,ATMOSPHERE_MIRRORS,type LayeredSnapshot,type LayeredCheckpoint} from './layeredAtmosphere';
+import {LayeredAtmosphere,emptyLayeredCheckpoint,layeredSnapshotFromCheckpoint,COLUMN_KG,AIR_RADIUS,AIR_SECONDS,validLayered,surfaceCapacity,surfaceEnthalpy,ATMOSPHERE_MIRRORS,type LayeredSnapshot,type LayeredCheckpoint} from './layeredAtmosphere';
 import {DeepAtmosphere,DEEP_LAYERS,validDeep,type DeepSnapshot,type DeepCheckpoint} from './deepAtmosphere';
 import {isDeepAtmosphere} from './planetDefinition';
 
@@ -62,7 +62,13 @@ export function validClimate(value:unknown,count:number):value is ClimateSnapsho
 /** Stratified atmosphere coupled to the retained shallow ocean/ecology model.
  * Atmospheric inventories, enthalpy and tangent momentum share edge fluxes. */
 export class WeatherClimate {
- wind:Float32Array;currents:Float32Array;seeds:Float32Array;lift:Float32Array;readonly air:LayeredAtmosphere;readonly giant:DeepAtmosphere;
+ wind:Float32Array;currents:Float32Array;seeds:Float32Array;lift:Float32Array;
+ private airInstance?:LayeredAtmosphere;private giantInstance?:DeepAtmosphere;
+ get air(){if(!this.airInstance){this.airInstance=new LayeredAtmosphere(this.grid,this.edges);if(this.giantReady)this.airInstance.radiusMeters=this.giant.radiusMeters;}return this.airInstance;}
+ get giant(){return this.giantInstance??=new DeepAtmosphere(this.grid,this.edges);}
+ get airReady(){return this.airInstance?.ready??false;}
+ get giantReady(){return this.giantInstance?.ready??false;}
+ get radiusMeters(){return this.giantReady?this.giant.radiusMeters:this.airInstance?.radiusMeters??AIR_RADIUS;}
  private edges:ClimateEdge[]=[];private incident:ClimateEdge[][];
  private roundoff:Float64Array;private pressure:Float64Array;private delta:Float64Array;private heat:Float64Array;
  constructor(readonly grid:SphereGrid){
@@ -73,25 +79,37 @@ export class WeatherClimate {
    const a=Array.from(grid.directions.slice(i*3,i*3+3)),b=Array.from(grid.directions.slice(j*3,j*3+3)),d=b.map((v,k)=>v-a[k]),length=Math.hypot(...d);
    const edge={i,j,distance:2*Math.asin(Math.min(1,length/2)),t:d.map(v=>v/length)};this.edges.push(edge);this.incident[i].push(edge);this.incident[j].push(edge);
   }
-  this.air=new LayeredAtmosphere(grid,this.edges);
-  this.giant=new DeepAtmosphere(grid,this.edges);
  }
- snapshot():ClimateSnapshot{return {...(this.giant.ready?{version:3 as const,giant:this.giant.snapshot()}:{version:2 as const,atmosphere:this.air.snapshot()}),wind:[...this.wind],currents:[...this.currents],seeds:[...this.seeds]};}
- checkpoint():ClimateCheckpoint{return {wind:this.wind.slice(),currents:this.currents.slice(),seeds:this.seeds.slice(),air:this.air.checkpoint(),...(this.giant.ready?{giant:this.giant.checkpoint()}:{} )};}
- restoreCheckpoint(c:ClimateCheckpoint){this.air.restoreCheckpoint(c.air);this.giant.restore(c.giant);if(c.giant)this.air.radiusMeters=c.giant.radiusMeters;this.lift.fill(0);this.wind.set(c.wind);this.currents.set(c.currents);this.seeds.set(c.seeds);}
- restore(saved?:ClimateSnapshot){if(saved&&!validClimate(saved,this.grid.count))throw new Error('기후 저장 상태가 올바르지 않습니다.');this.air.restore(saved?.atmosphere);this.giant.restore(saved?.giant);if(saved?.giant)this.air.radiusMeters=saved.giant.radiusMeters;this.lift.fill(0);this.wind.fill(0);this.currents.fill(0);this.seeds.fill(0);if(saved){this.wind.set(saved.wind);this.currents.set(saved.currents);this.seeds.set(saved.seeds);}}
+ snapshot():ClimateSnapshot{return {...(this.giantReady?{version:3 as const,giant:this.giant.snapshot()}:{version:2 as const,atmosphere:this.airInstance?.snapshot()}),wind:[...this.wind],currents:[...this.currents],seeds:[...this.seeds]};}
+ checkpoint():ClimateCheckpoint{return {wind:this.wind.slice(),currents:this.currents.slice(),seeds:this.seeds.slice(),air:this.airInstance?.checkpoint()??emptyLayeredCheckpoint(this.radiusMeters),...(this.giantReady?{giant:this.giant.checkpoint()}:{} )};}
+ /** Capture typed ownership now; allocate ordinary arrays only when a reader
+  * actually requests this completed snapshot. Later solver steps cannot alter it. */
+ deferredSnapshot(){const checkpoint=this.checkpoint();let cached:ClimateSnapshot|undefined;return ()=>cached??=climateSnapshotFromCheckpoint(checkpoint);}
+ restoreCheckpoint(c:ClimateCheckpoint){
+  if(c.air.initialized)this.air.restoreCheckpoint(c.air);else this.airInstance=undefined;
+  if(c.giant)this.giant.restore(c.giant);else this.giantInstance=undefined;
+  if(c.giant&&this.airInstance)this.airInstance.radiusMeters=c.giant.radiusMeters;
+  this.lift.fill(0);this.wind.set(c.wind);this.currents.set(c.currents);this.seeds.set(c.seeds);
+ }
+ restore(saved?:ClimateSnapshot){
+  if(saved&&!validClimate(saved,this.grid.count))throw new Error('기후 저장 상태가 올바르지 않습니다.');
+  if(saved?.atmosphere)this.air.restore(saved.atmosphere);else this.airInstance=undefined;
+  if(saved?.giant)this.giant.restore(saved.giant);else this.giantInstance=undefined;
+  this.lift.fill(0);this.wind.fill(0);this.currents.fill(0);this.seeds.fill(0);if(saved){this.wind.set(saved.wind);this.currents.set(saved.currents);this.seeds.set(saved.seeds);}
+ }
+
  seedLife(initial?:Float32Array){this.seeds.fill(1);if(initial)for(let i=0;i<this.grid.count;i++)initial[i*STRIDE+F.seed]=.08;}
  /** Re-derived from saved winds and current terrain: no stale cache after resume/edit. */
  private cloudLift(s:Float32Array,index:number){
   let lift=0;for(const {i,j,distance,t} of this.incident[index]){const flow=t.reduce((a,v,k)=>a+v*(this.wind[i*3+k]+this.wind[j*3+k])*.5,0),slope=(solidHeight(s,j,this.grid)-solidHeight(s,i,this.grid))*HEIGHT_SCALE/RADIUS/distance;lift=Math.fround(lift+((index===i?-flow:flow)/distance+flow*slope)/3);}return lift;
  }
- conditions(s:Float32Array,i:number,e:Environment){return this.giant.ready?this.giant.conditions(i):this.air.ready?this.air.conditions(s,i):cloudConditions(s,i,e);}
- prepareSurface(s:Float32Array,e:Environment){if(isDeepAtmosphere(e.body)){this.giant.initialize(s,e);this.air.radiusMeters=this.giant.radiusMeters;return;}this.air.detach(s,e,this.wind);}
+ conditions(s:Float32Array,i:number,e:Environment){return this.giantReady?this.giant.conditions(i):this.airReady?this.air.conditions(s,i):cloudConditions(s,i,e);}
+ prepareSurface(s:Float32Array,e:Environment){if(isDeepAtmosphere(e.body)){this.giant.initialize(s,e);if(this.airInstance)this.airInstance.radiusMeters=this.giant.radiusMeters;return;}this.air.detach(s,e,this.wind);}
  surfaceSupplies(s:Float32Array,commands:Float32Array,stride:number,energy:Float32Array){this.air.supplies(s,commands,stride,energy);}
- energy(s:Float32Array){if(this.giant.ready)return this.giant.totalEnergy();let h=0;for(let i=0;i<this.grid.count;i++)h+=surfaceEnthalpy(s,i);return h+this.air.totalEnergy();}
- stepGiant(s:Float32Array,dt:number,commands:Float32Array,e:Environment,energy:Float32Array){this.giant.advance(s,dt,commands,e,energy);this.air.radiusMeters=this.giant.radiusMeters;this.currents.fill(0);this.seeds.fill(0);this.lift.fill(0);for(let i=0;i<this.grid.count;i++){const q=i*DEEP_LAYERS+this.giant.referenceLayer(i);for(let k=0;k<3;k++)this.wind[i*3+k]=this.giant.velocity[q*3+k]*AIR_SECONDS/this.giant.radiusMeters;}}
+ energy(s:Float32Array){if(this.giantReady)return this.giant.totalEnergy();let h=0;for(let i=0;i<this.grid.count;i++)h+=surfaceEnthalpy(s,i);return h+(this.airInstance?.totalEnergy()??0);}
+ stepGiant(s:Float32Array,dt:number,commands:Float32Array,e:Environment,energy:Float32Array){this.giant.advance(s,dt,commands,e,energy);if(this.airInstance)this.airInstance.radiusMeters=this.giant.radiusMeters;this.currents.fill(0);this.seeds.fill(0);this.lift.fill(0);for(let i=0;i<this.grid.count;i++){const q=i*DEEP_LAYERS+this.giant.referenceLayer(i);for(let k=0;k<3;k++)this.wind[i*3+k]=this.giant.velocity[q*3+k]*AIR_SECONDS/this.giant.radiusMeters;}}
  step(s:Float32Array,dt:number,e:Environment,energy:Float32Array,condensed?:Float32Array,precipitated?:Float32Array,escaped?:Float32Array,feeding?:Float32Array){
-  if(!this.air.ready)this.prepareSurface(s,e);
+  if(!this.airReady)this.prepareSurface(s,e);
   this.air.advance(s,dt,e,energy,condensed,precipitated,escaped);this.air.surfaceWind(this.wind);
   if(dt<=0)return;
   this.roundoff.fill(0);
@@ -157,7 +175,7 @@ export function climateColor(layer:ClimateLayer,s:Float32Array,i:number,e:Enviro
  const deep=isDeepAtmosphere(e.body);if(deep&&layer==='temperature')v=(c.conditions(s,i,e).temperature+200)/150;
  if(layer==='temperature'&&!deep)v=mars?(s[p+F.temperature]+150)/180:(s[p+F.temperature]+30)/80;
  if(layer==='pressure'){const pressure=columnPressure(s[p+F.vapor]+s[p+F.nitrogen]+s[p+F.methane]+s[p+F.carbonDioxide]+s[p+F.oxygen]+s[p+F.carbonMonoxide],e.gravity??1);v=mars?pressure/1200:(pressure/101325-.6)/.8;}
- if(layer==='pressure'&&deep)v=c.giant.ready?(c.giant.bottomPressure(i)/c.giant.initialBottomPressure-.9)/.2:0;
+ if(layer==='pressure'&&deep)v=c.giantReady?(c.giant.bottomPressure(i)/c.giant.initialBottomPressure-.9)/.2:0;
  if(layer==='humidity')v=relativeHumidity(s,i,e,c);
  if(layer==='clouds')v=(s[p+F.cloud]+s[p+F.cloudIce]+s[p+F.ammoniaCloud]+s[p+F.ammoniaIce])*COLUMN_KG/(deep?50:.3);
  if(layer==='ammonia')v=(s[p+F.ammoniaCloud]+s[p+F.ammoniaIce])*COLUMN_KG/2;
@@ -168,4 +186,9 @@ export function climateColor(layer:ClimateLayer,s:Float32Array,i:number,e:Enviro
  if(layer==='seeds')v=c.seeds[i];
  if(layer==='wind'||layer==='currents'){const a=layer==='wind'?c.wind:c.currents;v=Math.hypot(a[i*3],a[i*3+1],a[i*3+2])/(layer==='wind'?100*AIR_SECONDS/c.air.radiusMeters:.035);}
  v=clamp(v);return v<.5?[.12+v*.6,.25+v*.9,.78-v*.25,.82]:[.42+(v-.5)*1.14,.70-(v-.5)*1.0,.65-(v-.5)*1.1,.82];
+}
+
+export function climateSnapshotFromCheckpoint(c:ClimateCheckpoint):ClimateSnapshot {
+ const giant=c.giant;
+ return {...(giant?{version:3 as const,giant:{...giant,mass:[...giant.mass],temperature:[...giant.temperature],velocity:[...giant.velocity],height:[...giant.height]}}:{version:2 as const,atmosphere:layeredSnapshotFromCheckpoint(c.air)}),wind:[...c.wind],currents:[...c.currents],seeds:[...c.seeds]};
 }

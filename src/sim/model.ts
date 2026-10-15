@@ -90,9 +90,9 @@ export function capacity(state:Float32Array,i:number) {
 export function phaseEnergy(state:Float32Array,i:number){const p=i*STRIDE;let h=state[p+F.photonEnergy];for(const f of PHASE_FIELDS)h+=state[p+f]*MATERIAL_ENERGY[f];return h;}
 export function enthalpy(state:Float32Array,i:number){return thermalEnergy(capacity(state,i),state[i*STRIDE+F.temperature],phaseEnergy(state,i));}
 export function totalEnthalpy(state:Float32Array,climate?:ClimateSnapshot|WeatherClimate){
- if(climate instanceof WeatherClimate&&climate.giant.ready)return climate.giant.totalEnergy();
+ if(climate instanceof WeatherClimate&&climate.giantReady)return climate.giant.totalEnergy();
  if(climate&&!(climate instanceof WeatherClimate)&&climate.giant)return deepSnapshotEnergy(climate.giant);
- if(climate instanceof WeatherClimate&&climate.air.ready)return climate.energy(state);
+ if(climate instanceof WeatherClimate&&climate.airReady)return climate.energy(state);
  let h=0;for(let i=0;i<state.length/STRIDE;i++)h+=enthalpy(state,i);
  const a=climate&&!(climate instanceof WeatherClimate)?climate.atmosphere:undefined;
  if(a)for(let i=0;i<state.length/STRIDE;i++){const layers=a.version===1?LEGACY_AIR_LAYERS:AIR_LAYERS,width=airMassWidth(a);let actual=0;for(let k=0;k<layers;k++){const q=i*layers+k;let m=0,c=0,phase=0;for(let f=0;f<width;f++){const mass=a.mass[q*width+f];m+=mass;c+=mass*CP[AIR_FIELDS[f]];phase+=mass*MATERIAL_ENERGY[AIR_FIELDS[f]];}const dust=a.dustMass?.[q]??0;m+=dust;c+=dust*CP[F.airborneDust];const v=q*3;actual+=c*a.temperature[q]+phase+m*(9.81*AIR_Z[k]+.5*(a.velocity[v]**2+a.velocity[v+1]**2+a.velocity[v+2]**2))/1000;}const p=i*STRIDE;h+=actual-ATMOSPHERE_MIRRORS.reduce((sum,f)=>sum+state[p+f]*(CP[f]*state[p+F.temperature]+MATERIAL_ENERGY[f]),0);}
@@ -141,7 +141,7 @@ export function vaporCapacity(s:Float32Array,i:number,t:number,e:Environment,pha
 export function cellPressure(s:Float32Array,i:number,e:Environment){const p=i*STRIDE;return columnPressure(s[p+F.vapor]+s[p+F.nitrogen]+s[p+F.methane]+s[p+F.carbonDioxide]+s[p+F.oxygen]+s[p+F.carbonMonoxide],gravityMultiplier(e));}
 export function cellHabitat(s:Float32Array,i:number,e:Environment,field:number,grid:SphereGrid){const p=i*STRIDE;if(field!==F.plant)return consumerHabitat(s[p+8],s[p+4],s[p+7],s[p+5],field===F.carnivore);const exposure=Math.max(0,grid.directions[i*3]*e.sun[0]+grid.directions[i*3+1]*e.sun[1]+grid.directions[i*3+2]*e.sun[2]);return habitat(s[p+8],s[p+4],s[p+7],s[p+5],transmittedLight(exposure,e.sunlight,s[p+16],s[p+17]))*(e.climate?pioneerRootability(s,p):1);}
 export function totalMass(state:Float32Array,climate?:ClimateSnapshot|WeatherClimate) {
-  if(climate instanceof WeatherClimate&&climate.giant.ready)return climate.giant.totalMass();
+  if(climate instanceof WeatherClimate&&climate.giantReady)return climate.giant.totalMass();
   if(climate&&!(climate instanceof WeatherClimate)&&climate.giant)return deepSnapshotMass(climate.giant);
   let result=0;
   for(let p=0;p<state.length;p+=STRIDE) for(const f of MASS_FIELDS) result+=state[p+f];

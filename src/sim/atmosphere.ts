@@ -53,7 +53,7 @@ export function atmosphereState(state:Float32Array,e:Environment,climate?:Climat
     }
     moles+=localMoles;thermalMoles+=localMoles*Math.max(1,state[p+F.temperature]+273.15);
   }
-  const air=climate&&'air' in climate?(climate.air.ready?climate.air:undefined):climate?.atmosphere;
+  const air=climate&&'air' in climate?(climate.airReady?climate.air:undefined):climate?.atmosphere;
   if(air){
     thermalMoles=0;minimumBinding=Infinity;
     const width='ready' in air?AIR_SPECIES:airMassWidth(air);
@@ -63,7 +63,7 @@ export function atmosphereState(state:Float32Array,e:Environment,climate?:Climat
       if(mass>0)minimumBinding=Math.min(minimumBinding,bindingParameter(air.temperature[q],gravityMultiplier(e),gas.molarMass,radius));
     }
   }
-  const giant=climate&&'giant' in climate?climate.giant:undefined;
+  const giant=climate&&'giantReady' in climate?(climate.giantReady?climate.giant:undefined):climate?.giant;
   if(giant&&('ready' in giant?giant.ready:true)){
     masses.fill(0);moles=0;thermalMoles=0;minimumBinding=Infinity;
     const width='ready' in giant?8:deepMassWidth(giant);

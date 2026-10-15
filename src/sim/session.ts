@@ -8,7 +8,7 @@ export interface FallingDeposit {index:number;material:Material;amount:number;}
 
 /** Save a complete material budget without snapping or stopping visible falling grains. */
 export function snapshotSurface(live:Float32Array,pending:Float32Array,falling:FallingDeposit[],inFlight?:Float32Array|null,climate?:WeatherClimate,environment?:Environment):{state:Float32Array;pendingRemoved:number;collected:ReturnType<typeof emptyStock>;climate?:ClimateSnapshot} {
-  if((!climate||climate.air.ready||climate.giant.ready)&&!falling.length&&!pending.some(v=>v!==0)&&(!inFlight||!inFlight.some(v=>v!==0)))return {state:live.slice(),pendingRemoved:0,collected:emptyStock(),climate:climate?.snapshot()};
+  if((!climate||climate.airReady||climate.giantReady)&&!falling.length&&!pending.some(v=>v!==0)&&(!inFlight||!inFlight.some(v=>v!==0)))return {state:live.slice(),pendingRemoved:0,collected:emptyStock(),climate:climate?.snapshot()};
   const prior=inFlight?snapshotSurface(live,inFlight,[],null,climate,environment):null;
   const state=prior?.state??new Float32Array(live),count=live.length/STRIDE;
   const shadow=climate&&environment?new WeatherClimate(climate.grid):undefined;
