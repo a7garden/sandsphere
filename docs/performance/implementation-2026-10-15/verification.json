@@ -1,0 +1,111 @@
+{
+  "runtime": "Node v26.9.0 / npm 11.19.1 / macOS 27.0.1 arm64 / Apple M4 Max",
+  "tests": {
+    "passed": 556,
+    "failed": 0,
+    "skipped": 19,
+    "total": 575,
+    "durationMs": 205338.43798828125,
+    "success": true,
+    "command": "SANDSPHERE_LIVE_USERS= SANDSPHERE_LIVE_CONFIG= FIRESTORE_EMULATOR_HOST= node node_modules/vitest/vitest.mjs run --maxWorkers=2 --testTimeout=20000 --configLoader runner --cache=false --reporter=json --outputFile=artifacts/performance/full-tests.json",
+    "skips": [
+      {
+        "file": "account-live.test.ts",
+        "name": "operational Firebase account saves logs in, saves, switches users and restores only the original owner"
+      },
+      {
+        "file": "account-rules.test.ts",
+        "name": "Firebase user isolation and atomic cloud saves allows only the owner to read and write a valid manifest, denies listing and malformed values"
+      },
+      {
+        "file": "account-rules.test.ts",
+        "name": "Firebase user isolation and atomic cloud saves keeps Firestore chunks private, bounded, immutable and protects retained revisions"
+      },
+      {
+        "file": "account-rules.test.ts",
+        "name": "Firebase user isolation and atomic cloud saves round trips a save larger than one document and removes only revisions older than the previous save"
+      },
+      {
+        "file": "account-rules.test.ts",
+        "name": "Firebase user isolation and atomic cloud saves makes compressed revisions private and immutable"
+      },
+      {
+        "file": "account-rules.test.ts",
+        "name": "Firebase user isolation and atomic cloud saves permits exactly one concurrent writer and restores the committed world"
+      },
+      {
+        "file": "atmosphere-optimization-audit.test.ts",
+        "name": "keeps complete atmosphere results identical while reducing kernel work"
+      },
+      {
+        "file": "climate-rce.test.ts",
+        "name": "audits 1000 days of RCE at 295 K"
+      },
+      {
+        "file": "climate-rce.test.ts",
+        "name": "audits 1000 days of RCE at 300 K"
+      },
+      {
+        "file": "climate-rce.test.ts",
+        "name": "audits 1000 days of RCE at 305 K"
+      },
+      {
+        "file": "climate-resolution-soak.test.ts",
+        "name": "climate resolution audit coast: 2400 game seconds at subdivision 2"
+      },
+      {
+        "file": "climate-resolution-soak.test.ts",
+        "name": "climate resolution audit coast: 240 game seconds at subdivision 4"
+      },
+      {
+        "file": "climate-soak-resume.test.ts",
+        "name": "continues a long evolved climate identically through a serialized and upgraded snapshot"
+      },
+      {
+        "file": "climate-soak.test.ts",
+        "name": "long climate audit coast: 7200 game seconds at subdivision 1"
+      },
+      {
+        "file": "climate-soak.test.ts",
+        "name": "long climate audit tidal: 7200 game seconds at subdivision 1"
+      },
+      {
+        "file": "climate-soak.test.ts",
+        "name": "long climate audit cold: 7200 game seconds at subdivision 1"
+      },
+      {
+        "file": "climate-soak.test.ts",
+        "name": "long climate audit dry: 2400 game seconds at subdivision 1"
+      },
+      {
+        "file": "climate-soak.test.ts",
+        "name": "long climate audit symmetric: 2400 game seconds at subdivision 1"
+      },
+      {
+        "file": "methane-save-resume.test.ts",
+        "name": "continues a saved cold methane world with a closed ledger and exact restart"
+      }
+    ]
+  },
+  "typecheck": true,
+  "checkVersion": true,
+  "isolatedBuild": true,
+  "browserValidation": {
+    "status": "blocked",
+    "reason": "Mac locked; no lock/security bypass attempted"
+  },
+  "externalWrites": false,
+  "remotePush": false,
+  "deployment": false,
+  "npmBuild": {
+    "command": "npm run build -- --configLoader runner",
+    "exitCode": 0,
+    "warning": "Large main/solver chunks remain; no chunk-size warning suppression"
+  },
+  "diagnosticScriptSyntax": true,
+  "bundleReproduction": {
+    "command": "node scripts/benchmark-bundle.mjs artifacts/performance/repro-bundle",
+    "identicalAssetSizes": true,
+    "identicalChunkGraph": true
+  }
+}

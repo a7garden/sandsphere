@@ -1,0 +1,4399 @@
+{
+  "buildMs": 8955.255625,
+  "envFilesLoaded": false,
+  "outDir": "/tmp/sandsphere-performance-improved-build-20261015",
+  "files": [
+    {
+      "file": "abstractAudioBus-BRY5mTB6.js",
+      "bytes": 119,
+      "gzipBytes": 130,
+      "brotliBytes": 104
+    },
+    {
+      "file": "abstractSoundInstance-DFpF0HqE.js",
+      "bytes": 3064,
+      "gzipBytes": 887,
+      "brotliBytes": 783
+    },
+    {
+      "file": "abstractSoundSource-Crn3W6pT.js",
+      "bytes": 1484,
+      "gzipBytes": 484,
+      "brotliBytes": 427
+    },
+    {
+      "file": "app-Ct5fmA8o.js",
+      "bytes": 257444,
+      "gzipBytes": 83552,
+      "brotliBytes": 68236
+    },
+    {
+      "file": "app-_GVRWp5g.css",
+      "bytes": 203045,
+      "gzipBytes": 34492,
+      "brotliBytes": 28592
+    },
+    {
+      "file": "baseTexture.pure-CYGjrvG4.js",
+      "bytes": 31866,
+      "gzipBytes": 8651,
+      "brotliBytes": 7706
+    },
+    {
+      "file": "basisTextureLoader-CqwFakAd.js",
+      "bytes": 8138,
+      "gzipBytes": 3165,
+      "brotliBytes": 2845
+    },
+    {
+      "file": "clouds-DLK2ca2x.css",
+      "bytes": 16511,
+      "gzipBytes": 3934,
+      "brotliBytes": 3266
+    },
+    {
+      "file": "clouds-Dfak_FvN.js",
+      "bytes": 3393,
+      "gzipBytes": 1735,
+      "brotliBytes": 1476
+    },
+    {
+      "file": "color.fragment-DVaYbzXa.js",
+      "bytes": 982,
+      "gzipBytes": 459,
+      "brotliBytes": 400
+    },
+    {
+      "file": "color.fragment-SH3AKoaS.js",
+      "bytes": 874,
+      "gzipBytes": 420,
+      "brotliBytes": 396
+    },
+    {
+      "file": "color.vertex-Ca_aYOpk.js",
+      "bytes": 1439,
+      "gzipBytes": 628,
+      "brotliBytes": 559
+    },
+    {
+      "file": "color.vertex-DKaa32eP.js",
+      "bytes": 1428,
+      "gzipBytes": 644,
+      "brotliBytes": 566
+    },
+    {
+      "file": "cubemapToSphericalPolynomial-BcGW8Y83.js",
+      "bytes": 3705,
+      "gzipBytes": 1618,
+      "brotliBytes": 1479
+    },
+    {
+      "file": "dds.pure-DbChDZlf.js",
+      "bytes": 6936,
+      "gzipBytes": 2513,
+      "brotliBytes": 2236
+    },
+    {
+      "file": "ddsTextureLoader-DQQxh3cc.js",
+      "bytes": 1258,
+      "gzipBytes": 617,
+      "brotliBytes": 560
+    },
+    {
+      "file": "default.fragment-BYIQOBIG.js",
+      "bytes": 108064,
+      "gzipBytes": 20000,
+      "brotliBytes": 17109
+    },
+    {
+      "file": "default.fragment-CDXEID0B.js",
+      "bytes": 101137,
+      "gzipBytes": 19723,
+      "brotliBytes": 16873
+    },
+    {
+      "file": "default.vertex-CtWj3Tu-.js",
+      "bytes": 19510,
+      "gzipBytes": 4297,
+      "brotliBytes": 3765
+    },
+    {
+      "file": "default.vertex-DNv2BK-H.js",
+      "bytes": 37861,
+      "gzipBytes": 6226,
+      "brotliBytes": 5447
+    },
+    {
+      "file": "envTextureLoader-DgMEFrqe.js",
+      "bytes": 32211,
+      "gzipBytes": 9104,
+      "brotliBytes": 8278
+    },
+    {
+      "file": "exrTextureLoader-AvtVnwYU.js",
+      "bytes": 13138,
+      "gzipBytes": 4802,
+      "brotliBytes": 4395
+    },
+    {
+      "file": "firebase-BmI4gkYH.js",
+      "bytes": 475476,
+      "gzipBytes": 141724,
+      "brotliBytes": 121564
+    },
+    {
+      "file": "fogFragment-NFgubt9V.js",
+      "bytes": 2430,
+      "gzipBytes": 751,
+      "brotliBytes": 651
+    },
+    {
+      "file": "fogFragment-WPqtYpyX.js",
+      "bytes": 2200,
+      "gzipBytes": 698,
+      "brotliBytes": 601
+    },
+    {
+      "file": "fogVertex-B7dQhgq9.js",
+      "bytes": 1802,
+      "gzipBytes": 502,
+      "brotliBytes": 415
+    },
+    {
+      "file": "fogVertex-x0NJgB5y.js",
+      "bytes": 1493,
+      "gzipBytes": 439,
+      "brotliBytes": 366
+    },
+    {
+      "file": "guid-CxX3q4DM.js",
+      "bytes": 17330,
+      "gzipBytes": 5952,
+      "brotliBytes": 5320
+    },
+    {
+      "file": "halfFloat-Ce77JD5z.js",
+      "bytes": 1290,
+      "gzipBytes": 602,
+      "brotliBytes": 574
+    },
+    {
+      "file": "hdrTextureLoader-BQVwkxK1.js",
+      "bytes": 2313,
+      "gzipBytes": 1132,
+      "brotliBytes": 1038
+    },
+    {
+      "file": "helperFunctions-gEnZbjN3.js",
+      "bytes": 6815,
+      "gzipBytes": 2277,
+      "brotliBytes": 2056
+    },
+    {
+      "file": "iesTextureLoader-3O5bSkSd.js",
+      "bytes": 2477,
+      "gzipBytes": 1073,
+      "brotliBytes": 963
+    },
+    {
+      "file": "index.esm-xyj4vR7n.js",
+      "bytes": 155136,
+      "gzipBytes": 44522,
+      "brotliBytes": 38284
+    },
+    {
+      "file": "ktxTextureLoader-C2yQXxOL.js",
+      "bytes": 16377,
+      "gzipBytes": 4766,
+      "brotliBytes": 4234
+    },
+    {
+      "file": "logDepthDeclaration-3gXGtHbI.js",
+      "bytes": 275,
+      "gzipBytes": 225,
+      "brotliBytes": 190
+    },
+    {
+      "file": "logDepthDeclaration-DYYUVTrx.js",
+      "bytes": 281,
+      "gzipBytes": 230,
+      "brotliBytes": 196
+    },
+    {
+      "file": "logDepthFragment-Cr-Stg0k.js",
+      "bytes": 9502,
+      "gzipBytes": 2901,
+      "brotliBytes": 2519
+    },
+    {
+      "file": "logDepthVertex-D5IUM6qd.js",
+      "bytes": 309,
+      "gzipBytes": 245,
+      "brotliBytes": 210
+    },
+    {
+      "file": "logDepthVertex-DSD5XdGw.js",
+      "bytes": 376,
+      "gzipBytes": 262,
+      "brotliBytes": 232
+    },
+    {
+      "file": "logger-CuBYPcDK.js",
+      "bytes": 1881,
+      "gzipBytes": 826,
+      "brotliBytes": 726
+    },
+    {
+      "file": "mainUVVaryingDeclaration-BJcmOgzM.js",
+      "bytes": 1752,
+      "gzipBytes": 594,
+      "brotliBytes": 529
+    },
+    {
+      "file": "mainUVVaryingDeclaration-Bn-mAjvV.js",
+      "bytes": 1943,
+      "gzipBytes": 766,
+      "brotliBytes": 668
+    },
+    {
+      "file": "math.color.pure-anOydqGM.js",
+      "bytes": 12506,
+      "gzipBytes": 2949,
+      "brotliBytes": 2508
+    },
+    {
+      "file": "math.scalar.functions-lnL7TJ7T.js",
+      "bytes": 764,
+      "gzipBytes": 413,
+      "brotliBytes": 381
+    },
+    {
+      "file": "math.vector.pure-6ByuvoqV.js",
+      "bytes": 65022,
+      "gzipBytes": 15758,
+      "brotliBytes": 12896
+    },
+    {
+      "file": "mesh.vertexData.functions-CD4JOR2q.js",
+      "bytes": 930,
+      "gzipBytes": 482,
+      "brotliBytes": 421
+    },
+    {
+      "file": "meshBlendTagFragmentOutput-CzziWpin.js",
+      "bytes": 6635,
+      "gzipBytes": 2337,
+      "brotliBytes": 2067
+    },
+    {
+      "file": "observable.pure-B5E8yEYx.js",
+      "bytes": 3205,
+      "gzipBytes": 1105,
+      "brotliBytes": 994
+    },
+    {
+      "file": "particles.fragment-BfWjWt--.js",
+      "bytes": 6124,
+      "gzipBytes": 1768,
+      "brotliBytes": 1612
+    },
+    {
+      "file": "particles.vertex-CXBkuinE.js",
+      "bytes": 8518,
+      "gzipBytes": 1946,
+      "brotliBytes": 1766
+    },
+    {
+      "file": "postprocess.vertex-CmVXXq2T.js",
+      "bytes": 584,
+      "gzipBytes": 355,
+      "brotliBytes": 330
+    },
+    {
+      "file": "postprocess.vertex-DJCmMhI8.js",
+      "bytes": 460,
+      "gzipBytes": 307,
+      "brotliBytes": 257
+    },
+    {
+      "file": "precisionDate-CfCevjl-.js",
+      "bytes": 390,
+      "gzipBytes": 237,
+      "brotliBytes": 199
+    },
+    {
+      "file": "rgbdDecode.fragment-Cdz2Tveq.js",
+      "bytes": 520,
+      "gzipBytes": 343,
+      "brotliBytes": 311
+    },
+    {
+      "file": "rgbdDecode.fragment-h6Kuj5D-.js",
+      "bytes": 654,
+      "gzipBytes": 387,
+      "brotliBytes": 367
+    },
+    {
+      "file": "savePreparation.worker-C_i7XHtC.js",
+      "bytes": 37363,
+      "gzipBytes": 13575,
+      "brotliBytes": 12048
+    },
+    {
+      "file": "shaderStore-D-XQlhUT.js",
+      "bytes": 469,
+      "gzipBytes": 176,
+      "brotliBytes": 153
+    },
+    {
+      "file": "solver.worker-DK0R8t-z.js",
+      "bytes": 2343095,
+      "gzipBytes": 1435296,
+      "brotliBytes": 1310925
+    },
+    {
+      "file": "space-grotesk-latin-400-normal-BnQMeOim.woff",
+      "bytes": 17004,
+      "gzipBytes": 16969,
+      "brotliBytes": 16905
+    },
+    {
+      "file": "space-grotesk-latin-400-normal-CJ-V5oYT.woff2",
+      "bytes": 13388,
+      "gzipBytes": 13409,
+      "brotliBytes": 13374
+    },
+    {
+      "file": "space-grotesk-latin-500-normal-CNSSEhBt.woff",
+      "bytes": 16988,
+      "gzipBytes": 16948,
+      "brotliBytes": 16882
+    },
+    {
+      "file": "space-grotesk-latin-500-normal-lFbtlQH6.woff2",
+      "bytes": 13312,
+      "gzipBytes": 13335,
+      "brotliBytes": 13309
+    },
+    {
+      "file": "space-grotesk-latin-600-normal-BflQw4A9.woff",
+      "bytes": 16884,
+      "gzipBytes": 16829,
+      "brotliBytes": 16760
+    },
+    {
+      "file": "space-grotesk-latin-600-normal-DjKNqYRj.woff2",
+      "bytes": 13284,
+      "gzipBytes": 13307,
+      "brotliBytes": 13284
+    },
+    {
+      "file": "spatialWebAudio-DzT5q2Ot.js",
+      "bytes": 14101,
+      "gzipBytes": 3228,
+      "brotliBytes": 2908
+    },
+    {
+      "file": "system-C1gPXZlW.js",
+      "bytes": 4180328,
+      "gzipBytes": 1902653,
+      "brotliBytes": 1671205
+    },
+    {
+      "file": "tgaTextureLoader-CqhhocF6.js",
+      "bytes": 3408,
+      "gzipBytes": 1349,
+      "brotliBytes": 1210
+    },
+    {
+      "file": "tools.pure-BztHInWZ.js",
+      "bytes": 22564,
+      "gzipBytes": 7699,
+      "brotliBytes": 6894
+    },
+    {
+      "file": "typeStore-RqCBAJcv.js",
+      "bytes": 441,
+      "gzipBytes": 270,
+      "brotliBytes": 230
+    },
+    {
+      "file": "vertexColorMixing-B-QfZ7Di.js",
+      "bytes": 8963,
+      "gzipBytes": 1819,
+      "brotliBytes": 1574
+    },
+    {
+      "file": "vertexColorMixing-CeF6hIt3.js",
+      "bytes": 4323,
+      "gzipBytes": 989,
+      "brotliBytes": 878
+    },
+    {
+      "file": "webAudioBaseSubGraph-fpvxH4LN.js",
+      "bytes": 8467,
+      "gzipBytes": 2093,
+      "brotliBytes": 1921
+    },
+    {
+      "file": "webAudioBus-Jk1fQWvj.js",
+      "bytes": 2276,
+      "gzipBytes": 746,
+      "brotliBytes": 665
+    },
+    {
+      "file": "webAudioMainBus-pmVy-dxX.js",
+      "bytes": 917,
+      "gzipBytes": 417,
+      "brotliBytes": 389
+    },
+    {
+      "file": "webAudioSoundSource-Dn7pWToQ.js",
+      "bytes": 2327,
+      "gzipBytes": 822,
+      "brotliBytes": 730
+    },
+    {
+      "file": "webAudioStaticSound-Ifpzshpn.js",
+      "bytes": 9369,
+      "gzipBytes": 2543,
+      "brotliBytes": 2339
+    },
+    {
+      "file": "webAudioStreamingSound-XPfsejuB.js",
+      "bytes": 8401,
+      "gzipBytes": 2433,
+      "brotliBytes": 2178
+    },
+    {
+      "file": "webRequest-dqz0dHXK.js",
+      "bytes": 2941,
+      "gzipBytes": 1070,
+      "brotliBytes": 928
+    }
+  ],
+  "chunks": [
+    {
+      "file": "assets/app-Ct5fmA8o.js",
+      "isEntry": true,
+      "imports": [
+        "assets/system-C1gPXZlW.js"
+      ],
+      "dynamicImports": [
+        "assets/index.esm-xyj4vR7n.js",
+        "assets/system-C1gPXZlW.js",
+        "assets/firebase-BmI4gkYH.js"
+      ],
+      "modules": [
+        {
+          "id": "src/sim/planetCreation.ts",
+          "bytes": 3423
+        },
+        {
+          "id": "src/account/config.ts",
+          "bytes": 273
+        },
+        {
+          "id": "src/account/sync.ts",
+          "bytes": 1047
+        },
+        {
+          "id": "src/ui/icons.ts",
+          "bytes": 4581
+        },
+        {
+          "id": "src/ui/account.ts",
+          "bytes": 6300
+        },
+        {
+          "id": "src/ui/account.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/helpTip.ts",
+          "bytes": 2871
+        },
+        {
+          "id": "src/ui/activityStore.ts",
+          "bytes": 1950
+        },
+        {
+          "id": "src/ui/appChrome.ts",
+          "bytes": 9208
+        },
+        {
+          "id": "src/ui/planetNavigation.ts",
+          "bytes": 6208
+        },
+        {
+          "id": "src/sim/telemetry.ts",
+          "bytes": 14915
+        },
+        {
+          "id": "src/sim/telemetryPersistence.ts",
+          "bytes": 6773
+        },
+        {
+          "id": "src/sim/telemetryCsvImport.ts",
+          "bytes": 4568
+        },
+        {
+          "id": "src/ui/simulationTime.ts",
+          "bytes": 3406
+        },
+        {
+          "id": "src/ui/planetDashboard.ts",
+          "bytes": 25641
+        },
+        {
+          "id": "package.json",
+          "bytes": 68
+        },
+        {
+          "id": "src/version.ts",
+          "bytes": 183
+        },
+        {
+          "id": "src/ui/rangeControl.ts",
+          "bytes": 2010
+        },
+        {
+          "id": "src/ui/materialSupply.ts",
+          "bytes": 1292
+        },
+        {
+          "id": "src/ui/inventory.ts",
+          "bytes": 10434
+        },
+        {
+          "id": "src/ui/rotationStick.ts",
+          "bytes": 3562
+        },
+        {
+          "id": "src/ui/observationPoint.ts",
+          "bytes": 594
+        },
+        {
+          "id": "src/ui/sceneLayers.ts",
+          "bytes": 9802
+        },
+        {
+          "id": "src/ui/spinPeriod.ts",
+          "bytes": 1592
+        },
+        {
+          "id": "src/ui/sectionSelection.ts",
+          "bytes": 5065
+        },
+        {
+          "id": "src/ui/planetControls.ts",
+          "bytes": 8152
+        },
+        {
+          "id": "src/ui/depthProfile.ts",
+          "bytes": 5084
+        },
+        {
+          "id": "src/ui/weatherReadings.ts",
+          "bytes": 800
+        },
+        {
+          "id": "src/ui/domUpdates.ts",
+          "bytes": 175
+        },
+        {
+          "id": "src/ui/observatory.ts",
+          "bytes": 17725
+        },
+        {
+          "id": "src/ui/inspector.ts",
+          "bytes": 7198
+        },
+        {
+          "id": "src/sim/meteor.ts",
+          "bytes": 2786
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@fontsource/space-grotesk/latin-400.css",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@fontsource/space-grotesk/latin-500.css",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@fontsource/space-grotesk/latin-600.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/style.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/planetDashboard.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/glassWorkbench.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/workbench.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/onboarding.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/mobileWorkbench.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/workbench.ts",
+          "bytes": 8152
+        },
+        {
+          "id": "src/ui/onboarding.ts",
+          "bytes": 2847
+        },
+        {
+          "id": "src/sim/physics.wgsl?raw",
+          "bytes": 7633
+        },
+        {
+          "id": "src/sim/physicsShader.ts",
+          "bytes": 1115
+        },
+        {
+          "id": "src/sim/gpu.ts",
+          "bytes": 7198
+        },
+        {
+          "id": "src/sim/solverWorkerProtocol.ts",
+          "bytes": 516
+        },
+        {
+          "id": "src/sim/workerSolver.ts",
+          "bytes": 4414
+        },
+        {
+          "id": "src/sim/toolHeat.ts",
+          "bytes": 783
+        },
+        {
+          "id": "src/sim/session.ts",
+          "bytes": 2290
+        },
+        {
+          "id": "src/sim/savePreparation.ts",
+          "bytes": 2593
+        },
+        {
+          "id": "src/ui/system.ts",
+          "bytes": 4423
+        },
+        {
+          "id": "src/main.ts",
+          "bytes": 121964
+        },
+        {
+          "id": "index.html",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/clouds-Dfak_FvN.js",
+      "isEntry": true,
+      "imports": [
+        "assets/system-C1gPXZlW.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "src/ui/cloudComparison.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/cloudComparison.ts",
+          "bytes": 4789
+        },
+        {
+          "id": "clouds.html",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/abstractAudioBus-BRY5mTB6.js",
+      "isEntry": false,
+      "imports": [
+        "assets/webAudioBaseSubGraph-fpvxH4LN.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractAudioBus.js",
+          "bytes": 232
+        }
+      ]
+    },
+    {
+      "file": "assets/abstractSoundInstance-DFpF0HqE.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/abstractSoundSource-Crn3W6pT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractSound.js",
+          "bytes": 3554
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractSoundInstance.js",
+          "bytes": 791
+        }
+      ]
+    },
+    {
+      "file": "assets/abstractSoundSource-Crn3W6pT.js",
+      "isEntry": false,
+      "imports": [
+        "assets/webAudioBaseSubGraph-fpvxH4LN.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractSoundSource.js",
+          "bytes": 2001
+        }
+      ]
+    },
+    {
+      "file": "assets/baseTexture.pure-CYGjrvG4.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.vector.pure-6ByuvoqV.js",
+        "assets/math.color.pure-anOydqGM.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/andOrNotEvaluator.js",
+          "bytes": 2152
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/tags.js",
+          "bytes": 2034
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/tslib.es6.js",
+          "bytes": 2926
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/decorators.functions.js",
+          "bytes": 1727
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/decorators.js",
+          "bytes": 3035
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/decorators.serialization.js",
+          "bytes": 6902
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/textureSampler.js",
+          "bytes": 1868
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/internalTexture.js",
+          "bytes": 9603
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.size.js",
+          "bytes": 1479
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/thinTexture.js",
+          "bytes": 3341
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/baseTexture.pure.js",
+          "bytes": 25924
+        }
+      ]
+    },
+    {
+      "file": "assets/basisTextureLoader-CqwFakAd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-BztHInWZ.js",
+        "assets/baseTexture.pure-CYGjrvG4.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/basisWorker.js",
+          "bytes": 6317
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/basis.pure.js",
+          "bytes": 7020
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/basisTextureLoader.js",
+          "bytes": 2189
+        }
+      ]
+    },
+    {
+      "file": "assets/color.fragment-DVaYbzXa.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-NFgubt9V.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/color.fragment.js",
+          "bytes": 1176
+        }
+      ]
+    },
+    {
+      "file": "assets/color.fragment-SH3AKoaS.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-WPqtYpyX.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/color.fragment.js",
+          "bytes": 1048
+        }
+      ]
+    },
+    {
+      "file": "assets/color.vertex-Ca_aYOpk.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogVertex-x0NJgB5y.js",
+        "assets/vertexColorMixing-B-QfZ7Di.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/color.vertex.js",
+          "bytes": 1653
+        }
+      ]
+    },
+    {
+      "file": "assets/color.vertex-DKaa32eP.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/vertexColorMixing-CeF6hIt3.js",
+        "assets/fogVertex-B7dQhgq9.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/color.vertex.js",
+          "bytes": 1641
+        }
+      ]
+    },
+    {
+      "file": "assets/cubemapToSphericalPolynomial-BcGW8Y83.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/math.vector.pure-6ByuvoqV.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/math.color.pure-anOydqGM.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/HighDynamicRange/cubemapToSphericalPolynomial.js",
+          "bytes": 7878
+        }
+      ]
+    },
+    {
+      "file": "assets/dds.pure-DbChDZlf.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/halfFloat-Ce77JD5z.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/cubemapToSphericalPolynomial-BcGW8Y83.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/dds.pure.js",
+          "bytes": 16899
+        }
+      ]
+    },
+    {
+      "file": "assets/ddsTextureLoader-DQQxh3cc.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/dds.pure-DbChDZlf.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/ddsTextureLoader.js",
+          "bytes": 2216
+        }
+      ]
+    },
+    {
+      "file": "assets/default.fragment-BYIQOBIG.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-NFgubt9V.js",
+        "assets/mainUVVaryingDeclaration-BJcmOgzM.js",
+        "assets/meshBlendTagFragmentOutput-CzziWpin.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/oitDeclaration.js",
+          "bytes": 570
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightUboDeclaration.js",
+          "bytes": 3671
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/ltcHelperFunctions.js",
+          "bytes": 6803
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clusteredLightingFunctions.js",
+          "bytes": 980
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clusteredLightingCompute.js",
+          "bytes": 1890
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightsFragmentFunctions.js",
+          "bytes": 7429
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/shadowsFragmentFunctions.js",
+          "bytes": 28609
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/samplerFragmentDeclaration.js",
+          "bytes": 917
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/reflectionFunction.js",
+          "bytes": 4724
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/textureRepetitionFunctions.js",
+          "bytes": 6302
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpFragmentMainFunctions.js",
+          "bytes": 3079
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpFragmentFunctions.js",
+          "bytes": 2229
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpFragment.js",
+          "bytes": 3342
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/defaultFragmentAlpha.js",
+          "bytes": 1212
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/depthPrePass.js",
+          "bytes": 543
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightFragment.js",
+          "bytes": 22319
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/oitFragment.js",
+          "bytes": 1545
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/default.fragment.js",
+          "bytes": 16537
+        }
+      ]
+    },
+    {
+      "file": "assets/default.fragment-CDXEID0B.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/logDepthDeclaration-3gXGtHbI.js",
+        "assets/logDepthFragment-Cr-Stg0k.js",
+        "assets/fogFragment-WPqtYpyX.js",
+        "assets/helperFunctions-gEnZbjN3.js",
+        "assets/mainUVVaryingDeclaration-Bn-mAjvV.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/decalFragmentDeclaration.js",
+          "bytes": 402
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultFragmentDeclaration.js",
+          "bytes": 2599
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/oitDeclaration.js",
+          "bytes": 650
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/lightFragmentDeclaration.js",
+          "bytes": 3007
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/lightUboDeclaration.js",
+          "bytes": 2905
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/ltcHelperFunctions.js",
+          "bytes": 6204
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/clusteredLightingFunctions.js",
+          "bytes": 944
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/lightsFragmentFunctions.js",
+          "bytes": 8003
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/shadowsFragmentFunctions.js",
+          "bytes": 26071
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/samplerFragmentDeclaration.js",
+          "bytes": 855
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/fresnelFunction.js",
+          "bytes": 541
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/reflectionFunction.js",
+          "bytes": 4214
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/textureRepetitionFunctions.js",
+          "bytes": 5318
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpFragmentMainFunctions.js",
+          "bytes": 2839
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpFragmentFunctions.js",
+          "bytes": 2063
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpFragment.js",
+          "bytes": 2519
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/decalFragment.js",
+          "bytes": 537
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultFragmentAlpha.js",
+          "bytes": 1052
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/depthPrePass.js",
+          "bytes": 380
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/lightFragment.js",
+          "bytes": 19681
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/oitFragment.js",
+          "bytes": 1362
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/default.fragment.js",
+          "bytes": 14315
+        }
+      ]
+    },
+    {
+      "file": "assets/default.vertex-CtWj3Tu-.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogVertex-x0NJgB5y.js",
+        "assets/logDepthDeclaration-3gXGtHbI.js",
+        "assets/logDepthVertex-D5IUM6qd.js",
+        "assets/helperFunctions-gEnZbjN3.js",
+        "assets/vertexColorMixing-B-QfZ7Di.js",
+        "assets/mainUVVaryingDeclaration-Bn-mAjvV.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/decalVertexDeclaration.js",
+          "bytes": 421
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultVertexDeclaration.js",
+          "bytes": 1343
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/uvAttributeDeclaration.js",
+          "bytes": 392
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/prePassVertexDeclaration.js",
+          "bytes": 735
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/samplerVertexDeclaration.js",
+          "bytes": 447
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpVertexDeclaration.js",
+          "bytes": 511
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/lightVxFragmentDeclaration.js",
+          "bytes": 1342
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/lightVxUboDeclaration.js",
+          "bytes": 1251
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertexGlobalDeclaration.js",
+          "bytes": 1859
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertexDeclaration.js",
+          "bytes": 824
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertexGlobal.js",
+          "bytes": 427
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertex.js",
+          "bytes": 2146
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/prePassVertex.js",
+          "bytes": 1884
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/uvVariableDeclaration.js",
+          "bytes": 455
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/samplerVertexImplementation.js",
+          "bytes": 1050
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpVertex.js",
+          "bytes": 663
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/shadowsVertex.js",
+          "bytes": 1068
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/pointCloudVertex.js",
+          "bytes": 399
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/default.vertex.js",
+          "bytes": 6956
+        }
+      ]
+    },
+    {
+      "file": "assets/default.vertex-DNv2BK-H.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/vertexColorMixing-CeF6hIt3.js",
+        "assets/fogVertex-B7dQhgq9.js",
+        "assets/mainUVVaryingDeclaration-BJcmOgzM.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js",
+        "assets/logDepthVertex-DSD5XdGw.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/uvAttributeDeclaration.js",
+          "bytes": 448
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/prePassVertexDeclaration.js",
+          "bytes": 763
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/samplerVertexDeclaration.js",
+          "bytes": 465
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpVertexDeclaration.js",
+          "bytes": 572
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightVxFragmentDeclaration.js",
+          "bytes": 1420
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightVxUboDeclaration.js",
+          "bytes": 1508
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertexGlobalDeclaration.js",
+          "bytes": 1345
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertexDeclaration.js",
+          "bytes": 888
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/vertexPullingDeclaration.js",
+          "bytes": 11747
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/vertexPullingVertex.js",
+          "bytes": 2151
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertexGlobal.js",
+          "bytes": 447
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertex.js",
+          "bytes": 4641
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/prePassVertex.js",
+          "bytes": 2347
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/uvVariableDeclaration.js",
+          "bytes": 578
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/samplerVertexImplementation.js",
+          "bytes": 1322
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpVertex.js",
+          "bytes": 848
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/shadowsVertex.js",
+          "bytes": 2544
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/default.vertex.js",
+          "bytes": 8529
+        }
+      ]
+    },
+    {
+      "file": "assets/envTextureLoader-DgMEFrqe.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/baseTexture.pure-CYGjrvG4.js",
+        "assets/math.vector.pure-6ByuvoqV.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/cubemapToSphericalPolynomial-BcGW8Y83.js"
+      ],
+      "dynamicImports": [
+        "assets/postprocess.vertex-CmVXXq2T.js",
+        "assets/postprocess.vertex-DJCmMhI8.js",
+        "assets/rgbdDecode.fragment-h6Kuj5D-.js",
+        "assets/rgbdDecode.fragment-Cdz2Tveq.js"
+      ],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/effectRenderer.pure.js",
+          "bytes": 8616
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/PostProcesses/postProcess.pure.js",
+          "bytes": 32261
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/environmentTextureTools.pure.js",
+          "bytes": 11907
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/baseTexture.polynomial.pure.js",
+          "bytes": 1553
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js",
+          "bytes": 1011
+        }
+      ]
+    },
+    {
+      "file": "assets/exrTextureLoader-AvtVnwYU.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-BztHInWZ.js",
+        "assets/halfFloat-Ce77JD5z.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.interfaces.js",
+          "bytes": 249
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.core.js",
+          "bytes": 6018
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.header.js",
+          "bytes": 1222
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.compression.huf.js",
+          "bytes": 8687
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.compression.rle.js",
+          "bytes": 602
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.compression.js",
+          "bytes": 4210
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.configuration.js",
+          "bytes": 526
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.decoder.js",
+          "bytes": 6272
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/exrTextureLoader.js",
+          "bytes": 1201
+        }
+      ]
+    },
+    {
+      "file": "assets/firebase-BmI4gkYH.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/app-Ct5fmA8o.js",
+        "assets/index.esm-xyj4vR7n.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/firebase/app/dist/esm/index.esm.js",
+          "bytes": 134
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/webchannel-wrapper/dist/bloom-blob/esm/bloom_blob_es2018.js",
+          "bytes": 15731
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/tslib/tslib.es6.mjs",
+          "bytes": 507
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/webchannel-wrapper/dist/webchannel-blob/esm/webchannel_blob_es2018.js",
+          "bytes": 54928
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/re2js/build/index.js",
+          "bytes": 218967
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/firestore/dist/common-D9UYuXJO.esm.js",
+          "bytes": 400864
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/firestore/dist/index.esm.js",
+          "bytes": 5333
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/firebase/firestore/dist/esm/index.esm.js",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/storage/dist/index.esm.js",
+          "bytes": 27647
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/firebase/storage/dist/esm/index.esm.js",
+          "bytes": 0
+        },
+        {
+          "id": "src/account/firebase.ts",
+          "bytes": 6698
+        }
+      ]
+    },
+    {
+      "file": "assets/fogFragment-NFgubt9V.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneFragmentDeclaration.js",
+          "bytes": 699
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogFragmentDeclaration.js",
+          "bytes": 1119
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneFragment.js",
+          "bytes": 981
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogFragment.js",
+          "bytes": 449
+        }
+      ]
+    },
+    {
+      "file": "assets/fogFragment-WPqtYpyX.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneFragmentDeclaration.js",
+          "bytes": 689
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/fogFragmentDeclaration.js",
+          "bytes": 1013
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneFragment.js",
+          "bytes": 875
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/fogFragment.js",
+          "bytes": 409
+        }
+      ]
+    },
+    {
+      "file": "assets/fogVertex-B7dQhgq9.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneVertexDeclaration.js",
+          "bytes": 878
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogVertexDeclaration.js",
+          "bytes": 400
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneVertex.js",
+          "bytes": 875
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogVertex.js",
+          "bytes": 451
+        }
+      ]
+    },
+    {
+      "file": "assets/fogVertex-x0NJgB5y.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneVertexDeclaration.js",
+          "bytes": 832
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/fogVertexDeclaration.js",
+          "bytes": 382
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneVertex.js",
+          "bytes": 721
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/fogVertex.js",
+          "bytes": 328
+        }
+      ]
+    },
+    {
+      "file": "assets/guid-CxX3q4DM.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/halfFloat-Ce77JD5z.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/devTools.js",
+          "bytes": 1309
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/abstractEngine.functions.js",
+          "bytes": 3270
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/shaderCodeNode.js",
+          "bytes": 3660
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/shaderCodeCursor.js",
+          "bytes": 1208
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/shaderCodeConditionNode.js",
+          "bytes": 462
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/shaderCodeTestNode.js",
+          "bytes": 250
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/Expressions/shaderDefineExpression.js",
+          "bytes": 3105
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineIsDefinedOperator.js",
+          "bytes": 458
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineOrOperator.js",
+          "bytes": 327
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineAndOperator.js",
+          "bytes": 329
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineArithmeticOperator.js",
+          "bytes": 1131
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/shaderProcessor.js",
+          "bytes": 11664
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/timingTools.js",
+          "bytes": 1198
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Buffers/bufferUtils.js",
+          "bytes": 9298
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/guid.js",
+          "bytes": 273
+        }
+      ]
+    },
+    {
+      "file": "assets/halfFloat-Ce77JD5z.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/halfFloat.js",
+          "bytes": 2555
+        }
+      ]
+    },
+    {
+      "file": "assets/hdrTextureLoader-BQVwkxK1.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/HighDynamicRange/hdr.js",
+          "bytes": 4606
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/hdrTextureLoader.js",
+          "bytes": 1129
+        }
+      ]
+    },
+    {
+      "file": "assets/helperFunctions-gEnZbjN3.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/helperFunctions.js",
+          "bytes": 6938
+        }
+      ]
+    },
+    {
+      "file": "assets/iesTextureLoader-3O5bSkSd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/IES/iesLoader.js",
+          "bytes": 4160
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/iesTextureLoader.js",
+          "bytes": 709
+        }
+      ]
+    },
+    {
+      "file": "assets/index.esm-xyj4vR7n.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/util/dist/postinstall.mjs",
+          "bytes": 136
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/util/dist/index.esm.js",
+          "bytes": 16704
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/component/dist/esm/index.esm.js",
+          "bytes": 7198
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/logger/dist/esm/index.esm.js",
+          "bytes": 2762
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/idb/build/wrap-idb-value.js",
+          "bytes": 4159
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/idb/build/index.js",
+          "bytes": 2038
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/app/dist/esm/index.esm.js",
+          "bytes": 15638
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/auth/dist/esm/index-LY22yodV.js",
+          "bytes": 207715
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@firebase/auth/dist/esm/index.js",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/firebase/auth/dist/esm/index.esm.js",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/ktxTextureLoader-C2yQXxOL.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-BztHInWZ.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/khronosTextureContainer.js",
+          "bytes": 4146
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/workerPool.js",
+          "bytes": 2356
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/ktx2decoderTypes.js",
+          "bytes": 2494
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/khronosTextureContainer2Worker.js",
+          "bytes": 4892
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/khronosTextureContainer2.js",
+          "bytes": 11488
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader.js",
+          "bytes": 3014
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthDeclaration-3gXGtHbI.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/logDepthDeclaration.js",
+          "bytes": 406
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthDeclaration-DYYUVTrx.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/logDepthDeclaration.js",
+          "bytes": 420
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthFragment-Cr-Stg0k.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/objectIdFunctions.js",
+          "bytes": 644
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/prePassDeclaration.js",
+          "bytes": 3412
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/imageProcessingDeclaration.js",
+          "bytes": 1054
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/imageProcessingFunctions.js",
+          "bytes": 5008
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/logDepthFragment.js",
+          "bytes": 395
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthVertex-D5IUM6qd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/logDepthVertex.js",
+          "bytes": 430
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthVertex-DSD5XdGw.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/logDepthVertex.js",
+          "bytes": 505
+        }
+      ]
+    },
+    {
+      "file": "assets/logger-CuBYPcDK.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/logger.js",
+          "bytes": 3051
+        }
+      ]
+    },
+    {
+      "file": "assets/mainUVVaryingDeclaration-BJcmOgzM.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/defaultUboDeclaration.js",
+          "bytes": 1713
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/mainUVVaryingDeclaration.js",
+          "bytes": 388
+        }
+      ]
+    },
+    {
+      "file": "assets/mainUVVaryingDeclaration-Bn-mAjvV.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/sceneUboDeclaration.js",
+          "bytes": 523
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/meshUboDeclaration.js",
+          "bytes": 502
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultUboDeclaration.js",
+          "bytes": 1342
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/mainUVVaryingDeclaration.js",
+          "bytes": 370
+        }
+      ]
+    },
+    {
+      "file": "assets/math.color.pure-anOydqGM.js",
+      "isEntry": false,
+      "imports": [
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.vector.pure-6ByuvoqV.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.color.pure.js",
+          "bytes": 23401
+        }
+      ]
+    },
+    {
+      "file": "assets/math.scalar.functions-lnL7TJ7T.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.scalar.functions.js",
+          "bytes": 1546
+        }
+      ]
+    },
+    {
+      "file": "assets/math.vector.pure-6ByuvoqV.js",
+      "isEntry": false,
+      "imports": [
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.constants.js",
+          "bytes": 200
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/arrayTools.js",
+          "bytes": 1451
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/performanceConfigurator.js",
+          "bytes": 1109
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/ThinMaths/thinMath.matrix.functions.js",
+          "bytes": 5949
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.vector.pure.js",
+          "bytes": 114116
+        }
+      ]
+    },
+    {
+      "file": "assets/mesh.vertexData.functions-CD4JOR2q.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/bitArray.js",
+          "bytes": 872
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/mesh.vertexData.functions.js",
+          "bytes": 1470
+        }
+      ]
+    },
+    {
+      "file": "assets/meshBlendTagFragmentOutput-CzziWpin.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/objectIdFunctions.js",
+          "bytes": 625
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/prePassDeclaration.js",
+          "bytes": 921
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/imageProcessingDeclaration.js",
+          "bytes": 1159
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/imageProcessingFunctions.js",
+          "bytes": 4196
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/logDepthFragment.js",
+          "bytes": 473
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/meshBlendTagFragmentOutput.js",
+          "bytes": 551
+        }
+      ]
+    },
+    {
+      "file": "assets/observable.pure-B5E8yEYx.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/observable.pure.js",
+          "bytes": 5638
+        }
+      ]
+    },
+    {
+      "file": "assets/particles.fragment-BfWjWt--.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-NFgubt9V.js",
+        "assets/meshBlendTagFragmentOutput-CzziWpin.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/geometryRenderingFragment.js",
+          "bytes": 2880
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/particles.fragment.js",
+          "bytes": 3721
+        }
+      ]
+    },
+    {
+      "file": "assets/particles.vertex-CXBkuinE.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogVertex-B7dQhgq9.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js",
+        "assets/logDepthVertex-DSD5XdGw.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/particles.vertex.js",
+          "bytes": 8648
+        }
+      ]
+    },
+    {
+      "file": "assets/postprocess.vertex-CmVXXq2T.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/postprocess.vertex.js",
+          "bytes": 685
+        }
+      ]
+    },
+    {
+      "file": "assets/postprocess.vertex-DJCmMhI8.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/postprocess.vertex.js",
+          "bytes": 557
+        }
+      ]
+    },
+    {
+      "file": "assets/precisionDate-CfCevjl-.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/domManagement.js",
+          "bytes": 532
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/precisionDate.js",
+          "bytes": 276
+        }
+      ]
+    },
+    {
+      "file": "assets/rgbdDecode.fragment-Cdz2Tveq.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/helperFunctions-gEnZbjN3.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/rgbdDecode.fragment.js",
+          "bytes": 642
+        }
+      ]
+    },
+    {
+      "file": "assets/rgbdDecode.fragment-h6Kuj5D-.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/rgbdDecode.fragment.js",
+          "bytes": 793
+        }
+      ]
+    },
+    {
+      "file": "assets/shaderStore-D-XQlhUT.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/shaderStore.js",
+          "bytes": 838
+        }
+      ]
+    },
+    {
+      "file": "assets/spatialWebAudio-DzT5q2Ot.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/math.vector.pure-6ByuvoqV.js",
+        "assets/webAudioBaseSubGraph-fpvxH4LN.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractSpatialAudio.js",
+          "bytes": 1253
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractStereoAudio.js",
+          "bytes": 311
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/stereoAudioSubNode.js",
+          "bytes": 554
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/stereoAudio.js",
+          "bytes": 421
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/spatialAudioSubNode.js",
+          "bytes": 2723
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/spatialWebAudioSubNode.js",
+          "bytes": 7049
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/stereoWebAudioSubNode.js",
+          "bytes": 1031
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/webAudioBusAndSoundSubGraph.js",
+          "bytes": 3012
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/spatialAudio.js",
+          "bytes": 5927
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subProperties/spatialWebAudio.js",
+          "bytes": 603
+        }
+      ]
+    },
+    {
+      "file": "assets/system-C1gPXZlW.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/precisionDate-CfCevjl-.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-BztHInWZ.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/webRequest-dqz0dHXK.js",
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/halfFloat-Ce77JD5z.js",
+        "assets/baseTexture.pure-CYGjrvG4.js",
+        "assets/math.vector.pure-6ByuvoqV.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/math.color.pure-anOydqGM.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogVertex-x0NJgB5y.js",
+        "assets/logDepthDeclaration-3gXGtHbI.js",
+        "assets/logDepthVertex-D5IUM6qd.js",
+        "assets/logDepthFragment-Cr-Stg0k.js",
+        "assets/fogFragment-WPqtYpyX.js",
+        "assets/helperFunctions-gEnZbjN3.js"
+      ],
+      "dynamicImports": [
+        "assets/mesh.vertexData.functions-CD4JOR2q.js",
+        "assets/color.vertex-DKaa32eP.js",
+        "assets/color.fragment-DVaYbzXa.js",
+        "assets/color.vertex-Ca_aYOpk.js",
+        "assets/color.fragment-SH3AKoaS.js",
+        "assets/particles.vertex-CXBkuinE.js",
+        "assets/particles.fragment-BfWjWt--.js",
+        "assets/system-C1gPXZlW.js",
+        "assets/default.vertex-CtWj3Tu-.js",
+        "assets/default.fragment-CDXEID0B.js",
+        "assets/default.vertex-DNv2BK-H.js",
+        "assets/default.fragment-BYIQOBIG.js",
+        "assets/dds.pure-DbChDZlf.js",
+        "assets/iesTextureLoader-3O5bSkSd.js",
+        "assets/ddsTextureLoader-DQQxh3cc.js",
+        "assets/basisTextureLoader-CqwFakAd.js",
+        "assets/envTextureLoader-DgMEFrqe.js",
+        "assets/hdrTextureLoader-BQVwkxK1.js",
+        "assets/ktxTextureLoader-C2yQXxOL.js",
+        "assets/tgaTextureLoader-CqhhocF6.js",
+        "assets/exrTextureLoader-AvtVnwYU.js",
+        "assets/webAudioBus-Jk1fQWvj.js",
+        "assets/webAudioMainBus-pmVy-dxX.js",
+        "assets/webAudioStaticSound-Ifpzshpn.js",
+        "assets/webAudioSoundSource-Dn7pWToQ.js",
+        "assets/webAudioStreamingSound-XPfsejuB.js"
+      ],
+      "modules": [
+        {
+          "id": "\u0000rolldown/runtime.js",
+          "bytes": 348
+        },
+        {
+          "id": "\u0000vite/modulepreload-polyfill.js",
+          "bytes": 1205
+        },
+        {
+          "id": "src/sim/gases.ts",
+          "bytes": 2013
+        },
+        {
+          "id": "src/sim/aerosolPhysics.ts",
+          "bytes": 1182
+        },
+        {
+          "id": "src/sim/co2Ice.ts",
+          "bytes": 1071
+        },
+        {
+          "id": "src/sim/chemistry.ts",
+          "bytes": 1080
+        },
+        {
+          "id": "src/sim/thermodynamics.ts",
+          "bytes": 1947
+        },
+        {
+          "id": "src/sim/materialReaction.ts",
+          "bytes": 4283
+        },
+        {
+          "id": "src/sim/sphere.ts",
+          "bytes": 4638
+        },
+        {
+          "id": "src/sim/waterPhysics.ts",
+          "bytes": 2070
+        },
+        {
+          "id": "src/sim/ecology.ts",
+          "bytes": 8312
+        },
+        {
+          "id": "src/sim/conservativeTransport.ts",
+          "bytes": 1822
+        },
+        {
+          "id": "src/sim/dustPhysics.ts",
+          "bytes": 707
+        },
+        {
+          "id": "src/sim/buoyancy.ts",
+          "bytes": 495
+        },
+        {
+          "id": "src/sim/phaseEquilibrium.ts",
+          "bytes": 3076
+        },
+        {
+          "id": "src/sim/climateUnits.ts",
+          "bytes": 217
+        },
+        {
+          "id": "src/sim/materialPhysics.ts",
+          "bytes": 3039
+        },
+        {
+          "id": "src/sim/climatePhysics.ts",
+          "bytes": 10034
+        },
+        {
+          "id": "src/sim/cloudMicrophysics.ts",
+          "bytes": 1029
+        },
+        {
+          "id": "src/sim/data/ecckd-32.json",
+          "bytes": 2221537
+        },
+        {
+          "id": "src/sim/spectralRadiation.ts",
+          "bytes": 4491
+        },
+        {
+          "id": "src/sim/planetDefinition.ts",
+          "bytes": 6378
+        },
+        {
+          "id": "src/sim/layeredAtmosphere.ts",
+          "bytes": 60692
+        },
+        {
+          "id": "src/sim/giantCloudPhysics.ts",
+          "bytes": 4309
+        },
+        {
+          "id": "src/sim/deepAtmosphere.ts",
+          "bytes": 25156
+        },
+        {
+          "id": "src/sim/weatherClimate.ts",
+          "bytes": 18686
+        },
+        {
+          "id": "src/sim/climate.ts",
+          "bytes": 580
+        },
+        {
+          "id": "src/sim/animalNavigation.ts",
+          "bytes": 5876
+        },
+        {
+          "id": "src/sim/clouds.ts",
+          "bytes": 345
+        },
+        {
+          "id": "src/sim/clock.ts",
+          "bytes": 702
+        },
+        {
+          "id": "src/sim/model.ts",
+          "bytes": 30622
+        },
+        {
+          "id": "src/sim/orbit.ts",
+          "bytes": 829
+        },
+        {
+          "id": "\u0000vite/preload-helper.js",
+          "bytes": 2990
+        },
+        {
+          "id": "src/ui/i18n.ts",
+          "bytes": 86329
+        },
+        {
+          "id": "src/sim/atmosphere.ts",
+          "bytes": 6227
+        },
+        {
+          "id": "src/ui/content.ts",
+          "bytes": 6196
+        },
+        {
+          "id": "src/sim/progress.ts",
+          "bytes": 5472
+        },
+        {
+          "id": "src/render/budget.ts",
+          "bytes": 667
+        },
+        {
+          "id": "src/render/columnGeometry.ts",
+          "bytes": 2242
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/tools.functions.js",
+          "bytes": 881
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/coroutine.js",
+          "bytes": 1856
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/smartArray.js",
+          "bytes": 1911
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/node.js",
+          "bytes": 18639
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.viewport.js",
+          "bytes": 697
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.plane.js",
+          "bytes": 3219
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.frustum.js",
+          "bytes": 2477
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGL/webGLPipelineContext.js",
+          "bytes": 10050
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/thinEngine.functions.js",
+          "bytes": 7745
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/effect.functions.js",
+          "bytes": 5892
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/effect.pure.js",
+          "bytes": 23102
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/States/depthCullingState.js",
+          "bytes": 3434
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/States/stencilStateComposer.js",
+          "bytes": 5277
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/States/stencilState.js",
+          "bytes": 2169
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/States/alphaCullingState.js",
+          "bytes": 7947
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/abstractEngine.pure.js",
+          "bytes": 30625
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.renderPass.pure.js",
+          "bytes": 1150
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/camera.pure.js",
+          "bytes": 35187
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Buffers/dataBuffer.js",
+          "bytes": 331
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/drawWrapper.functions.js",
+          "bytes": 181
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGL/webGLShaderProcessors.js",
+          "bytes": 412
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGL/webGL2ShaderProcessors.js",
+          "bytes": 2139
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/WebGL/webGLDataBuffer.js",
+          "bytes": 273
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGL/webGLHardwareTexture.js",
+          "bytes": 1219
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/textureHelper.functions.js",
+          "bytes": 799
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/thinEngine.pure.js",
+          "bytes": 101731
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.dynamicBuffer.pure.js",
+          "bytes": 1683
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Buffers/buffer.pure.js",
+          "bytes": 11589
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Collisions/intersectionInfo.js",
+          "bytes": 302
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Culling/boundingBox.js",
+          "bytes": 5708
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Culling/boundingSphere.js",
+          "bytes": 3085
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Culling/boundingInfo.js",
+          "bytes": 5401
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.functions.js",
+          "bytes": 3682
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/drawWrapper.js",
+          "bytes": 1168
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/subMesh.pure.js",
+          "bytes": 13844
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/mesh.vertexData.js",
+          "bytes": 47496
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Loading/sceneLoaderFlags.js",
+          "bytes": 1101
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Compat/compatibilityOptions.js",
+          "bytes": 139
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/geometry.js",
+          "bytes": 37635
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/transformNode.pure.js",
+          "bytes": 40845
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Collisions/pickingInfo.js",
+          "bytes": 4752
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/uniformBuffer.js",
+          "bytes": 25260
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Collisions/meshCollisionData.js",
+          "bytes": 455
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.axis.js",
+          "bytes": 568
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/abstractMesh.pure.js",
+          "bytes": 61351
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialStencilState.js",
+          "bytes": 7166
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/lightConstants.js",
+          "bytes": 1093
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/floatingOriginMatrixOverrides.js",
+          "bytes": 4721
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/clipPlaneMaterialHelper.js",
+          "bytes": 3800
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialFlags.js",
+          "bytes": 8218
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialHelper.functions.js",
+          "bytes": 40556
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/material.pure.js",
+          "bytes": 48887
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialHelper.geometryrendering.js",
+          "bytes": 12390
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/multiMaterial.pure.js",
+          "bytes": 3715
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/sceneComponent.js",
+          "bytes": 4795
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/meshLODLevel.js",
+          "bytes": 252
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/mesh.pure.js",
+          "bytes": 131693
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/mesh.js",
+          "bytes": 100
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/ribbonBuilder.pure.js",
+          "bytes": 11063
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/discBuilder.pure.js",
+          "bytes": 2242
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/groundMesh.pure.js",
+          "bytes": 6004
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/groundBuilder.pure.js",
+          "bytes": 10699
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/boxBuilder.pure.js",
+          "bytes": 5708
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/tiledPlaneBuilder.pure.js",
+          "bytes": 16662
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/tiledBoxBuilder.pure.js",
+          "bytes": 5116
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/sphereBuilder.pure.js",
+          "bytes": 3863
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/stringDictionary.js",
+          "bytes": 1606
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/colorTemperature.functions.js",
+          "bytes": 4420
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/colorCurves.functions.js",
+          "bytes": 267
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/colorCurves.pure.js",
+          "bytes": 16229
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/imageProcessingConfiguration.functions.js",
+          "bytes": 865
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/imageProcessingConfiguration.pure.js",
+          "bytes": 31865
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Actions/actionEvent.js",
+          "bytes": 1111
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/PostProcesses/postProcessManager.js",
+          "bytes": 4691
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Rendering/renderingGroup.js",
+          "bytes": 9247
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Rendering/renderingManager.js",
+          "bytes": 7469
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Events/pointerEvents.js",
+          "bytes": 1275
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Actions/abstractActionManager.js",
+          "bytes": 1013
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Events/keyboardEvents.js",
+          "bytes": 642
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/DeviceInput/InputDevices/deviceEnums.js",
+          "bytes": 7410
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Events/deviceInputEvents.js",
+          "bytes": 587
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/DeviceInput/eventFactory.js",
+          "bytes": 5111
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/DeviceInput/nativeDeviceInputSystem.js",
+          "bytes": 1028
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/DeviceInput/webDeviceInputSystem.js",
+          "bytes": 22187
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/DeviceInput/InputDevices/deviceSource.js",
+          "bytes": 485
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/DeviceInput/internalDeviceSourceManager.pure.js",
+          "bytes": 2137
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/DeviceInput/InputDevices/deviceSourceManager.js",
+          "bytes": 3367
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/import.helper.js",
+          "bytes": 159
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Inputs/scene.inputManager.js",
+          "bytes": 31010
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/perfCounter.js",
+          "bytes": 2280
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/uniqueIdGenerator.js",
+          "bytes": 282
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Inputs/pointerPickingConfiguration.js",
+          "bytes": 396
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/scene.pure.js",
+          "bytes": 119335
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/cylinderBuilder.pure.js",
+          "bytes": 8880
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/torusBuilder.pure.js",
+          "bytes": 2712
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/torusKnotBuilder.pure.js",
+          "bytes": 3272
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/instancedMesh.pure.js",
+          "bytes": 10221
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/copyTools.js",
+          "bytes": 1865
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/texture.pure.js",
+          "bytes": 32614
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/effectFallbacks.js",
+          "bytes": 2176
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/pushMaterial.js",
+          "bytes": 1832
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/vertexPullingHelper.functions.js",
+          "bytes": 1274
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/shaderMaterial.pure.js",
+          "bytes": 35117
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/linesMesh.pure.js",
+          "bytes": 6186
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/linesBuilder.pure.js",
+          "bytes": 6725
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.path.js",
+          "bytes": 16558
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/polygonMesh.js",
+          "bytes": 6340
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/polygonBuilder.pure.js",
+          "bytes": 4872
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/shapeBuilder.pure.js",
+          "bytes": 7795
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/latheBuilder.pure.js",
+          "bytes": 2090
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/planeBuilder.pure.js",
+          "bytes": 2340
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/tubeBuilder.pure.js",
+          "bytes": 4216
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/polyhedronBuilder.pure.js",
+          "bytes": 18349
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/icoSphereBuilder.pure.js",
+          "bytes": 5477
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/decalBuilder.pure.js",
+          "bytes": 20006
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/capsuleBuilder.pure.js",
+          "bytes": 6244
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.isovector.js",
+          "bytes": 1663
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/geodesicMesh.js",
+          "bytes": 19068
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/geodesicBuilder.js",
+          "bytes": 1032
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/goldbergMesh.pure.js",
+          "bytes": 6131
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/goldbergBuilder.js",
+          "bytes": 4486
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/textBuilder.js",
+          "bytes": 5656
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/meshBuilder.pure.js",
+          "bytes": 598
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/ribbonBuilder.js",
+          "bytes": 127
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/discBuilder.js",
+          "bytes": 123
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/boxBuilder.js",
+          "bytes": 121
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/tiledBoxBuilder.js",
+          "bytes": 131
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/sphereBuilder.js",
+          "bytes": 127
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/cylinderBuilder.js",
+          "bytes": 131
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/torusBuilder.js",
+          "bytes": 125
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/torusKnotBuilder.js",
+          "bytes": 133
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/linesBuilder.js",
+          "bytes": 125
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/polygonBuilder.js",
+          "bytes": 129
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/shapeBuilder.js",
+          "bytes": 125
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/latheBuilder.js",
+          "bytes": 125
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/planeBuilder.js",
+          "bytes": 125
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/tiledPlaneBuilder.js",
+          "bytes": 135
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/groundBuilder.js",
+          "bytes": 127
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/tubeBuilder.js",
+          "bytes": 123
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/polyhedronBuilder.js",
+          "bytes": 135
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/icoSphereBuilder.js",
+          "bytes": 133
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/decalBuilder.js",
+          "bytes": 125
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/Builders/capsuleBuilder.js",
+          "bytes": 129
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/meshBuilder.js",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.vector.js",
+          "bytes": 112
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/math.color.js",
+          "bytes": 110
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/shaderMaterial.js",
+          "bytes": 123
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/rawTexture.js",
+          "bytes": 4050
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/texture.js",
+          "bytes": 118
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/constants.js",
+          "bytes": 15773
+        },
+        {
+          "id": "src/render/sectionProjection.ts",
+          "bytes": 6135
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/gradients.js",
+          "bytes": 1580
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialDefines.js",
+          "bytes": 3789
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/imageProcessingConfiguration.defines.js",
+          "bytes": 1387
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/boxParticleEmitter.js",
+          "bytes": 2748
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/pointParticleEmitter.js",
+          "bytes": 1904
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/hemisphericParticleEmitter.js",
+          "bytes": 2784
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/sphereParticleEmitter.js",
+          "bytes": 4672
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/cylinderParticleEmitter.js",
+          "bytes": 5362
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/coneParticleEmitter.js",
+          "bytes": 5791
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/meshParticleEmitter.js",
+          "bytes": 4506
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/particleSystem.functions.js",
+          "bytes": 1692
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/baseParticleSystem.pure.js",
+          "bytes": 11191
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/particle.js",
+          "bytes": 8011
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Animations/animationRange.js",
+          "bytes": 309
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Animations/animation.pure.js",
+          "bytes": 19006
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Animations/runtimeAnimation.js",
+          "bytes": 19557
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Animations/animatable.core.js",
+          "bytes": 24976
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Bones/bone.pure.js",
+          "bytes": 17651
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Animations/animatable.pure.js",
+          "bytes": 252
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.alpha.pure.js",
+          "bytes": 860
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/thinParticleSystem.function.js",
+          "bytes": 16150
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/Queue/executionQueue.js",
+          "bytes": 720
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/thinParticleSystem.pure.js",
+          "bytes": 52602
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/subEmitter.js",
+          "bytes": 2509
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/EmitterTypes/customParticleEmitter.js",
+          "bytes": 2550
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/attractor.js",
+          "bytes": 740
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/particleSystem.pure.js",
+          "bytes": 32651
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Particles/particleSystem.js",
+          "bytes": 123
+        },
+        {
+          "id": "src/render/sectionClip.ts",
+          "bytes": 5095
+        },
+        {
+          "id": "src/render/climateLayers.ts",
+          "bytes": 4894
+        },
+        {
+          "id": "src/render/giantCloudColor.ts",
+          "bytes": 451
+        },
+        {
+          "id": "src/render/sectionArc.ts",
+          "bytes": 2965
+        },
+        {
+          "id": "src/render/precipitation.ts",
+          "bytes": 545
+        },
+        {
+          "id": "src/render/sectionPowder.ts",
+          "bytes": 697
+        },
+        {
+          "id": "src/render/sectionProfile.ts",
+          "bytes": 3365
+        },
+        {
+          "id": "src/render/surface.ts",
+          "bytes": 6430
+        },
+        {
+          "id": "src/render/sectionGeometry.ts",
+          "bytes": 8935
+        },
+        {
+          "id": "src/render/cellBrush.ts",
+          "bytes": 3313
+        },
+        {
+          "id": "src/render/cameraGestures.ts",
+          "bytes": 601
+        },
+        {
+          "id": "src/render/vegetation.ts",
+          "bytes": 970
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Buffers/buffer.js",
+          "bytes": 111
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/prePassConfiguration.js",
+          "bytes": 1663
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialPluginManager.pure.js",
+          "bytes": 11697
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialPluginBase.pure.js",
+          "bytes": 5926
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/material.detailMapConfiguration.js",
+          "bytes": 9263
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/shaderImportLoader.js",
+          "bytes": 998
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/uv.defines.js",
+          "bytes": 482
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/prepass.defines.js",
+          "bytes": 1666
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/imageProcessing.js",
+          "bytes": 3063
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/standardMaterial.pure.js",
+          "bytes": 119768
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/standardMaterial.js",
+          "bytes": 127
+        },
+        {
+          "id": "src/render/animals.ts",
+          "bytes": 10317
+        },
+        {
+          "id": "src/render/biosphere.ts",
+          "bytes": 8034
+        },
+        {
+          "id": "src/render/solar.ts",
+          "bytes": 1035
+        },
+        {
+          "id": "src/render/orbitDisplay.ts",
+          "bytes": 1399
+        },
+        {
+          "id": "src/render/system.ts",
+          "bytes": 8094
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Behaviors/Cameras/autoRotationBehavior.js",
+          "bytes": 4003
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Animations/easing.js",
+          "bytes": 1471
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Behaviors/Cameras/bouncingBehavior.js",
+          "bytes": 3747
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Behaviors/Cameras/framingBehavior.js",
+          "bytes": 9423
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/cameraMovement.js",
+          "bytes": 5534
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/inputMapper.js",
+          "bytes": 5750
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/targetCameraMovement.js",
+          "bytes": 986
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/targetCamera.pure.js",
+          "bytes": 17509
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/cameraInputsManager.js",
+          "bytes": 3368
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/Inputs/BaseCameraPointersInput.js",
+          "bytes": 7715
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/Inputs/orbitCameraPointersInput.js",
+          "bytes": 4376
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/Inputs/arcRotateCameraPointersInput.js",
+          "bytes": 10059
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/Inputs/arcRotateCameraKeyboardMoveInput.js",
+          "bytes": 13434
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/Inputs/arcRotateCameraMouseWheelInput.js",
+          "bytes": 8861
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/arcRotateCameraInputsManager.pure.js",
+          "bytes": 828
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/arcRotateCameraMovement.js",
+          "bytes": 1369
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/arcRotateCamera.pure.js",
+          "bytes": 52609
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/arcRotateCamera.js",
+          "bytes": 123
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Cameras/camera.js",
+          "bytes": 105
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/performanceMonitor.js",
+          "bytes": 2341
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/engine.common.js",
+          "bytes": 8947
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.dom.pure.js",
+          "bytes": 1153
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/engine.pure.js",
+          "bytes": 18409
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.alpha.js",
+          "bytes": 144
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.alphaToCoverage.pure.js",
+          "bytes": 1590
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.alphaToCoverage.js",
+          "bytes": 164
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.rawTexture.pure.js",
+          "bytes": 14039
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.rawTexture.js",
+          "bytes": 154
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.readTexture.pure.js",
+          "bytes": 2300
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.readTexture.js",
+          "bytes": 156
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.dynamicBuffer.js",
+          "bytes": 143
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.cubeTexture.pure.js",
+          "bytes": 4961
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.cubeTexture.js",
+          "bytes": 156
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/renderTargetWrapper.js",
+          "bytes": 10012
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGL/webGLRenderTargetWrapper.js",
+          "bytes": 7747
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.renderTarget.pure.js",
+          "bytes": 9321
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.renderTarget.js",
+          "bytes": 158
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetTexture.pure.js",
+          "bytes": 619
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetTexture.js",
+          "bytes": 172
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetCube.pure.js",
+          "bytes": 2963
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetCube.js",
+          "bytes": 166
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Maths/sphericalPolynomial.pure.js",
+          "bytes": 9019
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.prefilteredCubeTexture.pure.js",
+          "bytes": 3322
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.prefilteredCubeTexture.js",
+          "bytes": 161
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.uniformBuffer.pure.js",
+          "bytes": 2718
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.uniformBuffer.js",
+          "bytes": 143
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadingScreen.pure.js",
+          "bytes": 1429
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadingScreen.js",
+          "bytes": 163
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.dom.js",
+          "bytes": 143
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.states.pure.js",
+          "bytes": 1552
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.states.js",
+          "bytes": 149
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.stencil.pure.js",
+          "bytes": 4220
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.stencil.js",
+          "bytes": 151
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.renderPass.js",
+          "bytes": 157
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.texture.pure.js",
+          "bytes": 543
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.texture.js",
+          "bytes": 151
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadFile.pure.js",
+          "bytes": 588
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadFile.js",
+          "bytes": 153
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/textureLoaderManager.js",
+          "bytes": 2764
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.textureLoaders.pure.js",
+          "bytes": 337
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.textureLoaders.js",
+          "bytes": 165
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/thinEngine.scissor.pure.js",
+          "bytes": 498
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/thinEngine.scissor.js",
+          "bytes": 128
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/engine.js",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuTextureHelper.js",
+          "bytes": 18358
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuPerfCounter.js",
+          "bytes": 579
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/thinWebGPUEngine.js",
+          "bytes": 4459
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuConstants.js",
+          "bytes": 18342
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessor.js",
+          "bytes": 8590
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuPipelineContext.js",
+          "bytes": 7458
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessingContext.js",
+          "bytes": 7670
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/codeStringParsingTools.js",
+          "bytes": 3508
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessorsGLSL.js",
+          "bytes": 13760
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessorsWGSL.pure.js",
+          "bytes": 21057
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuHardwareTexture.js",
+          "bytes": 3090
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuTextureManager.js",
+          "bytes": 49814
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/WebGPU/webgpuDataBuffer.js",
+          "bytes": 404
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuBufferManager.js",
+          "bytes": 5746
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheSampler.js",
+          "bytes": 5702
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Buffers/buffer.nonFloatVertexBuffers.js",
+          "bytes": 2747
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheRenderPipeline.js",
+          "bytes": 33040
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheRenderPipelineTree.js",
+          "bytes": 2068
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuStencilStateComposer.js",
+          "bytes": 4010
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuDepthCullingState.js",
+          "bytes": 2035
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/externalTexture.js",
+          "bytes": 593
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuMaterialContext.js",
+          "bytes": 2257
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuDrawContext.js",
+          "bytes": 4647
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheBindGroups.js",
+          "bytes": 9453
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheTextureView.js",
+          "bytes": 924
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuClearQuad.pure.js",
+          "bytes": 5118
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuBundleList.js",
+          "bytes": 3860
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuQuerySet.js",
+          "bytes": 3403
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuTimestampQuery.js",
+          "bytes": 3026
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuOcclusionQuery.js",
+          "bytes": 2642
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Processors/shaderCodeInliner.js",
+          "bytes": 9114
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuTintWASM.js",
+          "bytes": 1467
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuSnapshotRendering.js",
+          "bytes": 3277
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuExternalTexture.js",
+          "bytes": 213
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/webgpuEngine.pure.js",
+          "bytes": 93487
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/clearQuad.vertex.js",
+          "bytes": 803
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/clearQuad.fragment.js",
+          "bytes": 570
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bakedVertexAnimationDeclaration.js",
+          "bytes": 1049
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bakedVertexAnimation.js",
+          "bytes": 3000
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/instancesDeclaration.js",
+          "bytes": 1209
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/instancesVertex.js",
+          "bytes": 1336
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/helperFunctions.js",
+          "bytes": 6648
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fresnelFunction.js",
+          "bytes": 557
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/meshUboDeclaration.js",
+          "bytes": 444
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/sceneUboDeclaration.js",
+          "bytes": 603
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/decalFragment.js",
+          "bytes": 636
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessorsWGSL.js",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Buffers/buffer.align.pure.js",
+          "bytes": 4646
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Buffers/buffer.align.js",
+          "bytes": 116
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/audioEngineV2.js",
+          "bytes": 2903
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractSpatialAudioListener.js",
+          "bytes": 573
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/components/spatialAudioAttacherComponent.js",
+          "bytes": 1958
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/spatialAudioListener.js",
+          "bytes": 1422
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/components/spatialWebAudioUpdaterComponent.js",
+          "bytes": 831
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/audioUtils.js",
+          "bytes": 2496
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/components/webAudioParameterComponent.js",
+          "bytes": 1797
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subProperties/spatialWebAudioListener.js",
+          "bytes": 4571
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractAudioNode.js",
+          "bytes": 2327
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/mainAudioOut.js",
+          "bytes": 210
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioMainOut.js",
+          "bytes": 1102
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioUnmuteUI.js",
+          "bytes": 2620
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioEngine.js",
+          "bytes": 10285
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Audio/audioEngine.pure.js",
+          "bytes": 4043
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Audio/audioEngine.js",
+          "bytes": 113
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alpha.pure.js",
+          "bytes": 1685
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alpha.js",
+          "bytes": 157
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alphaToCoverage.pure.js",
+          "bytes": 1258
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alphaToCoverage.js",
+          "bytes": 177
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.rawTexture.pure.js",
+          "bytes": 12512
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.rawTexture.js",
+          "bytes": 167
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.readTexture.pure.js",
+          "bytes": 859
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.readTexture.js",
+          "bytes": 169
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.cubeTexture.pure.js",
+          "bytes": 2916
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.cubeTexture.js",
+          "bytes": 169
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/webgpuRenderTargetWrapper.js",
+          "bytes": 412
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTarget.pure.js",
+          "bytes": 5495
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTarget.js",
+          "bytes": 171
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetTexture.pure.js",
+          "bytes": 546
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetTexture.js",
+          "bytes": 185
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetCube.pure.js",
+          "bytes": 2193
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetCube.js",
+          "bytes": 179
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.query.pure.js",
+          "bytes": 1827
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.query.js",
+          "bytes": 157
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.dynamicTexture.pure.js",
+          "bytes": 1905
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.dynamicTexture.js",
+          "bytes": 175
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/webgpuEngine.js",
+          "bytes": 0
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/scene.js",
+          "bytes": 95
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/transformNode.js",
+          "bytes": 118
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/Extensions/engine.dynamicTexture.pure.js",
+          "bytes": 2150
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/dynamicTexture.pure.js",
+          "bytes": 4580
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/light.js",
+          "bytes": 22866
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/hemisphericLight.pure.js",
+          "bytes": 3875
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/hemisphericLight.js",
+          "bytes": 124
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/shadowLight.js",
+          "bytes": 6638
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/directionalLight.pure.js",
+          "bytes": 11644
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Lights/directionalLight.js",
+          "bytes": 124
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/thinInstanceMesh.pure.js",
+          "bytes": 21173
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/thinInstanceMesh.js",
+          "bytes": 124
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Culling/ray.core.js",
+          "bytes": 23268
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Culling/ray.pure.js",
+          "bytes": 1636
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Culling/ray.js",
+          "bytes": 99
+        },
+        {
+          "id": "src/render/effects.ts",
+          "bytes": 6608
+        },
+        {
+          "id": "src/render/smokeField.ts",
+          "bytes": 549
+        },
+        {
+          "id": "src/render/cloudEnvelope.ts",
+          "bytes": 1853
+        },
+        {
+          "id": "src/render/cloudProfiles.ts",
+          "bytes": 1058
+        },
+        {
+          "id": "src/render/cloudEnvelopeGeometry.ts",
+          "bytes": 4167
+        },
+        {
+          "id": "src/render/cloudBanks.ts",
+          "bytes": 9349
+        },
+        {
+          "id": "src/sim/optics.ts",
+          "bytes": 1157
+        },
+        {
+          "id": "src/render/sky.ts",
+          "bytes": 11230
+        },
+        {
+          "id": "src/render/weather.ts",
+          "bytes": 2804
+        },
+        {
+          "id": "src/render/precipitationLayer.ts",
+          "bytes": 4929
+        },
+        {
+          "id": "src/render/particles.ts",
+          "bytes": 1451
+        },
+        {
+          "id": "src/render/supplyPulse.ts",
+          "bytes": 1914
+        },
+        {
+          "id": "src/render/surfaceBuffers.ts",
+          "bytes": 760
+        },
+        {
+          "id": "src/render/vertexUploadGate.ts",
+          "bytes": 1514
+        },
+        {
+          "id": "src/sim/supply.ts",
+          "bytes": 228
+        },
+        {
+          "id": "src/render/materials.ts",
+          "bytes": 7413
+        },
+        {
+          "id": "src/sim/falling.ts",
+          "bytes": 1744
+        },
+        {
+          "id": "src/render/rotationFrame.ts",
+          "bytes": 1072
+        },
+        {
+          "id": "src/render/axisAlignment.ts",
+          "bytes": 1490
+        },
+        {
+          "id": "src/render/sceneMarker.ts",
+          "bytes": 572
+        },
+        {
+          "id": "src/render/orbitAngles.ts",
+          "bytes": 445
+        },
+        {
+          "id": "src/render/sectionCamera.ts",
+          "bytes": 7225
+        },
+        {
+          "id": "src/render/sectionView.ts",
+          "bytes": 9928
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/materialPluginBase.js",
+          "bytes": 131
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Meshes/linesMesh.js",
+          "bytes": 110
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/particles.vertex.js",
+          "bytes": 7391
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/geometryRenderingFragment.js",
+          "bytes": 3048
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/particles.fragment.js",
+          "bytes": 3345
+        },
+        {
+          "id": "src/render/sectionMaterials.ts",
+          "bytes": 4059
+        },
+        {
+          "id": "src/sim/random.ts",
+          "bytes": 312
+        },
+        {
+          "id": "src/render/planet.ts",
+          "bytes": 83594
+        },
+        {
+          "id": "src/sim/saveCodec.ts",
+          "bytes": 8226
+        },
+        {
+          "id": "src/sim/storage.ts",
+          "bytes": 13448
+        },
+        {
+          "id": "src/sim/system.ts",
+          "bytes": 8036
+        }
+      ]
+    },
+    {
+      "file": "assets/tgaTextureLoader-CqhhocF6.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/tga.js",
+          "bytes": 7655
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Materials/Textures/Loaders/tgaTextureLoader.js",
+          "bytes": 540
+        }
+      ]
+    },
+    {
+      "file": "assets/tools.pure-BztHInWZ.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/precisionDate-CfCevjl-.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/webRequest-dqz0dHXK.js",
+        "assets/typeStore-RqCBAJcv.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/deepCopier.js",
+          "bytes": 2231
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/filesInputStore.js",
+          "bytes": 159
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/retryStrategy.js",
+          "bytes": 385
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/error.js",
+          "bytes": 723
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/stringTools.js",
+          "bytes": 1619
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/fileTools.pure.js",
+          "bytes": 15854
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/instantiationTools.js",
+          "bytes": 781
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/tools.pure.js",
+          "bytes": 21333
+        }
+      ]
+    },
+    {
+      "file": "assets/typeStore-RqCBAJcv.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Engines/engineStore.js",
+          "bytes": 526
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/typeStore.js",
+          "bytes": 252
+        }
+      ]
+    },
+    {
+      "file": "assets/vertexColorMixing-B-QfZ7Di.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bonesDeclaration.js",
+          "bytes": 1646
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bakedVertexAnimationDeclaration.js",
+          "bytes": 1520
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/instancesDeclaration.js",
+          "bytes": 1094
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/instancesVertex.js",
+          "bytes": 1034
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bonesVertex.js",
+          "bytes": 2233
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/bakedVertexAnimation.js",
+          "bytes": 2307
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Shaders/ShadersInclude/vertexColorMixing.js",
+          "bytes": 561
+        }
+      ]
+    },
+    {
+      "file": "assets/vertexColorMixing-CeF6hIt3.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bonesDeclaration.js",
+          "bytes": 1303
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bonesVertex.js",
+          "bytes": 2891
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/vertexColorMixing.js",
+          "bytes": 697
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioBaseSubGraph-fpvxH4LN.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/logger-CuBYPcDK.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/abstractAudioSubNode.js",
+          "bytes": 694
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/volumeAudioSubNode.js",
+          "bytes": 624
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractAudioAnalyzer.js",
+          "bytes": 892
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/audioAnalyzerSubNode.js",
+          "bytes": 842
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/audioAnalyzer.js",
+          "bytes": 2987
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractAudioOutNode.js",
+          "bytes": 915
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/abstractAudioSubGraph.js",
+          "bytes": 1888
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/volumeWebAudioSubNode.js",
+          "bytes": 1127
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/webAudioAnalyzerSubNode.js",
+          "bytes": 2670
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/webAudioBaseSubGraph.js",
+          "bytes": 1843
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioBus-Jk1fQWvj.js",
+      "isEntry": false,
+      "imports": [
+        "assets/abstractAudioBus-BRY5mTB6.js",
+        "assets/spatialWebAudio-DzT5q2Ot.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/audioBus.js",
+          "bytes": 1554
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioBus.js",
+          "bytes": 1605
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioMainBus-pmVy-dxX.js",
+      "isEntry": false,
+      "imports": [
+        "assets/webAudioBaseSubGraph-fpvxH4LN.js",
+        "assets/abstractAudioBus-BRY5mTB6.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/mainAudioBus.js",
+          "bytes": 217
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioMainBus.js",
+          "bytes": 1167
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioSoundSource-Dn7pWToQ.js",
+      "isEntry": false,
+      "imports": [
+        "assets/spatialWebAudio-DzT5q2Ot.js",
+        "assets/abstractSoundSource-Crn3W6pT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioSoundSource.js",
+          "bytes": 3236
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioStaticSound-Ifpzshpn.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/spatialWebAudio-DzT5q2Ot.js",
+        "assets/abstractSoundInstance-DFpF0HqE.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/staticSound.js",
+          "bytes": 2277
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/staticSoundBuffer.js",
+          "bytes": 287
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/staticSoundInstance.js",
+          "bytes": 182
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioStaticSound.js",
+          "bytes": 11211
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioStreamingSound-XPfsejuB.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-C1gPXZlW.js",
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-BztHInWZ.js",
+        "assets/webRequest-dqz0dHXK.js",
+        "assets/spatialWebAudio-DzT5q2Ot.js",
+        "assets/abstractSoundInstance-DFpF0HqE.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/streamingSound.js",
+          "bytes": 2076
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/abstractAudio/streamingSoundInstance.js",
+          "bytes": 753
+        },
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/AudioV2/webAudio/webAudioStreamingSound.js",
+          "bytes": 8964
+        }
+      ]
+    },
+    {
+      "file": "assets/webRequest-dqz0dHXK.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "/Users/garden/Workspace/Projects/sandsphere/node_modules/@babylonjs/core/Misc/webRequest.js",
+          "bytes": 4712
+        }
+      ]
+    }
+  ]
+}

@@ -179,12 +179,12 @@ export function climateColor(layer:ClimateLayer,s:Float32Array,i:number,e:Enviro
  if(layer==='humidity')v=relativeHumidity(s,i,e,c);
  if(layer==='clouds')v=(s[p+F.cloud]+s[p+F.cloudIce]+s[p+F.ammoniaCloud]+s[p+F.ammoniaIce])*COLUMN_KG/(deep?50:.3);
  if(layer==='ammonia')v=(s[p+F.ammoniaCloud]+s[p+F.ammoniaIce])*COLUMN_KG/2;
- if(layer==='jets'){const x=c.grid.directions[i*3],z=c.grid.directions[i*3+2],length=Math.hypot(x,z),u=deep?c.giant.zonalWind(i):length>1e-9?(c.wind[i*3]*z-c.wind[i*3+2]*x)/length*c.air.radiusMeters/AIR_SECONDS:0;v=(u+250)/500;}
+ if(layer==='jets'){const x=c.grid.directions[i*3],z=c.grid.directions[i*3+2],length=Math.hypot(x,z),u=deep?c.giant.zonalWind(i):length>1e-9?(c.wind[i*3]*z-c.wind[i*3+2]*x)/length*c.radiusMeters/AIR_SECONDS:0;v=(u+250)/500;}
  if(layer==='dust')v=dustOpticalDepth(s[p+F.airborneDust]*COLUMN_KG)/3;
  if(layer==='co2ice')v=s[p+F.carbonDioxideIce]*COLUMN_KG;
  if(layer==='moisture')v=s[p+F.water]/.3;
  if(layer==='seeds')v=c.seeds[i];
- if(layer==='wind'||layer==='currents'){const a=layer==='wind'?c.wind:c.currents;v=Math.hypot(a[i*3],a[i*3+1],a[i*3+2])/(layer==='wind'?100*AIR_SECONDS/c.air.radiusMeters:.035);}
+ if(layer==='wind'||layer==='currents'){const a=layer==='wind'?c.wind:c.currents;v=Math.hypot(a[i*3],a[i*3+1],a[i*3+2])/(layer==='wind'?100*AIR_SECONDS/c.radiusMeters:.035);}
  v=clamp(v);return v<.5?[.12+v*.6,.25+v*.9,.78-v*.25,.82]:[.42+(v-.5)*1.14,.70-(v-.5)*1.0,.65-(v-.5)*1.1,.82];
 }
 

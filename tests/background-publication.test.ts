@@ -1,7 +1,7 @@
 import {it,expect,vi} from 'vitest';
 import {CpuSolver,seedPlanet,totalEnthalpy} from '../src/sim/model';
 import {createSphere} from '../src/sim/sphere';
-import {WeatherClimate} from '../src/sim/weatherClimate';
+import {WeatherClimate,climateColor} from '../src/sim/weatherClimate';
 import {LayeredAtmosphere} from '../src/sim/layeredAtmosphere';
 import {DeepAtmosphere} from '../src/sim/deepAtmosphere';
 import {BackgroundWorlds,migrateWorld} from '../src/sim/system';
@@ -12,7 +12,7 @@ import {atmosphereState} from '../src/sim/atmosphere';
 const grid=createSphere(0),environment={...orbitalEnvironment(1),climate:true};
 const record=(id:string)=>({...migrateWorld({version:4,preset:'coast',state:[...seedPlanet(grid,'sand',22)],environment,time:0,supplied:0,removed:0,discoveries:[]},grid.count).planets[0],id});
 it('does not allocate inactive atmospheric domains for readiness, diagnostics or compact checkpoints',()=>{
- const c=new WeatherClimate(grid),state=seedPlanet(grid,'sand',22);expect(c.airReady).toBe(false);expect(c.giantReady).toBe(false);c.snapshot();c.checkpoint();totalEnthalpy(state,c);atmosphereState(state,environment,c);
+ const c=new WeatherClimate(grid),state=seedPlanet(grid,'sand',22);expect(c.airReady).toBe(false);expect(c.giantReady).toBe(false);c.snapshot();c.checkpoint();totalEnthalpy(state,c);atmosphereState(state,environment,c);climateColor('wind',state,0,environment,c);climateColor('jets',state,0,environment,c);
  expect(Object.values(c).some(x=>x instanceof LayeredAtmosphere||x instanceof DeepAtmosphere)).toBe(false);
  c.prepareSurface(state,environment);expect(c.airReady).toBe(true);expect(Object.values(c).some(x=>x instanceof DeepAtmosphere)).toBe(false);
  const p=createJupiterPlanet(grid),giant=new WeatherClimate(grid);giant.restore(p.climate);const checkpoint=giant.checkpoint();expect(checkpoint.air.mass.length).toBe(0);expect(checkpoint.giant).toBeDefined();atmosphereState(p.state,p.environment,giant);expect(Object.values(giant).some(x=>x instanceof LayeredAtmosphere)).toBe(false);

@@ -47,6 +47,7 @@ import {PrecipitationLayer} from './precipitationLayer';
 import {materialGrain} from './particles';
 import {SupplyPulse,supplyPulseCoordinates} from './supplyPulse';
 import {writeHexWater} from './surfaceBuffers';
+import {VertexUploadGate} from './vertexUploadGate';
 import {deliverSurfaceSupply,type SupplyCell} from '../sim/supply';
 import {surfaceMaterial} from './materials';
 import type {ShaderMaterial} from '@babylonjs/core/Materials/shaderMaterial';
@@ -105,6 +106,8 @@ export class PlanetView {
   private water:Mesh;
   private hexBanks:Mesh;
   private bankPulseLength=0;
+  private vertexUploads=new VertexUploadGate();
+  private bankRebuilds=0;
   private terrainMaterial:ShaderMaterial;
   private waterMaterial:ShaderMaterial;
   private displayHeights:Float32Array;
@@ -202,7 +205,7 @@ export class PlanetView {
   private cameraGestures=new CameraGestures();
   private sectionControlsDetached=false;
   private constructor(readonly canvas:HTMLCanvasElement,readonly grid:SphereGrid,state:Float32Array,engine:AbstractEngine,renderRefinement=0) {
-    this.state=state;this.atmosphereInfo=atmosphereState(state,this.environment);this.engine=engine;this.scene=new Scene(engine);this.root=new TransformNode('rotating planet',this.scene);
+    this.state=state;this.atmosphereInfo=atmosphereState(state,this.environment);this.engine=engine;this.scene=new Scene(engine);this.scene.skipPointerMovePicking=true;this.root=new TransformNode('rotating planet',this.scene);
     this.scene.clearColor=new Color4(0,0,0,1);
     this.scene.imageProcessingConfiguration.toneMappingEnabled=false;
     this.camera=new ArcRotateCamera('observer',-1.01,1.17,16.4,Vector3.Zero(),this.scene);
@@ -576,29 +579,36 @@ export class PlanetView {
 
     }
     this.hexBanks.setEnabled(bankIndices.length>0);
+    const bankPositionsChanged=this.vertexUploads.changed('bankPositions',bankPositions),bankIndicesChanged=this.vertexUploads.changed('bankIndices',bankIndices);
+    const bankColorsChanged=this.vertexUploads.changed('bankColors',bankColors),bankSurfaceChanged=this.vertexUploads.changed('bankSurface',bankSurface);
     if(bankIndices.length){
-      const data=new VertexData(),normals:number[]=[];
-      VertexData.ComputeNormals(bankPositions,bankIndices,normals);
-      data.positions=bankPositions;data.indices=bankIndices;data.normals=normals;data.colors=bankColors;
-      data.applyToMesh(this.hexBanks,true);this.hexBanks.setVerticesData('surfaceInfo',bankSurface,true,4);
+      if(bankPositionsChanged||bankIndicesChanged){
+        const data=new VertexData(),normals:number[]=[];
+        VertexData.ComputeNormals(bankPositions,bankIndices,normals);
+        data.positions=bankPositions;data.indices=bankIndices;data.normals=normals;data.colors=bankColors;
+        data.applyToMesh(this.hexBanks,true);this.hexBanks.setVerticesData('surfaceInfo',bankSurface,true,4);this.bankRebuilds++;
+      }else{
+        if(bankColorsChanged)this.hexBanks.updateVerticesData(VertexBuffer.ColorKind,bankColors);
+        if(bankSurfaceChanged)this.hexBanks.updateVerticesData('surfaceInfo',bankSurface);
+      }
       // Zero coordinates keep the vertical coastal banks out of the pulse.
       // Geometry already has its new vertex count here. Reading the old custom
       // buffer through getVerticesData would use that count and can overrun it.
       if(this.bankPulseLength!==bankPositions.length){this.hexBanks.setVerticesData('supplyCoord',new Float32Array(bankPositions.length),false,3);this.bankPulseLength=bankPositions.length;}
     }
-    this.terrain.updateVerticesData(VertexBuffer.PositionKind,this.terrainData,true);
-    this.terrain.updateVerticesData(VertexBuffer.NormalKind,this.normals);
-    this.terrain.updateVerticesData(VertexBuffer.ColorKind,this.colors);
-    this.terrain.updateVerticesData('surfaceInfo',this.surfaceInfo);
+    if(this.vertexUploads.changed('terrainData',this.terrainData))this.terrain.updateVerticesData(VertexBuffer.PositionKind,this.terrainData,true);
+    if(this.vertexUploads.changed('normals',this.normals))this.terrain.updateVerticesData(VertexBuffer.NormalKind,this.normals);
+    if(this.vertexUploads.changed('colors',this.colors))this.terrain.updateVerticesData(VertexBuffer.ColorKind,this.colors);
+    if(this.vertexUploads.changed('surfaceInfo',this.surfaceInfo))this.terrain.updateVerticesData('surfaceInfo',this.surfaceInfo);
     
     
     
     
-    this.water.updateVerticesData(VertexBuffer.PositionKind,this.waterData,true);
-    this.water.updateVerticesData(VertexBuffer.NormalKind,this.waterNormals);
-    this.water.updateVerticesData(VertexBuffer.ColorKind,this.waterColors);
-    this.heatSurface.updateVerticesData(VertexBuffer.PositionKind,this.heatPositions,true);
-    this.heatSurface.updateVerticesData(VertexBuffer.ColorKind,this.heatColors);
+    if(this.vertexUploads.changed('waterData',this.waterData))this.water.updateVerticesData(VertexBuffer.PositionKind,this.waterData,true);
+    if(this.vertexUploads.changed('waterNormals',this.waterNormals))this.water.updateVerticesData(VertexBuffer.NormalKind,this.waterNormals);
+    if(this.vertexUploads.changed('waterColors',this.waterColors))this.water.updateVerticesData(VertexBuffer.ColorKind,this.waterColors);
+    if(this.vertexUploads.changed('heatPositions',this.heatPositions))this.heatSurface.updateVerticesData(VertexBuffer.PositionKind,this.heatPositions,true);
+    if(this.vertexUploads.changed('heatColors',this.heatColors))this.heatSurface.updateVerticesData(VertexBuffer.ColorKind,this.heatColors);
     this.precipitationLayer.updateSurface(this.heatPositions);
     this.cellBrush.update(this.heatPositions);this.selectionBrush.update(this.heatPositions);
     for(let i=0;i<this.grid.count;i++) {
@@ -801,7 +811,7 @@ export class PlanetView {
   setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionDirty=true;}
   clearPrecipitation(){this.precipitationLayer.clear();this.sectionView.clearPrecipitation();this.sectionDirty=true;}
   precipitationStats(){return this.precipitationLayer.stats();}
-  visualStats() {return {brush:this.cellBrush.stats(),animals:this.biosphere.animalStats(),climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:0,supplyPulse:{activeCells:this.supplyPulse.activeCells(),bytes:this.supplyPulse.pixels.byteLength,uploads:this.supplyUploads},grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
+  visualStats() {return {vertexUploads:this.vertexUploads.stats(),bankRebuilds:this.bankRebuilds,brush:this.cellBrush.stats(),animals:this.biosphere.animalStats(),climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:0,supplyPulse:{activeCells:this.supplyPulse.activeCells(),bytes:this.supplyPulse.pixels.byteLength,uploads:this.supplyUploads},grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
   deposits() {return this.grains.map(g=>({index:g.index,material:g.material,amount:g.amount}));}
   supplySurface(cells:readonly SupplyCell[],material:SurfaceMaterial,amount:number,land:Grain['land']) {
     deliverSurfaceSupply(cells,amount,land);

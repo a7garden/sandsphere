@@ -1,4 +1,3 @@
-import {createUserWithEmailAndPassword,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,sendPasswordResetEmail,signOut} from 'firebase/auth';
 import type {FirebaseServices} from '../account/firebase';
 import {icon} from './icons';
 
@@ -31,11 +30,11 @@ export class AccountPanel {
     document.getElementById('account-form')!.addEventListener('submit',event=>{
       event.preventDefault();const register=(event as SubmitEvent).submitter?.hasAttribute('data-register');
       void this.run(async()=>{if(!auth)return;await actions.beforeAuth();const email=this.input('account-email'),password=this.input('account-password');
-        if(register)await createUserWithEmailAndPassword(auth,email,password);else await signInWithEmailAndPassword(auth,email,password);});
+        const api=await import('firebase/auth');if(register)await api.createUserWithEmailAndPassword(auth,email,password);else await api.signInWithEmailAndPassword(auth,email,password);});
     });
-    document.getElementById('account-google')!.addEventListener('click',()=>void this.run(async()=>{if(!auth)return;await actions.beforeAuth();await signInWithPopup(auth,new GoogleAuthProvider());}));
-    document.getElementById('account-reset')!.addEventListener('click',()=>void this.run(async()=>{if(!auth)return;const email=document.getElementById('account-email') as HTMLInputElement;if(!email.reportValidity())return;await sendPasswordResetEmail(auth,email.value);this.status('재설정 안내를 요청했습니다. 이메일을 확인하세요.');}));
-    document.getElementById('account-logout')!.addEventListener('click',()=>void this.run(async()=>{if(!auth)return;await actions.beforeAuth();await signOut(auth);}));
+    document.getElementById('account-google')!.addEventListener('click',()=>void this.run(async()=>{if(!auth)return;await actions.beforeAuth();const api=await import('firebase/auth');await api.signInWithPopup(auth,new api.GoogleAuthProvider());}));
+    document.getElementById('account-reset')!.addEventListener('click',()=>void this.run(async()=>{if(!auth)return;const email=document.getElementById('account-email') as HTMLInputElement;if(!email.reportValidity())return;const {sendPasswordResetEmail}=await import('firebase/auth');await sendPasswordResetEmail(auth,email.value);this.status('재설정 안내를 요청했습니다. 이메일을 확인하세요.');}));
+    document.getElementById('account-logout')!.addEventListener('click',()=>void this.run(async()=>{if(!auth)return;await actions.beforeAuth();const {signOut}=await import('firebase/auth');await signOut(auth);}));
     for(const [id,action] of [['account-sync',actions.sync],['account-import',actions.importGuest],['account-use-cloud',actions.useCloud],['account-use-local',actions.useLocal]] as const)
       document.getElementById(id)!.addEventListener('click',()=>void this.run(action));
   }

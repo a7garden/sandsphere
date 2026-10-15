@@ -1,0 +1,69 @@
+{
+  "method": "CPU comparison of real dual-surface buffer dimensions with synthetic staging values; no GPU or browser FPS measured",
+  "cells": 2562,
+  "triangles": 15360,
+  "vertices": 46080,
+  "bytesPerRefresh": 7557120,
+  "runs": [
+    {
+      "changed": [],
+      "refreshes": 60,
+      "meanCompareMs": 1.0462402833333333,
+      "oldUploadCalls": 540,
+      "newUploadCalls": 0,
+      "oldUploadBytes": 453427200,
+      "newUploadBytes": 0,
+      "stats": {
+        "checks": 549,
+        "uploads": 9,
+        "skippedBytes": 453427200,
+        "uploadedBytes": 7557120,
+        "cacheBytes": 7557120
+      }
+    },
+    {
+      "changed": [
+        "heatColors"
+      ],
+      "refreshes": 60,
+      "meanCompareMs": 0.9523882000000005,
+      "oldUploadCalls": 540,
+      "newUploadCalls": 60,
+      "oldUploadBytes": 453427200,
+      "newUploadBytes": 44236800,
+      "stats": {
+        "checks": 549,
+        "uploads": 69,
+        "skippedBytes": 409190400,
+        "uploadedBytes": 51793920,
+        "cacheBytes": 7557120
+      }
+    },
+    {
+      "changed": [
+        "terrainData",
+        "normals",
+        "colors",
+        "surfaceInfo",
+        "waterData",
+        "waterNormals",
+        "waterColors",
+        "heatPositions",
+        "heatColors"
+      ],
+      "refreshes": 60,
+      "meanCompareMs": 0.11460624999999994,
+      "oldUploadCalls": 540,
+      "newUploadCalls": 540,
+      "oldUploadBytes": 453427200,
+      "newUploadBytes": 453427200,
+      "stats": {
+        "checks": 549,
+        "uploads": 549,
+        "skippedBytes": 0,
+        "uploadedBytes": 460984320,
+        "cacheBytes": 7557120
+      }
+    }
+  ]
+}

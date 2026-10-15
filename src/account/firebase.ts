@@ -1,3 +1,4 @@
+import {firebaseConfigured} from './config';
 import {initializeApp} from 'firebase/app';
 import {getAuth,connectAuthEmulator,type Auth} from 'firebase/auth';
 import {getFirestore,connectFirestoreEmulator,doc,getDocFromServer,runTransaction,writeBatch,Bytes,type Firestore} from 'firebase/firestore';
@@ -12,7 +13,7 @@ let services:FirebaseServices|null=null;
 export function firebaseServices(){
   if(services)return services;
   const e=import.meta.env;
-  if(!e.VITE_FIREBASE_API_KEY||!e.VITE_FIREBASE_AUTH_DOMAIN||!e.VITE_FIREBASE_PROJECT_ID||!e.VITE_FIREBASE_APP_ID)return null;
+  if(!firebaseConfigured(e))return null;
   const app=initializeApp({apiKey:e.VITE_FIREBASE_API_KEY,authDomain:e.VITE_FIREBASE_AUTH_DOMAIN,
     projectId:e.VITE_FIREBASE_PROJECT_ID,storageBucket:e.VITE_FIREBASE_STORAGE_BUCKET,appId:e.VITE_FIREBASE_APP_ID});
   services={auth:getAuth(app),db:getFirestore(app),storage:e.VITE_FIREBASE_STORAGE_BUCKET?getStorage(app):null};

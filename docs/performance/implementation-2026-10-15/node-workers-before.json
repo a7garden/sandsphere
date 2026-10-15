@@ -1,0 +1,89 @@
+{
+  "method": "Real Node worker_threads; browser solver bundle forced to CPU; not browser FPS or GPU",
+  "root": "/Users/garden/Workspace/Projects/sandsphere",
+  "runtime": "v26.9.0",
+  "scenarios": [
+    {
+      "kind": "wet",
+      "cells": 2562,
+      "baseline": {
+        "step": {
+          "n": 8,
+          "meanMs": 177.633776,
+          "p95Ms": 190.45387499999993,
+          "maxMs": 190.45387499999993
+        },
+        "eventLoopGaps": {
+          "n": 10,
+          "meanMs": 143.06277920000002,
+          "p95Ms": 190.7289169999999,
+          "maxMs": 190.7289169999999
+        }
+      },
+      "background": {
+        "step": {
+          "n": 8,
+          "meanMs": 100.77017212499993,
+          "p95Ms": 117.74408299999959,
+          "maxMs": 117.74408299999959
+        },
+        "eventLoopGaps": {
+          "n": 169,
+          "meanMs": 4.848273426035505,
+          "p95Ms": 5.099667000000409,
+          "maxMs": 6.950209000000541
+        }
+      },
+      "exact": true
+    },
+    {
+      "kind": "jupiter",
+      "cells": 2562,
+      "baseline": {
+        "step": {
+          "n": 8,
+          "meanMs": 223.04010937500027,
+          "p95Ms": 231.43095800000083,
+          "maxMs": 231.43095800000083
+        },
+        "eventLoopGaps": {
+          "n": 10,
+          "meanMs": 179.3994834,
+          "p95Ms": 231.62137500000063,
+          "maxMs": 231.62137500000063
+        }
+      },
+      "background": {
+        "step": {
+          "n": 8,
+          "meanMs": 80.42471375000025,
+          "p95Ms": 94.16262499999993,
+          "maxMs": 94.16262499999993
+        },
+        "eventLoopGaps": {
+          "n": 135,
+          "meanMs": 4.85545123703703,
+          "p95Ms": 5.157999999999447,
+          "maxMs": 6.2150000000001455
+        }
+      },
+      "exact": true
+    }
+  ],
+  "threeBackgroundPlanets": {
+    "cells": 2562,
+    "serial": {
+      "n": 8,
+      "meanMs": 384.6286509999993,
+      "p95Ms": 451.12508399999933,
+      "maxMs": 451.12508399999933
+    },
+    "boundedParallel": {
+      "n": 8,
+      "meanMs": 391.91052599999966,
+      "p95Ms": 465.4333340000012,
+      "maxMs": 465.4333340000012
+    },
+    "exact": true
+  }
+}

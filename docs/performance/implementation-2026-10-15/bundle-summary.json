@@ -1,0 +1,27 @@
+{
+  "method": "Static import graph from app entry; env files deliberately disabled. Configured account boot dynamically fetches account chunks before selecting scope. Individual gzip members summed; excludes CSS/fonts and dynamic chunks.",
+  "before": {
+    "chunks": 21,
+    "bytes": 5185697,
+    "gzipBytes": 2205347
+  },
+  "after": {
+    "chunks": 21,
+    "bytes": 4619035,
+    "gzipBytes": 2038698
+  },
+  "workers": [
+    {
+      "file": "savePreparation.worker-C_i7XHtC.js",
+      "bytes": 37363,
+      "gzipBytes": 13575
+    },
+    {
+      "file": "solver.worker-DK0R8t-z.js",
+      "bytes": 2343095,
+      "gzipBytes": 1435296
+    }
+  ],
+  "tableSourceBytes": 1660728,
+  "tableOldFloat64Bytes": 3321456
+}

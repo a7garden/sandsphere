@@ -1,0 +1,13 @@
+{
+  "method": "Actual compiled persistence Worker via Node worker_threads; evolved 14x1/30s Jupiter state, 4 planets per mode, no telemetry; wire-byte equality against direct preparation",
+  "cells": 2562,
+  "planets": 8,
+  "workerBundleBytes": 45792,
+  "packedBytes": 31331632,
+  "workerMs": 144.54370800000015,
+  "exact": true,
+  "liveStateUnchanged": true,
+  "inputTransferred": true,
+  "validationAccepted": true,
+  "invalidRejected": true
+}

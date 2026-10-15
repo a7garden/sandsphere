@@ -10,7 +10,7 @@ import {isDeepStrictEqual} from 'node:util';
 import {setImmediate as immediate,setTimeout as delay} from 'node:timers/promises';
 const root=process.cwd(),prefix=resolve(process.argv[2]??'artifacts/performance/workers'),directory=mkdtempSync(join(tmpdir(),'sandsphere-worker-bench-'));
 mkdirSync(dirname(prefix),{recursive:true});const {createServer,build}=await import(pathToFileURL(createRequire(resolve(root,'package.json')).resolve('vite')).href);
-await build({root,configFile:false,envDir:false,logLevel:'error',build:{target:'es2022',outDir:directory,emptyOutDir:false,minify:false,lib:{entry:resolve(root,'src/sim/solver.worker.ts'),formats:['es'],fileName:()=> 'solver.worker.mjs'}}});
+await build({root,configFile:false,envDir:false,logLevel:'error',build:{target:'es2022',copyPublicDir:false,outDir:directory,emptyOutDir:false,minify:false,lib:{entry:resolve(root,'src/sim/solver.worker.ts'),formats:['es'],fileName:()=> 'solver.worker.mjs'}}});
 const shim=join(directory,'node-worker.mjs');writeFileSync(shim,`import {parentPort,workerData} from 'node:worker_threads';globalThis.self=globalThis;globalThis.postMessage=(data,transfer=[])=>parentPort.postMessage(data,transfer);const queue=[];let ready=false;parentPort.on('message',data=>ready?globalThis.onmessage({data}):queue.push(data));await import(workerData.module);ready=true;for(const data of queue)globalThis.onmessage({data});`);
 const threads=new Set();
 class BrowserWorkerAdapter {

@@ -124,7 +124,7 @@ ecCKD JSON은 2,220,399B로, 이미 **Float32 데이터의 base64 포장**이다
 
 | 후보 | 근거와 현재 판단 | 다음 측정 |
 | --- | --- | --- |
-| 표면의 전체 버퍼 업로드 | `PlanetView.update`가 온도만 바뀌어도 지형·물·열의 position/normal/color 등을 전체 갱신하고 젖은 해안 메시를 `applyToMesh`로 재작성한다. 기본 격자의 명시적 9개 업로드 배열 합은 약 2.52MB/회로 계산된다. 최대 15Hz에서는 약 37.8MB/s의 이론적 업로드량이며 해안 재구축은 별도다. GPU 지연 실측은 없다. | 기존 surface lab의 온도 변화 / 붓기 각각 refresh·render·frame P95, 업로드 바이트 |
+| 표면의 전체 버퍼 업로드 | `PlanetView.update`가 온도만 바뀌어도 지형·물·열의 position/normal/color 등을 전체 갱신하고 젖은 해안 메시를 `applyToMesh`로 재작성한다. 최초 9개 배열 추정은 약 2.52MB/회·15Hz에서 37.8MB/s였으나, 구면 인덱스와 확장 렌더 정점 수를 혼동한 과소 추정이었다. 후속 구현에서 실제 dual surface 배열은 **7,557,120B/회·15Hz에서 약 113.36MB/s**로 정정했다. 해안 재구축은 별도다. GPU 지연 실측은 없다. | 기존 surface lab의 온도 변화 / 붓기 각각 refresh·render·frame P95, 업로드 바이트 |
 | WebGPU readback | 매 단계 `queue.submit` 뒤 `mapAsync`로 지표를 읽고 호스트에서 대기를 계산한다. 깊은 대기 자체도 호스트 코드다. GPU 전환만으로 이번 대기 CPU 비용이 제거되지는 않는다. | dispatch·map 대기·finishSurfaceStep·Worker 왕복 분리. [mapAsync의 매핑 완료와 GPU 사용 제약](https://developer.mozilla.org/en-US/docs/Web/API/GPUBuffer/mapAsync) 참고 |
 | 중복 picking | 앱의 명시적 picking은 hover 시 약 33ms 제한이 있으나 Babylon 기본 pointer move picking을 끄는 설정은 발견하지 못했다. 추가 비용의 존재·크기는 미측정이다. | 포인터 정지 / hover / 큰 브러시 별 pick 호출수·시간, section 입력 회귀 |
 | 관측 DOM과 전체 state 배열 | 약 5Hz로 DOM·전체 state 일반 배열을 갱신하고, 관측 지점에서 복사·정렬·복사열 진단을 호출한다. 캠페인 과제도 함께 갱신된다. | observerUpdate·layout·style 시간, 닫힌 패널과 캠페인/샌드박스 비교 |
@@ -146,7 +146,7 @@ ecCKD JSON은 2,220,399B로, 이미 **Float32 데이터의 base64 포장**이다
 | **P1** | 배경 행성 상태를 Worker에 유지하고 typed 관측 스냅샷을 일정 주기로 게시한다. 일반 배열 변환은 저장 경계로 모은다. 독립 행성 계산은 제한된 동시 실행을 검토한다. | 배경당 snapshot 약 13ms/단계와 직렬 대기를 줄임. 시뮬레이션 단계·질량·시간은 그대로 보존. 실제 4행성 향상률은 미측정. | 2–4일 | 시점이 다른 관측·저장, 활성 전환·취소 처리, CPU 경쟁 | 활성/배경 동일 시간 결과·행성 전환·명령·실패 보존; 1/2/4행성 처리량과 UI P95·배터리 |
 | **P1** | 상태 상수·타입·표시용 읽기 모델과 실제 솔버/과학 데이터의 import 경계를 분리하고, Firebase 계정 기능은 필요한 시점에 로드한다. | main/Worker에 반복 포함되는 2.22MB 과학 모듈과 정적 Firebase의 초기 평가·네트워크를 줄일 여지. 파일을 청크로 나누는 것만으로 총량이 줄지는 않음. | 2–4일 | 비동기 초기화·fallback·순환 import·옛 캐시와 새 Worker 불일치 | [Vite 8 Rolldown 분할 계약](https://vite.dev/guide/build)에 맞춘 빌드 그래프, cold/warm cache 로드·게스트·계정·Worker 불가 경로 |
 | **P2** | 일반/깊은 대기와 main의 표시 전용 상태를 필요할 때 할당하고 buffer pool을 도입한다. 누락된 soot 배열의 transfer도 검토한다. | 깊은 대기 미사용 영역 약 7.6MB 하위 그래프 등 감소 여지. soot clone은 편도 246KB. 단순 checkpoint 복사 개선의 CPU 이득은 이 Mac에서 작음. | 1–3일 | 소유권 detach·stale 버퍼·롤백·giant 체크포인트 호환 | 현재 Worker 실패·재개 테스트, 4행성 및 모드 전환 GC 후 힙, typed buffer 생존·정확한 완료 상태 게시 |
-| **P2** | geometry·appearance·water·biosphere·section dirty 원인을 나눠 바뀐 버퍼만 업로드하고 해안 버퍼를 재사용한다. | 계산상 약 2.52MB/refresh의 일부와 해안 재구축을 줄일 수 있음. 렌더 P95 효과는 브라우저 측정 필요. | 2–4일 | picking·단면·경계·바운딩·물 반경 stale | surface/pour/section lab, 온도만 변화 vs 실제 지형 변화, 모바일 좌표·그림 비교와 프레임 추적 |
+| **P2** | geometry·appearance·water·biosphere·section dirty 원인을 나눠 바뀐 버퍼만 업로드하고 해안 버퍼를 재사용한다. | 초기 추정 약 2.52MB/refresh(후속 구현 측정에서 7,557,120B로 정정)의 일부와 해안 재구축을 줄일 수 있음. 렌더 P95 효과는 브라우저 측정 필요. | 2–4일 | picking·단면·경계·바운딩·물 반경 stale | surface/pour/section lab, 온도만 변화 vs 실제 지형 변화, 모바일 좌표·그림 비교와 프레임 추적 |
 | **P2** | observerUpdate와 캠페인 표시의 revision을 구분해 값이 바뀐 DOM만 갱신한다. 관측 집계·radiative target을 공유한다. | 5Hz 전체 배열·진단 작업을 줄일 여지. 실제 이득은 미측정. | 1–2일 | 선택 지점·시간·언어 전환에 오래된 표시 | 캠페인·관측·i18n 테스트, 열어 둔 대시보드와 패널 상태에서 UI 시간 측정 |
 | **P3** | 위 개선 뒤에도 처리량이 부족하면 대기 kernel의 WASM/SIMD 또는 GPU 상주화를 별도 설계한다. | CPU 대기가 대부분인 구조의 더 큰 처리량 개선 가능. 이번 조사로 배수 보장 불가. | 1–3주 이상 | 정밀도·보존·CFL·재개·GPU/CPU 일관성과 유지보수 비용 | 같은 법칙의 독립 백엔드 검증·시간/해상도 수렴·실기 비교. readback을 더 늘리는 분할은 별도 평가 |
 
