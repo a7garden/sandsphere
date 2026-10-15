@@ -403,12 +403,12 @@ function observerUpdate() {
   if(overview){const record=planets.find(p=>p.id===activeId);if(record)record.snapshot=capture();updateSystemUi(planets,stock,mode);}
   if(el<HTMLDialogElement>('research').open){const t=totals(s);for(const [id,value] of [['water',t[4]],['ice',t[5]],['vapor',t[9]],['cloud',t[F.cloud]+t[F.cloudIce]],['salt',t[6]+t[7]]] as const)el('mass-'+id).textContent=value.toFixed(1)+' kg';}
 }
-function capture():Snapshot {
-  const {state,pendingRemoved,collected,climate}=snapshotSurface(solver.state,commands,view.deposits(),activeCommands,solver.climate,environment);
+function capture(settled?:ReturnType<typeof snapshotSurface>):Snapshot {
+  const {state,pendingRemoved,collected,climate}=settled??snapshotSurface(solver.state,commands,view.deposits(),activeCommands,solver.climate,environment);
   return {version:11,climate:climate??solver.climate.snapshot(),preset:'coast',...(isDeepAtmosphere(environment.body)?{}:{planet:{primary}}),time:simTime,state:[...state],discoveries:[...discoveries],environment:{...environment,sun:[...environment.sun]},supplied,removed:removed+pendingRemoved,escaped,transferredIn,transferredOut:transferredOut+Object.values(collected).reduce((a,b)=>a+b,0),savedAt:Date.now(),paused,spin:{angle:spinAngle,running:spinning,tilt:axisTilt,period:spinPeriod,locked:tidallyLocked}};
 }
 function captureSystem():SystemSave {
-  const snapshot=capture(),collected=snapshotSurface(solver.state,commands,view.deposits(),activeCommands,solver.climate,environment).collected;
+  const settled=snapshotSurface(solver.state,commands,view.deposits(),activeCommands,solver.climate,environment),snapshot=capture(settled),collected=settled.collected;
   return {version:3,mode,other:otherMode?structuredClone(otherMode):undefined,progress:structuredClone(progress),activeId,planets:planets.map(p=>p.id===activeId?{...p,snapshot}:structuredClone(p)),stock:Object.fromEntries(PRODUCTS.map(id=>[id,stock[id]+collected[id]])) as typeof stock,savedAt:persistenceTime()};
 }
 function capturePersistedSystem(journal=false):SystemSave {

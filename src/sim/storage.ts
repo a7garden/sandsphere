@@ -1,4 +1,5 @@
 import {validClimate} from './weatherClimate';
+import {packSave,unpackSave} from './saveCodec';
 import {airMassWidth,AIR_FIELDS,AIR_LAYERS,LEGACY_AIR_LAYERS} from './layeredAtmosphere';
 import { F,STRIDE,type Snapshot } from './model';
 import { RESEARCH } from '../ui/content';
@@ -41,12 +42,13 @@ function openDatabase():Promise<IDBDatabase> {
   });
 }
 export async function saveSnapshot(snapshot:unknown,slot='latest',companion?:{slot:string;value:unknown}) {
+  const stored=snapshot&&typeof snapshot==='object'&&'planets' in snapshot?packSave(snapshot):snapshot;
   const db=await openDatabase();
   try {
     await new Promise<void>((resolve,reject)=>{
       const tx=db.transaction('snapshots','readwrite');
       if(companion)tx.objectStore('snapshots').put(companion.value,companion.slot);
-      tx.objectStore('snapshots').put(snapshot,slot);
+      tx.objectStore('snapshots').put(stored,slot);
       tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
     });
   }finally{db.close();}
@@ -55,7 +57,7 @@ export async function loadRecord(slot:string):Promise<unknown> {
   const db=await openDatabase();
   try{return await new Promise<unknown>((resolve,reject)=>{
     const tx=db.transaction('snapshots','readonly'),req=tx.objectStore('snapshots').get(slot);
-    req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
+    req.onsuccess=()=>{try{resolve(req.result instanceof ArrayBuffer?unpackSave(req.result):req.result);}catch(error){reject(error);}};req.onerror=()=>reject(req.error);
   });}finally{db.close();}
 }
 export async function loadSnapshot(count:number,slot='latest'):Promise<Snapshot|null> {
@@ -131,6 +133,11 @@ export function validSnapshot(value:unknown,count:number):value is Snapshot {
 
 /** Zero-extend legacy cells and deep v1 without adding physical stocks. */
 export function upgradeSnapshot(snapshot:Snapshot,count:number):Snapshot {
+  if(snapshot.version===11&&snapshot.environment.body&&snapshot.state.length===count*STRIDE&&!snapshot.state.some((v,i)=>i%STRIDE!==F.temperature&&v<0)){
+    const {state,climate,...metadata}=snapshot;
+    const copyClimate=(v:unknown):unknown=>Array.isArray(v)?v.slice():v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,copyClimate(x)])):v;
+    return {...structuredClone(metadata),state:state.slice(),...(climate?{climate:copyClimate(climate) as Snapshot['climate']}:{})};
+  }
   const oldStride=snapshot.state.length/count;
   const state=new Float32Array(count*STRIDE);
   for(let i=0;i<count;i++)state.set(snapshot.state.slice(i*oldStride,(i+1)*oldStride),i*STRIDE);

@@ -1,0 +1,1265 @@
+{
+  "date": "2026-10-15T05:23:07.374Z",
+  "runtime": "v26.9.0",
+  "arch": "arm64",
+  "method": "Vite SSR loads current sources; no browser; no live user saves",
+  "scenarios": [
+    {
+      "level": 2,
+      "kind": "dry",
+      "climate": true,
+      "cells": 162,
+      "dt": 0.03333333333333333,
+      "first": {
+        "n": 1,
+        "meanMs": 72.42879199999999,
+        "medianMs": 72.42879199999999,
+        "p95Ms": 72.42879199999999,
+        "minMs": 72.42879199999999,
+        "maxMs": 72.42879199999999
+      },
+      "steady": {
+        "n": 8,
+        "meanMs": 11.645020875000021,
+        "medianMs": 11.063292000000047,
+        "p95Ms": 16.17741699999999,
+        "minMs": 10.488916000000017,
+        "maxMs": 16.17741699999999
+      },
+      "instrumented": {
+        "n": 3,
+        "meanMs": 17.928736666666623,
+        "medianMs": 14.60670899999991,
+        "p95Ms": 26.434541999999965,
+        "minMs": 12.744958999999994,
+        "maxMs": 26.434541999999965
+      },
+      "named": {
+        "climate.step": {
+          "calls": 3,
+          "totalMs": 48.57349900000008
+        },
+        "climate.stepGiant": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.checkpoint": {
+          "calls": 3,
+          "totalMs": 0.08295799999996234
+        },
+        "climate.prepareSurface": {
+          "calls": 3,
+          "totalMs": 0.5371249999999463
+        },
+        "air.advance": {
+          "calls": 3,
+          "totalMs": 42.14712499999996
+        },
+        "air.dynamics": {
+          "calls": 6,
+          "totalMs": 22.34624800000006
+        },
+        "air.combustionStep": {
+          "calls": 12,
+          "totalMs": 6.700956000000133
+        },
+        "air.radiation": {
+          "calls": 972,
+          "totalMs": 3.1604100000020026
+        },
+        "air.phase": {
+          "calls": 10692,
+          "totalMs": 0.5415479999986701
+        },
+        "air.precipitation": {
+          "calls": 972,
+          "totalMs": 0.21700600000019676
+        },
+        "giant.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.equilibrateClouds": {
+          "calls": 0,
+          "totalMs": 0
+        }
+      },
+      "checkpointBytes": 331128,
+      "copy": {
+        "n": 30,
+        "meanMs": 0.025537433333336898,
+        "medianMs": 0.02416599999992286,
+        "p95Ms": 0.039750000000026375,
+        "minMs": 0.01445800000010422,
+        "maxMs": 0.06591600000001563
+      },
+      "restore": {
+        "n": 30,
+        "meanMs": 0.009524966666670782,
+        "medianMs": 0.0060000000000854925,
+        "p95Ms": 0.016916999999921245,
+        "minMs": 0.005790999999931046,
+        "maxMs": 0.07604099999991831
+      },
+      "snapshot": {
+        "n": 10,
+        "meanMs": 0.6463707,
+        "medianMs": 0.5790419999999585,
+        "p95Ms": 1.0134160000000065,
+        "minMs": 0.5334169999999858,
+        "maxMs": 1.0134160000000065
+      },
+      "surfaceArray": {
+        "n": 10,
+        "meanMs": 0.07770840000001726,
+        "medianMs": 0.0739170000000513,
+        "p95Ms": 0.10966700000005858,
+        "minMs": 0.07283299999994597,
+        "maxMs": 0.10966700000005858
+      },
+      "solverTypedArrayBytes": 1435410,
+      "memoryBefore": {
+        "rss": 305840128,
+        "heapTotal": 115408896,
+        "heapUsed": 44642384,
+        "external": 12300792,
+        "arrayBuffers": 6369313
+      },
+      "memoryAfter": {
+        "rss": 306626560,
+        "heapTotal": 116195328,
+        "heapUsed": 46572016,
+        "external": 12455888,
+        "arrayBuffers": 5427305
+      },
+      "digest": "e63beb1622610ae04b4b7ff76e9ad495c82aa4037c32de41cb5eae90753000c8"
+    },
+    {
+      "level": 3,
+      "kind": "dry",
+      "climate": true,
+      "cells": 642,
+      "dt": 0.03333333333333333,
+      "first": {
+        "n": 1,
+        "meanMs": 138.7355,
+        "medianMs": 138.7355,
+        "p95Ms": 138.7355,
+        "minMs": 138.7355,
+        "maxMs": 138.7355
+      },
+      "steady": {
+        "n": 8,
+        "meanMs": 40.02311462499995,
+        "medianMs": 40.187124999999924,
+        "p95Ms": 42.35312499999998,
+        "minMs": 38.468124999999986,
+        "maxMs": 42.35312499999998
+      },
+      "instrumented": {
+        "n": 3,
+        "meanMs": 39.847430666666696,
+        "medianMs": 39.900333000000046,
+        "p95Ms": 40.534834000000046,
+        "minMs": 39.107124999999996,
+        "maxMs": 40.534834000000046
+      },
+      "named": {
+        "climate.step": {
+          "calls": 3,
+          "totalMs": 103.516208
+        },
+        "climate.stepGiant": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.checkpoint": {
+          "calls": 3,
+          "totalMs": 0.174708000000237
+        },
+        "climate.prepareSurface": {
+          "calls": 3,
+          "totalMs": 0.44429200000013225
+        },
+        "air.advance": {
+          "calls": 3,
+          "totalMs": 88.73745899999994
+        },
+        "air.dynamics": {
+          "calls": 6,
+          "totalMs": 46.249250000000075
+        },
+        "air.combustionStep": {
+          "calls": 12,
+          "totalMs": 20.747749999999996
+        },
+        "air.radiation": {
+          "calls": 3852,
+          "totalMs": 7.454947999998012
+        },
+        "air.phase": {
+          "calls": 42372,
+          "totalMs": 1.1833819999974367
+        },
+        "air.precipitation": {
+          "calls": 3852,
+          "totalMs": 0.22440599999890765
+        },
+        "giant.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.equilibrateClouds": {
+          "calls": 0,
+          "totalMs": 0
+        }
+      },
+      "checkpointBytes": 1312248,
+      "copy": {
+        "n": 30,
+        "meanMs": 0.09157930000001216,
+        "medianMs": 0.08820799999989504,
+        "p95Ms": 0.10816700000009405,
+        "minMs": 0.08008399999994253,
+        "maxMs": 0.1365410000000793
+      },
+      "restore": {
+        "n": 30,
+        "meanMs": 0.021113766666682448,
+        "medianMs": 0.01999999999998181,
+        "p95Ms": 0.02158299999996416,
+        "minMs": 0.01970900000014808,
+        "maxMs": 0.051333000000113316
+      },
+      "snapshot": {
+        "n": 10,
+        "meanMs": 2.780583300000012,
+        "medianMs": 2.5697909999998956,
+        "p95Ms": 5.225292000000081,
+        "minMs": 2.0407500000001164,
+        "maxMs": 5.225292000000081
+      },
+      "surfaceArray": {
+        "n": 10,
+        "meanMs": 0.373479199999997,
+        "medianMs": 0.32779100000016115,
+        "p95Ms": 0.9361670000000686,
+        "minMs": 0.2869580000001406,
+        "maxMs": 0.9361670000000686
+      },
+      "solverTypedArrayBytes": 5690610,
+      "memoryBefore": {
+        "rss": 321994752,
+        "heapTotal": 116195328,
+        "heapUsed": 45432208,
+        "external": 19935578,
+        "arrayBuffers": 11143307
+      },
+      "memoryAfter": {
+        "rss": 321994752,
+        "heapTotal": 116195328,
+        "heapUsed": 57657504,
+        "external": 19930442,
+        "arrayBuffers": 13998923
+      },
+      "digest": "95bd4dd36cdab8dbb8db678c1650d4d3d1fd47e5ae7582a193c6bbe7ae3bc633"
+    },
+    {
+      "level": 4,
+      "kind": "dry",
+      "climate": true,
+      "cells": 2562,
+      "dt": 0.03333333333333333,
+      "first": {
+        "n": 1,
+        "meanMs": 486.568708,
+        "medianMs": 486.568708,
+        "p95Ms": 486.568708,
+        "minMs": 486.568708,
+        "maxMs": 486.568708
+      },
+      "steady": {
+        "n": 8,
+        "meanMs": 158.65519800000004,
+        "medianMs": 159.71508399999993,
+        "p95Ms": 165.41945799999985,
+        "minMs": 154.38470800000005,
+        "maxMs": 165.41945799999985
+      },
+      "instrumented": {
+        "n": 3,
+        "meanMs": 162.42191666666682,
+        "medianMs": 162.13241700000026,
+        "p95Ms": 163.09900000000016,
+        "minMs": 162.03433300000006,
+        "maxMs": 163.09900000000016
+      },
+      "named": {
+        "climate.step": {
+          "calls": 3,
+          "totalMs": 423.7988750000004
+        },
+        "climate.stepGiant": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.checkpoint": {
+          "calls": 3,
+          "totalMs": 0.5702079999996386
+        },
+        "climate.prepareSurface": {
+          "calls": 3,
+          "totalMs": 1.8744590000001153
+        },
+        "air.advance": {
+          "calls": 3,
+          "totalMs": 354.65458300000046
+        },
+        "air.dynamics": {
+          "calls": 6,
+          "totalMs": 186.79337399999986
+        },
+        "air.combustionStep": {
+          "calls": 12,
+          "totalMs": 82.240002
+        },
+        "air.radiation": {
+          "calls": 15372,
+          "totalMs": 30.197184999977253
+        },
+        "air.phase": {
+          "calls": 169092,
+          "totalMs": 4.390923999973893
+        },
+        "air.precipitation": {
+          "calls": 15372,
+          "totalMs": 0.8625239999728365
+        },
+        "giant.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.equilibrateClouds": {
+          "calls": 0,
+          "totalMs": 0
+        }
+      },
+      "checkpointBytes": 5236728,
+      "copy": {
+        "n": 30,
+        "meanMs": 0.41458056666663956,
+        "medianMs": 0.29366699999991397,
+        "p95Ms": 1.3355420000002596,
+        "minMs": 0.1371249999997417,
+        "maxMs": 2.2368329999999332
+      },
+      "restore": {
+        "n": 30,
+        "meanMs": 0.09796949999999924,
+        "medianMs": 0.0909999999998945,
+        "p95Ms": 0.16224999999985812,
+        "minMs": 0.0856669999998303,
+        "maxMs": 0.20075000000042564
+      },
+      "snapshot": {
+        "n": 10,
+        "meanMs": 14.346699999999919,
+        "medianMs": 14.77779099999998,
+        "p95Ms": 19.169416999999157,
+        "minMs": 11.11200000000008,
+        "maxMs": 19.169416999999157
+      },
+      "surfaceArray": {
+        "n": 10,
+        "meanMs": 1.8198124000001372,
+        "medianMs": 1.6709170000003724,
+        "p95Ms": 4.483208999999988,
+        "minMs": 1.1559159999997064,
+        "maxMs": 4.483208999999988
+      },
+      "solverTypedArrayBytes": 22711410,
+      "memoryBefore": {
+        "rss": 373243904,
+        "heapTotal": 116457472,
+        "heapUsed": 47038480,
+        "external": 45267938,
+        "arrayBuffers": 33587291
+      },
+      "memoryAfter": {
+        "rss": 393347072,
+        "heapTotal": 116457472,
+        "heapUsed": 55534056,
+        "external": 45288434,
+        "arrayBuffers": 39274931
+      },
+      "digest": "a119741e35ad724f9144a7b651ca08b7d8c352ee2666c043846c82cf3eb7877f"
+    },
+    {
+      "level": 4,
+      "kind": "wet",
+      "climate": true,
+      "cells": 2562,
+      "dt": 0.03333333333333333,
+      "first": {
+        "n": 1,
+        "meanMs": 573.1885839999995,
+        "medianMs": 573.1885839999995,
+        "p95Ms": 573.1885839999995,
+        "minMs": 573.1885839999995,
+        "maxMs": 573.1885839999995
+      },
+      "steady": {
+        "n": 8,
+        "meanMs": 170.64293762500017,
+        "medianMs": 170.0073339999999,
+        "p95Ms": 176.55937500000073,
+        "minMs": 167.61895800000002,
+        "maxMs": 176.55937500000073
+      },
+      "instrumented": {
+        "n": 3,
+        "meanMs": 173.75562499999978,
+        "medianMs": 172.85949999999957,
+        "p95Ms": 176.13525000000027,
+        "minMs": 172.2721249999995,
+        "maxMs": 176.13525000000027
+      },
+      "named": {
+        "climate.step": {
+          "calls": 3,
+          "totalMs": 446.51120900000024
+        },
+        "climate.stepGiant": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.checkpoint": {
+          "calls": 3,
+          "totalMs": 0.47879099999954633
+        },
+        "climate.prepareSurface": {
+          "calls": 3,
+          "totalMs": 1.7279179999995904
+        },
+        "air.advance": {
+          "calls": 3,
+          "totalMs": 379.85070899999937
+        },
+        "air.dynamics": {
+          "calls": 6,
+          "totalMs": 185.1267080000016
+        },
+        "air.combustionStep": {
+          "calls": 12,
+          "totalMs": 96.23775100000057
+        },
+        "air.radiation": {
+          "calls": 15372,
+          "totalMs": 30.02555199994822
+        },
+        "air.phase": {
+          "calls": 169092,
+          "totalMs": 7.539498999998614
+        },
+        "air.precipitation": {
+          "calls": 15372,
+          "totalMs": 0.7748490000585662
+        },
+        "giant.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.equilibrateClouds": {
+          "calls": 0,
+          "totalMs": 0
+        }
+      },
+      "checkpointBytes": 5236728,
+      "copy": {
+        "n": 30,
+        "meanMs": 0.2923876333333283,
+        "medianMs": 0.2503339999993841,
+        "p95Ms": 0.5592920000008235,
+        "minMs": 0.11370799999986048,
+        "maxMs": 1.071125000000393
+      },
+      "restore": {
+        "n": 30,
+        "meanMs": 0.11454043333351364,
+        "medianMs": 0.09091699999953562,
+        "p95Ms": 0.27104100000087783,
+        "minMs": 0.08587500000066939,
+        "maxMs": 0.4032919999999649
+      },
+      "snapshot": {
+        "n": 10,
+        "meanMs": 13.690383200000088,
+        "medianMs": 14.348541000000296,
+        "p95Ms": 18.180582999999388,
+        "minMs": 10.594082999999955,
+        "maxMs": 18.180582999999388
+      },
+      "surfaceArray": {
+        "n": 10,
+        "meanMs": 1.2781960999998774,
+        "medianMs": 1.2172920000002705,
+        "p95Ms": 1.7333749999997963,
+        "minMs": 1.0611669999998412,
+        "maxMs": 1.7333749999997963
+      },
+      "solverTypedArrayBytes": 22711410,
+      "memoryBefore": {
+        "rss": 487309312,
+        "heapTotal": 115654656,
+        "heapUsed": 43964288,
+        "external": 77609211,
+        "arrayBuffers": 57104699
+      },
+      "memoryAfter": {
+        "rss": 487522304,
+        "heapTotal": 115654656,
+        "heapUsed": 58066744,
+        "external": 66277999,
+        "arrayBuffers": 60357127
+      },
+      "digest": "db5a130a884a89da3792c5e8db6feff74569c6120567b90a38818bb8747d8265",
+      "profile": "/Users/garden/Workspace/Projects/wt/sandsphere-performance-20261015/artifacts/performance/before.cpuprofile"
+    },
+    {
+      "level": 4,
+      "kind": "methane",
+      "climate": true,
+      "cells": 2562,
+      "dt": 0.03333333333333333,
+      "first": {
+        "n": 1,
+        "meanMs": 582.3187500000022,
+        "medianMs": 582.3187500000022,
+        "p95Ms": 582.3187500000022,
+        "minMs": 582.3187500000022,
+        "maxMs": 582.3187500000022
+      },
+      "steady": {
+        "n": 8,
+        "meanMs": 172.13096387500036,
+        "medianMs": 171.3921249999985,
+        "p95Ms": 180.8315419999999,
+        "minMs": 169.12208399999872,
+        "maxMs": 180.8315419999999
+      },
+      "instrumented": {
+        "n": 3,
+        "meanMs": 232.21300033333318,
+        "medianMs": 232.23462500000096,
+        "p95Ms": 281.47283400000015,
+        "minMs": 182.93154199999844,
+        "maxMs": 281.47283400000015
+      },
+      "named": {
+        "climate.step": {
+          "calls": 3,
+          "totalMs": 615.9834579999988
+        },
+        "climate.stepGiant": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.checkpoint": {
+          "calls": 3,
+          "totalMs": 0.46304199999940465
+        },
+        "climate.prepareSurface": {
+          "calls": 3,
+          "totalMs": 3.8144159999974363
+        },
+        "air.advance": {
+          "calls": 3,
+          "totalMs": 545.1090829999994
+        },
+        "air.dynamics": {
+          "calls": 6,
+          "totalMs": 295.5965410000026
+        },
+        "air.combustionStep": {
+          "calls": 12,
+          "totalMs": 89.49645900000542
+        },
+        "air.radiation": {
+          "calls": 15372,
+          "totalMs": 33.87210300002698
+        },
+        "air.phase": {
+          "calls": 169092,
+          "totalMs": 5.0283180004953465
+        },
+        "air.precipitation": {
+          "calls": 15372,
+          "totalMs": 1.095679000041855
+        },
+        "giant.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.equilibrateClouds": {
+          "calls": 0,
+          "totalMs": 0
+        }
+      },
+      "checkpointBytes": 5236728,
+      "copy": {
+        "n": 30,
+        "meanMs": 0.43449023333305375,
+        "medianMs": 0.39750000000276486,
+        "p95Ms": 0.771999999997206,
+        "minMs": 0.14229100000011385,
+        "maxMs": 1.1723749999982829
+      },
+      "restore": {
+        "n": 30,
+        "meanMs": 0.11486663333344041,
+        "medianMs": 0.09208299999954761,
+        "p95Ms": 0.18683400000008987,
+        "minMs": 0.08650000000125146,
+        "maxMs": 0.27162500000122236
+      },
+      "snapshot": {
+        "n": 10,
+        "meanMs": 15.649383300000409,
+        "medianMs": 15.619417000001704,
+        "p95Ms": 26.877707999999984,
+        "minMs": 11.304832999998325,
+        "maxMs": 26.877707999999984
+      },
+      "surfaceArray": {
+        "n": 10,
+        "meanMs": 1.375487400000202,
+        "medianMs": 1.2464159999981348,
+        "p95Ms": 2.898416999996698,
+        "minMs": 1.0388330000023416,
+        "maxMs": 2.898416999996698
+      },
+      "solverTypedArrayBytes": 22711410,
+      "memoryBefore": {
+        "rss": 1421606912,
+        "heapTotal": 284704768,
+        "heapUsed": 212232136,
+        "external": 131808362,
+        "arrayBuffers": 125297194
+      },
+      "memoryAfter": {
+        "rss": 1421639680,
+        "heapTotal": 284704768,
+        "heapUsed": 243630488,
+        "external": 160185074,
+        "arrayBuffers": 170736826
+      },
+      "digest": "cb7ef5b36938d5810a594fc91587f8b477f6b10d100b2a9ac32837fcbcfbc386"
+    },
+    {
+      "level": 4,
+      "kind": "jupiter",
+      "climate": true,
+      "cells": 2562,
+      "dt": 0.03333333333333333,
+      "first": {
+        "n": 1,
+        "meanMs": 247.02316699999938,
+        "medianMs": 247.02316699999938,
+        "p95Ms": 247.02316699999938,
+        "minMs": 247.02316699999938,
+        "maxMs": 247.02316699999938
+      },
+      "steady": {
+        "n": 8,
+        "meanMs": 226.56993237500092,
+        "medianMs": 226.26000000000204,
+        "p95Ms": 250.32400000000052,
+        "minMs": 214.78799999999683,
+        "maxMs": 250.32400000000052
+      },
+      "instrumented": {
+        "n": 3,
+        "meanMs": 260.93927766666576,
+        "medianMs": 225.53608299999905,
+        "p95Ms": 336.7072499999995,
+        "minMs": 220.5744999999988,
+        "maxMs": 336.7072499999995
+      },
+      "named": {
+        "climate.step": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.stepGiant": {
+          "calls": 3,
+          "totalMs": 781.9295010000023
+        },
+        "climate.checkpoint": {
+          "calls": 3,
+          "totalMs": 0.7420420000053127
+        },
+        "climate.prepareSurface": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.combustionStep": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.phase": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.precipitation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.advance": {
+          "calls": 3,
+          "totalMs": 767.0877070000024
+        },
+        "giant.dynamics": {
+          "calls": 3,
+          "totalMs": 442.6424999999981
+        },
+        "giant.radiation": {
+          "calls": 3,
+          "totalMs": 79.10737499999595
+        },
+        "giant.equilibrateClouds": {
+          "calls": 3,
+          "totalMs": 94.52604199999769
+        }
+      },
+      "checkpointBytes": 8188248,
+      "copy": {
+        "n": 30,
+        "meanMs": 0.6371193666662294,
+        "medianMs": 0.49012500000026193,
+        "p95Ms": 1.2282089999971504,
+        "minMs": 0.238999999997759,
+        "maxMs": 4.287667000000511
+      },
+      "restore": {
+        "n": 30,
+        "meanMs": 0.1282498999999613,
+        "medianMs": 0.1270829999994021,
+        "p95Ms": 0.13458299999911105,
+        "minMs": 0.12099999999918509,
+        "maxMs": 0.16570800000044983
+      },
+      "snapshot": {
+        "n": 10,
+        "meanMs": 7.470720799999981,
+        "medianMs": 6.820334000000003,
+        "p95Ms": 15.052666999999929,
+        "minMs": 4.810915999998542,
+        "maxMs": 15.052666999999929
+      },
+      "surfaceArray": {
+        "n": 10,
+        "meanMs": 1.3793624000005367,
+        "medianMs": 1.26770800000304,
+        "p95Ms": 2.803334000000177,
+        "minMs": 1.1133330000011483,
+        "maxMs": 2.803334000000177
+      },
+      "solverTypedArrayBytes": 22711410,
+      "memoryBefore": {
+        "rss": 1496875008,
+        "heapTotal": 299237376,
+        "heapUsed": 223484864,
+        "external": 151542012,
+        "arrayBuffers": 153450292
+      },
+      "memoryAfter": {
+        "rss": 1495023616,
+        "heapTotal": 305528832,
+        "heapUsed": 238234720,
+        "external": 152494812,
+        "arrayBuffers": 163046564
+      },
+      "digest": "5eae6e345f6ff2c1b295b72c0781ee413ae37a406259d1c506649dbfbf32d102"
+    },
+    {
+      "level": 4,
+      "kind": "dry",
+      "climate": false,
+      "cells": 2562,
+      "dt": 0.03333333333333333,
+      "first": {
+        "n": 1,
+        "meanMs": 34.44333400000323,
+        "medianMs": 34.44333400000323,
+        "p95Ms": 34.44333400000323,
+        "minMs": 34.44333400000323,
+        "maxMs": 34.44333400000323
+      },
+      "steady": {
+        "n": 8,
+        "meanMs": 20.884291624999605,
+        "medianMs": 20.34637500000099,
+        "p95Ms": 24.458832999996957,
+        "minMs": 19.892457999994804,
+        "maxMs": 24.458832999996957
+      },
+      "instrumented": {
+        "n": 3,
+        "meanMs": 20.487403000001603,
+        "medianMs": 20.449334000004455,
+        "p95Ms": 20.78112500000134,
+        "minMs": 20.23174999999901,
+        "maxMs": 20.78112500000134
+      },
+      "named": {
+        "climate.step": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.stepGiant": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.checkpoint": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "climate.prepareSurface": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.combustionStep": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.phase": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "air.precipitation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.advance": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.dynamics": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.radiation": {
+          "calls": 0,
+          "totalMs": 0
+        },
+        "giant.equilibrateClouds": {
+          "calls": 0,
+          "totalMs": 0
+        }
+      },
+      "checkpointBytes": 5236728,
+      "copy": {
+        "n": 30,
+        "meanMs": 0.3850305999997848,
+        "medianMs": 0.340875000001688,
+        "p95Ms": 0.6200420000022859,
+        "minMs": 0.13974999999481952,
+        "maxMs": 0.8620000000009895
+      },
+      "restore": {
+        "n": 30,
+        "meanMs": 0.10508460000055493,
+        "medianMs": 0.0912499999976717,
+        "p95Ms": 0.21099999999569263,
+        "minMs": 0.08858300000429153,
+        "maxMs": 0.22437499999796273
+      },
+      "snapshot": {
+        "n": 10,
+        "meanMs": 0.6667207999998936,
+        "medianMs": 0.6582079999934649,
+        "p95Ms": 0.8713750000024447,
+        "minMs": 0.5084580000038841,
+        "maxMs": 0.8713750000024447
+      },
+      "surfaceArray": {
+        "n": 10,
+        "meanMs": 1.5897293000001809,
+        "medianMs": 1.3315000000002328,
+        "p95Ms": 4.405292000003101,
+        "minMs": 1.0935420000023441,
+        "maxMs": 4.405292000003101
+      },
+      "solverTypedArrayBytes": 22711410,
+      "memoryBefore": {
+        "rss": 1612726272,
+        "heapTotal": 328417280,
+        "heapUsed": 254667688,
+        "external": 118724178,
+        "arrayBuffers": 134096720
+      },
+      "memoryAfter": {
+        "rss": 1612726272,
+        "heapTotal": 328417280,
+        "heapUsed": 269166024,
+        "external": 118724178,
+        "arrayBuffers": 134096720
+      },
+      "digest": "d34e724cf39f4fe568be732e87a8937fce25db845bd8aa4186aa5376de93f2ca"
+    }
+  ],
+  "saves": [
+    {
+      "kind": "wet",
+      "count": 1,
+      "rawBytes": 6757598,
+      "gzipBytes": 2061278,
+      "parts512KiB": 4,
+      "prepare": {
+        "n": 3,
+        "meanMs": 16.496193999999985,
+        "medianMs": 14.660291000000143,
+        "p95Ms": 20.753582999999708,
+        "minMs": 14.0747080000001,
+        "maxMs": 20.753582999999708
+      },
+      "stringify": {
+        "n": 3,
+        "meanMs": 7.7623056666664825,
+        "medianMs": 7.720374999998967,
+        "p95Ms": 7.910750000000917,
+        "minMs": 7.655791999999565,
+        "maxMs": 7.910750000000917
+      },
+      "clone": {
+        "n": 3,
+        "meanMs": 45.746361333333574,
+        "medianMs": 41.03770799999984,
+        "p95Ms": 55.349334000000454,
+        "minMs": 40.85204200000044,
+        "maxMs": 55.349334000000454
+      },
+      "gzip": {
+        "n": 3,
+        "meanMs": 179.56761099999918,
+        "medianMs": 178.23974999999882,
+        "p95Ms": 182.98266700000022,
+        "minMs": 177.4804159999985,
+        "maxMs": 182.98266700000022
+      },
+      "telemetryIncluded": false,
+      "validate": {
+        "n": 3,
+        "meanMs": 15.324750000000373,
+        "medianMs": 13.708208000000013,
+        "p95Ms": 20.455417000001034,
+        "minMs": 11.810625000000073,
+        "maxMs": 20.455417000001034
+      }
+    },
+    {
+      "kind": "wet",
+      "count": 4,
+      "rawBytes": 27029903,
+      "gzipBytes": 8243244,
+      "parts512KiB": 16,
+      "prepare": {
+        "n": 3,
+        "meanMs": 50.046111333333705,
+        "medianMs": 50.028041999999914,
+        "p95Ms": 50.40345800000068,
+        "minMs": 49.706834000000526,
+        "maxMs": 50.40345800000068
+      },
+      "stringify": {
+        "n": 3,
+        "meanMs": 32.03258300000016,
+        "medianMs": 32.129290999999284,
+        "p95Ms": 32.78120800000033,
+        "minMs": 31.18725000000086,
+        "maxMs": 32.78120800000033
+      },
+      "clone": {
+        "n": 3,
+        "meanMs": 189.27087499999956,
+        "medianMs": 185.59066699999858,
+        "p95Ms": 200.40829099999974,
+        "minMs": 181.81366700000035,
+        "maxMs": 200.40829099999974
+      },
+      "gzip": {
+        "n": 3,
+        "meanMs": 732.326055333333,
+        "medianMs": 716.883249999999,
+        "p95Ms": 768.4906250000004,
+        "minMs": 711.6042909999996,
+        "maxMs": 768.4906250000004
+      },
+      "telemetryIncluded": false,
+      "validate": {
+        "n": 3,
+        "meanMs": 40.22858333333352,
+        "medianMs": 39.88287499999933,
+        "p95Ms": 41.042209000001094,
+        "minMs": 39.76066600000013,
+        "maxMs": 41.042209000001094
+      }
+    },
+    {
+      "kind": "wet",
+      "count": 8,
+      "rawBytes": 54059774,
+      "gzipBytes": 16485641,
+      "parts512KiB": 32,
+      "prepare": {
+        "n": 3,
+        "meanMs": 95.98008333333382,
+        "medianMs": 96.26958300000115,
+        "p95Ms": 97.59587500000089,
+        "minMs": 94.07479199999943,
+        "maxMs": 97.59587500000089
+      },
+      "stringify": {
+        "n": 3,
+        "meanMs": 62.828457999999955,
+        "medianMs": 62.72979099999975,
+        "p95Ms": 63.764124999999694,
+        "minMs": 61.99145800000042,
+        "maxMs": 63.764124999999694
+      },
+      "clone": {
+        "n": 3,
+        "meanMs": 379.08591666666626,
+        "medianMs": 373.2022079999988,
+        "p95Ms": 404.5256669999999,
+        "minMs": 359.5298750000002,
+        "maxMs": 404.5256669999999
+      },
+      "gzip": {
+        "n": 3,
+        "meanMs": 1431.335708333334,
+        "medianMs": 1431.7852090000015,
+        "p95Ms": 1432.3810830000002,
+        "minMs": 1429.8408330000002,
+        "maxMs": 1432.3810830000002
+      },
+      "telemetryIncluded": false,
+      "validate": {
+        "n": 3,
+        "meanMs": 79.18918033333345,
+        "medianMs": 78.63995800000157,
+        "p95Ms": 81.44758299999921,
+        "minMs": 77.47999999999956,
+        "maxMs": 81.44758299999921
+      }
+    },
+    {
+      "kind": "jupiter",
+      "count": 1,
+      "rawBytes": 6886000,
+      "gzipBytes": 2663457,
+      "parts512KiB": 6,
+      "prepare": {
+        "n": 3,
+        "meanMs": 71.42080533333258,
+        "medianMs": 69.06837499999892,
+        "p95Ms": 81.13733299999876,
+        "minMs": 64.05670800000007,
+        "maxMs": 81.13733299999876
+      },
+      "stringify": {
+        "n": 3,
+        "meanMs": 8.198930333333314,
+        "medianMs": 8.264957999999751,
+        "p95Ms": 8.56499999999869,
+        "minMs": 7.766833000001498,
+        "maxMs": 8.56499999999869
+      },
+      "clone": {
+        "n": 3,
+        "meanMs": 28.33574999999958,
+        "medianMs": 27.785415999998804,
+        "p95Ms": 29.640542000001005,
+        "minMs": 27.58129199999894,
+        "maxMs": 29.640542000001005
+      },
+      "gzip": {
+        "n": 3,
+        "meanMs": 241.04159733333412,
+        "medianMs": 239.00287500000195,
+        "p95Ms": 249.0766250000015,
+        "minMs": 235.04529199999888,
+        "maxMs": 249.0766250000015
+      },
+      "telemetryIncluded": false,
+      "validate": {
+        "n": 3,
+        "meanMs": 21.183986333334662,
+        "medianMs": 21.42620900000111,
+        "p95Ms": 22.67500000000291,
+        "minMs": 19.45074999999997,
+        "maxMs": 22.67500000000291
+      }
+    },
+    {
+      "kind": "jupiter",
+      "count": 4,
+      "rawBytes": 27543511,
+      "gzipBytes": 10653303,
+      "parts512KiB": 21,
+      "prepare": {
+        "n": 3,
+        "meanMs": 261.32483366666685,
+        "medianMs": 260.39529200000106,
+        "p95Ms": 263.3525840000002,
+        "minMs": 260.22662499999933,
+        "maxMs": 263.3525840000002
+      },
+      "stringify": {
+        "n": 3,
+        "meanMs": 35.19947266666835,
+        "medianMs": 32.80883400000312,
+        "p95Ms": 40.35795900000085,
+        "minMs": 32.43162500000108,
+        "maxMs": 40.35795900000085
+      },
+      "clone": {
+        "n": 3,
+        "meanMs": 114.81763899999957,
+        "medianMs": 115.18366700000115,
+        "p95Ms": 116.5323329999992,
+        "minMs": 112.73691699999836,
+        "maxMs": 116.5323329999992
+      },
+      "gzip": {
+        "n": 3,
+        "meanMs": 931.8578053333343,
+        "medianMs": 935.1339580000022,
+        "p95Ms": 941.2179160000014,
+        "minMs": 919.2215419999993,
+        "maxMs": 941.2179160000014
+      },
+      "telemetryIncluded": false,
+      "validate": {
+        "n": 3,
+        "meanMs": 77.44063899999917,
+        "medianMs": 73.19895799999722,
+        "p95Ms": 86.15266699999847,
+        "minMs": 72.97029200000179,
+        "maxMs": 86.15266699999847
+      }
+    },
+    {
+      "kind": "jupiter",
+      "count": 8,
+      "rawBytes": 55086990,
+      "gzipBytes": 21306431,
+      "parts512KiB": 41,
+      "prepare": {
+        "n": 3,
+        "meanMs": 540.9934300000023,
+        "medianMs": 543.5788329999996,
+        "p95Ms": 545.3965410000019,
+        "minMs": 534.0049160000053,
+        "maxMs": 545.3965410000019
+      },
+      "stringify": {
+        "n": 3,
+        "meanMs": 64.73738899999687,
+        "medianMs": 64.27783400000044,
+        "p95Ms": 65.85695799999667,
+        "minMs": 64.07737499999348,
+        "maxMs": 65.85695799999667
+      },
+      "clone": {
+        "n": 3,
+        "meanMs": 257.86575000000204,
+        "medianMs": 247.43991700000333,
+        "p95Ms": 289.38412500000413,
+        "minMs": 236.7732079999987,
+        "maxMs": 289.38412500000413
+      },
+      "gzip": {
+        "n": 3,
+        "meanMs": 1845.5954860000008,
+        "medianMs": 1848.791667000005,
+        "p95Ms": 1859.8457080000007,
+        "minMs": 1828.1490829999966,
+        "maxMs": 1859.8457080000007
+      },
+      "telemetryIncluded": false,
+      "validate": {
+        "n": 3,
+        "meanMs": 146.18579200000022,
+        "medianMs": 146.99825000000055,
+        "p95Ms": 150.09783400000015,
+        "minMs": 141.46129199999996,
+        "maxMs": 150.09783400000015
+      }
+    }
+  ]
+}

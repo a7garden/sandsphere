@@ -3,6 +3,7 @@ import {getAuth,connectAuthEmulator,type Auth} from 'firebase/auth';
 import {getFirestore,connectFirestoreEmulator,doc,getDocFromServer,runTransaction,writeBatch,Bytes,type Firestore} from 'firebase/firestore';
 import {getStorage,connectStorageEmulator,ref,getBytes,type FirebaseStorage} from 'firebase/storage';
 import {validSystem,type SystemSave} from '../sim/system';
+import {packSave,unpackSave,SAVE_RAW_LIMIT} from '../sim/saveCodec';
 import {SaveConflict,type RemoteSave} from './sync';
 
 export interface FirebaseServices {auth:Auth;db:Firestore;storage:FirebaseStorage|null;}
@@ -21,10 +22,10 @@ export function firebaseServices(){
   }
   return services;
 }
-const RAW_LIMIT=64*1024*1024,COMPRESSED_LIMIT=20*1024*1024;
+const RAW_LIMIT=SAVE_RAW_LIMIT,COMPRESSED_LIMIT=20*1024*1024;
 export async function encodeSave(system:SystemSave){
-  const bytes=new TextEncoder().encode(JSON.stringify(system));
-  if(bytes.length>RAW_LIMIT)throw new Error('저장 데이터가 최대 크기(64MB)를 넘었습니다.');
+  const bytes=packSave(system);
+  if(bytes.byteLength>RAW_LIMIT)throw new Error('저장 데이터가 최대 크기(64MB)를 넘었습니다.');
   const blob=await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
   if(blob.size>COMPRESSED_LIMIT)throw new Error('압축한 저장 데이터가 최대 크기(20MB)를 넘었습니다.');
   return blob;
@@ -35,7 +36,7 @@ export async function decodeSave(bytes:ArrayBuffer,count:number):Promise<SystemS
   const chunks:Uint8Array<ArrayBuffer>[]=[];let size=0;
   try{while(true){const next=await reader.read();if(next.done)break;size+=next.value.length;if(size>RAW_LIMIT){await reader.cancel();throw new Error('클라우드 저장본이 너무 큽니다.');}chunks.push(new Uint8Array(next.value));}}
   finally{reader.releaseLock();}
-  const value:unknown=JSON.parse(await new Blob(chunks).text());
+  const value=unpackSave(await new Blob(chunks).arrayBuffer());
   if(!validSystem(value,count)||value.telemetry?.baseSavedAt!==undefined)throw new Error('클라우드 저장본의 형식이 맞지 않습니다.');
   return value;
 }
