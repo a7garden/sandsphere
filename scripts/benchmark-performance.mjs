@@ -30,13 +30,13 @@ try{
   const instrumented=measure(3,()=>solver.advance(dt,commands,env));for(const restore of restores)restore();
   const checkpoint=solver.climate.checkpoint(),checkpointBytes=buffers(checkpoint),copy=measure(30,()=>solver.climate.checkpoint()),restore=measure(30,()=>solver.climate.restoreCheckpoint(checkpoint));
   const snapshot=measure(10,()=>solver.climate.snapshot()),surfaceArray=measure(10,()=>Array.from(solver.state));
-  const hash=createHash('sha256');const add=(x)=>{if(ArrayBuffer.isView(x))hash.update(new Uint8Array(x.buffer,x.byteOffset,x.byteLength));else if(x&&typeof x==='object')for(const key of Object.keys(x).sort())add(x[key]);};add([solver.state,solver.climate.checkpoint(),solver.energyChanges,solver.escapeCells,solver.feedingCells]);
+  const hash=createHash('sha256');const add=(x)=>{if(ArrayBuffer.isView(x))hash.update(new Uint8Array(x.buffer,x.byteOffset,x.byteLength));else if(x&&typeof x==='object')for(const key of Object.keys(x).sort())add(x[key]);};const complete=solver.climate.checkpoint();add([solver.state,complete.wind,complete.currents,complete.seeds,complete.air.initialized?complete.air:null,complete.giant,solver.energyChanges,solver.escapeCells,solver.feedingCells]);
   const row={level,kind,climate,cells:grid.count,dt,first,steady,instrumented,named,checkpointBytes,copy,restore,snapshot,surfaceArray,solverTypedArrayBytes:buffers(solver),memoryBefore,memoryAfter,digest:hash.digest('hex')};
   if(level===4&&kind==='wet'){
    profileSession.connect();await post('Profiler.enable');await post('Profiler.setSamplingInterval',{interval:1000});await post('Profiler.start');for(let n=0;n<8;n++)solver.advance(dt,commands,env);const {profile}=await post('Profiler.stop');await post('Profiler.disable');profileSession.disconnect();writeFileSync(prefix+'.cpuprofile',JSON.stringify(profile));row.profile=prefix+'.cpuprofile';
   }
   result.scenarios.push(row);writeFileSync(prefix+'.json',JSON.stringify(result,null,2));console.log(JSON.stringify({kind,level,cells:grid.count,first:first.meanMs,steady:steady.meanMs,copyMs:copy.meanMs,checkpointBytes}));
-  if(level===4&&['wet','jupiter'].includes(kind)){
+  if(!process.argv.includes('--cpu-only')&&level===4&&['wet','jupiter'].includes(kind)){
    const saveEnv=env.body?env:{...env,body:definition.sandboxDefinition('rock',env.gravity??1,1)};
    const snapshot={version:11,preset:'coast',state:[...solver.state],climate:solver.climate.snapshot(),environment:saveEnv,time:1,supplied:0,removed:0,discoveries:[]};
    for(const count of [1,4,8]){

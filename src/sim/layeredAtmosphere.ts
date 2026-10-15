@@ -1,6 +1,6 @@
 import {SOOT,particleLiftFlux,particleSettlingSpeed,aerosolOptics} from './aerosolPhysics';
 import {buoyancyAcceleration,surfaceExchangeSpeed} from './buoyancy';
-import {COMBUSTION_REACTIONS,oxidationRoutes,combust} from './ecology';
+import {COMBUSTION_REACTIONS,oxidationRoutes,combust,MIN_COMBUSTION_TEMPERATURE} from './ecology';
 import {materialReaction,reactInventory,thermalReactionLimit} from './materialReaction';
 import {waterEquilibrium} from './phaseEquilibrium';
 import {AIR_SECONDS,COLUMN_KG,radiationEnergy} from './climateUnits';
@@ -100,10 +100,10 @@ export class LayeredAtmosphere {
  // Retained snapshot hint for initial profiles and surface boundary choices.
  // Evolved air uses the common positive-Kelvin enthalpy domain instead.
  private minTemperature=-150;private radiationModel:RadiationModel='earth-spectral';
- private fluxMass:Float64Array;private delta:Float64Array;private heat:Float64Array;private momentum:Float64Array;private out:Float64Array;
+ private fluxMass:Float64Array;private fluxEnergy:Float64Array;private delta:Float64Array;private heat:Float64Array;private momentum:Float64Array;private out:Float64Array;
  private gradients:Float64Array;private radiationCache:Float64Array;
  private acceleration:Float64Array;private rt:Float64Array;private virtualTemperature:Float64Array;private logPressure:Float64Array;private edgeSpeeds:Float64Array;private carried:Float64Array;
- constructor(readonly grid:SphereGrid,private edges:AirEdge[],private maxStepSeconds=1){if(!Number.isFinite(maxStepSeconds)||maxStepSeconds<=0||maxStepSeconds>60)throw new Error("대기 적분 간격은 0–60초 범위여야 합니다.");const n=grid.count*AIR_LAYERS;this.absorbedSolar=new Float64Array(grid.count);this.dustMass=new Float64Array(n);this.dustDelta=new Float64Array(n);this.dustRadiationCache=new Float64Array(n);this.sootRadiationCache=new Float64Array(n);this.dustLiftCarry=new Float64Array(grid.count);this.sootLiftCarry=new Float64Array(grid.count);this.roundoff=new Float64Array(grid.count);this.mass=new Float64Array(n*AIR_SPECIES);this.temperature=new Float64Array(n);this.velocity=new Float64Array(n*3);this.updraft=new Float64Array(grid.count*(AIR_LAYERS-1));this.fluxMass=new Float64Array(n);this.delta=new Float64Array(n*AIR_SPECIES);this.heat=new Float64Array(n);this.momentum=new Float64Array(n*3);this.out=new Float64Array(n);this.acceleration=new Float64Array(n*3);this.rt=new Float64Array(n);this.virtualTemperature=new Float64Array(n);this.logPressure=new Float64Array(n);this.edgeSpeeds=new Float64Array(edges.length*AIR_LAYERS);this.carried=new Float64Array(3);this.gradients=this.gradientGeometry();this.radiationCache=new Float64Array(grid.count*RAD_STRIDE);for(let i=0;i<grid.count;i++)this.radiationCache[i*RAD_STRIDE]=-1;}
+ constructor(readonly grid:SphereGrid,private edges:AirEdge[],private maxStepSeconds=1){if(!Number.isFinite(maxStepSeconds)||maxStepSeconds<=0||maxStepSeconds>60)throw new Error("대기 적분 간격은 0–60초 범위여야 합니다.");const n=grid.count*AIR_LAYERS;this.absorbedSolar=new Float64Array(grid.count);this.dustMass=new Float64Array(n);this.dustDelta=new Float64Array(n);this.dustRadiationCache=new Float64Array(n);this.sootRadiationCache=new Float64Array(n);this.dustLiftCarry=new Float64Array(grid.count);this.sootLiftCarry=new Float64Array(grid.count);this.roundoff=new Float64Array(grid.count);this.mass=new Float64Array(n*AIR_SPECIES);this.temperature=new Float64Array(n);this.velocity=new Float64Array(n*3);this.updraft=new Float64Array(grid.count*(AIR_LAYERS-1));this.fluxMass=new Float64Array(n);this.fluxEnergy=new Float64Array(n);this.delta=new Float64Array(n*AIR_SPECIES);this.heat=new Float64Array(n);this.momentum=new Float64Array(n*3);this.out=new Float64Array(n);this.acceleration=new Float64Array(n*3);this.rt=new Float64Array(n);this.virtualTemperature=new Float64Array(n);this.logPressure=new Float64Array(n);this.edgeSpeeds=new Float64Array(edges.length*AIR_LAYERS);this.carried=new Float64Array(3);this.gradients=this.gradientGeometry();this.radiationCache=new Float64Array(grid.count*RAD_STRIDE);for(let i=0;i<grid.count;i++)this.radiationCache[i*RAD_STRIDE]=-1;}
  /** Consistent tangent least-squares gradient, including the 12 pentagons.
   * A fixed division by 3 biases irregular neighbor fans as resolution grows. */
  private gradientGeometry(){
@@ -247,22 +247,22 @@ export class LayeredAtmosphere {
   for(let f=0;f<AIR_SPECIES;f++)queueSpecies(this.mass,this.delta,AIR_SPECIES,d,r,f,fraction);
   queueSpecies(this.dustMass,this.dustDelta,1,d,r,0,fraction);
   carryVelocity(this.velocity,d,this.grid.directions,Math.floor(d/AIR_LAYERS),Math.floor(r/AIR_LAYERS),this.carried);
-  queueEnergyMomentum(d,r,mass*fraction,this.layerEnergy(d,mass)*fraction,this.velocity,this.carried,this.heat,this.momentum);
+  queueEnergyMomentum(d,r,mass*fraction,this.fluxEnergy[d]*fraction,this.velocity,this.carried,this.heat,this.momentum);
  }
  private commit(){
   for(let q=0;q<this.temperature.length;q++){
-   const oldMass=this.fluxMass[q],h=this.layerEnergy(q,oldMass)+this.heat[q];
+   const oldMass=this.fluxMass[q],h=this.fluxEnergy[q]+this.heat[q];
    for(let f=0;f<AIR_SPECIES;f++)this.mass[q*AIR_SPECIES+f]+=this.delta[q*AIR_SPECIES+f];this.dustMass[q]+=this.dustDelta[q];const m=this.layerMass(q);
    commitMomentum(q,oldMass,m,this.velocity,this.momentum);
    this.setEnergy(q,h,m);
   }
  }
  /** Mass stays fixed while fluxes are queued. Refresh after each commit. */
- private clearFlux(){this.delta.fill(0);this.dustDelta.fill(0);this.heat.fill(0);this.momentum.fill(0);this.out.fill(0);for(let q=0;q<this.fluxMass.length;q++)this.fluxMass[q]=this.layerMass(q);}
+ private clearFlux(){this.delta.fill(0);this.dustDelta.fill(0);this.heat.fill(0);this.momentum.fill(0);this.out.fill(0);for(let q=0;q<this.fluxMass.length;q++){const m=this.layerMass(q);this.fluxMass[q]=m;this.fluxEnergy[q]=this.layerEnergy(q,m);}}
  private dynamics(dt:number,e:Environment){
   const acceleration=this.acceleration,rt=this.rt,virtual=this.virtualTemperature,logPressure=this.logPressure;
   acceleration.fill(0);
-  for(let i=0;i<this.grid.count;i++){let above=0;for(let k=AIR_LAYERS-1;k>=0;k--){const q=i*AIR_LAYERS+k,m=this.layerMass(q);this.fluxMass[q]=m;rt[q]=this.gasConstant(q)*(this.temperature[q]+273.15);virtual[q]=this.virtual(q);logPressure[q]=Math.log(Math.max(.01,(above+m*.5)*COLUMN_KG*9.81*this.gravity));above+=m;}}
+  for(let i=0;i<this.grid.count;i++){let above=0;for(let k=AIR_LAYERS-1;k>=0;k--){const q=i*AIR_LAYERS+k,m=this.layerMass(q);this.fluxMass[q]=m;rt[q]=this.gasConstant(q)*(this.temperature[q]+273.15);let gas=0;for(const f of AIR_GAS_INDICES)gas+=this.mass[q*AIR_SPECIES+f];virtual[q]=rt[q]/287*gas/Math.max(1e-30,m);logPressure[q]=Math.log(Math.max(.01,(above+m*.5)*COLUMN_KG*9.81*this.gravity));above+=m;}}
   let edgeIndex=0;for(const {i,j,distance} of this.edges){let thermal=0,previous=0;for(let k=0;k<AIR_LAYERS;k++){
    const a=i*AIR_LAYERS+k,b=j*AIR_LAYERS+k;
    if(this.fluxMass[a]<1e-12||this.fluxMass[b]<1e-12)continue;
@@ -308,7 +308,7 @@ export class LayeredAtmosphere {
    const useDry=da.mass>1e-12&&db.mass>1e-12,referenceA=useDry?da.mass:ma,referenceB=useDry?db.mass:mb,scale=referenceA/referenceB,mixedMass=(1-mix)*ma+mix*scale*mb;
    let envCapacity=this.dustMass[b]*DUST_CP+this.mass[b*AIR_SPECIES+8]*cp[8];for(const f of DRY_GAS_INDICES)envCapacity+=this.mass[b*AIR_SPECIES+f]*cp[f];
    const dryMoles=(1-mix)*da.moles+mix*scale*db.moles,water=(1-mix)*(this.mass[a*AIR_SPECIES]+this.mass[a*AIR_SPECIES+4]+this.mass[a*AIR_SPECIES+5])+mix*scale*(this.mass[b*AIR_SPECIES]+this.mass[b*AIR_SPECIES+4]+this.mass[b*AIR_SPECIES+5]),
-    dryMass=(1-mix)*da.mass+mix*scale*db.mass,mixedH=(1-mix)*(this.layerEnergy(a,ma)-ma*this.speed2(a)*.5/1000)+mix*scale*(this.layerEnergy(b,mb)-mb*this.speed2(b)*.5/1000),
+    dryMass=(1-mix)*da.mass+mix*scale*db.mass,mixedH=(1-mix)*(this.fluxEnergy[a]-ma*this.speed2(a)*.5/1000)+mix*scale*(this.fluxEnergy[b]-mb*this.speed2(b)*.5/1000),
     parcel=parcelEquilibrium((1-mix)*dryCapacity+mix*scale*envCapacity,dryMoles,water,mixedH-((1-mix)*this.dryChemicalEnergy(a)+mix*scale*this.dryChemicalEnergy(b)),this.pressure(i,k+1),mixedMass*9.81*this.gravity*this.height(k+1)/1000),
     parcelGas=dryMass+parcel.vapor,parcelR=8.314462618*(dryMoles+parcel.vapor/.018015)/Math.max(1e-30,parcelGas),parcelVirtual=(parcel.temperature+273.15)*parcelR/287*parcelGas/mixedMass;
    const buoyancy=buoyancyAcceleration(parcelVirtual,this.virtual(b),9.81*this.gravity),v=i*(AIR_LAYERS-1)+k;
@@ -328,7 +328,7 @@ export class LayeredAtmosphere {
  }
  private surfaceExchange(s:Float32Array,i:number,dt:number,boundary?:PrescribedClimateBoundary){
   const p=i*STRIDE,q=i*AIR_LAYERS,m=this.layerMass(q),ca=this.layerCapacity(q);
-  let ha=this.layerEnergy(q),hs=enthalpy(s,i),cs=capacity(s,i),t=s[p+F.temperature],air=this.temperature[q],u=boundary?.windSpeed??Math.hypot(...this.velocity.subarray(q*3,q*3+3));
+  let ha=this.layerEnergy(q),hs=enthalpy(s,i),cs=capacity(s,i),t=s[p+F.temperature],air=this.temperature[q],u=boundary?.windSpeed??Math.hypot(this.velocity[q*3],this.velocity[q*3+1],this.velocity[q*3+2]);
   const exchange=boundary?.windSpeed!==undefined?Math.max(1,u):surfaceExchangeSpeed(u,t+273.15,air+273.15,this.height(0),9.81*this.gravity);
   const rho=m*COLUMN_KG/this.thickness(0),transfer=rho*1004*.0015*exchange/COLUMN_KG/1000;
   if(ca>1e-18){const amount=conductiveExchange(t,air,cs,ca,transfer,dt);hs-=amount;ha+=amount;s[p+F.temperature]=(hs-phaseEnergy(s,i))/cs;this.roundoff[i]+=enthalpy(s,i)-hs;this.setEnergy(q,ha);}
@@ -506,7 +506,7 @@ export class LayeredAtmosphere {
  private burnGas(q:number,gameDt:number){
   for(const {def,adapted} of gasCombustion){
    const fuel=this.mass[q*AIR_SPECIES+airReactionField(def.field)],oxygen=this.mass[q*AIR_SPECIES+6];
-   if(fuel<=0||oxygen<=0)continue;
+   if(fuel<=0||oxygen<=0||this.temperature[q]<=def.ignition)continue;
    for(const {reaction,requested} of oxidationRoutes(def,fuel,oxygen,gameDt,this.temperature[q])){
     if(requested<=0)continue;
     const h=this.layerEnergy(q);
@@ -522,7 +522,16 @@ export class LayeredAtmosphere {
  private combustionStep(s:Float32Array,gameDt:number){
   for(let i=0;i<this.grid.count;i++){
    const p=i*STRIDE,h=enthalpy(s,i)+this.columnEnergy(i);
-   this.surfaceReaction(s,i,()=>combust(s,p,gameDt,s[p+F.temperature],ATMOSPHERE_MIRRORS));
+   if(s[p+F.temperature]>MIN_COMBUSTION_TEMPERATURE)this.surfaceReaction(s,i,()=>combust(s,p,gameDt,s[p+F.temperature],ATMOSPHERE_MIRRORS));
+   else{
+    // The reaction network is inactive below its lowest ignition threshold.
+    // Keep the original no-op enthalpy inversion and momentum roundoff, while
+    // avoiding temporary Float32 mirrors, callbacks and reaction-route arrays.
+    const q=i*AIR_LAYERS,heat=this.layerEnergy(q),oldMass=this.layerMass(q);
+    for(let f=0;f<AIR_SPECIES;f++)this.mass[q*AIR_SPECIES+f]+=0;
+    const newMass=this.layerMass(q);for(let v=0;v<3;v++)this.velocity[q*3+v]*=Math.max(0,oldMass)/Math.max(1e-30,newMass);
+    this.setEnergy(q,heat+0);
+   }
    for(const f of ATMOSPHERE_MIRRORS)s[p+f]=0;
    const target=h-this.columnEnergy(i);s[p+F.temperature]=(target-phaseEnergy(s,i))/capacity(s,i);
    this.roundoff[i]+=enthalpy(s,i)-target;

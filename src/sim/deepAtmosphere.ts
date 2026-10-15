@@ -50,8 +50,10 @@ export class DeepAtmosphere {
  readonly mass:Float64Array;readonly temperature:Float64Array;readonly velocity:Float64Array;readonly height=new Float64Array(DEEP_LAYERS);
  ready=false;radiusMeters=1e6;gravity=1;referencePressure=1e5;initialBottomPressure=3e6;intrinsicFlux=0;
  private carried=new Float64Array(3);
- private delta:Float64Array;private heat:Float64Array;private momentum:Float64Array;private out:Float64Array;private oldMass:Float64Array;private acceleration:Float64Array;private pressureValues:Float64Array;
- constructor(readonly grid:SphereGrid,private edges:AirEdge[]){const n=grid.count*DEEP_LAYERS;this.mass=new Float64Array(n*DEEP_SPECIES);this.temperature=new Float64Array(n);this.velocity=new Float64Array(n*3);this.delta=new Float64Array(n*DEEP_SPECIES);this.heat=new Float64Array(n);this.momentum=new Float64Array(n*3);this.out=new Float64Array(n);this.oldMass=new Float64Array(n);this.acceleration=new Float64Array(n*3);this.pressureValues=new Float64Array(n);}
+ private delta:Float64Array;private heat:Float64Array;private momentum:Float64Array;private out:Float64Array;private oldMass:Float64Array;private acceleration:Float64Array;private pressureValues:Float64Array;private oldEnergy:Float64Array;private thermalPressure:Float64Array;private edgeTangents:Float64Array;private flowFrom:Int32Array;private flowTo:Int32Array;private flowFraction:Float64Array;
+ constructor(readonly grid:SphereGrid,private edges:AirEdge[]){const n=grid.count*DEEP_LAYERS;this.mass=new Float64Array(n*DEEP_SPECIES);this.temperature=new Float64Array(n);this.velocity=new Float64Array(n*3);this.delta=new Float64Array(n*DEEP_SPECIES);this.heat=new Float64Array(n);this.momentum=new Float64Array(n*3);this.out=new Float64Array(n);this.oldMass=new Float64Array(n);this.acceleration=new Float64Array(n*3);this.pressureValues=new Float64Array(n);this.oldEnergy=new Float64Array(n);this.thermalPressure=new Float64Array(n);this.edgeTangents=new Float64Array(edges.length*6);this.flowFrom=new Int32Array(edges.length*DEEP_LAYERS);this.flowTo=new Int32Array(edges.length*DEEP_LAYERS);this.flowFraction=new Float64Array(edges.length*DEEP_LAYERS);
+  for(let e=0;e<edges.length;e++){const edge=edges[e];for(const [cell,offset] of [[edge.i,0],[edge.j,3]]){const p=cell*3,dot=edge.t.reduce((v,x,k)=>v+x*grid.directions[p+k],0);for(let v=0;v<3;v++)this.edgeTangents[e*6+offset+v]=edge.t[v]-dot*grid.directions[p+v];}}
+ }
  private metadata():DeepMetadata{return {radiusMeters:this.radiusMeters,gravity:this.gravity,referencePressure:this.referencePressure,initialBottomPressure:this.initialBottomPressure,intrinsicFlux:this.intrinsicFlux};}
  snapshot():DeepSnapshot|undefined{return this.ready?{version:2,...this.metadata(),mass:[...this.mass],temperature:[...this.temperature],velocity:[...this.velocity],height:[...this.height]}:undefined;}
  checkpoint():DeepCheckpoint|undefined{return this.ready?{version:2,...this.metadata(),mass:this.mass.slice(),temperature:this.temperature.slice(),velocity:this.velocity.slice(),height:this.height.slice()}:undefined;}
@@ -88,21 +90,38 @@ export class DeepAtmosphere {
  sync(s:Float32Array){for(let i=0;i<this.grid.count;i++){const p=i*STRIDE;let h=0,c=0;for(let f=0;f<DEEP_SPECIES;f++){let m=0;for(let k=0;k<DEEP_LAYERS;k++)m+=this.mass[(i*DEEP_LAYERS+k)*DEEP_SPECIES+f];s[p+DEEP_FIELDS[f]]=m;}for(let k=0;k<DEEP_LAYERS;k++){const q=i*DEEP_LAYERS+k;h+=this.layerCapacity(q)*this.temperature[q];c+=this.layerCapacity(q);}s[p+F.temperature]=h/c;}}
  heatForTarget(i:number,target:number,mode:'heat'|'cool',pending=0){const q=i*DEEP_LAYERS+this.referenceLayer(i),change=this.layerCapacity(q)*(target-this.temperature[q])-pending;return mode==='heat'?Math.max(0,change):Math.min(0,change);}
  private validate(){for(let q=0;q<this.temperature.length;q++)if(!Number.isFinite(this.temperature[q])||this.temperature[q]<-250||this.temperature[q]>2500||!Number.isFinite(this.layerMass(q))||this.layerMass(q)<=1e-15||this.mass.subarray(q*DEEP_SPECIES,(q+1)*DEEP_SPECIES).some(m=>!Number.isFinite(m)||m<0)||Math.sqrt(this.speed2(q))>5000)throw new Error('깊은 대기 상태가 계산 범위를 벗어났습니다.');}
- private clear(){this.delta.fill(0);this.heat.fill(0);this.momentum.fill(0);this.out.fill(0);for(let q=0;q<this.oldMass.length;q++)this.oldMass[q]=this.layerMass(q);}
+ private clear(){this.delta.fill(0);this.heat.fill(0);this.momentum.fill(0);this.out.fill(0);for(let q=0;q<this.oldMass.length;q++){this.oldMass[q]=this.layerMass(q);this.oldEnergy[q]=this.layerEnergy(q);}}
  private queue(a:number,b:number,fraction:number){
   if(fraction<=0)return;
   for(let f=0;f<DEEP_SPECIES;f++)queueSpecies(this.mass,this.delta,DEEP_SPECIES,a,b,f,fraction);
   carryVelocity(this.velocity,a,this.grid.directions,Math.floor(a/DEEP_LAYERS),Math.floor(b/DEEP_LAYERS),this.carried);
-  queueEnergyMomentum(a,b,this.oldMass[a]*fraction,this.layerEnergy(a)*fraction,this.velocity,this.carried,this.heat,this.momentum);
+  queueEnergyMomentum(a,b,this.oldMass[a]*fraction,this.oldEnergy[a]*fraction,this.velocity,this.carried,this.heat,this.momentum);
  }
- private commit(){for(let q=0;q<this.oldMass.length;q++){const h=this.layerEnergy(q)+this.heat[q],m0=this.oldMass[q];for(let f=0;f<DEEP_SPECIES;f++)this.mass[q*DEEP_SPECIES+f]+=this.delta[q*DEEP_SPECIES+f];const m=this.layerMass(q);commitMomentum(q,m0,m,this.velocity,this.momentum);this.setEnergy(q,h);}}
+ private commit(){for(let q=0;q<this.oldMass.length;q++){const h=this.oldEnergy[q]+this.heat[q],m0=this.oldMass[q];for(let f=0;f<DEEP_SPECIES;f++)this.mass[q*DEEP_SPECIES+f]+=this.delta[q*DEEP_SPECIES+f];const m=this.layerMass(q);commitMomentum(q,m0,m,this.velocity,this.momentum);this.setEnergy(q,h);}}
  private gasR(q:number){let n=0;for(const f of [0,1,2,5])n+=this.mass[q*DEEP_SPECIES+f]/MOLAR[f];return R*n/this.layerMass(q);}
  private cachePressures(){for(let i=0;i<this.grid.count;i++){let above=0;for(let k=0;k<DEEP_LAYERS;k++){const q=i*DEEP_LAYERS+k,m=this.layerMass(q);this.pressureValues[q]=(above+.5*m)*COLUMN_KG*9.81*this.gravity;above+=m;}}}
  dynamics(dt:number,e:Environment){
-  this.cachePressures();this.acceleration.fill(0);for(const {i,j,distance,t} of this.edges)for(let k=0;k<DEEP_LAYERS;k++){const a=i*DEEP_LAYERS+k,b=j*DEEP_LAYERS+k,p1=this.pressureValues[a],p2=this.pressureValues[b],rt=(this.gasR(a)*(this.temperature[a]+273.15)+this.gasR(b)*(this.temperature[b]+273.15))*.5,thermal=9.81*this.gravity*this.height[k]*2*(this.temperature[b]-this.temperature[a])/Math.max(1,this.temperature[a]+this.temperature[b]+546.3),force=-(rt*Math.log(p2/p1)+thermal)/(this.radiusMeters*distance*3);for(const q of [a,b]){const cell=Math.floor(q/DEEP_LAYERS),normal=this.grid.directions.subarray(cell*3,cell*3+3),dot=t.reduce((v,x,k)=>v+x*normal[k],0);for(let v=0;v<3;v++)this.acceleration[q*3+v]+=force*(t[v]-dot*normal[v]);}}
-  for(let q=0;q<this.oldMass.length;q++){const h=this.layerEnergy(q),i=Math.floor(q/DEEP_LAYERS),n=this.grid.directions.subarray(i*3,i*3+3),v=q*3,x=Array.from(this.velocity.subarray(v,v+3),(x,k)=>x+this.acceleration[v+k]*dt),dot=x.reduce((a,b,k)=>a+b*n[k],0),tangent=x.map((x,k)=>x-dot*n[k]),angle=2*(e.rotationRate??0)/AIR_SECONDS*n[1]*dt,c=Math.cos(angle),sn=-Math.sin(angle),cross=[n[1]*tangent[2]-n[2]*tangent[1],n[2]*tangent[0]-n[0]*tangent[2],n[0]*tangent[1]-n[1]*tangent[0]];for(let k=0;k<3;k++)this.velocity[v+k]=(tangent[k]*c+cross[k]*sn)*Math.exp(-dt/604800);this.setEnergy(q,h);}
-  this.clear();const flows:{a:number;b:number;fraction:number}[]=[];for(const {i,j,distance,t} of this.edges)for(let k=0;k<DEEP_LAYERS;k++){const a=i*DEEP_LAYERS+k,b=j*DEEP_LAYERS+k,speed=t.reduce((a,x,v)=>a+x*(this.velocity[(i*DEEP_LAYERS+k)*3+v]+this.velocity[(j*DEEP_LAYERS+k)*3+v])*.5,0),from=speed>=0?a:b,to=speed>=0?b:a,fraction=Math.abs(speed)*dt/(this.radiusMeters*distance*3);flows.push({a:from,b:to,fraction});this.out[from]+=fraction;}
-  for(const {a,b,fraction} of flows)this.queue(a,b,fraction*outgoingScale(1,this.out[a],.25));this.commit();
+  this.cachePressures();this.acceleration.fill(0);
+  for(let q=0;q<this.temperature.length;q++)this.thermalPressure[q]=this.gasR(q)*(this.temperature[q]+273.15);
+  let edgeIndex=0;for(const {i,j,distance} of this.edges){for(let k=0;k<DEEP_LAYERS;k++){
+   const a=i*DEEP_LAYERS+k,b=j*DEEP_LAYERS+k,p1=this.pressureValues[a],p2=this.pressureValues[b],rt=(this.thermalPressure[a]+this.thermalPressure[b])*.5,thermal=9.81*this.gravity*this.height[k]*2*(this.temperature[b]-this.temperature[a])/Math.max(1,this.temperature[a]+this.temperature[b]+546.3),force=-(rt*Math.log(p2/p1)+thermal)/(this.radiusMeters*distance*3);
+   for(let v=0;v<3;v++){this.acceleration[a*3+v]+=force*this.edgeTangents[edgeIndex*6+v];this.acceleration[b*3+v]+=force*this.edgeTangents[edgeIndex*6+3+v];}
+  }edgeIndex++;}
+  const drag=Math.exp(-dt/604800);let previousCell=-1,c=1,sn=0;
+  for(let q=0;q<this.oldMass.length;q++){
+   const h=this.layerEnergy(q),i=Math.floor(q/DEEP_LAYERS),n=i*3,v=q*3,x=this.velocity[v]+this.acceleration[v]*dt,y=this.velocity[v+1]+this.acceleration[v+1]*dt,z=this.velocity[v+2]+this.acceleration[v+2]*dt;
+   let dot=0;dot+=x*this.grid.directions[n];dot+=y*this.grid.directions[n+1];dot+=z*this.grid.directions[n+2];
+   const tx=x-dot*this.grid.directions[n],ty=y-dot*this.grid.directions[n+1],tz=z-dot*this.grid.directions[n+2];
+   if(i!==previousCell){const angle=2*(e.rotationRate??0)/AIR_SECONDS*this.grid.directions[n+1]*dt;c=Math.cos(angle);sn=-Math.sin(angle);previousCell=i;}
+   const cx=this.grid.directions[n+1]*tz-this.grid.directions[n+2]*ty,cy=this.grid.directions[n+2]*tx-this.grid.directions[n]*tz,cz=this.grid.directions[n]*ty-this.grid.directions[n+1]*tx;
+   this.velocity[v]=(tx*c+cx*sn)*drag;this.velocity[v+1]=(ty*c+cy*sn)*drag;this.velocity[v+2]=(tz*c+cz*sn)*drag;this.setEnergy(q,h);
+  }
+  this.clear();let flow=0;
+  for(const {i,j,distance,t} of this.edges)for(let k=0;k<DEEP_LAYERS;k++){
+   const a=i*DEEP_LAYERS+k,b=j*DEEP_LAYERS+k,speed=t.reduce((a,x,v)=>a+x*(this.velocity[(i*DEEP_LAYERS+k)*3+v]+this.velocity[(j*DEEP_LAYERS+k)*3+v])*.5,0),from=speed>=0?a:b,to=speed>=0?b:a,fraction=Math.abs(speed)*dt/(this.radiusMeters*distance*3);
+   this.flowFrom[flow]=from;this.flowTo[flow]=to;this.flowFraction[flow++]=fraction;this.out[from]+=fraction;
+  }
+  for(let n=0;n<flow;n++){const a=this.flowFrom[n];this.queue(a,this.flowTo[n],this.flowFraction[n]*outgoingScale(1,this.out[a],.25));}this.commit();
   this.cachePressures();this.clear();for(let i=0;i<this.grid.count;i++)for(let k=0;k<DEEP_LAYERS-1;k++){const a=i*DEEP_LAYERS+k,b=a+1,theta=(q:number,l:number)=>(this.temperature[q]+273.15)*(this.referencePressure/this.pressureValues[i*DEEP_LAYERS+l])**(this.gasR(q)/(this.layerCapacity(q)/this.layerMass(q)*1000)),unstable=Math.max(0,(theta(b,k+1)-theta(a,k))/Math.max(1,theta(a,k))),exchange=Math.min(this.oldMass[a],this.oldMass[b])*Math.min(.02,dt*(1e-6+.002*unstable));this.queue(a,b,exchange/this.oldMass[a]);this.queue(b,a,exchange/this.oldMass[b]);}this.commit();
  }
  /** Preset-only tracer perturbation, never a continuing latitude forcing.

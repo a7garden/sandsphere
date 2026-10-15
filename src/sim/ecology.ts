@@ -32,6 +32,7 @@ export const COMBUSTION_REACTIONS:CombustionRule[]=[METHANE_COMBUSTION,
  {field:35,ignition:350,reaction:stoichiometricReaction([[35,2],[27,1]],[[15,2]])},
 ];
 export const PYROLYSIS_REACTIONS=[18,19,20,21,23].map(field=>({field,ignition:300,reaction:stoichiometricReaction([[field,1]],[[34,.8],[36,.2],[4,1]])}));
+export const MIN_COMBUSTION_TEMPERATURE=Math.min(...COMBUSTION_REACTIONS.map(r=>r.ignition),...PYROLYSIS_REACTIONS.map(r=>r.ignition));
 /** Local O₂/fuel inventory chooses a continuous blend. Use stock, not dt-sized
  * demand, so smaller timesteps do not silently turn oxygen-poor flames complete. */
 export function oxidationRoutes(def:typeof COMBUSTION_REACTIONS[number],fuel:number,oxygen:number,dt:number,t:number){
@@ -45,6 +46,7 @@ export function oxidationRoutes(def:typeof COMBUSTION_REACTIONS[number],fuel:num
 /** Each event conserves reservoir enthalpy. Unavailable oxygen or heat leaves
  * reactants intact; products become ordinary fuel for subsequent local events. */
 export function combust(s:Float32Array,p:number,dt:number,temperature:number,fixedTemperatureFields:readonly number[]=[]){
+ if(temperature<=MIN_COMBUSTION_TEMPERATURE||dt<=0)return 0;
  let burned=0,t=temperature;
  const capacity=()=>SPECIFIC_HEAT.reduce((c,cp,f)=>c+(fixedTemperatureFields.includes(f)?0:s[p+f]*cp),BASE_CAPACITY);
  const phase=()=>MATERIAL_ENERGY.reduce((h,e,f)=>h+s[p+f]*(e+(fixedTemperatureFields.includes(f)?SPECIFIC_HEAT[f]*temperature:0)),0);

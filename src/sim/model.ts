@@ -68,6 +68,10 @@ export const DEFAULT_ENVIRONMENT:Environment = {ambient:18,sunlight:1,sun:[-0.65
 export const MASS_FIELDS = [0,1,2,3,4,5,6,7,9,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36];
 const GAS_FIELDS = [...GASES.map(g=>g.field),F.soot];
 const CP = SPECIFIC_HEAT;
+// Zero coefficients contribute no finite-state energy. Preserve the original
+// nonzero term order, including photon energy, to retain deterministic arithmetic.
+const CAPACITY_FIELDS=CP.flatMap((cp,f)=>cp!==0?[f]:[]);
+const PHASE_FIELDS=MASS_FIELDS.filter(f=>MATERIAL_ENERGY[f]!==0);
 export const gravityMultiplier = (e:Environment) => e.gravity??1;
 export const WATER_LATENT = phaseChangeEnergy(F.water,F.vapor,100);
 export const ICE_LATENT = MATERIAL_ENERGY[F.water]-MATERIAL_ENERGY[F.ice];
@@ -79,11 +83,11 @@ export function capacity(state:Float32Array,i:number) {
   const p=i*STRIDE;
   if(state[p+F.hydrogen]+state[p+F.helium]>0)return DEEP_FIELDS.reduce((c,f)=>c+state[p+f]*CP[f],0);
   let c=BASE_CAPACITY;
-  for(let f=0;f<CP.length;f++) c+=state[p+f]*CP[f];
+  for(const f of CAPACITY_FIELDS)c+=state[p+f]*CP[f];
   return c;
 }
 /** Historical API name: includes phase AND chemical material potentials. */
-export function phaseEnergy(state:Float32Array,i:number){const p=i*STRIDE;let h=state[p+F.photonEnergy];for(const f of MASS_FIELDS)h+=state[p+f]*MATERIAL_ENERGY[f];return h;}
+export function phaseEnergy(state:Float32Array,i:number){const p=i*STRIDE;let h=state[p+F.photonEnergy];for(const f of PHASE_FIELDS)h+=state[p+f]*MATERIAL_ENERGY[f];return h;}
 export function enthalpy(state:Float32Array,i:number){return thermalEnergy(capacity(state,i),state[i*STRIDE+F.temperature],phaseEnergy(state,i));}
 export function totalEnthalpy(state:Float32Array,climate?:ClimateSnapshot|WeatherClimate){
  if(climate instanceof WeatherClimate&&climate.giant.ready)return climate.giant.totalEnergy();

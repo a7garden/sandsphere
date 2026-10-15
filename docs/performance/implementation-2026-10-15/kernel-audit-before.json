@@ -1,0 +1,17 @@
+[
+  {
+    "kind": "dry",
+    "digest": "3bfec88f0ffc7a9739facd79fbeb5be47204941bcc527ebe203ca0553f750d19",
+    "meanStepMs": 10.036081238095246
+  },
+  {
+    "kind": "wet",
+    "digest": "f9909ae2bade287fa3eb9a55886d0a6120ead420d274da03c5bc697ff006e84a",
+    "meanStepMs": 10.994416619047607
+  },
+  {
+    "kind": "methane",
+    "digest": "a58f9d781116256c2a606ddc4207397a8f65028b68a3afb95dd9071f11547b31",
+    "meanStepMs": 10.264531857142867
+  }
+]
