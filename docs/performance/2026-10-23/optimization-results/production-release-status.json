@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-23T15:22:25.523957+00:00",
+  "url": "https://sandsphere.app/release.json",
+  "release": {
+    "tag": "v0.6.1",
+    "commit": "02d53d7bb7111ed2a858599dd296489db9246417",
+    "builtAt": "2026-10-12T13:36:30.137Z"
+  },
+  "deploymentComplete": false,
+  "reason": "Cloudflare runner OAuth renewal requires user login; local OAuth has no Workers permission."
+}

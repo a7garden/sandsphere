@@ -1,0 +1,106 @@
+{
+  "checkedAt": "2026-10-23T15:19:01.953760+00:00",
+  "run": {
+    "id": 52,
+    "head_sha": "0833a9e91cfa540a3ec9ef5017447ed44ae520fd",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "http://100.81.146.46:3000/garden/sandsphere/actions/runs/52",
+    "run_started_at": null,
+    "updated_at": null
+  },
+  "steps": [
+    {
+      "name": "Run https://github.com/actions/checkout@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run https://github.com/actions/setup-node@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run https://github.com/actions/setup-java@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm ci",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run check:version",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm test",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run test:rules",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run build:production",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run node scripts/release-info.mjs",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Archive the tested build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Attach release assets",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Deploy Firebase security rules and indexes",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Deploy sandsphere.app",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "Verify sandsphere.app serves this release",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "testSummary": [
+    "2026-10-23T14:55:28.9660010Z  Test Files  101 passed | 18 skipped (119)",
+    "2026-10-23T14:55:28.9661590Z       Tests  782 passed | 70 skipped (852)",
+    "2026-10-23T14:55:28.9663770Z    Duration  542.45s (tests 98%, import 1%)",
+    "2026-10-23T14:55:37.0978860Z  Test Files  1 passed (1)",
+    "2026-10-23T14:55:37.0979030Z       Tests  5 passed (5)",
+    "2026-10-23T14:55:37.0980590Z    Duration  4.58s (tests 91%, transform 5%, import 4%)"
+  ],
+  "assets": [
+    {
+      "name": "SHA256SUMS",
+      "size": 92,
+      "browser_download_url": "https://gitea.oxinot.dev/garden/sandsphere/releases/download/v0.7.0/SHA256SUMS"
+    },
+    {
+      "name": "sandsphere.tar.gz",
+      "size": 5382928,
+      "browser_download_url": "https://gitea.oxinot.dev/garden/sandsphere/releases/download/v0.7.0/sandsphere.tar.gz"
+    }
+  ],
+  "archiveSha256": "eb9f4bd8063b397f9a54a1034fe0083c9a289b28494d99f6a4e3349207d209c8",
+  "deployment": "Blocked by expired runner Cloudflare OAuth; subsequent local account has Pages permission but lacks Workers permission. No successful Cloudflare publish yet."
+}
