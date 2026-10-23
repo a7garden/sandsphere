@@ -1,0 +1,380 @@
+{
+  "kind": "background-worlds-production-inspector",
+  "label": "candidate",
+  "startedAt": "2026-10-23T13:47:01.544Z",
+  "finishedAt": "2026-10-23T13:47:47.649Z",
+  "totalElapsedMs": 46104.59999990463,
+  "status": "pass",
+  "environment": {
+    "url": "http://127.0.0.1:5184/artifacts/performance-optimization-20261023/background-lab.html?label=candidate",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 16,
+    "devicePixelRatio": 1,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "visibility": "visible"
+  },
+  "identity": {
+    "/src/sim/model.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "7d1c6eea4e76ff0d65a9adbf5398807b61f924468e61d256461cfac20066e70a"
+    },
+    "/src/sim/system.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "d6f558181176fe29a0f9bf02cfb38a3bf03723cb379c3b1e9fe81692b1c5cfc5"
+    },
+    "/src/sim/workerSolver.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "f23b3062c9e0551fa39867956a633500b429c8af7533f776dc5396cbfb9bb893"
+    },
+    "/src/sim/solver.worker.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "7eae24bc5333367b14a011dbfedcf260111520abb4a261f35973f1a6a453778f"
+    },
+    "/src/sim/solverWorkerProtocol.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "6af55794d2f80b113f1c8e721edc8ad847f23e399cc219304fa167b84c2154b4"
+    },
+    "/src/sim/weatherClimate.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "9403d0c7ff0772621e34e5fc7bbd4abb9386529d0c138d89905e0f36e72d239a"
+    },
+    "/src/sim/layeredAtmosphere.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "8e1c5725ea0308aaff14f1742d472b19c7b32aa7bba56472a00d3915ddfca1f4"
+    },
+    "/src/sim/spectralRadiation.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "ecca7d53d5e3ced577e5f58c3aa533c2788a1db9e9b873693de4da7c2b5e1eab"
+    },
+    "/src/sim/deepAtmosphere.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "450964cdea766e9e37b9e5b8e23bdde52aa3aafd8c7ba3513ef3a704b03ce774"
+    },
+    "/src/sim/climateSnapshot.ts": {
+      "available": true,
+      "sha256ServedTransformedModule": "40cf44086ed4448e9e1851632b7e746455aaf5308078a474dc2be98e7b1f3b53"
+    }
+  },
+  "settings": {
+    "resolution": 4,
+    "fixture": "dry sand, nitrogen 0.3 game kg/cell, full climate, deterministic temperature/orbit variation",
+    "dt": 0.03333333333333333,
+    "warm": 6,
+    "samples": 12,
+    "totalPlanets": [
+      1,
+      2,
+      4
+    ],
+    "forceCpuWorker": true,
+    "ordering": "production runFrameSteps: await active, then await BackgroundWorlds.stepAsync",
+    "timeBoundMs": 110000
+  },
+  "interpretation": {
+    "timed": "Worker roundtrip + active step + production background scheduling/publication; 1/2/4 total planets means 0/1/3 background worlds.",
+    "notMeasured": "Game rendering, UI frame rate, GPU execution time, mobile hardware, long-term thermal performance, cloud or save throughput.",
+    "cadence": "requestAnimationFrame interval in this visible inspector only; longtasks are main-thread entries overlapping measured windows.",
+    "control": "Serial CpuSolver replays the same 18 ordered common steps per planet only after all timing. Exact checks use Object.is, retaining signed zero.",
+    "parallelism": "Observed simultaneous solver.step promises; not a CPU-core utilization measurement. Candidate background maximum is 2; baseline may remain serial."
+  },
+  "cases": [
+    {
+      "totalPlanets": 1,
+      "activePlanets": 1,
+      "inactivePlanets": 0,
+      "cells": 2562,
+      "warmStepsPerPlanet": 6,
+      "measuredStepsPerPlanet": 12,
+      "completedPerWorld": {
+        "planet-0": {
+          "warm": 6,
+          "measured": 12
+        }
+      },
+      "completedCountsExact": true,
+      "workerCreations": 1,
+      "backends": [
+        {
+          "scope": "active",
+          "backend": "CPU",
+          "backgroundCompute": true
+        }
+      ],
+      "maxBackgroundStepConcurrency": 0,
+      "maxAllStepConcurrency": 1,
+      "maxMeasuredBackgroundConcurrency": 0,
+      "maxMeasuredAllConcurrency": 1,
+      "candidateBackgroundBoundObserved": true,
+      "window": {
+        "startMs": 5878.199999809265,
+        "endMs": 7954.199999809265,
+        "elapsedMs": 2076
+      },
+      "systemStep": {
+        "count": 12,
+        "meanMs": 173,
+        "p50Ms": 173.09999990463257,
+        "p95Ms": 176.59999990463257,
+        "maxMs": 176.59999990463257
+      },
+      "systemStepsPerSecond": 5.780346820809249,
+      "planetStepsPerSecond": 5.780346820809249,
+      "elapsedMsPerPlanetStep": 173,
+      "mainRaf": {
+        "count": 123,
+        "meanMs": 16.66829268292683,
+        "p50Ms": 16.699999999999818,
+        "p95Ms": 17.5,
+        "maxMs": 17.700000000000728
+      },
+      "longTasks": {
+        "count": 0,
+        "totalMs": 0,
+        "maxMs": 0,
+        "entries": []
+      },
+      "serialControl": {
+        "outsideTiming": true,
+        "elapsedMs": 3624.2000000476837,
+        "worlds": [
+          {
+            "id": "planet-0",
+            "steps": 18,
+            "exactState": true,
+            "exactCheckpoint": true,
+            "exactOrbitAndEscaped": true,
+            "exactSnapshotValues": true,
+            "exactSnapshotJson": true,
+            "firstDifference": null
+          }
+        ],
+        "pass": true
+      }
+    },
+    {
+      "totalPlanets": 2,
+      "activePlanets": 1,
+      "inactivePlanets": 1,
+      "cells": 2562,
+      "warmStepsPerPlanet": 6,
+      "measuredStepsPerPlanet": 12,
+      "completedPerWorld": {
+        "planet-0": {
+          "warm": 6,
+          "measured": 12
+        },
+        "planet-1": {
+          "warm": 6,
+          "measured": 12
+        }
+      },
+      "completedCountsExact": true,
+      "workerCreations": 2,
+      "backends": [
+        {
+          "scope": "active",
+          "backend": "CPU",
+          "backgroundCompute": true
+        },
+        {
+          "scope": "background",
+          "backend": "CPU",
+          "backgroundCompute": true
+        }
+      ],
+      "maxBackgroundStepConcurrency": 1,
+      "maxAllStepConcurrency": 1,
+      "maxMeasuredBackgroundConcurrency": 1,
+      "maxMeasuredAllConcurrency": 1,
+      "candidateBackgroundBoundObserved": true,
+      "window": {
+        "startMs": 10777.699999809265,
+        "endMs": 14975.399999856949,
+        "elapsedMs": 4197.700000047684
+      },
+      "systemStep": {
+        "count": 12,
+        "meanMs": 349.808333337307,
+        "p50Ms": 348.7000000476837,
+        "p95Ms": 358.60000014305115,
+        "maxMs": 358.60000014305115
+      },
+      "systemStepsPerSecond": 2.8587083402491094,
+      "planetStepsPerSecond": 5.717416680498219,
+      "elapsedMsPerPlanetStep": 174.9041666686535,
+      "mainRaf": {
+        "count": 250,
+        "meanMs": 16.666400000000003,
+        "p50Ms": 16.69999999999891,
+        "p95Ms": 17.30000000000109,
+        "maxMs": 17.600000000000364
+      },
+      "longTasks": {
+        "count": 0,
+        "totalMs": 0,
+        "maxMs": 0,
+        "entries": []
+      },
+      "serialControl": {
+        "outsideTiming": true,
+        "elapsedMs": 7083,
+        "worlds": [
+          {
+            "id": "planet-0",
+            "steps": 18,
+            "exactState": true,
+            "exactCheckpoint": true,
+            "exactOrbitAndEscaped": true,
+            "exactSnapshotValues": true,
+            "exactSnapshotJson": true,
+            "firstDifference": null
+          },
+          {
+            "id": "planet-1",
+            "steps": 18,
+            "exactState": true,
+            "exactCheckpoint": true,
+            "exactOrbitAndEscaped": true,
+            "exactSnapshotValues": true,
+            "exactSnapshotJson": true,
+            "firstDifference": null
+          }
+        ],
+        "pass": true
+      }
+    },
+    {
+      "totalPlanets": 4,
+      "activePlanets": 1,
+      "inactivePlanets": 3,
+      "cells": 2562,
+      "warmStepsPerPlanet": 6,
+      "measuredStepsPerPlanet": 12,
+      "completedPerWorld": {
+        "planet-0": {
+          "warm": 6,
+          "measured": 12
+        },
+        "planet-1": {
+          "warm": 6,
+          "measured": 12
+        },
+        "planet-2": {
+          "warm": 6,
+          "measured": 12
+        },
+        "planet-3": {
+          "warm": 6,
+          "measured": 12
+        }
+      },
+      "completedCountsExact": true,
+      "workerCreations": 4,
+      "backends": [
+        {
+          "scope": "active",
+          "backend": "CPU",
+          "backgroundCompute": true
+        },
+        {
+          "scope": "background",
+          "backend": "CPU",
+          "backgroundCompute": true
+        },
+        {
+          "scope": "background",
+          "backend": "CPU",
+          "backgroundCompute": true
+        },
+        {
+          "scope": "background",
+          "backend": "CPU",
+          "backgroundCompute": true
+        }
+      ],
+      "maxBackgroundStepConcurrency": 2,
+      "maxAllStepConcurrency": 2,
+      "maxMeasuredBackgroundConcurrency": 2,
+      "maxMeasuredAllConcurrency": 2,
+      "candidateBackgroundBoundObserved": true,
+      "window": {
+        "startMs": 19262.39999985695,
+        "endMs": 25723.299999952316,
+        "elapsedMs": 6460.900000095367
+      },
+      "systemStep": {
+        "count": 12,
+        "meanMs": 538.4000000158945,
+        "p50Ms": 536.4000000953674,
+        "p95Ms": 556.1999998092651,
+        "maxMs": 556.1999998092651
+      },
+      "systemStepsPerSecond": 1.8573263786504777,
+      "planetStepsPerSecond": 7.429305514601911,
+      "elapsedMsPerPlanetStep": 134.60208333532015,
+      "mainRaf": {
+        "count": 386,
+        "meanMs": 16.667616580310884,
+        "p50Ms": 16.700000000000728,
+        "p95Ms": 17.5,
+        "maxMs": 17.700000000000728
+      },
+      "longTasks": {
+        "count": 0,
+        "totalMs": 0,
+        "maxMs": 0,
+        "entries": []
+      },
+      "serialControl": {
+        "outsideTiming": true,
+        "elapsedMs": 14060.299999952316,
+        "worlds": [
+          {
+            "id": "planet-0",
+            "steps": 18,
+            "exactState": true,
+            "exactCheckpoint": true,
+            "exactOrbitAndEscaped": true,
+            "exactSnapshotValues": true,
+            "exactSnapshotJson": true,
+            "firstDifference": null
+          },
+          {
+            "id": "planet-1",
+            "steps": 18,
+            "exactState": true,
+            "exactCheckpoint": true,
+            "exactOrbitAndEscaped": true,
+            "exactSnapshotValues": true,
+            "exactSnapshotJson": true,
+            "firstDifference": null
+          },
+          {
+            "id": "planet-2",
+            "steps": 18,
+            "exactState": true,
+            "exactCheckpoint": true,
+            "exactOrbitAndEscaped": true,
+            "exactSnapshotValues": true,
+            "exactSnapshotJson": true,
+            "firstDifference": null
+          },
+          {
+            "id": "planet-3",
+            "steps": 18,
+            "exactState": true,
+            "exactCheckpoint": true,
+            "exactOrbitAndEscaped": true,
+            "exactSnapshotValues": true,
+            "exactSnapshotJson": true,
+            "firstDifference": null
+          }
+        ],
+        "pass": true
+      }
+    }
+  ]
+}

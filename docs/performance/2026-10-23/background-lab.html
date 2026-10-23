@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sandsphere background workload inspector</title>
+<style>
+body{max-width:960px;margin:32px auto;padding:0 24px;background:#f7f7f4;color:#232323;font:15px/1.5 system-ui,sans-serif}h1{font-size:24px}button{padding:10px 16px;border:1px solid #777;border-radius:8px;background:#232323;color:white;font:inherit;cursor:pointer}button:disabled{opacity:.45;cursor:wait}#download{background:white;color:#232323;margin-left:8px}#pulse{display:inline-block;width:10px;height:10px;margin-right:28px;background:#3c8f63;border-radius:50%}#status{min-height:48px;margin:20px 0}pre{padding:20px;background:white;border:1px solid #ddd;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace}
+</style>
+<h1>Background planet workload</h1>
+<p>1, 2 and 4 total planets: one active planet, then 0, 1 or 3 background planets. Grid 4, dry sand and nitrogen, full climate physics. Each case runs 6 warm-up and 12 measured common steps. Serial CPU verification follows all timing.</p>
+<button id="run">Run isolated workload</button><button id="download" disabled>Download JSON</button>
+<div id="status" role="status"><span id="pulse"></span><span id="message">Ready. Keep this tab visible and run without another benchmark.</span></div>
+<pre id="result">No game slots, account APIs or production settings are read or written. This inspector measures physics scheduling and main-thread cadence without the game renderer.</pre>
+<script type="module" src="./background-lab.ts"></script>
+</html>

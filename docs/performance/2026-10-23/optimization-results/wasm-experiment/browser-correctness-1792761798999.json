@@ -1,0 +1,56 @@
+{
+  "createdAt": "2026-10-23T13:23:18.994Z",
+  "kind": "browser-wasm-experiment",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "platform": "MacIntel",
+  "hardwareConcurrency": 16,
+  "deviceMemoryGiB": 32,
+  "crossOriginIsolated": false,
+  "secureContext": true,
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "dpr": 2
+  },
+  "sourceSha256": "2f857bc6f0978d6ee3c0304fdb8ed1eaf9568b99ed154c8c6a4f593b29307ee9",
+  "tableSha256": "87c30c18d1483b2844fffa1ee99fbcdd7b8d8525722ad30e72a877a2c6578d0f",
+  "kernelSourceSha256": "494bfe52a683db114021da68b321b0b4c73c845ba6bd233e29bd132ed25e234b",
+  "referenceSourceSha256": "14c90c2a74cdb42379d1e47516b2c54d032db202eeece6da5355969125c49195",
+  "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "linker": "LLD 22.1.8 (https://github.com/rust-lang/llvm-project.git 52ed14fcd56afc30f9cccd8ca8ce237c2eef7e04)",
+  "correctness": {
+    "cases": 126,
+    "componentsPerCase": 96,
+    "comparison": "Object.is, no epsilon; includes signed zero",
+    "packedJs": true,
+    "kernels": [
+      {
+        "kind": "scalar",
+        "passed": true
+      },
+      {
+        "kind": "simd",
+        "passed": true
+      }
+    ]
+  },
+  "kernels": [
+    {
+      "kind": "scalar",
+      "supported": true,
+      "binaryBytes": 2295,
+      "binarySha256": "ecefeae51cd2e7a5e1a8bb238ec64917eef6044c5efffacd6faf9bdc09268291",
+      "memoryBytes": 3473408,
+      "tableBytes": 3256576
+    },
+    {
+      "kind": "simd",
+      "supported": true,
+      "binaryBytes": 1379,
+      "binarySha256": "d20624ef1fa75b8e945f6e510a8889b898e3bd44195b9b0639a1b69b909234df",
+      "memoryBytes": 3473408,
+      "tableBytes": 3256576
+    }
+  ],
+  "benchmark": null
+}

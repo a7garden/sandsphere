@@ -88,7 +88,7 @@ The emulator configuration uses `demo-sandsphere`. Keep credentials and service-
 
 ## Development
 
-Built with **TypeScript, Vite, and Babylon.js**. WebGPU rendering and compute are used where supported, with a WebGL/CPU fallback. Atmospheric computation runs in a Web Worker, and local saves use IndexedDB.
+Built with **TypeScript, Vite, and Babylon.js**. Rendering uses WebGPU where available, with a bounded startup and WebGL fallback. Physics runs on the CPU in Web Workers; supported devices accelerate the spectral kernel with lossless Float64 WebAssembly SIMD. Local saves use IndexedDB and a lossless compressed binary representation that also reads older JSON saves.
 
 ```sh
 npm run check:version

@@ -1,0 +1,267 @@
+{
+  "createdAt": "2026-10-23T13:25:53.101Z",
+  "kind": "browser-wasm-experiment",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "platform": "MacIntel",
+  "hardwareConcurrency": 16,
+  "deviceMemoryGiB": 32,
+  "crossOriginIsolated": false,
+  "secureContext": true,
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "dpr": 2
+  },
+  "sourceSha256": "2f857bc6f0978d6ee3c0304fdb8ed1eaf9568b99ed154c8c6a4f593b29307ee9",
+  "tableSha256": "87c30c18d1483b2844fffa1ee99fbcdd7b8d8525722ad30e72a877a2c6578d0f",
+  "kernelSourceSha256": "494bfe52a683db114021da68b321b0b4c73c845ba6bd233e29bd132ed25e234b",
+  "referenceSourceSha256": "14c90c2a74cdb42379d1e47516b2c54d032db202eeece6da5355969125c49195",
+  "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "linker": "LLD 22.1.8 (https://github.com/rust-lang/llvm-project.git 52ed14fcd56afc30f9cccd8ca8ce237c2eef7e04)",
+  "correctness": {
+    "cases": 126,
+    "componentsPerCase": 96,
+    "comparison": "Object.is, no epsilon; includes signed zero",
+    "packedJs": true,
+    "kernels": [
+      {
+        "kind": "scalar",
+        "passed": true
+      },
+      {
+        "kind": "simd",
+        "passed": true
+      }
+    ]
+  },
+  "kernels": [
+    {
+      "kind": "scalar",
+      "supported": true,
+      "binaryBytes": 2295,
+      "binarySha256": "ecefeae51cd2e7a5e1a8bb238ec64917eef6044c5efffacd6faf9bdc09268291",
+      "memoryBytes": 3473408,
+      "tableBytes": 3256576
+    },
+    {
+      "kind": "simd",
+      "supported": true,
+      "binaryBytes": 1379,
+      "binarySha256": "d20624ef1fa75b8e945f6e510a8889b898e3bd44195b9b0639a1b69b909234df",
+      "memoryBytes": 3473408,
+      "tableBytes": 3256576
+    }
+  ],
+  "benchmark": {
+    "warmupRounds": 4,
+    "samples": 16,
+    "repeats": 1000,
+    "batches": [
+      1,
+      11,
+      128
+    ],
+    "rows": [
+      {
+        "count": 1,
+        "name": "production-js",
+        "samples": 16,
+        "meanMs": 0.001293749988079071,
+        "medianMs": 0.0012999999523162842,
+        "p95Ms": 0.0015,
+        "minMs": 0.0011999998092651367,
+        "maxMs": 0.0015,
+        "meanMicrosecondsPerLayer": 1.293749988079071
+      },
+      {
+        "count": 1,
+        "name": "packed-js-kernel",
+        "samples": 16,
+        "meanMs": 0.0012125000059604646,
+        "medianMs": 0.0012000000476837158,
+        "p95Ms": 0.0013000001907348632,
+        "minMs": 0.0010999999046325684,
+        "maxMs": 0.0013000001907348632,
+        "meanMicrosecondsPerLayer": 1.2125000059604645
+      },
+      {
+        "count": 1,
+        "name": "wasm-scalar-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.0007437499761581421,
+        "medianMs": 0.0007000000476837158,
+        "p95Ms": 0.0008999998569488526,
+        "minMs": 0.0005999999046325683,
+        "maxMs": 0.0008999998569488526,
+        "meanMicrosecondsPerLayer": 0.7437499761581421
+      },
+      {
+        "count": 1,
+        "name": "wasm-scalar-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.0008812500089406966,
+        "medianMs": 0.0009000000953674316,
+        "p95Ms": 0.001,
+        "minMs": 0.0007000000476837158,
+        "maxMs": 0.001,
+        "meanMicrosecondsPerLayer": 0.8812500089406966
+      },
+      {
+        "count": 1,
+        "name": "wasm-simd-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.00036875000596046454,
+        "medianMs": 0.00040000009536743164,
+        "p95Ms": 0.00040000009536743164,
+        "minMs": 0.00029999995231628417,
+        "maxMs": 0.00040000009536743164,
+        "meanMicrosecondsPerLayer": 0.36875000596046453
+      },
+      {
+        "count": 1,
+        "name": "wasm-simd-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.00041875000298023234,
+        "medianMs": 0.00040000009536743164,
+        "p95Ms": 0.0005,
+        "minMs": 0.00039999985694885254,
+        "maxMs": 0.0005,
+        "meanMicrosecondsPerLayer": 0.41875000298023235
+      },
+      {
+        "count": 11,
+        "name": "production-js",
+        "samples": 16,
+        "meanMs": 0.015412499979138374,
+        "medianMs": 0.015400000095367431,
+        "p95Ms": 0.015700000047683717,
+        "minMs": 0.015199999809265136,
+        "maxMs": 0.015700000047683717,
+        "meanMicrosecondsPerLayer": 1.4011363617398522
+      },
+      {
+        "count": 11,
+        "name": "packed-js-kernel",
+        "samples": 16,
+        "meanMs": 0.013293750017881394,
+        "medianMs": 0.013300000190734863,
+        "p95Ms": 0.013600000143051148,
+        "minMs": 0.013,
+        "maxMs": 0.013600000143051148,
+        "meanMicrosecondsPerLayer": 1.2085227288983085
+      },
+      {
+        "count": 11,
+        "name": "wasm-scalar-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.00895000000298023,
+        "medianMs": 0.009,
+        "p95Ms": 0.009100000143051148,
+        "minMs": 0.008700000047683716,
+        "maxMs": 0.009100000143051148,
+        "meanMicrosecondsPerLayer": 0.8136363639072937
+      },
+      {
+        "count": 11,
+        "name": "wasm-scalar-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.009787499994039536,
+        "medianMs": 0.009799999952316283,
+        "p95Ms": 0.01,
+        "minMs": 0.009599999904632568,
+        "maxMs": 0.01,
+        "meanMicrosecondsPerLayer": 0.8897727267308668
+      },
+      {
+        "count": 11,
+        "name": "wasm-simd-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.004631250008940696,
+        "medianMs": 0.004600000143051147,
+        "p95Ms": 0.004900000095367432,
+        "minMs": 0.0045,
+        "maxMs": 0.004900000095367432,
+        "meanMicrosecondsPerLayer": 0.42102272808551783
+      },
+      {
+        "count": 11,
+        "name": "wasm-simd-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.0054375000149011615,
+        "medianMs": 0.005400000095367431,
+        "p95Ms": 0.005599999904632568,
+        "minMs": 0.0052999999523162845,
+        "maxMs": 0.005599999904632568,
+        "meanMicrosecondsPerLayer": 0.4943181831728328
+      },
+      {
+        "count": 128,
+        "name": "production-js",
+        "samples": 16,
+        "meanMs": 0.18041250000894068,
+        "medianMs": 0.18060000014305114,
+        "p95Ms": 0.1825,
+        "minMs": 0.1777999999523163,
+        "maxMs": 0.1825,
+        "meanMicrosecondsPerLayer": 1.4094726563198492
+      },
+      {
+        "count": 128,
+        "name": "packed-js-kernel",
+        "samples": 16,
+        "meanMs": 0.1566812499910593,
+        "medianMs": 0.15709999990463258,
+        "p95Ms": 0.1585,
+        "minMs": 0.15469999980926513,
+        "maxMs": 0.1585,
+        "meanMicrosecondsPerLayer": 1.2240722655551508
+      },
+      {
+        "count": 128,
+        "name": "wasm-scalar-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.10000624999403955,
+        "medianMs": 0.1,
+        "p95Ms": 0.10129999995231628,
+        "minMs": 0.09890000009536744,
+        "maxMs": 0.10129999995231628,
+        "meanMicrosecondsPerLayer": 0.781298828078434
+      },
+      {
+        "count": 128,
+        "name": "wasm-scalar-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.10868749998509884,
+        "medianMs": 0.1085,
+        "p95Ms": 0.11020000004768371,
+        "minMs": 0.10709999990463256,
+        "maxMs": 0.11020000004768371,
+        "meanMicrosecondsPerLayer": 0.8491210936335847
+      },
+      {
+        "count": 128,
+        "name": "wasm-simd-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.04922499999403953,
+        "medianMs": 0.04940000009536743,
+        "p95Ms": 0.050100000143051146,
+        "minMs": 0.048299999952316285,
+        "maxMs": 0.050100000143051146,
+        "meanMicrosecondsPerLayer": 0.3845703124534338
+      },
+      {
+        "count": 128,
+        "name": "wasm-simd-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.058356250032782546,
+        "medianMs": 0.05840000009536743,
+        "p95Ms": 0.059200000047683714,
+        "minMs": 0.057699999809265136,
+        "maxMs": 0.059200000047683714,
+        "meanMicrosecondsPerLayer": 0.45590820338111365
+      }
+    ],
+    "sink": 0.43472354936777424,
+    "limitations": "Browser spectral microbenchmark on fixed inputs. Excludes startup, full radiationColumn/transfer, full-step, worker scheduling, GPU, physical mobile hardware, and energy/resume integration."
+  }
+}

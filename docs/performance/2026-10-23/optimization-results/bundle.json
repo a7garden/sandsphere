@@ -1,0 +1,4480 @@
+{
+  "buildMs": 17277.388625,
+  "envFilesLoaded": false,
+  "outDir": "/tmp/sandsphere-optimization-build-20261023",
+  "files": [
+    {
+      "file": "abstractAudioBus-B_mNCC7z.js",
+      "bytes": 119,
+      "gzipBytes": 129,
+      "brotliBytes": 101
+    },
+    {
+      "file": "abstractSoundInstance-BfUH-FEg.js",
+      "bytes": 3064,
+      "gzipBytes": 890,
+      "brotliBytes": 786
+    },
+    {
+      "file": "abstractSoundSource-D3MD6Naa.js",
+      "bytes": 1484,
+      "gzipBytes": 479,
+      "brotliBytes": 427
+    },
+    {
+      "file": "account-DNU33ubi.js",
+      "bytes": 3931,
+      "gzipBytes": 1579,
+      "brotliBytes": 1279
+    },
+    {
+      "file": "app-Dlr6qvd5.js",
+      "bytes": 244795,
+      "gzipBytes": 80356,
+      "brotliBytes": 64998
+    },
+    {
+      "file": "app-_GVRWp5g.css",
+      "bytes": 203045,
+      "gzipBytes": 34458,
+      "brotliBytes": 28592
+    },
+    {
+      "file": "baseTexture.pure-Dv0Q4ppc.js",
+      "bytes": 31866,
+      "gzipBytes": 8662,
+      "brotliBytes": 7722
+    },
+    {
+      "file": "basisTextureLoader-HaDyc5Kg.js",
+      "bytes": 8148,
+      "gzipBytes": 3177,
+      "brotliBytes": 2841
+    },
+    {
+      "file": "checkpoint.service-worker-CuEwSM6A.js",
+      "bytes": 9471,
+      "gzipBytes": 4005,
+      "brotliBytes": 3561
+    },
+    {
+      "file": "clouds-Cen8OZpz.js",
+      "bytes": 3398,
+      "gzipBytes": 1739,
+      "brotliBytes": 1511
+    },
+    {
+      "file": "clouds-DLK2ca2x.css",
+      "bytes": 16511,
+      "gzipBytes": 3933,
+      "brotliBytes": 3266
+    },
+    {
+      "file": "color.fragment-DVaYbzXa.js",
+      "bytes": 982,
+      "gzipBytes": 458,
+      "brotliBytes": 400
+    },
+    {
+      "file": "color.fragment-SH3AKoaS.js",
+      "bytes": 874,
+      "gzipBytes": 420,
+      "brotliBytes": 396
+    },
+    {
+      "file": "color.vertex-BLmHnwn7.js",
+      "bytes": 1428,
+      "gzipBytes": 643,
+      "brotliBytes": 567
+    },
+    {
+      "file": "color.vertex-Ca_aYOpk.js",
+      "bytes": 1439,
+      "gzipBytes": 628,
+      "brotliBytes": 559
+    },
+    {
+      "file": "cubemapToSphericalPolynomial-CqvmT60H.js",
+      "bytes": 3705,
+      "gzipBytes": 1626,
+      "brotliBytes": 1480
+    },
+    {
+      "file": "dds.pure-u9BzG0Hj.js",
+      "bytes": 6936,
+      "gzipBytes": 2542,
+      "brotliBytes": 2234
+    },
+    {
+      "file": "ddsTextureLoader-BtMVqypC.js",
+      "bytes": 1258,
+      "gzipBytes": 620,
+      "brotliBytes": 562
+    },
+    {
+      "file": "default.fragment-5wp0NYaz.js",
+      "bytes": 108064,
+      "gzipBytes": 20122,
+      "brotliBytes": 17094
+    },
+    {
+      "file": "default.fragment-CDXEID0B.js",
+      "bytes": 101137,
+      "gzipBytes": 19863,
+      "brotliBytes": 16873
+    },
+    {
+      "file": "default.vertex-BXm7PPqg.js",
+      "bytes": 37861,
+      "gzipBytes": 6245,
+      "brotliBytes": 5449
+    },
+    {
+      "file": "default.vertex-CtWj3Tu-.js",
+      "bytes": 19510,
+      "gzipBytes": 4309,
+      "brotliBytes": 3765
+    },
+    {
+      "file": "envTextureLoader-eHcvx32d.js",
+      "bytes": 32210,
+      "gzipBytes": 9112,
+      "brotliBytes": 8243
+    },
+    {
+      "file": "exrTextureLoader-ALeUNgNd.js",
+      "bytes": 13138,
+      "gzipBytes": 4807,
+      "brotliBytes": 4397
+    },
+    {
+      "file": "firebase-C-l09l2H.js",
+      "bytes": 475023,
+      "gzipBytes": 141699,
+      "brotliBytes": 121289
+    },
+    {
+      "file": "fogFragment-NFgubt9V.js",
+      "bytes": 2430,
+      "gzipBytes": 753,
+      "brotliBytes": 651
+    },
+    {
+      "file": "fogFragment-WPqtYpyX.js",
+      "bytes": 2200,
+      "gzipBytes": 702,
+      "brotliBytes": 601
+    },
+    {
+      "file": "fogVertex-B7dQhgq9.js",
+      "bytes": 1802,
+      "gzipBytes": 501,
+      "brotliBytes": 415
+    },
+    {
+      "file": "fogVertex-x0NJgB5y.js",
+      "bytes": 1493,
+      "gzipBytes": 442,
+      "brotliBytes": 366
+    },
+    {
+      "file": "guid-CxX3q4DM.js",
+      "bytes": 17330,
+      "gzipBytes": 5949,
+      "brotliBytes": 5320
+    },
+    {
+      "file": "halfFloat-Ce77JD5z.js",
+      "bytes": 1290,
+      "gzipBytes": 603,
+      "brotliBytes": 574
+    },
+    {
+      "file": "hdrTextureLoader-BQVwkxK1.js",
+      "bytes": 2313,
+      "gzipBytes": 1133,
+      "brotliBytes": 1038
+    },
+    {
+      "file": "helperFunctions-gEnZbjN3.js",
+      "bytes": 6815,
+      "gzipBytes": 2302,
+      "brotliBytes": 2056
+    },
+    {
+      "file": "iesTextureLoader-3O5bSkSd.js",
+      "bytes": 2477,
+      "gzipBytes": 1078,
+      "brotliBytes": 963
+    },
+    {
+      "file": "index.esm-RxUV7x0u.js",
+      "bytes": 107327,
+      "gzipBytes": 32033,
+      "brotliBytes": 27962
+    },
+    {
+      "file": "ktxTextureLoader-D6cTgE5e.js",
+      "bytes": 16377,
+      "gzipBytes": 4765,
+      "brotliBytes": 4213
+    },
+    {
+      "file": "logDepthDeclaration-3gXGtHbI.js",
+      "bytes": 275,
+      "gzipBytes": 225,
+      "brotliBytes": 190
+    },
+    {
+      "file": "logDepthDeclaration-DYYUVTrx.js",
+      "bytes": 281,
+      "gzipBytes": 229,
+      "brotliBytes": 196
+    },
+    {
+      "file": "logDepthFragment-Cr-Stg0k.js",
+      "bytes": 9502,
+      "gzipBytes": 2924,
+      "brotliBytes": 2519
+    },
+    {
+      "file": "logDepthVertex-D5IUM6qd.js",
+      "bytes": 309,
+      "gzipBytes": 245,
+      "brotliBytes": 210
+    },
+    {
+      "file": "logDepthVertex-DSD5XdGw.js",
+      "bytes": 376,
+      "gzipBytes": 262,
+      "brotliBytes": 232
+    },
+    {
+      "file": "logger-CuBYPcDK.js",
+      "bytes": 1881,
+      "gzipBytes": 826,
+      "brotliBytes": 726
+    },
+    {
+      "file": "mainUVVaryingDeclaration-Bn-mAjvV.js",
+      "bytes": 1943,
+      "gzipBytes": 770,
+      "brotliBytes": 668
+    },
+    {
+      "file": "mainUVVaryingDeclaration-CXzXY6lV.js",
+      "bytes": 1752,
+      "gzipBytes": 593,
+      "brotliBytes": 530
+    },
+    {
+      "file": "math.color.pure-DDHiw1qW.js",
+      "bytes": 12506,
+      "gzipBytes": 2958,
+      "brotliBytes": 2506
+    },
+    {
+      "file": "math.scalar.functions-lnL7TJ7T.js",
+      "bytes": 764,
+      "gzipBytes": 414,
+      "brotliBytes": 381
+    },
+    {
+      "file": "math.vector.pure-BbjIRuKh.js",
+      "bytes": 65027,
+      "gzipBytes": 15883,
+      "brotliBytes": 12887
+    },
+    {
+      "file": "mesh.vertexData.functions-CD4JOR2q.js",
+      "bytes": 930,
+      "gzipBytes": 481,
+      "brotliBytes": 421
+    },
+    {
+      "file": "meshBlendTagFragmentOutput-CzziWpin.js",
+      "bytes": 6635,
+      "gzipBytes": 2362,
+      "brotliBytes": 2067
+    },
+    {
+      "file": "observable.pure-B5E8yEYx.js",
+      "bytes": 3205,
+      "gzipBytes": 1101,
+      "brotliBytes": 994
+    },
+    {
+      "file": "particles.fragment-D0AJ3O_b.js",
+      "bytes": 6124,
+      "gzipBytes": 1776,
+      "brotliBytes": 1618
+    },
+    {
+      "file": "particles.vertex-CXBkuinE.js",
+      "bytes": 8518,
+      "gzipBytes": 1944,
+      "brotliBytes": 1766
+    },
+    {
+      "file": "persistencePreparation.worker-C_BlDd_a.js",
+      "bytes": 2393098,
+      "gzipBytes": 1441781,
+      "brotliBytes": 1324177
+    },
+    {
+      "file": "postprocess.vertex-CmVXXq2T.js",
+      "bytes": 584,
+      "gzipBytes": 357,
+      "brotliBytes": 330
+    },
+    {
+      "file": "postprocess.vertex-DJCmMhI8.js",
+      "bytes": 460,
+      "gzipBytes": 307,
+      "brotliBytes": 257
+    },
+    {
+      "file": "precisionDate-CfCevjl-.js",
+      "bytes": 390,
+      "gzipBytes": 236,
+      "brotliBytes": 199
+    },
+    {
+      "file": "rgbdDecode.fragment-Cdz2Tveq.js",
+      "bytes": 520,
+      "gzipBytes": 343,
+      "brotliBytes": 311
+    },
+    {
+      "file": "rgbdDecode.fragment-CuLeR5Bw.js",
+      "bytes": 654,
+      "gzipBytes": 387,
+      "brotliBytes": 371
+    },
+    {
+      "file": "saveCodec.worker-DNehKoXy.js",
+      "bytes": 6060,
+      "gzipBytes": 2546,
+      "brotliBytes": 2265
+    },
+    {
+      "file": "shaderStore-D-XQlhUT.js",
+      "bytes": 469,
+      "gzipBytes": 176,
+      "brotliBytes": 153
+    },
+    {
+      "file": "solver.worker-BwhZZguR.js",
+      "bytes": 2369831,
+      "gzipBytes": 1432862,
+      "brotliBytes": 1315934
+    },
+    {
+      "file": "space-grotesk-latin-400-normal-BnQMeOim.woff",
+      "bytes": 17004,
+      "gzipBytes": 16987,
+      "brotliBytes": 16905
+    },
+    {
+      "file": "space-grotesk-latin-400-normal-CJ-V5oYT.woff2",
+      "bytes": 13388,
+      "gzipBytes": 13411,
+      "brotliBytes": 13374
+    },
+    {
+      "file": "space-grotesk-latin-500-normal-CNSSEhBt.woff",
+      "bytes": 16988,
+      "gzipBytes": 16963,
+      "brotliBytes": 16882
+    },
+    {
+      "file": "space-grotesk-latin-500-normal-lFbtlQH6.woff2",
+      "bytes": 13312,
+      "gzipBytes": 13335,
+      "brotliBytes": 13309
+    },
+    {
+      "file": "space-grotesk-latin-600-normal-BflQw4A9.woff",
+      "bytes": 16884,
+      "gzipBytes": 16847,
+      "brotliBytes": 16760
+    },
+    {
+      "file": "space-grotesk-latin-600-normal-DjKNqYRj.woff2",
+      "bytes": 13284,
+      "gzipBytes": 13307,
+      "brotliBytes": 13284
+    },
+    {
+      "file": "spatialWebAudio-B1y_gmG7.js",
+      "bytes": 14101,
+      "gzipBytes": 3217,
+      "brotliBytes": 2903
+    },
+    {
+      "file": "system-D7Ty4SBH.js",
+      "bytes": 4232965,
+      "gzipBytes": 1911055,
+      "brotliBytes": 1684457
+    },
+    {
+      "file": "tgaTextureLoader-CqhhocF6.js",
+      "bytes": 3408,
+      "gzipBytes": 1354,
+      "brotliBytes": 1210
+    },
+    {
+      "file": "tools.pure-C84O2eK_.js",
+      "bytes": 22559,
+      "gzipBytes": 7713,
+      "brotliBytes": 6884
+    },
+    {
+      "file": "typeStore-RqCBAJcv.js",
+      "bytes": 441,
+      "gzipBytes": 270,
+      "brotliBytes": 230
+    },
+    {
+      "file": "vertexColorMixing-B-QfZ7Di.js",
+      "bytes": 8963,
+      "gzipBytes": 1831,
+      "brotliBytes": 1574
+    },
+    {
+      "file": "vertexColorMixing-CeF6hIt3.js",
+      "bytes": 4323,
+      "gzipBytes": 990,
+      "brotliBytes": 878
+    },
+    {
+      "file": "webAudioBaseSubGraph-BtCHSnXd.js",
+      "bytes": 8467,
+      "gzipBytes": 2097,
+      "brotliBytes": 1921
+    },
+    {
+      "file": "webAudioBus-CmYONKJ2.js",
+      "bytes": 2276,
+      "gzipBytes": 740,
+      "brotliBytes": 664
+    },
+    {
+      "file": "webAudioMainBus-DKa4uiLG.js",
+      "bytes": 917,
+      "gzipBytes": 416,
+      "brotliBytes": 381
+    },
+    {
+      "file": "webAudioSoundSource-DZVWg__H.js",
+      "bytes": 2327,
+      "gzipBytes": 822,
+      "brotliBytes": 728
+    },
+    {
+      "file": "webAudioStaticSound-CbZPKNCd.js",
+      "bytes": 9369,
+      "gzipBytes": 2538,
+      "brotliBytes": 2336
+    },
+    {
+      "file": "webAudioStreamingSound-B4wBEzZN.js",
+      "bytes": 8401,
+      "gzipBytes": 2430,
+      "brotliBytes": 2181
+    },
+    {
+      "file": "webRequest-dqz0dHXK.js",
+      "bytes": 2941,
+      "gzipBytes": 1066,
+      "brotliBytes": 928
+    }
+  ],
+  "chunks": [
+    {
+      "file": "assets/app-Dlr6qvd5.js",
+      "isEntry": true,
+      "imports": [
+        "assets/system-D7Ty4SBH.js"
+      ],
+      "dynamicImports": [
+        "assets/account-DNU33ubi.js",
+        "assets/firebase-C-l09l2H.js",
+        "assets/index.esm-RxUV7x0u.js"
+      ],
+      "modules": [
+        {
+          "id": "src/sim/planetCreation.ts",
+          "bytes": 3317
+        },
+        {
+          "id": "src/account/sync.ts",
+          "bytes": 1047
+        },
+        {
+          "id": "src/ui/icons.ts",
+          "bytes": 4581
+        },
+        {
+          "id": "src/ui/accountMarkup.ts",
+          "bytes": 1536
+        },
+        {
+          "id": "src/ui/account.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/helpTip.ts",
+          "bytes": 2871
+        },
+        {
+          "id": "src/ui/activityStore.ts",
+          "bytes": 1950
+        },
+        {
+          "id": "src/ui/appChrome.ts",
+          "bytes": 9208
+        },
+        {
+          "id": "src/ui/planetNavigation.ts",
+          "bytes": 6208
+        },
+        {
+          "id": "src/sim/telemetry.ts",
+          "bytes": 14978
+        },
+        {
+          "id": "src/sim/telemetryPersistence.ts",
+          "bytes": 6461
+        },
+        {
+          "id": "src/sim/telemetryCsvImport.ts",
+          "bytes": 4568
+        },
+        {
+          "id": "src/ui/simulationTime.ts",
+          "bytes": 3406
+        },
+        {
+          "id": "src/ui/planetDashboard.ts",
+          "bytes": 26145
+        },
+        {
+          "id": "package.json",
+          "bytes": 59
+        },
+        {
+          "id": "src/version.ts",
+          "bytes": 183
+        },
+        {
+          "id": "src/ui/rangeControl.ts",
+          "bytes": 2010
+        },
+        {
+          "id": "src/ui/materialSupply.ts",
+          "bytes": 1292
+        },
+        {
+          "id": "src/ui/inventory.ts",
+          "bytes": 10400
+        },
+        {
+          "id": "src/ui/rotationStick.ts",
+          "bytes": 3562
+        },
+        {
+          "id": "src/ui/observationPoint.ts",
+          "bytes": 594
+        },
+        {
+          "id": "src/ui/sceneLayers.ts",
+          "bytes": 9802
+        },
+        {
+          "id": "src/ui/spinPeriod.ts",
+          "bytes": 1592
+        },
+        {
+          "id": "src/ui/sectionSelection.ts",
+          "bytes": 5065
+        },
+        {
+          "id": "src/ui/planetControls.ts",
+          "bytes": 8152
+        },
+        {
+          "id": "src/sim/observations.ts",
+          "bytes": 789
+        },
+        {
+          "id": "src/ui/observationSummary.ts",
+          "bytes": 986
+        },
+        {
+          "id": "src/ui/depthProfile.ts",
+          "bytes": 5084
+        },
+        {
+          "id": "src/ui/weatherReadings.ts",
+          "bytes": 800
+        },
+        {
+          "id": "src/ui/observatory.ts",
+          "bytes": 17640
+        },
+        {
+          "id": "src/ui/inspector.ts",
+          "bytes": 7198
+        },
+        {
+          "id": "src/sim/meteor.ts",
+          "bytes": 3845
+        },
+        {
+          "id": "node_modules/@fontsource/space-grotesk/latin-400.css",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/@fontsource/space-grotesk/latin-500.css",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/@fontsource/space-grotesk/latin-600.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/style.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/planetDashboard.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/glassWorkbench.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/workbench.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/onboarding.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/mobileWorkbench.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/ui/workbench.ts",
+          "bytes": 8152
+        },
+        {
+          "id": "src/ui/onboarding.ts",
+          "bytes": 2847
+        },
+        {
+          "id": "src/sim/gpu.ts",
+          "bytes": 139
+        },
+        {
+          "id": "src/sim/solverWorkerProtocol.ts",
+          "bytes": 422
+        },
+        {
+          "id": "src/sim/workerSolver.ts",
+          "bytes": 4703
+        },
+        {
+          "id": "src/sim/frameExecution.ts",
+          "bytes": 736
+        },
+        {
+          "id": "src/sim/toolHeat.ts",
+          "bytes": 783
+        },
+        {
+          "id": "src/sim/checkpoint.service-worker.ts?worker&url",
+          "bytes": 160
+        },
+        {
+          "id": "src/sim/checkpointWorkerClient.ts",
+          "bytes": 2599
+        },
+        {
+          "id": "src/sim/session.ts",
+          "bytes": 2704
+        },
+        {
+          "id": "src/sim/persistencePreparationClient.ts",
+          "bytes": 1970
+        },
+        {
+          "id": "src/ui/system.ts",
+          "bytes": 4401
+        },
+        {
+          "id": "src/main.ts",
+          "bytes": 125870
+        },
+        {
+          "id": "index.html",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/clouds-Cen8OZpz.js",
+      "isEntry": true,
+      "imports": [
+        "assets/system-D7Ty4SBH.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "src/ui/cloudComparison.css",
+          "bytes": 0
+        },
+        {
+          "id": "src/cloudComparison.ts",
+          "bytes": 4789
+        },
+        {
+          "id": "clouds.html",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/abstractAudioBus-B_mNCC7z.js",
+      "isEntry": false,
+      "imports": [
+        "assets/webAudioBaseSubGraph-BtCHSnXd.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractAudioBus.js",
+          "bytes": 215
+        }
+      ]
+    },
+    {
+      "file": "assets/abstractSoundInstance-BfUH-FEg.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/abstractSoundSource-D3MD6Naa.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractSound.js",
+          "bytes": 3537
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractSoundInstance.js",
+          "bytes": 774
+        }
+      ]
+    },
+    {
+      "file": "assets/abstractSoundSource-D3MD6Naa.js",
+      "isEntry": false,
+      "imports": [
+        "assets/webAudioBaseSubGraph-BtCHSnXd.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractSoundSource.js",
+          "bytes": 1984
+        }
+      ]
+    },
+    {
+      "file": "assets/account-DNU33ubi.js",
+      "isEntry": false,
+      "imports": [
+        "assets/app-Dlr6qvd5.js",
+        "assets/index.esm-RxUV7x0u.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "src/ui/account.ts",
+          "bytes": 4217
+        }
+      ]
+    },
+    {
+      "file": "assets/baseTexture.pure-Dv0Q4ppc.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.vector.pure-BbjIRuKh.js",
+        "assets/math.color.pure-DDHiw1qW.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/textureSampler.js",
+          "bytes": 1851
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/internalTexture.js",
+          "bytes": 9586
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/andOrNotEvaluator.js",
+          "bytes": 2135
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/tags.js",
+          "bytes": 2017
+        },
+        {
+          "id": "node_modules/@babylonjs/core/tslib.es6.js",
+          "bytes": 2909
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/decorators.functions.js",
+          "bytes": 1710
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/decorators.js",
+          "bytes": 3018
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/decorators.serialization.js",
+          "bytes": 6885
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.size.js",
+          "bytes": 1462
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/thinTexture.js",
+          "bytes": 3324
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/baseTexture.pure.js",
+          "bytes": 25907
+        }
+      ]
+    },
+    {
+      "file": "assets/basisTextureLoader-HaDyc5Kg.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/baseTexture.pure-Dv0Q4ppc.js",
+        "assets/tools.pure-C84O2eK_.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/basisWorker.js",
+          "bytes": 6300
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/basis.pure.js",
+          "bytes": 7003
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/basisTextureLoader.js",
+          "bytes": 2172
+        }
+      ]
+    },
+    {
+      "file": "assets/color.fragment-DVaYbzXa.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-NFgubt9V.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/color.fragment.js",
+          "bytes": 1159
+        }
+      ]
+    },
+    {
+      "file": "assets/color.fragment-SH3AKoaS.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-WPqtYpyX.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/color.fragment.js",
+          "bytes": 1031
+        }
+      ]
+    },
+    {
+      "file": "assets/color.vertex-BLmHnwn7.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/vertexColorMixing-CeF6hIt3.js",
+        "assets/fogVertex-B7dQhgq9.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/color.vertex.js",
+          "bytes": 1624
+        }
+      ]
+    },
+    {
+      "file": "assets/color.vertex-Ca_aYOpk.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogVertex-x0NJgB5y.js",
+        "assets/vertexColorMixing-B-QfZ7Di.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/color.vertex.js",
+          "bytes": 1636
+        }
+      ]
+    },
+    {
+      "file": "assets/cubemapToSphericalPolynomial-CqvmT60H.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/math.vector.pure-BbjIRuKh.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/math.color.pure-DDHiw1qW.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/HighDynamicRange/cubemapToSphericalPolynomial.js",
+          "bytes": 7861
+        }
+      ]
+    },
+    {
+      "file": "assets/dds.pure-u9BzG0Hj.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/halfFloat-Ce77JD5z.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/cubemapToSphericalPolynomial-CqvmT60H.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/dds.pure.js",
+          "bytes": 16882
+        }
+      ]
+    },
+    {
+      "file": "assets/ddsTextureLoader-BtMVqypC.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/dds.pure-u9BzG0Hj.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/ddsTextureLoader.js",
+          "bytes": 2199
+        }
+      ]
+    },
+    {
+      "file": "assets/default.fragment-5wp0NYaz.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-NFgubt9V.js",
+        "assets/mainUVVaryingDeclaration-CXzXY6lV.js",
+        "assets/meshBlendTagFragmentOutput-CzziWpin.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/oitDeclaration.js",
+          "bytes": 553
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightUboDeclaration.js",
+          "bytes": 3654
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/ltcHelperFunctions.js",
+          "bytes": 6786
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clusteredLightingFunctions.js",
+          "bytes": 963
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clusteredLightingCompute.js",
+          "bytes": 1873
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightsFragmentFunctions.js",
+          "bytes": 7412
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/shadowsFragmentFunctions.js",
+          "bytes": 28592
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/samplerFragmentDeclaration.js",
+          "bytes": 900
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/reflectionFunction.js",
+          "bytes": 4707
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/textureRepetitionFunctions.js",
+          "bytes": 6285
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpFragmentMainFunctions.js",
+          "bytes": 3062
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpFragmentFunctions.js",
+          "bytes": 2212
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpFragment.js",
+          "bytes": 3325
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/defaultFragmentAlpha.js",
+          "bytes": 1195
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/depthPrePass.js",
+          "bytes": 526
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightFragment.js",
+          "bytes": 22302
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/oitFragment.js",
+          "bytes": 1528
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/default.fragment.js",
+          "bytes": 16520
+        }
+      ]
+    },
+    {
+      "file": "assets/default.fragment-CDXEID0B.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/logDepthDeclaration-3gXGtHbI.js",
+        "assets/logDepthFragment-Cr-Stg0k.js",
+        "assets/fogFragment-WPqtYpyX.js",
+        "assets/helperFunctions-gEnZbjN3.js",
+        "assets/mainUVVaryingDeclaration-Bn-mAjvV.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/decalFragmentDeclaration.js",
+          "bytes": 385
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultFragmentDeclaration.js",
+          "bytes": 2582
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/oitDeclaration.js",
+          "bytes": 633
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/lightFragmentDeclaration.js",
+          "bytes": 2990
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/lightUboDeclaration.js",
+          "bytes": 2888
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/ltcHelperFunctions.js",
+          "bytes": 6187
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/clusteredLightingFunctions.js",
+          "bytes": 927
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/lightsFragmentFunctions.js",
+          "bytes": 7986
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/shadowsFragmentFunctions.js",
+          "bytes": 26054
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/samplerFragmentDeclaration.js",
+          "bytes": 838
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/fresnelFunction.js",
+          "bytes": 524
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/reflectionFunction.js",
+          "bytes": 4197
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/textureRepetitionFunctions.js",
+          "bytes": 5301
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpFragmentMainFunctions.js",
+          "bytes": 2822
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpFragmentFunctions.js",
+          "bytes": 2046
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpFragment.js",
+          "bytes": 2502
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/decalFragment.js",
+          "bytes": 520
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultFragmentAlpha.js",
+          "bytes": 1035
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/depthPrePass.js",
+          "bytes": 363
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/lightFragment.js",
+          "bytes": 19664
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/oitFragment.js",
+          "bytes": 1345
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/default.fragment.js",
+          "bytes": 14298
+        }
+      ]
+    },
+    {
+      "file": "assets/default.vertex-BXm7PPqg.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/vertexColorMixing-CeF6hIt3.js",
+        "assets/fogVertex-B7dQhgq9.js",
+        "assets/mainUVVaryingDeclaration-CXzXY6lV.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js",
+        "assets/logDepthVertex-DSD5XdGw.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/uvAttributeDeclaration.js",
+          "bytes": 431
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/prePassVertexDeclaration.js",
+          "bytes": 746
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/samplerVertexDeclaration.js",
+          "bytes": 448
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpVertexDeclaration.js",
+          "bytes": 555
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightVxFragmentDeclaration.js",
+          "bytes": 1403
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/lightVxUboDeclaration.js",
+          "bytes": 1491
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertexGlobalDeclaration.js",
+          "bytes": 1328
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertexDeclaration.js",
+          "bytes": 871
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/vertexPullingDeclaration.js",
+          "bytes": 11730
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/vertexPullingVertex.js",
+          "bytes": 2134
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertexGlobal.js",
+          "bytes": 430
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/morphTargetsVertex.js",
+          "bytes": 4624
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/prePassVertex.js",
+          "bytes": 2330
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/uvVariableDeclaration.js",
+          "bytes": 561
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/samplerVertexImplementation.js",
+          "bytes": 1305
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bumpVertex.js",
+          "bytes": 831
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/shadowsVertex.js",
+          "bytes": 2527
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/default.vertex.js",
+          "bytes": 8512
+        }
+      ]
+    },
+    {
+      "file": "assets/default.vertex-CtWj3Tu-.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogVertex-x0NJgB5y.js",
+        "assets/logDepthDeclaration-3gXGtHbI.js",
+        "assets/logDepthVertex-D5IUM6qd.js",
+        "assets/helperFunctions-gEnZbjN3.js",
+        "assets/vertexColorMixing-B-QfZ7Di.js",
+        "assets/mainUVVaryingDeclaration-Bn-mAjvV.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/decalVertexDeclaration.js",
+          "bytes": 404
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultVertexDeclaration.js",
+          "bytes": 1326
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/uvAttributeDeclaration.js",
+          "bytes": 375
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/prePassVertexDeclaration.js",
+          "bytes": 718
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/samplerVertexDeclaration.js",
+          "bytes": 430
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpVertexDeclaration.js",
+          "bytes": 494
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/lightVxFragmentDeclaration.js",
+          "bytes": 1325
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/lightVxUboDeclaration.js",
+          "bytes": 1234
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertexGlobalDeclaration.js",
+          "bytes": 1842
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertexDeclaration.js",
+          "bytes": 807
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertexGlobal.js",
+          "bytes": 410
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/morphTargetsVertex.js",
+          "bytes": 2129
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/prePassVertex.js",
+          "bytes": 1867
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/uvVariableDeclaration.js",
+          "bytes": 438
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/samplerVertexImplementation.js",
+          "bytes": 1033
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bumpVertex.js",
+          "bytes": 646
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/shadowsVertex.js",
+          "bytes": 1051
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/pointCloudVertex.js",
+          "bytes": 382
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/default.vertex.js",
+          "bytes": 6939
+        }
+      ]
+    },
+    {
+      "file": "assets/envTextureLoader-eHcvx32d.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.vector.pure-BbjIRuKh.js",
+        "assets/baseTexture.pure-Dv0Q4ppc.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/cubemapToSphericalPolynomial-CqvmT60H.js"
+      ],
+      "dynamicImports": [
+        "assets/postprocess.vertex-CmVXXq2T.js",
+        "assets/postprocess.vertex-DJCmMhI8.js",
+        "assets/rgbdDecode.fragment-CuLeR5Bw.js",
+        "assets/rgbdDecode.fragment-Cdz2Tveq.js"
+      ],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Materials/effectRenderer.pure.js",
+          "bytes": 8599
+        },
+        {
+          "id": "node_modules/@babylonjs/core/PostProcesses/postProcess.pure.js",
+          "bytes": 32244
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/environmentTextureTools.pure.js",
+          "bytes": 11890
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/baseTexture.polynomial.pure.js",
+          "bytes": 1536
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js",
+          "bytes": 994
+        }
+      ]
+    },
+    {
+      "file": "assets/exrTextureLoader-ALeUNgNd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-C84O2eK_.js",
+        "assets/halfFloat-Ce77JD5z.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.interfaces.js",
+          "bytes": 232
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.core.js",
+          "bytes": 6001
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.header.js",
+          "bytes": 1205
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.compression.huf.js",
+          "bytes": 8670
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.compression.rle.js",
+          "bytes": 585
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.compression.js",
+          "bytes": 4193
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.configuration.js",
+          "bytes": 509
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/EXR/exrLoader.decoder.js",
+          "bytes": 6255
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/exrTextureLoader.js",
+          "bytes": 1184
+        }
+      ]
+    },
+    {
+      "file": "assets/firebase-C-l09l2H.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/app-Dlr6qvd5.js",
+        "assets/index.esm-RxUV7x0u.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/firebase/app/dist/esm/index.esm.js",
+          "bytes": 117
+        },
+        {
+          "id": "node_modules/@firebase/webchannel-wrapper/dist/bloom-blob/esm/bloom_blob_es2018.js",
+          "bytes": 15714
+        },
+        {
+          "id": "node_modules/tslib/tslib.es6.mjs",
+          "bytes": 490
+        },
+        {
+          "id": "node_modules/@firebase/webchannel-wrapper/dist/webchannel-blob/esm/webchannel_blob_es2018.js",
+          "bytes": 54911
+        },
+        {
+          "id": "node_modules/re2js/build/index.js",
+          "bytes": 218950
+        },
+        {
+          "id": "node_modules/@firebase/firestore/dist/common-D9UYuXJO.esm.js",
+          "bytes": 400847
+        },
+        {
+          "id": "node_modules/@firebase/firestore/dist/index.esm.js",
+          "bytes": 5316
+        },
+        {
+          "id": "node_modules/firebase/firestore/dist/esm/index.esm.js",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/@firebase/storage/dist/index.esm.js",
+          "bytes": 27630
+        },
+        {
+          "id": "node_modules/firebase/storage/dist/esm/index.esm.js",
+          "bytes": 0
+        },
+        {
+          "id": "src/account/firebase.ts",
+          "bytes": 6166
+        }
+      ]
+    },
+    {
+      "file": "assets/fogFragment-NFgubt9V.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneFragmentDeclaration.js",
+          "bytes": 682
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogFragmentDeclaration.js",
+          "bytes": 1102
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneFragment.js",
+          "bytes": 964
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogFragment.js",
+          "bytes": 432
+        }
+      ]
+    },
+    {
+      "file": "assets/fogFragment-WPqtYpyX.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneFragmentDeclaration.js",
+          "bytes": 672
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/fogFragmentDeclaration.js",
+          "bytes": 996
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneFragment.js",
+          "bytes": 858
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/fogFragment.js",
+          "bytes": 392
+        }
+      ]
+    },
+    {
+      "file": "assets/fogVertex-B7dQhgq9.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneVertexDeclaration.js",
+          "bytes": 861
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogVertexDeclaration.js",
+          "bytes": 383
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/clipPlaneVertex.js",
+          "bytes": 858
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fogVertex.js",
+          "bytes": 434
+        }
+      ]
+    },
+    {
+      "file": "assets/fogVertex-x0NJgB5y.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneVertexDeclaration.js",
+          "bytes": 815
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/fogVertexDeclaration.js",
+          "bytes": 365
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/clipPlaneVertex.js",
+          "bytes": 704
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/fogVertex.js",
+          "bytes": 311
+        }
+      ]
+    },
+    {
+      "file": "assets/guid-CxX3q4DM.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/halfFloat-Ce77JD5z.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/devTools.js",
+          "bytes": 1292
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/abstractEngine.functions.js",
+          "bytes": 3253
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/shaderCodeNode.js",
+          "bytes": 3643
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/shaderCodeCursor.js",
+          "bytes": 1191
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/shaderCodeConditionNode.js",
+          "bytes": 445
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/shaderCodeTestNode.js",
+          "bytes": 233
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/Expressions/shaderDefineExpression.js",
+          "bytes": 3088
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineIsDefinedOperator.js",
+          "bytes": 441
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineOrOperator.js",
+          "bytes": 310
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineAndOperator.js",
+          "bytes": 312
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/Expressions/Operators/shaderDefineArithmeticOperator.js",
+          "bytes": 1114
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/shaderProcessor.js",
+          "bytes": 11647
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/timingTools.js",
+          "bytes": 1181
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Buffers/bufferUtils.js",
+          "bytes": 9281
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/guid.js",
+          "bytes": 256
+        }
+      ]
+    },
+    {
+      "file": "assets/halfFloat-Ce77JD5z.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/halfFloat.js",
+          "bytes": 2538
+        }
+      ]
+    },
+    {
+      "file": "assets/hdrTextureLoader-BQVwkxK1.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/HighDynamicRange/hdr.js",
+          "bytes": 4589
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/hdrTextureLoader.js",
+          "bytes": 1112
+        }
+      ]
+    },
+    {
+      "file": "assets/helperFunctions-gEnZbjN3.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/helperFunctions.js",
+          "bytes": 6921
+        }
+      ]
+    },
+    {
+      "file": "assets/iesTextureLoader-3O5bSkSd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Lights/IES/iesLoader.js",
+          "bytes": 4143
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/iesTextureLoader.js",
+          "bytes": 692
+        }
+      ]
+    },
+    {
+      "file": "assets/index.esm-RxUV7x0u.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@firebase/util/dist/postinstall.mjs",
+          "bytes": 119
+        },
+        {
+          "id": "node_modules/@firebase/util/dist/index.esm.js",
+          "bytes": 16687
+        },
+        {
+          "id": "node_modules/@firebase/component/dist/esm/index.esm.js",
+          "bytes": 7181
+        },
+        {
+          "id": "node_modules/@firebase/logger/dist/esm/index.esm.js",
+          "bytes": 2745
+        },
+        {
+          "id": "node_modules/idb/build/wrap-idb-value.js",
+          "bytes": 4142
+        },
+        {
+          "id": "node_modules/idb/build/index.js",
+          "bytes": 2021
+        },
+        {
+          "id": "node_modules/@firebase/app/dist/esm/index.esm.js",
+          "bytes": 15621
+        },
+        {
+          "id": "node_modules/@firebase/auth/dist/esm/index-LY22yodV.js",
+          "bytes": 151600
+        },
+        {
+          "id": "node_modules/@firebase/auth/dist/esm/index.js",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/firebase/auth/dist/esm/index.esm.js",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/ktxTextureLoader-D6cTgE5e.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-C84O2eK_.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/khronosTextureContainer.js",
+          "bytes": 4129
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/workerPool.js",
+          "bytes": 2339
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/ktx2decoderTypes.js",
+          "bytes": 2477
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/khronosTextureContainer2Worker.js",
+          "bytes": 4875
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/khronosTextureContainer2.js",
+          "bytes": 11471
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader.js",
+          "bytes": 2997
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthDeclaration-3gXGtHbI.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/logDepthDeclaration.js",
+          "bytes": 389
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthDeclaration-DYYUVTrx.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/logDepthDeclaration.js",
+          "bytes": 403
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthFragment-Cr-Stg0k.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/objectIdFunctions.js",
+          "bytes": 627
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/prePassDeclaration.js",
+          "bytes": 3395
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/imageProcessingDeclaration.js",
+          "bytes": 1037
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/imageProcessingFunctions.js",
+          "bytes": 4991
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/logDepthFragment.js",
+          "bytes": 378
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthVertex-D5IUM6qd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/logDepthVertex.js",
+          "bytes": 413
+        }
+      ]
+    },
+    {
+      "file": "assets/logDepthVertex-DSD5XdGw.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/logDepthVertex.js",
+          "bytes": 488
+        }
+      ]
+    },
+    {
+      "file": "assets/logger-CuBYPcDK.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/logger.js",
+          "bytes": 3034
+        }
+      ]
+    },
+    {
+      "file": "assets/mainUVVaryingDeclaration-Bn-mAjvV.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/sceneUboDeclaration.js",
+          "bytes": 506
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/meshUboDeclaration.js",
+          "bytes": 485
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/defaultUboDeclaration.js",
+          "bytes": 1325
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/mainUVVaryingDeclaration.js",
+          "bytes": 353
+        }
+      ]
+    },
+    {
+      "file": "assets/mainUVVaryingDeclaration-CXzXY6lV.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/defaultUboDeclaration.js",
+          "bytes": 1696
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/mainUVVaryingDeclaration.js",
+          "bytes": 371
+        }
+      ]
+    },
+    {
+      "file": "assets/math.color.pure-DDHiw1qW.js",
+      "isEntry": false,
+      "imports": [
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.vector.pure-BbjIRuKh.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.color.pure.js",
+          "bytes": 23384
+        }
+      ]
+    },
+    {
+      "file": "assets/math.scalar.functions-lnL7TJ7T.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.scalar.functions.js",
+          "bytes": 1529
+        }
+      ]
+    },
+    {
+      "file": "assets/math.vector.pure-BbjIRuKh.js",
+      "isEntry": false,
+      "imports": [
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Engines/performanceConfigurator.js",
+          "bytes": 1092
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.constants.js",
+          "bytes": 183
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/arrayTools.js",
+          "bytes": 1434
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/ThinMaths/thinMath.matrix.functions.js",
+          "bytes": 5932
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.vector.pure.js",
+          "bytes": 114099
+        }
+      ]
+    },
+    {
+      "file": "assets/mesh.vertexData.functions-CD4JOR2q.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/bitArray.js",
+          "bytes": 855
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/mesh.vertexData.functions.js",
+          "bytes": 1453
+        }
+      ]
+    },
+    {
+      "file": "assets/meshBlendTagFragmentOutput-CzziWpin.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/objectIdFunctions.js",
+          "bytes": 608
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/prePassDeclaration.js",
+          "bytes": 904
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/imageProcessingDeclaration.js",
+          "bytes": 1142
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/imageProcessingFunctions.js",
+          "bytes": 4179
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/logDepthFragment.js",
+          "bytes": 456
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/meshBlendTagFragmentOutput.js",
+          "bytes": 534
+        }
+      ]
+    },
+    {
+      "file": "assets/observable.pure-B5E8yEYx.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/observable.pure.js",
+          "bytes": 5621
+        }
+      ]
+    },
+    {
+      "file": "assets/particles.fragment-D0AJ3O_b.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogFragment-NFgubt9V.js",
+        "assets/meshBlendTagFragmentOutput-CzziWpin.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/geometryRenderingFragment.js",
+          "bytes": 2863
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/particles.fragment.js",
+          "bytes": 3704
+        }
+      ]
+    },
+    {
+      "file": "assets/particles.vertex-CXBkuinE.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/fogVertex-B7dQhgq9.js",
+        "assets/logDepthDeclaration-DYYUVTrx.js",
+        "assets/logDepthVertex-DSD5XdGw.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/particles.vertex.js",
+          "bytes": 8631
+        }
+      ]
+    },
+    {
+      "file": "assets/postprocess.vertex-CmVXXq2T.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/postprocess.vertex.js",
+          "bytes": 668
+        }
+      ]
+    },
+    {
+      "file": "assets/postprocess.vertex-DJCmMhI8.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/postprocess.vertex.js",
+          "bytes": 540
+        }
+      ]
+    },
+    {
+      "file": "assets/precisionDate-CfCevjl-.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/domManagement.js",
+          "bytes": 515
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/precisionDate.js",
+          "bytes": 259
+        }
+      ]
+    },
+    {
+      "file": "assets/rgbdDecode.fragment-Cdz2Tveq.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/helperFunctions-gEnZbjN3.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/rgbdDecode.fragment.js",
+          "bytes": 625
+        }
+      ]
+    },
+    {
+      "file": "assets/rgbdDecode.fragment-CuLeR5Bw.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/rgbdDecode.fragment.js",
+          "bytes": 776
+        }
+      ]
+    },
+    {
+      "file": "assets/shaderStore-D-XQlhUT.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Engines/shaderStore.js",
+          "bytes": 821
+        }
+      ]
+    },
+    {
+      "file": "assets/spatialWebAudio-B1y_gmG7.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/math.vector.pure-BbjIRuKh.js",
+        "assets/webAudioBaseSubGraph-BtCHSnXd.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractSpatialAudio.js",
+          "bytes": 1236
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractStereoAudio.js",
+          "bytes": 294
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/stereoAudioSubNode.js",
+          "bytes": 537
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/stereoAudio.js",
+          "bytes": 404
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/spatialAudioSubNode.js",
+          "bytes": 2706
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/spatialWebAudioSubNode.js",
+          "bytes": 7032
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/stereoWebAudioSubNode.js",
+          "bytes": 1014
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/webAudioBusAndSoundSubGraph.js",
+          "bytes": 2995
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/spatialAudio.js",
+          "bytes": 5910
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subProperties/spatialWebAudio.js",
+          "bytes": 586
+        }
+      ]
+    },
+    {
+      "file": "assets/system-D7Ty4SBH.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/shaderStore-D-XQlhUT.js",
+        "assets/precisionDate-CfCevjl-.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/math.vector.pure-BbjIRuKh.js",
+        "assets/baseTexture.pure-Dv0Q4ppc.js",
+        "assets/tools.pure-C84O2eK_.js",
+        "assets/webRequest-dqz0dHXK.js",
+        "assets/halfFloat-Ce77JD5z.js",
+        "assets/math.scalar.functions-lnL7TJ7T.js",
+        "assets/math.color.pure-DDHiw1qW.js",
+        "assets/fogVertex-x0NJgB5y.js",
+        "assets/logDepthDeclaration-3gXGtHbI.js",
+        "assets/logDepthVertex-D5IUM6qd.js",
+        "assets/logDepthFragment-Cr-Stg0k.js",
+        "assets/fogFragment-WPqtYpyX.js",
+        "assets/helperFunctions-gEnZbjN3.js"
+      ],
+      "dynamicImports": [
+        "assets/mesh.vertexData.functions-CD4JOR2q.js",
+        "assets/color.vertex-BLmHnwn7.js",
+        "assets/color.fragment-DVaYbzXa.js",
+        "assets/color.vertex-Ca_aYOpk.js",
+        "assets/color.fragment-SH3AKoaS.js",
+        "assets/particles.vertex-CXBkuinE.js",
+        "assets/particles.fragment-D0AJ3O_b.js",
+        "assets/system-D7Ty4SBH.js",
+        "assets/default.vertex-CtWj3Tu-.js",
+        "assets/default.fragment-CDXEID0B.js",
+        "assets/default.vertex-BXm7PPqg.js",
+        "assets/default.fragment-5wp0NYaz.js",
+        "assets/dds.pure-u9BzG0Hj.js",
+        "assets/iesTextureLoader-3O5bSkSd.js",
+        "assets/ddsTextureLoader-BtMVqypC.js",
+        "assets/basisTextureLoader-HaDyc5Kg.js",
+        "assets/envTextureLoader-eHcvx32d.js",
+        "assets/hdrTextureLoader-BQVwkxK1.js",
+        "assets/ktxTextureLoader-D6cTgE5e.js",
+        "assets/tgaTextureLoader-CqhhocF6.js",
+        "assets/exrTextureLoader-ALeUNgNd.js",
+        "assets/webAudioBus-CmYONKJ2.js",
+        "assets/webAudioMainBus-DKa4uiLG.js",
+        "assets/webAudioStaticSound-CbZPKNCd.js",
+        "assets/webAudioSoundSource-DZVWg__H.js",
+        "assets/webAudioStreamingSound-B4wBEzZN.js"
+      ],
+      "modules": [
+        {
+          "id": "\u0000rolldown/runtime.js",
+          "bytes": 348
+        },
+        {
+          "id": "\u0000vite/modulepreload-polyfill.js",
+          "bytes": 1205
+        },
+        {
+          "id": "src/sim/gases.ts",
+          "bytes": 2013
+        },
+        {
+          "id": "src/sim/co2Ice.ts",
+          "bytes": 1161
+        },
+        {
+          "id": "src/sim/thermodynamics.ts",
+          "bytes": 3216
+        },
+        {
+          "id": "src/sim/waterPhysics.ts",
+          "bytes": 2070
+        },
+        {
+          "id": "src/sim/phaseEquilibrium.ts",
+          "bytes": 3551
+        },
+        {
+          "id": "src/sim/giantCloudPhysics.ts",
+          "bytes": 4309
+        },
+        {
+          "id": "src/sim/deepAtmosphereProfile.ts",
+          "bytes": 2780
+        },
+        {
+          "id": "src/sim/physicalState.ts",
+          "bytes": 562
+        },
+        {
+          "id": "src/sim/mechanicalBoundary.ts",
+          "bytes": 1440
+        },
+        {
+          "id": "src/sim/solidMechanics.ts",
+          "bytes": 2103
+        },
+        {
+          "id": "src/sim/materialPhysics.ts",
+          "bytes": 3039
+        },
+        {
+          "id": "src/sim/sphere.ts",
+          "bytes": 4638
+        },
+        {
+          "id": "src/sim/aerosolPhysics.ts",
+          "bytes": 1182
+        },
+        {
+          "id": "src/sim/buoyancy.ts",
+          "bytes": 495
+        },
+        {
+          "id": "src/sim/chemistry.ts",
+          "bytes": 1080
+        },
+        {
+          "id": "src/sim/materialReaction.ts",
+          "bytes": 5250
+        },
+        {
+          "id": "src/sim/ecology.ts",
+          "bytes": 8134
+        },
+        {
+          "id": "src/sim/climateUnits.ts",
+          "bytes": 217
+        },
+        {
+          "id": "src/sim/conservativeTransport.ts",
+          "bytes": 1822
+        },
+        {
+          "id": "src/sim/climatePhysics.ts",
+          "bytes": 10034
+        },
+        {
+          "id": "src/sim/cloudMicrophysics.ts",
+          "bytes": 1029
+        },
+        {
+          "id": "src/sim/data/ecckd-32.json",
+          "bytes": 2221549
+        },
+        {
+          "id": "src/sim/data/spectral-optics-simd.wasm?url",
+          "bytes": 1986
+        },
+        {
+          "id": "src/sim/spectralAcceleration.ts",
+          "bytes": 2320
+        },
+        {
+          "id": "src/sim/spectralRadiation.ts",
+          "bytes": 10361
+        },
+        {
+          "id": "src/sim/dustPhysics.ts",
+          "bytes": 707
+        },
+        {
+          "id": "src/sim/planetDefinition.ts",
+          "bytes": 6622
+        },
+        {
+          "id": "src/sim/layeredAtmosphere.ts",
+          "bytes": 82439
+        },
+        {
+          "id": "src/sim/oceanDynamics.ts",
+          "bytes": 21850
+        },
+        {
+          "id": "src/sim/deepAtmosphere.ts",
+          "bytes": 26055
+        },
+        {
+          "id": "src/sim/weatherClimate.ts",
+          "bytes": 16997
+        },
+        {
+          "id": "src/sim/climate.ts",
+          "bytes": 580
+        },
+        {
+          "id": "src/sim/animalNavigation.ts",
+          "bytes": 5876
+        },
+        {
+          "id": "src/sim/clouds.ts",
+          "bytes": 345
+        },
+        {
+          "id": "src/sim/clock.ts",
+          "bytes": 702
+        },
+        {
+          "id": "src/sim/model.ts",
+          "bytes": 35680
+        },
+        {
+          "id": "src/sim/orbit.ts",
+          "bytes": 829
+        },
+        {
+          "id": "src/ui/i18n.ts",
+          "bytes": 86252
+        },
+        {
+          "id": "src/sim/atmosphere.ts",
+          "bytes": 6865
+        },
+        {
+          "id": "src/ui/content.ts",
+          "bytes": 6196
+        },
+        {
+          "id": "src/sim/progress.ts",
+          "bytes": 6272
+        },
+        {
+          "id": "src/render/budget.ts",
+          "bytes": 667
+        },
+        {
+          "id": "src/render/columnGeometry.ts",
+          "bytes": 2242
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGL/webGLPipelineContext.js",
+          "bytes": 10033
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/thinEngine.functions.js",
+          "bytes": 7728
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/effect.functions.js",
+          "bytes": 5875
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/effect.pure.js",
+          "bytes": 23085
+        },
+        {
+          "id": "node_modules/@babylonjs/core/States/depthCullingState.js",
+          "bytes": 3417
+        },
+        {
+          "id": "node_modules/@babylonjs/core/States/stencilStateComposer.js",
+          "bytes": 5260
+        },
+        {
+          "id": "node_modules/@babylonjs/core/States/stencilState.js",
+          "bytes": 2152
+        },
+        {
+          "id": "node_modules/@babylonjs/core/States/alphaCullingState.js",
+          "bytes": 7930
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/abstractEngine.pure.js",
+          "bytes": 30608
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/engine.common.js",
+          "bytes": 8930
+        },
+        {
+          "id": "src/render/rendererBoot.ts",
+          "bytes": 1348
+        },
+        {
+          "id": "src/render/surfaceChanges.ts",
+          "bytes": 1324
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/tools.functions.js",
+          "bytes": 864
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/coroutine.js",
+          "bytes": 1839
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/smartArray.js",
+          "bytes": 1894
+        },
+        {
+          "id": "node_modules/@babylonjs/core/node.js",
+          "bytes": 18622
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.viewport.js",
+          "bytes": 680
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.plane.js",
+          "bytes": 3202
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.frustum.js",
+          "bytes": 2460
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.renderPass.pure.js",
+          "bytes": 1133
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/camera.pure.js",
+          "bytes": 35170
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Buffers/dataBuffer.js",
+          "bytes": 314
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/drawWrapper.functions.js",
+          "bytes": 164
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGL/webGLShaderProcessors.js",
+          "bytes": 395
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGL/webGL2ShaderProcessors.js",
+          "bytes": 2122
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/WebGL/webGLDataBuffer.js",
+          "bytes": 256
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGL/webGLHardwareTexture.js",
+          "bytes": 1202
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/textureHelper.functions.js",
+          "bytes": 782
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/thinEngine.pure.js",
+          "bytes": 101714
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.dynamicBuffer.pure.js",
+          "bytes": 1666
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Buffers/buffer.pure.js",
+          "bytes": 11572
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Collisions/intersectionInfo.js",
+          "bytes": 285
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Culling/boundingBox.js",
+          "bytes": 5691
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Culling/boundingSphere.js",
+          "bytes": 3068
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Culling/boundingInfo.js",
+          "bytes": 5384
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.functions.js",
+          "bytes": 3665
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/drawWrapper.js",
+          "bytes": 1151
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/subMesh.pure.js",
+          "bytes": 13827
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/mesh.vertexData.js",
+          "bytes": 47479
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Loading/sceneLoaderFlags.js",
+          "bytes": 1084
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Compat/compatibilityOptions.js",
+          "bytes": 122
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/geometry.js",
+          "bytes": 37618
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/transformNode.pure.js",
+          "bytes": 40828
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Collisions/pickingInfo.js",
+          "bytes": 4735
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/uniformBuffer.js",
+          "bytes": 25243
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Collisions/meshCollisionData.js",
+          "bytes": 438
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.axis.js",
+          "bytes": 551
+        },
+        {
+          "id": "\u0000vite/preload-helper.js",
+          "bytes": 2990
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/abstractMesh.pure.js",
+          "bytes": 61334
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialStencilState.js",
+          "bytes": 7149
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Lights/lightConstants.js",
+          "bytes": 1076
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/floatingOriginMatrixOverrides.js",
+          "bytes": 4704
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/clipPlaneMaterialHelper.js",
+          "bytes": 3783
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialFlags.js",
+          "bytes": 8201
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialHelper.functions.js",
+          "bytes": 40539
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/material.pure.js",
+          "bytes": 48870
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialHelper.geometryrendering.js",
+          "bytes": 12373
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/multiMaterial.pure.js",
+          "bytes": 3698
+        },
+        {
+          "id": "node_modules/@babylonjs/core/sceneComponent.js",
+          "bytes": 4778
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/meshLODLevel.js",
+          "bytes": 235
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/mesh.pure.js",
+          "bytes": 131676
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/mesh.js",
+          "bytes": 83
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/ribbonBuilder.pure.js",
+          "bytes": 11046
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/discBuilder.pure.js",
+          "bytes": 2225
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/groundMesh.pure.js",
+          "bytes": 5987
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/groundBuilder.pure.js",
+          "bytes": 10682
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/boxBuilder.pure.js",
+          "bytes": 5691
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/tiledPlaneBuilder.pure.js",
+          "bytes": 16645
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/tiledBoxBuilder.pure.js",
+          "bytes": 5099
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/sphereBuilder.pure.js",
+          "bytes": 3846
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/stringDictionary.js",
+          "bytes": 1589
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/colorTemperature.functions.js",
+          "bytes": 4403
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/colorCurves.functions.js",
+          "bytes": 250
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/colorCurves.pure.js",
+          "bytes": 16212
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/imageProcessingConfiguration.functions.js",
+          "bytes": 848
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/imageProcessingConfiguration.pure.js",
+          "bytes": 31848
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Actions/actionEvent.js",
+          "bytes": 1094
+        },
+        {
+          "id": "node_modules/@babylonjs/core/PostProcesses/postProcessManager.js",
+          "bytes": 4674
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Rendering/renderingGroup.js",
+          "bytes": 9230
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Rendering/renderingManager.js",
+          "bytes": 7452
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Events/pointerEvents.js",
+          "bytes": 1258
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Actions/abstractActionManager.js",
+          "bytes": 996
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Events/keyboardEvents.js",
+          "bytes": 625
+        },
+        {
+          "id": "node_modules/@babylonjs/core/DeviceInput/InputDevices/deviceEnums.js",
+          "bytes": 7393
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Events/deviceInputEvents.js",
+          "bytes": 570
+        },
+        {
+          "id": "node_modules/@babylonjs/core/DeviceInput/eventFactory.js",
+          "bytes": 5094
+        },
+        {
+          "id": "node_modules/@babylonjs/core/DeviceInput/nativeDeviceInputSystem.js",
+          "bytes": 1011
+        },
+        {
+          "id": "node_modules/@babylonjs/core/DeviceInput/webDeviceInputSystem.js",
+          "bytes": 22170
+        },
+        {
+          "id": "node_modules/@babylonjs/core/DeviceInput/InputDevices/deviceSource.js",
+          "bytes": 468
+        },
+        {
+          "id": "node_modules/@babylonjs/core/DeviceInput/internalDeviceSourceManager.pure.js",
+          "bytes": 2120
+        },
+        {
+          "id": "node_modules/@babylonjs/core/DeviceInput/InputDevices/deviceSourceManager.js",
+          "bytes": 3350
+        },
+        {
+          "id": "node_modules/@babylonjs/core/import.helper.js",
+          "bytes": 142
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Inputs/scene.inputManager.js",
+          "bytes": 30993
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/perfCounter.js",
+          "bytes": 2263
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/uniqueIdGenerator.js",
+          "bytes": 265
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Inputs/pointerPickingConfiguration.js",
+          "bytes": 379
+        },
+        {
+          "id": "node_modules/@babylonjs/core/scene.pure.js",
+          "bytes": 119318
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/cylinderBuilder.pure.js",
+          "bytes": 8863
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/torusBuilder.pure.js",
+          "bytes": 2695
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/torusKnotBuilder.pure.js",
+          "bytes": 3255
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/instancedMesh.pure.js",
+          "bytes": 10204
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/copyTools.js",
+          "bytes": 1848
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/texture.pure.js",
+          "bytes": 32597
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/effectFallbacks.js",
+          "bytes": 2159
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/pushMaterial.js",
+          "bytes": 1815
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/vertexPullingHelper.functions.js",
+          "bytes": 1257
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/shaderMaterial.pure.js",
+          "bytes": 35100
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/linesMesh.pure.js",
+          "bytes": 6169
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/linesBuilder.pure.js",
+          "bytes": 6708
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.path.js",
+          "bytes": 16541
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/polygonMesh.js",
+          "bytes": 6323
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/polygonBuilder.pure.js",
+          "bytes": 4855
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/shapeBuilder.pure.js",
+          "bytes": 7778
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/latheBuilder.pure.js",
+          "bytes": 2073
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/planeBuilder.pure.js",
+          "bytes": 2323
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/tubeBuilder.pure.js",
+          "bytes": 4199
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/polyhedronBuilder.pure.js",
+          "bytes": 18332
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/icoSphereBuilder.pure.js",
+          "bytes": 5460
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/decalBuilder.pure.js",
+          "bytes": 19989
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/capsuleBuilder.pure.js",
+          "bytes": 6227
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.isovector.js",
+          "bytes": 1646
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/geodesicMesh.js",
+          "bytes": 19051
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/geodesicBuilder.js",
+          "bytes": 1015
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/goldbergMesh.pure.js",
+          "bytes": 6114
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/goldbergBuilder.js",
+          "bytes": 4469
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/textBuilder.js",
+          "bytes": 5639
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/meshBuilder.pure.js",
+          "bytes": 581
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/ribbonBuilder.js",
+          "bytes": 110
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/discBuilder.js",
+          "bytes": 106
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/boxBuilder.js",
+          "bytes": 104
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/tiledBoxBuilder.js",
+          "bytes": 114
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/sphereBuilder.js",
+          "bytes": 110
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/cylinderBuilder.js",
+          "bytes": 114
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/torusBuilder.js",
+          "bytes": 108
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/torusKnotBuilder.js",
+          "bytes": 116
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/linesBuilder.js",
+          "bytes": 108
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/polygonBuilder.js",
+          "bytes": 112
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/shapeBuilder.js",
+          "bytes": 108
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/latheBuilder.js",
+          "bytes": 108
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/planeBuilder.js",
+          "bytes": 108
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/tiledPlaneBuilder.js",
+          "bytes": 118
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/groundBuilder.js",
+          "bytes": 110
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/tubeBuilder.js",
+          "bytes": 106
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/polyhedronBuilder.js",
+          "bytes": 118
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/icoSphereBuilder.js",
+          "bytes": 116
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/decalBuilder.js",
+          "bytes": 108
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/Builders/capsuleBuilder.js",
+          "bytes": 112
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/meshBuilder.js",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.vector.js",
+          "bytes": 95
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/math.color.js",
+          "bytes": 93
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/shaderMaterial.js",
+          "bytes": 106
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/rawTexture.js",
+          "bytes": 4033
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/texture.js",
+          "bytes": 101
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/constants.js",
+          "bytes": 15756
+        },
+        {
+          "id": "src/render/sectionProjection.ts",
+          "bytes": 6135
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/gradients.js",
+          "bytes": 1563
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialDefines.js",
+          "bytes": 3772
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/imageProcessingConfiguration.defines.js",
+          "bytes": 1370
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/boxParticleEmitter.js",
+          "bytes": 2731
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/pointParticleEmitter.js",
+          "bytes": 1887
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/hemisphericParticleEmitter.js",
+          "bytes": 2767
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/sphereParticleEmitter.js",
+          "bytes": 4655
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/cylinderParticleEmitter.js",
+          "bytes": 5345
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/coneParticleEmitter.js",
+          "bytes": 5774
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/meshParticleEmitter.js",
+          "bytes": 4489
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/particleSystem.functions.js",
+          "bytes": 1675
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/baseParticleSystem.pure.js",
+          "bytes": 11174
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/particle.js",
+          "bytes": 7994
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Animations/animationRange.js",
+          "bytes": 292
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Animations/animation.pure.js",
+          "bytes": 18989
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Animations/runtimeAnimation.js",
+          "bytes": 19540
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Animations/animatable.core.js",
+          "bytes": 24959
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Bones/bone.pure.js",
+          "bytes": 17634
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Animations/animatable.pure.js",
+          "bytes": 235
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.alpha.pure.js",
+          "bytes": 843
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/thinParticleSystem.function.js",
+          "bytes": 16133
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/Queue/executionQueue.js",
+          "bytes": 703
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/thinParticleSystem.pure.js",
+          "bytes": 52585
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/subEmitter.js",
+          "bytes": 2492
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/EmitterTypes/customParticleEmitter.js",
+          "bytes": 2533
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/attractor.js",
+          "bytes": 723
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/particleSystem.pure.js",
+          "bytes": 32634
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Particles/particleSystem.js",
+          "bytes": 106
+        },
+        {
+          "id": "src/render/sectionClip.ts",
+          "bytes": 5095
+        },
+        {
+          "id": "src/render/climateLayers.ts",
+          "bytes": 5722
+        },
+        {
+          "id": "src/render/giantCloudColor.ts",
+          "bytes": 451
+        },
+        {
+          "id": "src/render/sectionArc.ts",
+          "bytes": 2965
+        },
+        {
+          "id": "src/render/precipitation.ts",
+          "bytes": 545
+        },
+        {
+          "id": "src/render/sectionPowder.ts",
+          "bytes": 697
+        },
+        {
+          "id": "src/render/sectionProfile.ts",
+          "bytes": 3365
+        },
+        {
+          "id": "src/render/surface.ts",
+          "bytes": 6423
+        },
+        {
+          "id": "src/render/sectionGeometry.ts",
+          "bytes": 9021
+        },
+        {
+          "id": "src/render/cellBrush.ts",
+          "bytes": 3313
+        },
+        {
+          "id": "src/render/cameraGestures.ts",
+          "bytes": 601
+        },
+        {
+          "id": "src/render/vegetation.ts",
+          "bytes": 970
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Buffers/buffer.js",
+          "bytes": 94
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/prePassConfiguration.js",
+          "bytes": 1646
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialPluginManager.pure.js",
+          "bytes": 11680
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialPluginBase.pure.js",
+          "bytes": 5909
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/material.detailMapConfiguration.js",
+          "bytes": 9246
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/shaderImportLoader.js",
+          "bytes": 981
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/uv.defines.js",
+          "bytes": 465
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/prepass.defines.js",
+          "bytes": 1649
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/imageProcessing.js",
+          "bytes": 3046
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/standardMaterial.pure.js",
+          "bytes": 119751
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/standardMaterial.js",
+          "bytes": 110
+        },
+        {
+          "id": "src/render/animals.ts",
+          "bytes": 10317
+        },
+        {
+          "id": "src/render/biosphere.ts",
+          "bytes": 8109
+        },
+        {
+          "id": "src/render/solar.ts",
+          "bytes": 1035
+        },
+        {
+          "id": "src/render/orbitDisplay.ts",
+          "bytes": 1399
+        },
+        {
+          "id": "src/render/system.ts",
+          "bytes": 8094
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Behaviors/Cameras/autoRotationBehavior.js",
+          "bytes": 3986
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Animations/easing.js",
+          "bytes": 1454
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Behaviors/Cameras/bouncingBehavior.js",
+          "bytes": 3730
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Behaviors/Cameras/framingBehavior.js",
+          "bytes": 9406
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/cameraMovement.js",
+          "bytes": 5517
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/inputMapper.js",
+          "bytes": 5733
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/targetCameraMovement.js",
+          "bytes": 969
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/targetCamera.pure.js",
+          "bytes": 17492
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/cameraInputsManager.js",
+          "bytes": 3351
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/Inputs/BaseCameraPointersInput.js",
+          "bytes": 7698
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/Inputs/orbitCameraPointersInput.js",
+          "bytes": 4359
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/Inputs/arcRotateCameraPointersInput.js",
+          "bytes": 10042
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/Inputs/arcRotateCameraKeyboardMoveInput.js",
+          "bytes": 13417
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/Inputs/arcRotateCameraMouseWheelInput.js",
+          "bytes": 8844
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/arcRotateCameraInputsManager.pure.js",
+          "bytes": 811
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/arcRotateCameraMovement.js",
+          "bytes": 1352
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/arcRotateCamera.pure.js",
+          "bytes": 52592
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/arcRotateCamera.js",
+          "bytes": 106
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Cameras/camera.js",
+          "bytes": 88
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/performanceMonitor.js",
+          "bytes": 2324
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.dom.pure.js",
+          "bytes": 1136
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/engine.pure.js",
+          "bytes": 18392
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.alpha.js",
+          "bytes": 127
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.alphaToCoverage.pure.js",
+          "bytes": 1573
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.alphaToCoverage.js",
+          "bytes": 147
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.rawTexture.pure.js",
+          "bytes": 14022
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.rawTexture.js",
+          "bytes": 137
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.readTexture.pure.js",
+          "bytes": 2283
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.readTexture.js",
+          "bytes": 139
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.dynamicBuffer.js",
+          "bytes": 126
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.cubeTexture.pure.js",
+          "bytes": 4944
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.cubeTexture.js",
+          "bytes": 139
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/renderTargetWrapper.js",
+          "bytes": 9995
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGL/webGLRenderTargetWrapper.js",
+          "bytes": 7730
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.renderTarget.pure.js",
+          "bytes": 9304
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.renderTarget.js",
+          "bytes": 141
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetTexture.pure.js",
+          "bytes": 602
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetTexture.js",
+          "bytes": 155
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetCube.pure.js",
+          "bytes": 2946
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.renderTargetCube.js",
+          "bytes": 149
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Maths/sphericalPolynomial.pure.js",
+          "bytes": 9002
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.prefilteredCubeTexture.pure.js",
+          "bytes": 3305
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.prefilteredCubeTexture.js",
+          "bytes": 144
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.uniformBuffer.pure.js",
+          "bytes": 2701
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.uniformBuffer.js",
+          "bytes": 126
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadingScreen.pure.js",
+          "bytes": 1412
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadingScreen.js",
+          "bytes": 146
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.dom.js",
+          "bytes": 126
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.states.pure.js",
+          "bytes": 1535
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.states.js",
+          "bytes": 132
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.stencil.pure.js",
+          "bytes": 4203
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.stencil.js",
+          "bytes": 134
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.renderPass.js",
+          "bytes": 140
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.texture.pure.js",
+          "bytes": 526
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.texture.js",
+          "bytes": 134
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadFile.pure.js",
+          "bytes": 571
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.loadFile.js",
+          "bytes": 136
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/textureLoaderManager.js",
+          "bytes": 2747
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.textureLoaders.pure.js",
+          "bytes": 320
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/AbstractEngine/abstractEngine.textureLoaders.js",
+          "bytes": 148
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/thinEngine.scissor.pure.js",
+          "bytes": 481
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/thinEngine.scissor.js",
+          "bytes": 111
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/engine.js",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuTextureHelper.js",
+          "bytes": 18341
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuPerfCounter.js",
+          "bytes": 562
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/thinWebGPUEngine.js",
+          "bytes": 4442
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuConstants.js",
+          "bytes": 18325
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessor.js",
+          "bytes": 8573
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuPipelineContext.js",
+          "bytes": 7441
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessingContext.js",
+          "bytes": 7653
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/codeStringParsingTools.js",
+          "bytes": 3491
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessorsGLSL.js",
+          "bytes": 13743
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessorsWGSL.pure.js",
+          "bytes": 21040
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuHardwareTexture.js",
+          "bytes": 3073
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuTextureManager.js",
+          "bytes": 49797
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/WebGPU/webgpuDataBuffer.js",
+          "bytes": 387
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuBufferManager.js",
+          "bytes": 5729
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheSampler.js",
+          "bytes": 5685
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Buffers/buffer.nonFloatVertexBuffers.js",
+          "bytes": 2730
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheRenderPipeline.js",
+          "bytes": 33023
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheRenderPipelineTree.js",
+          "bytes": 2051
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuStencilStateComposer.js",
+          "bytes": 3993
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuDepthCullingState.js",
+          "bytes": 2018
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/externalTexture.js",
+          "bytes": 576
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuMaterialContext.js",
+          "bytes": 2240
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuDrawContext.js",
+          "bytes": 4630
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheBindGroups.js",
+          "bytes": 9436
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuCacheTextureView.js",
+          "bytes": 907
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuClearQuad.pure.js",
+          "bytes": 5101
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuBundleList.js",
+          "bytes": 3843
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuQuerySet.js",
+          "bytes": 3386
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuTimestampQuery.js",
+          "bytes": 3009
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuOcclusionQuery.js",
+          "bytes": 2625
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Processors/shaderCodeInliner.js",
+          "bytes": 9097
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuTintWASM.js",
+          "bytes": 1450
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuSnapshotRendering.js",
+          "bytes": 3260
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuExternalTexture.js",
+          "bytes": 196
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/webgpuEngine.pure.js",
+          "bytes": 93470
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/clearQuad.vertex.js",
+          "bytes": 786
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/clearQuad.fragment.js",
+          "bytes": 553
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bakedVertexAnimationDeclaration.js",
+          "bytes": 1032
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bakedVertexAnimation.js",
+          "bytes": 2983
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/instancesDeclaration.js",
+          "bytes": 1192
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/instancesVertex.js",
+          "bytes": 1319
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/helperFunctions.js",
+          "bytes": 6631
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/fresnelFunction.js",
+          "bytes": 540
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/meshUboDeclaration.js",
+          "bytes": 427
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/sceneUboDeclaration.js",
+          "bytes": 586
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/decalFragment.js",
+          "bytes": 619
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuShaderProcessorsWGSL.js",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Buffers/buffer.align.pure.js",
+          "bytes": 4629
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Buffers/buffer.align.js",
+          "bytes": 99
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/audioEngineV2.js",
+          "bytes": 2886
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractSpatialAudioListener.js",
+          "bytes": 556
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/components/spatialAudioAttacherComponent.js",
+          "bytes": 1941
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/spatialAudioListener.js",
+          "bytes": 1405
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/components/spatialWebAudioUpdaterComponent.js",
+          "bytes": 814
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/audioUtils.js",
+          "bytes": 2479
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/components/webAudioParameterComponent.js",
+          "bytes": 1780
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subProperties/spatialWebAudioListener.js",
+          "bytes": 4554
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractAudioNode.js",
+          "bytes": 2310
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/mainAudioOut.js",
+          "bytes": 193
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioMainOut.js",
+          "bytes": 1085
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioUnmuteUI.js",
+          "bytes": 2603
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioEngine.js",
+          "bytes": 10268
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Audio/audioEngine.pure.js",
+          "bytes": 4026
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Audio/audioEngine.js",
+          "bytes": 96
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alpha.pure.js",
+          "bytes": 1668
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alpha.js",
+          "bytes": 140
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alphaToCoverage.pure.js",
+          "bytes": 1241
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.alphaToCoverage.js",
+          "bytes": 160
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.rawTexture.pure.js",
+          "bytes": 12495
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.rawTexture.js",
+          "bytes": 150
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.readTexture.pure.js",
+          "bytes": 842
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.readTexture.js",
+          "bytes": 152
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.cubeTexture.pure.js",
+          "bytes": 2899
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.cubeTexture.js",
+          "bytes": 152
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/webgpuRenderTargetWrapper.js",
+          "bytes": 395
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTarget.pure.js",
+          "bytes": 5478
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTarget.js",
+          "bytes": 154
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetTexture.pure.js",
+          "bytes": 529
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetTexture.js",
+          "bytes": 168
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetCube.pure.js",
+          "bytes": 2176
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.renderTargetCube.js",
+          "bytes": 162
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.query.pure.js",
+          "bytes": 1810
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.query.js",
+          "bytes": 140
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.dynamicTexture.pure.js",
+          "bytes": 1888
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/WebGPU/Extensions/engine.dynamicTexture.js",
+          "bytes": 158
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/webgpuEngine.js",
+          "bytes": 0
+        },
+        {
+          "id": "node_modules/@babylonjs/core/scene.js",
+          "bytes": 78
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/transformNode.js",
+          "bytes": 101
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Engines/Extensions/engine.dynamicTexture.pure.js",
+          "bytes": 2133
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/dynamicTexture.pure.js",
+          "bytes": 4563
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Lights/light.js",
+          "bytes": 22849
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Lights/hemisphericLight.pure.js",
+          "bytes": 3858
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Lights/hemisphericLight.js",
+          "bytes": 107
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Lights/shadowLight.js",
+          "bytes": 6621
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Lights/directionalLight.pure.js",
+          "bytes": 11627
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Lights/directionalLight.js",
+          "bytes": 107
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/thinInstanceMesh.pure.js",
+          "bytes": 21156
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/thinInstanceMesh.js",
+          "bytes": 107
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Culling/ray.core.js",
+          "bytes": 23251
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Culling/ray.pure.js",
+          "bytes": 1619
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Culling/ray.js",
+          "bytes": 82
+        },
+        {
+          "id": "src/render/effects.ts",
+          "bytes": 6608
+        },
+        {
+          "id": "src/render/smokeField.ts",
+          "bytes": 564
+        },
+        {
+          "id": "src/render/cloudEnvelope.ts",
+          "bytes": 1853
+        },
+        {
+          "id": "src/render/cloudProfiles.ts",
+          "bytes": 1058
+        },
+        {
+          "id": "src/render/cloudEnvelopeGeometry.ts",
+          "bytes": 4167
+        },
+        {
+          "id": "src/render/cloudBanks.ts",
+          "bytes": 9349
+        },
+        {
+          "id": "src/sim/optics.ts",
+          "bytes": 1157
+        },
+        {
+          "id": "src/render/sky.ts",
+          "bytes": 11230
+        },
+        {
+          "id": "src/render/weather.ts",
+          "bytes": 2804
+        },
+        {
+          "id": "src/render/precipitationLayer.ts",
+          "bytes": 4929
+        },
+        {
+          "id": "src/render/particles.ts",
+          "bytes": 1451
+        },
+        {
+          "id": "src/render/supplyPulse.ts",
+          "bytes": 1914
+        },
+        {
+          "id": "src/render/surfaceBuffers.ts",
+          "bytes": 760
+        },
+        {
+          "id": "src/sim/supply.ts",
+          "bytes": 305
+        },
+        {
+          "id": "src/render/materials.ts",
+          "bytes": 7413
+        },
+        {
+          "id": "src/sim/falling.ts",
+          "bytes": 1744
+        },
+        {
+          "id": "src/render/rotationFrame.ts",
+          "bytes": 1072
+        },
+        {
+          "id": "src/render/axisAlignment.ts",
+          "bytes": 1490
+        },
+        {
+          "id": "src/render/sceneMarker.ts",
+          "bytes": 572
+        },
+        {
+          "id": "src/render/orbitAngles.ts",
+          "bytes": 445
+        },
+        {
+          "id": "src/render/sectionCamera.ts",
+          "bytes": 7225
+        },
+        {
+          "id": "src/render/sectionView.ts",
+          "bytes": 11741
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/materialPluginBase.js",
+          "bytes": 114
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Meshes/linesMesh.js",
+          "bytes": 93
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/particles.vertex.js",
+          "bytes": 7374
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/geometryRenderingFragment.js",
+          "bytes": 3031
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/particles.fragment.js",
+          "bytes": 3328
+        },
+        {
+          "id": "src/render/sectionMaterials.ts",
+          "bytes": 4059
+        },
+        {
+          "id": "src/sim/random.ts",
+          "bytes": 312
+        },
+        {
+          "id": "src/render/planet.ts",
+          "bytes": 84533
+        },
+        {
+          "id": "src/sim/saveCodec.ts",
+          "bytes": 9454
+        },
+        {
+          "id": "src/sim/saveCodecClient.ts",
+          "bytes": 1344
+        },
+        {
+          "id": "src/sim/browserStorage.ts",
+          "bytes": 12308
+        },
+        {
+          "id": "src/sim/storage.ts",
+          "bytes": 12789
+        },
+        {
+          "id": "src/sim/climateSnapshot.ts",
+          "bytes": 1120
+        },
+        {
+          "id": "src/sim/system.ts",
+          "bytes": 9027
+        }
+      ]
+    },
+    {
+      "file": "assets/tgaTextureLoader-CqhhocF6.js",
+      "isEntry": false,
+      "imports": [
+        "assets/logger-CuBYPcDK.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/tga.js",
+          "bytes": 7638
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Materials/Textures/Loaders/tgaTextureLoader.js",
+          "bytes": 523
+        }
+      ]
+    },
+    {
+      "file": "assets/tools.pure-C84O2eK_.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/precisionDate-CfCevjl-.js",
+        "assets/guid-CxX3q4DM.js",
+        "assets/typeStore-RqCBAJcv.js",
+        "assets/webRequest-dqz0dHXK.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/deepCopier.js",
+          "bytes": 2214
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/filesInputStore.js",
+          "bytes": 142
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/retryStrategy.js",
+          "bytes": 368
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/error.js",
+          "bytes": 706
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/stringTools.js",
+          "bytes": 1602
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/fileTools.pure.js",
+          "bytes": 15837
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/instantiationTools.js",
+          "bytes": 764
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/tools.pure.js",
+          "bytes": 21316
+        }
+      ]
+    },
+    {
+      "file": "assets/typeStore-RqCBAJcv.js",
+      "isEntry": false,
+      "imports": [
+        "assets/observable.pure-B5E8yEYx.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Engines/engineStore.js",
+          "bytes": 509
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Misc/typeStore.js",
+          "bytes": 235
+        }
+      ]
+    },
+    {
+      "file": "assets/vertexColorMixing-B-QfZ7Di.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bonesDeclaration.js",
+          "bytes": 1629
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bakedVertexAnimationDeclaration.js",
+          "bytes": 1503
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/instancesDeclaration.js",
+          "bytes": 1077
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/instancesVertex.js",
+          "bytes": 1017
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bonesVertex.js",
+          "bytes": 2216
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/bakedVertexAnimation.js",
+          "bytes": 2290
+        },
+        {
+          "id": "node_modules/@babylonjs/core/Shaders/ShadersInclude/vertexColorMixing.js",
+          "bytes": 544
+        }
+      ]
+    },
+    {
+      "file": "assets/vertexColorMixing-CeF6hIt3.js",
+      "isEntry": false,
+      "imports": [
+        "assets/shaderStore-D-XQlhUT.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bonesDeclaration.js",
+          "bytes": 1286
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/bonesVertex.js",
+          "bytes": 2874
+        },
+        {
+          "id": "node_modules/@babylonjs/core/ShadersWGSL/ShadersInclude/vertexColorMixing.js",
+          "bytes": 680
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioBaseSubGraph-BtCHSnXd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/logger-CuBYPcDK.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/abstractAudioSubNode.js",
+          "bytes": 677
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/volumeAudioSubNode.js",
+          "bytes": 607
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/abstractAudioAnalyzer.js",
+          "bytes": 875
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/audioAnalyzerSubNode.js",
+          "bytes": 825
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subProperties/audioAnalyzer.js",
+          "bytes": 2970
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/abstractAudioOutNode.js",
+          "bytes": 898
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/subNodes/abstractAudioSubGraph.js",
+          "bytes": 1871
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/volumeWebAudioSubNode.js",
+          "bytes": 1110
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/webAudioAnalyzerSubNode.js",
+          "bytes": 2653
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/subNodes/webAudioBaseSubGraph.js",
+          "bytes": 1826
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioBus-CmYONKJ2.js",
+      "isEntry": false,
+      "imports": [
+        "assets/abstractAudioBus-B_mNCC7z.js",
+        "assets/spatialWebAudio-B1y_gmG7.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/audioBus.js",
+          "bytes": 1537
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioBus.js",
+          "bytes": 1588
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioMainBus-DKa4uiLG.js",
+      "isEntry": false,
+      "imports": [
+        "assets/webAudioBaseSubGraph-BtCHSnXd.js",
+        "assets/abstractAudioBus-B_mNCC7z.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/mainAudioBus.js",
+          "bytes": 200
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioMainBus.js",
+          "bytes": 1150
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioSoundSource-DZVWg__H.js",
+      "isEntry": false,
+      "imports": [
+        "assets/spatialWebAudio-B1y_gmG7.js",
+        "assets/abstractSoundSource-D3MD6Naa.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioSoundSource.js",
+          "bytes": 3219
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioStaticSound-CbZPKNCd.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/spatialWebAudio-B1y_gmG7.js",
+        "assets/abstractSoundInstance-BfUH-FEg.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/staticSound.js",
+          "bytes": 2260
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/staticSoundBuffer.js",
+          "bytes": 270
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/staticSoundInstance.js",
+          "bytes": 165
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioStaticSound.js",
+          "bytes": 11194
+        }
+      ]
+    },
+    {
+      "file": "assets/webAudioStreamingSound-B4wBEzZN.js",
+      "isEntry": false,
+      "imports": [
+        "assets/system-D7Ty4SBH.js",
+        "assets/observable.pure-B5E8yEYx.js",
+        "assets/logger-CuBYPcDK.js",
+        "assets/tools.pure-C84O2eK_.js",
+        "assets/webRequest-dqz0dHXK.js",
+        "assets/spatialWebAudio-B1y_gmG7.js",
+        "assets/abstractSoundInstance-BfUH-FEg.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/streamingSound.js",
+          "bytes": 2059
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/abstractAudio/streamingSoundInstance.js",
+          "bytes": 736
+        },
+        {
+          "id": "node_modules/@babylonjs/core/AudioV2/webAudio/webAudioStreamingSound.js",
+          "bytes": 8947
+        }
+      ]
+    },
+    {
+      "file": "assets/webRequest-dqz0dHXK.js",
+      "isEntry": false,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "node_modules/@babylonjs/core/Misc/webRequest.js",
+          "bytes": 4695
+        }
+      ]
+    }
+  ]
+}

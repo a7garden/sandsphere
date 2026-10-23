@@ -1,0 +1,11 @@
+{
+  "tag": "v0.6.1",
+  "sha256": "d636f5f4a1c7b840180371907d063f27955337833d2f5be5ccf557204933fa14",
+  "verified": true,
+  "releaseInfo": {
+    "tag": "v0.6.1",
+    "commit": "02d53d7bb7111ed2a858599dd296489db9246417",
+    "builtAt": "2026-10-12T13:36:30.137Z"
+  },
+  "caution": "Restoring this artifact cannot be assumed to read newer Snapshot11/binary-v1 saves; retain new data and use a compatible decoder/backup recovery."
+}

@@ -1,0 +1,120 @@
+{
+  "complete": true,
+  "passed": true,
+  "cases": [
+    {
+      "name": "independent persistence worker activates without controlling pages",
+      "passed": true,
+      "details": {
+        "available": true
+      }
+    },
+    {
+      "name": "legacy localStorage recovery and verified migration without deletion",
+      "passed": true,
+      "details": {
+        "legacyPreserved": true,
+        "committedAt": 11
+      }
+    },
+    {
+      "name": "compact migration preserves one compatible raw backup across later saves",
+      "passed": true,
+      "details": {
+        "rawBackupPreserved": true,
+        "savedAt": 12
+      }
+    },
+    {
+      "name": "stale asynchronous preparation cannot overwrite a chosen branch",
+      "passed": true,
+      "details": {
+        "rejected": true,
+        "selectedAt": 1
+      }
+    },
+    {
+      "name": "corrupt compact lifecycle does not hide an earlier complete primary",
+      "passed": true,
+      "details": {
+        "lastCompleteAt": 10
+      }
+    },
+    {
+      "name": "eight full-resolution giant worlds round-trip above 5 MiB",
+      "passed": true,
+      "details": {
+        "bytes": 50638914,
+        "cells": 2562,
+        "planets": 8,
+        "exact": true
+      }
+    },
+    {
+      "name": "exhausted localStorage cannot prevent full IndexedDB checkpoint",
+      "passed": true,
+      "details": {
+        "quotaName": "QuotaExceededError",
+        "fillerCharacters": 5004900,
+        "bytes": 50638914,
+        "exact": true
+      }
+    },
+    {
+      "name": "transaction abort preserves the world, telemetry base, and legacy receipt",
+      "passed": true,
+      "details": {
+        "rejected": true,
+        "lastCommittedRetained": true,
+        "pendingAt": 12
+      }
+    },
+    {
+      "name": "newer checkpoint wins when an older automatic save arrives later",
+      "passed": true,
+      "details": {
+        "results": [
+          true,
+          false
+        ],
+        "savedAt": 30,
+        "baseSavedAt": 29
+      }
+    },
+    {
+      "name": "save requests capture values synchronously before caller mutation",
+      "passed": true,
+      "details": {
+        "immutable": true
+      }
+    },
+    {
+      "name": "explicit replacement preserves legacy but prevents its resurrection",
+      "passed": true,
+      "details": {
+        "originalPreserved": true,
+        "replacementAt": 1,
+        "newLegacyAt": 101
+      }
+    },
+    {
+      "name": "stale lifecycle saves cannot replace newer checkpoints across writer instances",
+      "passed": true,
+      "details": {
+        "newestLifecycle": 201,
+        "newestPrimary": 202,
+        "replacementAt": 1,
+        "oldWriterRejected": true
+      }
+    },
+    {
+      "name": "late cleanup from a former generation preserves the current checkpoint",
+      "passed": true,
+      "details": {
+        "currentCheckpoint": 2,
+        "formerCleanupStamp": 1000,
+        "preserved": true
+      }
+    }
+  ]
+}

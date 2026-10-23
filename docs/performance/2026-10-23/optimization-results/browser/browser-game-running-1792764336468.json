@@ -1,0 +1,54 @@
+{
+  "boot": {
+    "readyMs": 1273.9000000953674,
+    "definition": "dev inspector available after boot; 200ms polling; local Vite resources; no cloud",
+    "renderer": "WebGPUEngine",
+    "backend": "CPU",
+    "version": "0.7.0",
+    "at": "2026-10-23T13:56:17.028Z"
+  },
+  "method": "actual application in same-origin iframe; default renderer selection; test storage slot; guest; no cloud configuration",
+  "viewport": [
+    1280,
+    720
+  ],
+  "viewportStart": [
+    1280,
+    720
+  ],
+  "viewportChanges": [],
+  "drawingBuffer": [
+    1280,
+    720
+  ],
+  "dpr": 1,
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "wallClock": "2026-10-23T14:05:36.467Z",
+  "elapsedMs": 15011.799999952316,
+  "start": {
+    "time": 6.966666666666652,
+    "paused": false,
+    "planets": 1,
+    "backend": "CPU",
+    "renderer": "WebGPUEngine"
+  },
+  "end": {
+    "time": 9.73333333333331,
+    "paused": false,
+    "planets": 1,
+    "clockBacklog": 12.25119999980924,
+    "lastSavedAt": 1792764333685
+  },
+  "actualGameSecondsPerWallSecond": 0.18429946220143126,
+  "frames": {
+    "n": 897,
+    "meanMs": 16.730769230875524,
+    "p50Ms": 16.699999999953434,
+    "p95Ms": 17.5,
+    "p99Ms": 17.70000000006985,
+    "over50ms": 0
+  },
+  "longTasks": [],
+  "fpsText": "60 fps",
+  "rateText": "실제 11초/초"
+}

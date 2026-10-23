@@ -1,0 +1,247 @@
+{
+  "createdAt": "2026-10-23T13:24:44.242Z",
+  "runtime": "v24.20.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "cpu": "Apple M4 Max",
+  "sourceSha256": "2f857bc6f0978d6ee3c0304fdb8ed1eaf9568b99ed154c8c6a4f593b29307ee9",
+  "tableSha256": "87c30c18d1483b2844fffa1ee99fbcdd7b8d8525722ad30e72a877a2c6578d0f",
+  "kernelSourceSha256": "494bfe52a683db114021da68b321b0b4c73c845ba6bd233e29bd132ed25e234b",
+  "referenceSourceSha256": "14c90c2a74cdb42379d1e47516b2c54d032db202eeece6da5355969125c49195",
+  "correctness": {
+    "cases": 126,
+    "componentsPerCase": 96,
+    "comparison": "Object.is for every Float64 output (including signed zero); no epsilon",
+    "packedJs": true,
+    "kernels": [
+      {
+        "kind": "scalar",
+        "passed": true,
+        "binaryBytes": 2295,
+        "binarySha256": "ecefeae51cd2e7a5e1a8bb238ec64917eef6044c5efffacd6faf9bdc09268291",
+        "memoryBytes": 3473408,
+        "tableBytes": 3256576
+      },
+      {
+        "kind": "simd",
+        "passed": true,
+        "binaryBytes": 1379,
+        "binarySha256": "d20624ef1fa75b8e945f6e510a8889b898e3bd44195b9b0639a1b69b909234df",
+        "memoryBytes": 3473408,
+        "tableBytes": 3256576
+      }
+    ]
+  },
+  "benchmark": {
+    "warmupRounds": 4,
+    "samples": 16,
+    "repeats": 12,
+    "batches": [
+      1,
+      11,
+      128
+    ],
+    "rows": [
+      {
+        "count": 1,
+        "name": "production-js",
+        "samples": 16,
+        "meanMs": 0.0025996041666669356,
+        "medianMs": 0.0024270833333351525,
+        "p95Ms": 0.004239583333334925,
+        "minMs": 0.002249999999998901,
+        "maxMs": 0.004239583333334925,
+        "meanMicrosecondsPerLayer": 2.5996041666669356
+      },
+      {
+        "count": 1,
+        "name": "packed-js-kernel",
+        "samples": 16,
+        "meanMs": 0.006881286458333711,
+        "medianMs": 0.006694416666666332,
+        "p95Ms": 0.00835416666666807,
+        "minMs": 0.005982583333334901,
+        "maxMs": 0.00835416666666807,
+        "meanMicrosecondsPerLayer": 6.881286458333711
+      },
+      {
+        "count": 1,
+        "name": "wasm-scalar-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.0008079374999997075,
+        "medianMs": 0.000777750000002205,
+        "p95Ms": 0.0009895833333312491,
+        "minMs": 0.0006875000000026906,
+        "maxMs": 0.0009895833333312491,
+        "meanMicrosecondsPerLayer": 0.8079374999997075
+      },
+      {
+        "count": 1,
+        "name": "wasm-scalar-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.0010900520833327931,
+        "medianMs": 0.001052083333334508,
+        "p95Ms": 0.0013403333333315004,
+        "minMs": 0.0009722499999990456,
+        "maxMs": 0.0013403333333315004,
+        "meanMicrosecondsPerLayer": 1.0900520833327931
+      },
+      {
+        "count": 1,
+        "name": "wasm-simd-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.0005548958333324212,
+        "medianMs": 0.00042358333333443926,
+        "p95Ms": 0.0016179999999981949,
+        "minMs": 0.000395833333333447,
+        "maxMs": 0.0016179999999981949,
+        "meanMicrosecondsPerLayer": 0.5548958333324212
+      },
+      {
+        "count": 1,
+        "name": "wasm-simd-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.0008574270833342131,
+        "medianMs": 0.0006910000000033278,
+        "p95Ms": 0.003031250000001743,
+        "minMs": 0.0006493333333329095,
+        "maxMs": 0.003031250000001743,
+        "meanMicrosecondsPerLayer": 0.8574270833342131
+      },
+      {
+        "count": 11,
+        "name": "production-js",
+        "samples": 16,
+        "meanMs": 0.027129348958333747,
+        "medianMs": 0.027718750000000607,
+        "p95Ms": 0.029812500000000835,
+        "minMs": 0.024166666666663634,
+        "maxMs": 0.029812500000000835,
+        "meanMicrosecondsPerLayer": 2.4663044507576135
+      },
+      {
+        "count": 11,
+        "name": "packed-js-kernel",
+        "samples": 16,
+        "meanMs": 0.014184895833333338,
+        "medianMs": 0.014114583333333522,
+        "p95Ms": 0.015788249999999948,
+        "minMs": 0.01282983333333713,
+        "maxMs": 0.015788249999999948,
+        "meanMicrosecondsPerLayer": 1.2895359848484853
+      },
+      {
+        "count": 11,
+        "name": "wasm-scalar-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.008366979166666805,
+        "medianMs": 0.008413166666665953,
+        "p95Ms": 0.009461833333332947,
+        "minMs": 0.0076215833333321825,
+        "maxMs": 0.009461833333332947,
+        "meanMicrosecondsPerLayer": 0.7606344696969823
+      },
+      {
+        "count": 11,
+        "name": "wasm-scalar-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.011384989583334594,
+        "medianMs": 0.010822916666668903,
+        "p95Ms": 0.015892333333335767,
+        "minMs": 0.009621583333336995,
+        "maxMs": 0.015892333333335767,
+        "meanMicrosecondsPerLayer": 1.0349990530304176
+      },
+      {
+        "count": 11,
+        "name": "wasm-simd-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.004671880208333867,
+        "medianMs": 0.004611166666668017,
+        "p95Ms": 0.005659750000001888,
+        "minMs": 0.004121583333329681,
+        "maxMs": 0.005659750000001888,
+        "meanMicrosecondsPerLayer": 0.42471638257580613
+      },
+      {
+        "count": 11,
+        "name": "wasm-simd-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.006876520833333898,
+        "medianMs": 0.006718749999999811,
+        "p95Ms": 0.008708333333335835,
+        "minMs": 0.006034750000002494,
+        "maxMs": 0.008708333333335835,
+        "meanMicrosecondsPerLayer": 0.6251382575758089
+      },
+      {
+        "count": 128,
+        "name": "production-js",
+        "samples": 16,
+        "meanMs": 0.29934981249999976,
+        "medianMs": 0.29651041666666345,
+        "p95Ms": 0.31076041666666754,
+        "minMs": 0.28949308333333096,
+        "maxMs": 0.31076041666666754,
+        "meanMicrosecondsPerLayer": 2.338670410156248
+      },
+      {
+        "count": 128,
+        "name": "packed-js-kernel",
+        "samples": 16,
+        "meanMs": 0.162324432291667,
+        "medianMs": 0.16188191666666776,
+        "p95Ms": 0.17211458333333476,
+        "minMs": 0.15336108333333223,
+        "maxMs": 0.17211458333333476,
+        "meanMicrosecondsPerLayer": 1.2681596272786484
+      },
+      {
+        "count": 128,
+        "name": "wasm-scalar-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.09542946874999991,
+        "medianMs": 0.09474308333333663,
+        "p95Ms": 0.10589583333333034,
+        "minMs": 0.08609375000000341,
+        "maxMs": 0.10589583333333034,
+        "meanMicrosecondsPerLayer": 0.7455427246093743
+      },
+      {
+        "count": 128,
+        "name": "wasm-scalar-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.102725052083333,
+        "medianMs": 0.10179866666666726,
+        "p95Ms": 0.10938541666666879,
+        "minMs": 0.09474299999999876,
+        "maxMs": 0.10938541666666879,
+        "meanMicrosecondsPerLayer": 0.8025394694010392
+      },
+      {
+        "count": 128,
+        "name": "wasm-simd-resident-kernel",
+        "samples": 16,
+        "meanMs": 0.048147124999999555,
+        "medianMs": 0.04838883333332925,
+        "p95Ms": 0.05430558333333598,
+        "minMs": 0.04282291666666538,
+        "maxMs": 0.05430558333333598,
+        "meanMicrosecondsPerLayer": 0.3761494140624965
+      },
+      {
+        "count": 128,
+        "name": "wasm-simd-pack-kernel-copy",
+        "samples": 16,
+        "meanMs": 0.05759591666666648,
+        "medianMs": 0.05798958333333341,
+        "p95Ms": 0.06411108333333478,
+        "minMs": 0.053229166666663254,
+        "maxMs": 0.06411108333333478,
+        "meanMicrosecondsPerLayer": 0.4499680989583319
+      }
+    ],
+    "sink": 0.43472354936777424,
+    "limitations": "Node V8 microbenchmark only; no browser, worker, complete radiationColumn, full-step, startup, CSP, memory-pressure, or GPU performance measured"
+  }
+}

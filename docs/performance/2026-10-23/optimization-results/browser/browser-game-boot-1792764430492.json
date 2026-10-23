@@ -1,0 +1,8 @@
+{
+  "readyMs": 1253,
+  "definition": "dev inspector available after boot; 200ms polling; local Vite resources; no cloud",
+  "renderer": "WebGPUEngine",
+  "backend": "CPU",
+  "version": "0.7.0",
+  "at": "2026-10-23T14:07:10.492Z"
+}
