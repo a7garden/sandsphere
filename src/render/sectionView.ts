@@ -17,10 +17,16 @@ import {PRECIPITATION_COLORS} from './precipitation';
 import {POWDER_COLOR_GLSL} from './sectionPowder';
 import type {SectionWindow} from './sectionArc';
 import {PHYSICS_DT} from '../sim/clock';
+import {F,STRIDE} from '../sim/model';
+import {precipitationSample} from './precipitation';
 
 export class SectionView {
   readonly mesh:Mesh;private baseline:LinesMesh;private flat=false;private owners:number[]=[];private physicalPositions:Vector3[]=[];private flatPositions:Vector3[]=[];private projection?:SectionProjection;private visible=false;private projectionStamp:number[]=[];
   private climateColors:Float32Array|null=null;
+  private temperatureSamples:number[]=[];
+  private readingData=new Float32Array(0);
+  private snowData=new Float32Array(0);
+  private climateData=new Float32Array(0);
   private precipitation:Float32Array;private precipitationDt=PHYSICS_DT;private showPrecipitation=false;
   constructor(scene:Scene,root:TransformNode,private grid:SphereGrid){
     this.baseline=MeshBuilder.CreateLines('surface profile datum',{points:Array.from({length:65},()=>Vector3.Zero()),updatable:true},scene);this.baseline.parent=root;this.baseline.color=new Color3(.38,.43,.45);this.baseline.alpha=.65;this.baseline.isPickable=false;this.baseline.setEnabled(false);
@@ -59,10 +65,35 @@ color=mix(color,climateTint.rgb,climateTint.a);color=mix(color,precipitationColo
   update(terrain:Float32Array,water:Float32Array,owners:Uint32Array,state:Float32Array,normal:Vector3,width:number,samples?:SectionSamples,hideBedrock=false,window?:SectionWindow){
     const result=buildSectionMesh(terrain,water,owners,state,this.grid,normal,width,this.showPrecipitation?this.precipitation:undefined,this.precipitationDt,samples,hideBedrock,window,hideBedrock);
     this.mesh.position.copyFrom(normal.scale(window?-width+.0001:0));this.baseline.position.copyFrom(this.mesh.position);
-    this.projectionStamp=[];this.owners=result.owners;this.physicalPositions=Array.from({length:result.positions.length/3},(_,i)=>Vector3.FromArray(result.positions,i*3));if(!result.indices.length){this.mesh.setEnabled(false);return result;}const data=new VertexData();data.positions=result.positions;data.normals=result.normals;data.colors=result.colors;data.indices=result.indices;data.applyToMesh(this.mesh,true);this.mesh.setVerticesData('sectionData',result.data,true,4);this.mesh.setVerticesData('snowFraction',result.snowFractions,true,1);for(let c=0;c<3;c++){const values=[];for(let v=0;v<result.positions.length/3;v++)values.push(...result.powders.slice(v*12+c*4,v*12+c*4+4));this.mesh.setVerticesData('powder'+c,values,true,4);}this.setClimateColors(this.climateColors);
+    this.projectionStamp=[];this.owners=result.owners;this.temperatureSamples=result.temperatureSamples;this.readingData=new Float32Array(result.data);this.snowData=new Float32Array(result.snowFractions);this.physicalPositions=Array.from({length:result.positions.length/3},(_,i)=>Vector3.FromArray(result.positions,i*3));if(!result.indices.length){this.mesh.setEnabled(false);return result;}const data=new VertexData();data.positions=result.positions;data.normals=result.normals;data.colors=result.colors;data.indices=result.indices;data.applyToMesh(this.mesh,true);this.mesh.setVerticesData('sectionData',this.readingData,true,4);this.mesh.setVerticesData('snowFraction',this.snowData,true,1);for(let c=0;c<3;c++){const values=[];for(let v=0;v<result.positions.length/3;v++)values.push(...result.powders.slice(v*12+c*4,v*12+c*4+4));this.mesh.setVerticesData('powder'+c,values,true,4);}this.setClimateColors(this.climateColors);
     this.mesh.setEnabled(this.visible&&result.indices.length>0);return result;
   }
-  setClimateColors(colors:Float32Array|null){this.climateColors=colors;const data=new Float32Array(this.owners.length*3*4);if(colors)for(let t=0;t<this.owners.length;t++){const owner=this.owners[t];if(owner>=0)for(let k=0;k<3;k++)data.set(colors.subarray(owner*4,owner*4+4),(t*3+k)*4);}if(data.length)this.mesh.setVerticesData('climateColor',data,true,4);}
+  /** Temperature and completed precipitation steps do not change cap geometry. */
+  updateReadings(state:Float32Array){
+    let changed=false,snowChanged=false;
+    for(let t=0;t<this.owners.length;t++){
+      const owner=this.owners[t],sample=this.temperatureSamples[t];
+      const temperature=sample>=0?state[sample*STRIDE+F.temperature]:18;
+      const rain=owner>=0&&this.showPrecipitation?precipitationSample(this.precipitation[owner*2],this.precipitation[owner*2+1],this.precipitationDt):{intensity:0,snowFraction:0};
+      for(let k=0;k<3;k++){
+        const v=t*3+k,p=v*4;
+        if(this.readingData[p]!==Math.fround(temperature)||this.readingData[p+3]!==Math.fround(rain.intensity)){this.readingData[p]=temperature;this.readingData[p+3]=rain.intensity;changed=true;}
+        if(this.snowData[v]!==Math.fround(rain.snowFraction)){this.snowData[v]=rain.snowFraction;snowChanged=true;}
+      }
+    }
+    if(changed)this.mesh.updateVerticesData('sectionData',this.readingData);
+    if(snowChanged)this.mesh.updateVerticesData('snowFraction',this.snowData);
+  }
+  setClimateColors(colors:Float32Array|null){
+    this.climateColors=colors;const length=this.owners.length*3*4,resize=this.climateData.length!==length;
+    if(resize)this.climateData=new Float32Array(length);
+    let changed=resize;
+    for(let t=0;t<this.owners.length;t++)for(let k=0;k<3;k++)for(let c=0;c<4;c++){
+      const owner=this.owners[t],p=(t*3+k)*4+c,value=colors&&owner>=0?colors[owner*4+c]:0;
+      if(this.climateData[p]!==value){this.climateData[p]=value;changed=true;}
+    }
+    if(length){if(resize||!this.mesh.isVerticesDataPresent('climateColor'))this.mesh.setVerticesData('climateColor',this.climateData,true,4);else if(changed)this.mesh.updateVerticesData('climateColor',this.climateData);}
+  }
   setVisible(visible:boolean){this.visible=visible;this.mesh.setEnabled(visible&&this.owners.length>0);this.baseline.setEnabled(visible&&this.flat);}
   setPrecipitation(precipitation:Float32Array,dt:number){if(dt>0){this.precipitation.set(precipitation);this.precipitationDt=dt;}}
   clearPrecipitation(){this.precipitation.fill(0);this.precipitationDt=PHYSICS_DT;}

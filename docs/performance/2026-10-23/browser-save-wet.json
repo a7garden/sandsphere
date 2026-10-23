@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "kind": "wet",
+    "cells": 2562,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 16,
+    "viewport": [
+      1280,
+      720
+    ],
+    "dpr": 2,
+    "drawingBuffer": [
+      1885,
+      1060
+    ],
+    "renderer": "Engine",
+    "drawCalls": 87092,
+    "activeIndices": 375932,
+    "meshCount": 41,
+    "quality": "production defaults; atmosphere/clouds enabled; spin stopped",
+    "wallClock": "2026-10-23T12:23:10.039Z"
+  },
+  "snapshotSurface": {
+    "n": 3,
+    "meanMs": 86.13333328564961,
+    "p50Ms": 87.79999995231628,
+    "p95Ms": 92.40000009536743,
+    "p99Ms": 92.40000009536743,
+    "over50ms": 3
+  },
+  "warmupPhysicsSteps": 3,
+  "rows": [
+    {
+      "count": 1,
+      "prepare": {
+        "n": 3,
+        "meanMs": 20.533333381017048,
+        "p50Ms": 19.100000143051147,
+        "p95Ms": 28.799999952316284,
+        "p99Ms": 28.799999952316284,
+        "over50ms": 0
+      },
+      "idbSynchronousSubmit": {
+        "n": 3,
+        "meanMs": 29.199999968210857,
+        "p50Ms": 29.399999856948853,
+        "p95Ms": 29.700000047683716,
+        "p99Ms": 29.700000047683716,
+        "over50ms": 0
+      },
+      "idbWriteElapsed": {
+        "n": 3,
+        "meanMs": 40.733333349227905,
+        "p50Ms": 38.299999952316284,
+        "p95Ms": 47,
+        "p99Ms": 47,
+        "over50ms": 0
+      },
+      "idbReadElapsed": {
+        "n": 3,
+        "meanMs": 34.333333253860474,
+        "p50Ms": 34.19999980926514,
+        "p95Ms": 34.799999952316284,
+        "p99Ms": 34.799999952316284,
+        "over50ms": 0
+      },
+      "telemetryIncluded": false
+    },
+    {
+      "count": 4,
+      "prepare": {
+        "n": 3,
+        "meanMs": 62.46666661898295,
+        "p50Ms": 63,
+        "p95Ms": 71.59999990463257,
+        "p99Ms": 71.59999990463257,
+        "over50ms": 3
+      },
+      "idbSynchronousSubmit": {
+        "n": 3,
+        "meanMs": 118.46666661898296,
+        "p50Ms": 116.29999995231628,
+        "p95Ms": 124.5,
+        "p99Ms": 124.5,
+        "over50ms": 3
+      },
+      "idbWriteElapsed": {
+        "n": 3,
+        "meanMs": 143.76666673024496,
+        "p50Ms": 141,
+        "p95Ms": 149.60000014305115,
+        "p99Ms": 149.60000014305115,
+        "over50ms": 3
+      },
+      "idbReadElapsed": {
+        "n": 3,
+        "meanMs": 133.06666660308838,
+        "p50Ms": 130.5,
+        "p95Ms": 139.29999995231628,
+        "p99Ms": 139.29999995231628,
+        "over50ms": 3
+      },
+      "telemetryIncluded": false
+    },
+    {
+      "count": 8,
+      "prepare": {
+        "n": 3,
+        "meanMs": 109.93333339691162,
+        "p50Ms": 112.40000009536743,
+        "p95Ms": 113.5,
+        "p99Ms": 113.5,
+        "over50ms": 3
+      },
+      "idbSynchronousSubmit": {
+        "n": 3,
+        "meanMs": 236.5,
+        "p50Ms": 236.59999990463257,
+        "p95Ms": 242.40000009536743,
+        "p99Ms": 242.40000009536743,
+        "over50ms": 3
+      },
+      "idbWriteElapsed": {
+        "n": 3,
+        "meanMs": 286.6666666666667,
+        "p50Ms": 286.5,
+        "p95Ms": 296.7000000476837,
+        "p99Ms": 296.7000000476837,
+        "over50ms": 3
+      },
+      "idbReadElapsed": {
+        "n": 3,
+        "meanMs": 287.2999999523163,
+        "p50Ms": 285.5,
+        "p95Ms": 293,
+        "p99Ms": 293,
+        "over50ms": 3
+      },
+      "telemetryIncluded": false
+    }
+  ],
+  "roundTripValidation": "savedAt only; size/cost research, not full save correctness"
+}

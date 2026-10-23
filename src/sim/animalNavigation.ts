@@ -1,3 +1,5 @@
+import type {PhysicalState} from './physicalState';
+import {MATERIAL_ENERGY} from './thermodynamics';
 import {capacity,enthalpy,F,STRIDE,solidHeight,type Environment} from './model';
 import {consumerTravelHabitat,openSurfaceWater} from './ecology';
 import {edgeScale} from './materialPhysics';
@@ -40,7 +42,7 @@ export class AnimalNavigation {
   if(this.heapSize){let p=0;while(p*2+1<this.heapSize){let child=p*2+1;if(child+1<this.heapSize&&this.cheaper(this.heap[child+1],this.heap[child]))child++;const other=this.heap[child];if(!this.cheaper(other,last))break;this.heap[p]=other;this.positions[other]=p;p=child;}this.heap[p]=last;this.positions[last]=p;}
   return cell;
  }
- plan(state:Float32Array,environment?:Environment){
+ plan(state:PhysicalState,environment?:Environment){
   let active=false;
   for(let i=0;i<this.grid.count;i++){
    const p=i*STRIDE;this.land[i]=+animalLand(state[p+F.water],state[p+F.soil],state[p+F.molten]);this.heights[i]=solidHeight(state,i,this.grid);
@@ -72,7 +74,7 @@ export class AnimalNavigation {
   return this.next;
  }
  /** Bounded donor flux moves guild mass and its sensible heat simultaneously. */
- move(state:Float32Array,dt:number,environment:Environment,energyChanges:Float32Array){
+ move(state:PhysicalState,dt:number,environment:Environment,energyChanges:Float32Array){
   if(dt<=0)return false;
   let active=false;for(let p=0;p<state.length;p+=STRIDE)if(state[p+F.herbivore]>1e-6||state[p+F.carnivore]>1e-6){active=true;break;}if(!active)return false;
   this.plan(state,environment);this.changes.fill(0);this.heat.fill(0);
@@ -92,7 +94,8 @@ export class AnimalNavigation {
    changed=true;
    const p=i*STRIDE,before=enthalpy(state,i),sensible=capacity(state,i)*state[p+F.temperature]+this.heat[i];
    state[p+F.herbivore]=Math.max(0,state[p+F.herbivore]+this.changes[i*2]);state[p+F.carnivore]=Math.max(0,state[p+F.carnivore]+this.changes[i*2+1]);state[p+F.temperature]=sensible/capacity(state,i);
-   energyChanges[i*4+3]+=enthalpy(state,i)-before-this.heat[i];
+   const chemical=this.changes[i*2]*MATERIAL_ENERGY[F.herbivore]+this.changes[i*2+1]*MATERIAL_ENERGY[F.carnivore];
+   energyChanges[i*4+3]+=enthalpy(state,i)-before-this.heat[i]-chemical;
   }
   return changed;
  }

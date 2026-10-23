@@ -1,4 +1,7 @@
+import {boundedWebGPU,disposeBootWebGPU} from './rendererBoot';
+import {SurfaceChangeTracker} from './surfaceChanges';
 import {ClimateLayers} from './climateLayers';
+import {giantCloudColor} from './giantCloudColor';
 import {arcFromBasis,arcFromCells,snapSectionEndpoint,type SectionArc} from './sectionArc';
 import {buildSectionMesh} from './sectionGeometry';
 import {CellBrush} from './cellBrush';
@@ -36,6 +39,7 @@ import '@babylonjs/core/Meshes/thinInstanceMesh';
 import '@babylonjs/core/Culling/ray';
 import { F,STRIDE,SURFACE_MATERIALS,solidHeight,gravityMultiplier,type SurfaceMaterial,type GasMaterial,type Environment,DEFAULT_ENVIRONMENT } from '../sim/model';
 import {GASES,atmosphereState,type AtmosphereState} from '../sim/atmosphere';
+import {GASES as ESCAPE_GASES} from '../sim/gases';
 import { HEIGHT_SCALE,RADIUS,nearestCell,NEIGHBORS,INVALID,type SphereGrid } from '../sim/sphere';
 import { dualSurface,shorelineDepths,softenShore,clipWater,facetWater,type WetVertex } from './surface';
 import {SurfaceEffects} from './effects';
@@ -95,6 +99,11 @@ export class PlanetView {
   private systemFlightId=0;
   private biosphere:Biosphere;
   private surfaceTime=0;
+  private surfaceChanges=new SurfaceChangeTracker();
+  private surfaceRevision=0;
+  private surfaceUploads={geometry:0,water:0,appearance:0,temperature:0,shoreline:0,section:0,selection:0};
+  private mobileWater:Float32Array;
+  private shoreline:Float32Array;
   private facetedSurface=false;
   private hexagonalSurface=false;
   private solar:ShaderMaterial;
@@ -177,6 +186,7 @@ export class PlanetView {
   private sectionCamera:SectionCamera;
   private climateLayers!:ClimateLayers;
   private climateState:WeatherClimate|null=null;
+  private giantCloudsVisible=true;
   private sectionView:SectionView;
   private sectionProjection:SectionProjection;
   private sectionMaterials:SectionMaterials;
@@ -200,6 +210,9 @@ export class PlanetView {
   private sectionControlsDetached=false;
   private constructor(readonly canvas:HTMLCanvasElement,readonly grid:SphereGrid,state:Float32Array,engine:AbstractEngine,renderRefinement=0) {
     this.state=state;this.atmosphereInfo=atmosphereState(state,this.environment);this.engine=engine;this.scene=new Scene(engine);this.root=new TransformNode('rotating planet',this.scene);
+    // All application hit tests use explicit pick()/multiPick(); camera input
+    // consumes pointer coordinates and does not require Babylon hover picking.
+    this.scene.skipPointerMovePicking=true;
     this.scene.clearColor=new Color4(0,0,0,1);
     this.scene.imageProcessingConfiguration.toneMappingEnabled=false;
     this.camera=new ArcRotateCamera('observer',-1.01,1.17,16.4,Vector3.Zero(),this.scene);
@@ -252,6 +265,7 @@ export class PlanetView {
       if(i<grid.count)this.sectionSamples.baseHeights[i]=grid.geometry[i*4+3];
       else {const a=this.surface.parents[i*2],b=this.surface.parents[i*2+1],c=this.surface.third[i];this.sectionSamples.baseHeights[i]=(this.sectionSamples.baseHeights[a]+this.sectionSamples.baseHeights[b]+(c>=0?this.sectionSamples.baseHeights[c]:0))/(c>=0?3:2);}
     }
+    this.mobileWater=new Float32Array(grid.count);this.shoreline=new Float32Array(grid.count);
     this.groundCover=new Float32Array(this.surface.count);this.surfaceDepths=new Float32Array(this.surface.count);this.shoreHeight=new Float32Array(this.surface.count);this.shoreDepth=new Float32Array(this.surface.count);
     this.vertexTerrain=new Float32Array(this.surface.count*3);
     this.vertexWater=new Float32Array(this.surface.count*3);
@@ -428,10 +442,11 @@ export class PlanetView {
   static async create(canvas:HTMLCanvasElement,grid:SphereGrid,state:Float32Array,renderRefinement=0) {
     let engine:AbstractEngine;
     const forceCpu=new URLSearchParams(location.search).get('cpu')==='1';
-    if(!forceCpu && await WebGPUEngine.IsSupportedAsync) {
+    if(!forceCpu) {
+      const attemptedCanvas=canvas;
       try {
-        const gpu=new WebGPUEngine(canvas,{antialias:true,powerPreference:'high-performance'});
-        await gpu.initAsync();engine=gpu;
+        const gpu=await boundedWebGPU(()=>WebGPUEngine.IsSupportedAsync,()=>new WebGPUEngine(canvas,{antialias:true,powerPreference:'high-performance'}),async (gpu,abandoned)=>{await gpu.initAsync();if(!abandoned())await gpu.prepareGlslangAndTintAsync();},gpu=>disposeBootWebGPU(gpu,attemptedCanvas));
+        engine=gpu??new Engine(canvas,true,{preserveDrawingBuffer:false});
       }catch(error){
         console.warn('WebGPU renderer unavailable; using WebGL.',error);
         // A failed WebGPU canvas context cannot be reused for WebGL.
@@ -447,29 +462,32 @@ export class PlanetView {
   update(state:Float32Array,dt=0,environment?:Environment) {
     this.syncState(state,environment);
     if(this.systemScene.active)return;
-    this.sectionDirty=true;
+    const changes=this.surfaceChanges.read(state),shapeDirty=changes.geometry||changes.water;
+    this.sectionDirty ||= changes.section;
     const surface=this.surface;
-    const heights=Float32Array.from({length:this.grid.count},(_,i)=>solidHeight(state,i,this.grid));
-    this.displayHeights.set(heights);
+    if(shapeDirty){
+      this.surfaceRevision++;this.surfaceUploads.shoreline++;
+      for(let i=0;i<this.grid.count;i++){this.displayHeights[i]=solidHeight(state,i,this.grid);this.mobileWater[i]=Math.max(0,state[i*STRIDE+F.water]-Math.min(1.2,state[i*STRIDE+F.soil]*.12));}
+      this.surfaceDepths.set(shorelineDepths(this.grid,this.displayHeights,this.mobileWater,this.shoreline));
+    }
     this.surfaceState.set(state);
-    this.groundCover.set(vegetationCover(this.grid,state));
-    this.surfaceDepths.set(shorelineDepths(this.grid,heights,
-      Float32Array.from({length:this.grid.count},(_,i)=>Math.max(0,state[i*STRIDE+F.water]-Math.min(1.2,state[i*STRIDE+F.soil]*.12)))));
+    if(changes.appearance)this.groundCover.set(vegetationCover(this.grid,state));
     for(let i=0;i<surface.count;i++) {
       const a=surface.parents[i*2],b=surface.parents[i*2+1],p=i*STRIDE;
       if(i>=this.grid.count){
         const c=surface.third[i],divisor=c>=0?3:2;
-        this.groundCover[i]=(this.groundCover[a]+this.groundCover[b]+(c>=0?this.groundCover[c]:0))/divisor;
+        if(changes.appearance)this.groundCover[i]=(this.groundCover[a]+this.groundCover[b]+(c>=0?this.groundCover[c]:0))/divisor;
         for(let f=0;f<STRIDE;f++)this.surfaceState[p+f]=(this.surfaceState[a*STRIDE+f]+this.surfaceState[b*STRIDE+f]+(c>=0?this.surfaceState[c*STRIDE+f]:0))/divisor;
-        this.displayHeights[i]=(this.displayHeights[a]+this.displayHeights[b]+(c>=0?this.displayHeights[c]:0))/divisor;
-        this.surfaceDepths[i]=(this.surfaceDepths[a]+this.surfaceDepths[b]+(c>=0?this.surfaceDepths[c]:0))/divisor;
+        if(shapeDirty)this.displayHeights[i]=(this.displayHeights[a]+this.displayHeights[b]+(c>=0?this.displayHeights[c]:0))/divisor;
+        if(shapeDirty)this.surfaceDepths[i]=(this.surfaceDepths[a]+this.surfaceDepths[b]+(c>=0?this.surfaceDepths[c]:0))/divisor;
       }
     }
 
-    softenShore(this.displayHeights,this.surfaceDepths,surface.neighbors,this.shoreHeight,this.shoreDepth);
-    this.updateAtmosphere();this.biosphere.update(state,this.renderRadii,this.surfaceTime,this.groundCover);
+    if(shapeDirty)softenShore(this.displayHeights,this.surfaceDepths,surface.neighbors,this.shoreHeight,this.shoreDepth);
+    this.updateAtmosphere();
+    if(changes.biosphere||shapeDirty)this.biosphere.update(state,this.renderRadii,this.surfaceTime,this.groundCover,shapeDirty||changes.appearance);
     let normalsDirty=false;
-    for(let i=0;i<surface.count;i++){
+    if(shapeDirty)for(let i=0;i<surface.count;i++){
       const solid=this.displayHeights[i],radius=RADIUS+altitude(solid);
       this.sectionSamples.solidRadii[i]=radius;
       const p=i*STRIDE;this.sectionSamples.bedrockHeights![i]=this.sectionSamples.baseHeights[i]+this.surfaceState[p+F.rock];this.sectionSamples.mobileWater[i]=Math.max(0,this.surfaceState[p+F.water]-Math.min(1.2,this.surfaceState[p+F.soil]*.12));
@@ -482,25 +500,27 @@ export class PlanetView {
         this.vertexTerrain[i*3+k]=dir*radius;this.vertexWater[i*3+k]=dir*waterRadius;
       }
     }
-    this.waterData.fill(0);this.waterNormals.fill(0);
+    if(shapeDirty){this.waterData.fill(0);this.waterNormals.fill(0);}
     if(normalsDirty)VertexData.ComputeNormals(this.vertexTerrain,surface.indices,this.surfaceNormals);
-    const fields=[F.sand,F.clay,F.ceramic,F.glass,F.salt,F.molten,F.soil,F.iron,F.ice];
-    const palette=[PALETTE.sand,PALETTE.clay,PALETTE.ceramic,PALETTE.glass,PALETTE.salt,PALETTE.molten,PALETTE.soil,PALETTE.iron,PALETTE.ice];
-    if(this.hexagonalSurface)for(let i=0;i<surface.tileCount;i++){
+    const fields=[F.sand,F.clay,F.ceramic,F.glass,F.salt,F.molten,F.soil,F.iron,F.ice,F.charcoal];
+    const palette=[PALETTE.sand,PALETTE.clay,PALETTE.ceramic,PALETTE.glass,PALETTE.salt,PALETTE.molten,PALETTE.soil,PALETTE.iron,PALETTE.ice,[.12,.11,.10]];
+    if(changes.appearance&&this.hexagonalSurface)for(let i=0;i<surface.tileCount;i++){
       const cell=i*STRIDE,q=i*4;let total=.35,cr=PALETTE.rock[0]*.35,cg=PALETTE.rock[1]*.35,cb=PALETTE.rock[2]*.35;
       for(let f=0;f<fields.length;f++){const weight=Math.min(8,this.surfaceState[cell+fields[f]]);total+=weight;cr+=palette[f][0]*weight;cg+=palette[f][1]*weight;cb+=palette[f][2]*weight;}
       this.tileColors[q]=cr/total;this.tileColors[q+1]=cg/total;this.tileColors[q+2]=cb/total;this.tileColors[q+3]=Math.min(.65,this.surfaceState[cell+F.glass]/total*.5+this.surfaceState[cell+F.iron]/total*.3);
       this.tileInfo[q]=Math.min(8,this.surfaceState[cell+F.sand])/total;this.tileInfo[q+1]=Math.min(8,this.surfaceState[cell+F.clay])/total;this.tileInfo[q+2]=this.groundCover[i];this.tileInfo[q+3]=1-Math.exp(-this.surfaceState[cell+F.water]*2);
     }
     const bankPositions:number[]=[],bankIndices:number[]=[],bankColors:number[]=[],bankSurface:number[]=[];
+    const giant=this.climateState?.giant.ready&&this.environment.body?.lowerBoundary.kind==='deep-atmosphere'?this.climateState.giant:null;
+    const giantColors=giant?Array.from({length:this.grid.count},(_,i)=>giantCloudColor(giant.cloudOptics(i),this.giantCloudsVisible)):null;
     const indices=[0,0,0];
-    for(let p=0;p<surface.indices.length;p+=3) {
+    if(shapeDirty||changes.appearance||changes.temperature||giantColors)for(let p=0;p<surface.indices.length;p+=3) {
       indices[0]=surface.indices[p];indices[1]=surface.indices[p+1];indices[2]=surface.indices[p+2];
       const owner=surface.owners[p/3],normalOffset=owner*3;
       const inset=this.hexagonalSurface&&this.surfaceDepths[owner]>=.035?.045:0;
       for(let k=0;k<3;k++) {
         const vertex=indices[k];
-        for(let c=0;c<3;c++){
+        if(shapeDirty)for(let c=0;c<3;c++){
           this.terrainData[(p+k)*3+c]=this.vertexTerrain[vertex*3+c]-surface.directions[vertex*3+c]*inset;
           this.normals[(p+k)*3+c]=this.hexagonalSurface?this.surfaceNormals[normalOffset+c]:this.surfaceNormals[normalOffset+c]*.12+this.surfaceNormals[vertex*3+c]*.88;
           const hotSurface=this.surfaceDepths[vertex]>.035?this.vertexWater:this.vertexTerrain;
@@ -508,7 +528,8 @@ export class PlanetView {
         }
         const materialVertex=this.hexagonalSurface?owner:vertex;
         const rgba=(p+k)*4,cell=materialVertex*STRIDE;
-        if(this.hexagonalSurface){
+        if(changes.appearance||giantColors){
+          if(this.hexagonalSurface){
           const source=owner*4;for(let c=0;c<4;c++){this.colors[rgba+c]=this.tileColors[source+c];this.surfaceInfo[rgba+c]=this.tileInfo[source+c];}
         }else{
           // Continuous vertex weights remove triangle-by-triangle material popping.
@@ -521,11 +542,15 @@ export class PlanetView {
           this.surfaceInfo[rgba]=Math.min(8,this.surfaceState[cell+F.sand])/total;this.surfaceInfo[rgba+1]=Math.min(8,this.surfaceState[cell+F.clay])/total;this.surfaceInfo[rgba+2]=plant;this.surfaceInfo[rgba+3]=wet;
           this.colors[rgba+3]=Math.min(.65,this.surfaceState[cell+F.glass]/total*.5+this.surfaceState[cell+F.iron]/total*.3);
         }
+        }
+        if(changes.temperature||giantColors){
         const temperature=this.surfaceState[vertex*STRIDE+F.temperature];
         const hot=Math.pow(Math.max(0,Math.min(.9,(temperature-45)/900)),.65);
         this.heatColors[rgba]=temperature>45?1:.14;this.heatColors[rgba+1]=temperature>45?.16+hot*.55:.55;this.heatColors[rgba+2]=temperature>45?.025:1;this.heatColors[rgba+3]=temperature>45?hot:0;
+        if(giantColors){for(let c=0;c<3;c++)this.colors[rgba+c]=giantColors[owner][c];this.colors[rgba+3]=0;this.surfaceInfo.fill(0,rgba,rgba+4);this.heatColors[rgba+3]=0;}
+        }
       }
-      if(this.facetedSurface&&!this.hexagonalSurface){
+      if((changes.appearance||giantColors)&&this.facetedSurface&&!this.hexagonalSurface){
         // Material ownership belongs to this triangular face, just like its
         // flat normal. All three corners carry the same mineral and plant mix.
         for(const buffer of [this.colors,this.surfaceInfo])for(let component=0;component<4;component++){
@@ -533,6 +558,7 @@ export class PlanetView {
           for(let k=0;k<3;k++)buffer[(p+k)*4+component]=average;
         }
       }
+      if(!shapeDirty)continue;
       let polygon:WetVertex[]|null=null;
       if(!this.hexagonalSurface){
         const wet=indices.map(v=>({x:this.vertexWater[v*3],y:this.vertexWater[v*3+1],z:this.vertexWater[v*3+2],depth:this.surfaceDepths[v],ice:this.surfaceState[v*STRIDE+F.ice]/Math.max(.001,this.surfaceState[v*STRIDE+F.ice]+this.surfaceState[v*STRIDE+F.water])}));
@@ -569,6 +595,7 @@ export class PlanetView {
       if(polygon&&polygon.length===4)this.writeWater(p*2+3,[polygon[0],polygon[2],polygon[3]]);
 
     }
+    if(shapeDirty){
     this.hexBanks.setEnabled(bankIndices.length>0);
     if(bankIndices.length){
       const data=new VertexData(),normals:number[]=[];
@@ -580,21 +607,26 @@ export class PlanetView {
       // buffer through getVerticesData would use that count and can overrun it.
       if(this.bankPulseLength!==bankPositions.length){this.hexBanks.setVerticesData('supplyCoord',new Float32Array(bankPositions.length),false,3);this.bankPulseLength=bankPositions.length;}
     }
+    this.surfaceUploads.geometry++;this.surfaceUploads.water++;
     this.terrain.updateVerticesData(VertexBuffer.PositionKind,this.terrainData,true);
     this.terrain.updateVerticesData(VertexBuffer.NormalKind,this.normals);
-    this.terrain.updateVerticesData(VertexBuffer.ColorKind,this.colors);
-    this.terrain.updateVerticesData('surfaceInfo',this.surfaceInfo);
-    
-    
-    
-    
     this.water.updateVerticesData(VertexBuffer.PositionKind,this.waterData,true);
     this.water.updateVerticesData(VertexBuffer.NormalKind,this.waterNormals);
     this.water.updateVerticesData(VertexBuffer.ColorKind,this.waterColors);
     this.heatSurface.updateVerticesData(VertexBuffer.PositionKind,this.heatPositions,true);
-    this.heatSurface.updateVerticesData(VertexBuffer.ColorKind,this.heatColors);
     this.precipitationLayer.updateSurface(this.heatPositions);
     this.cellBrush.update(this.heatPositions);this.selectionBrush.update(this.heatPositions);
+    }
+    if(changes.appearance||giantColors){
+      this.surfaceUploads.appearance++;
+      this.terrain.updateVerticesData(VertexBuffer.ColorKind,this.colors);
+      this.terrain.updateVerticesData('surfaceInfo',this.surfaceInfo);
+    }
+    if(changes.temperature||giantColors){
+      this.surfaceUploads.temperature++;
+      this.heatSurface.updateVerticesData(VertexBuffer.ColorKind,this.heatColors);
+      this.sectionView.updateReadings(this.surfaceState);
+    }
     for(let i=0;i<this.grid.count;i++) {
       const p=i*STRIDE;
       if(state[p+F.temperature]>28) {
@@ -754,7 +786,7 @@ export class PlanetView {
       line.color=new Color3(optics.color[0]*shade,optics.color[1]*shade,optics.color[2]*shade);
       line.alpha=.24*Math.min(1,info.pressure/.08);
     }
-    this.sky.update(this.state,this.renderRadii,info,this.environment,this.atmosphereRadii[0]);
+    this.sky.update(this.state,this.renderRadii,info,this.environment,this.atmosphereRadii[0],this.climateState?.giant.ready?this.climateState.giant:undefined,this.climateState?.air);
   }
   setSpin(angle:number,_running:boolean,tiltDegrees=0) {
     this.spinTilt=tiltDegrees;
@@ -786,16 +818,16 @@ export class PlanetView {
     faceted=faceted||hexagonal;
     const rebuild=this.facetedSurface!==faceted||this.hexagonalSurface!==hexagonal;this.facetedSurface=faceted;this.hexagonalSurface=hexagonal;
     for(const material of [this.terrainMaterial,this.waterMaterial]){material.setFloat('surfaceFaceting',faceted?1:0);material.setFloat('hexagonalSurface',hexagonal?1:0);material.setFloat('boundaryBlend',Math.max(0,Math.min(1,Number(blended))));}
-    if(rebuild)this.update(this.state);
+    if(rebuild){this.surfaceChanges.reset();this.update(this.state);}
   }
   setTime(time:number){this.surfaceTime=time;this.sectionView.setTime(time);this.solar.setFloat('time',time);this.sky.setTime(time);this.waterMaterial.setFloat('surfaceTime',time);}
-  setLayers(atmosphere:boolean,clouds:boolean) {this.terrainMaterial.setFloat('cloudShadow',clouds?1:0);this.waterMaterial.setFloat('cloudShadow',clouds?1:0);this.atmosphereVisible=atmosphere;this.sky.setVisible(atmosphere,clouds);this.weather.setVisible(clouds);for(const line of this.atmosphere)if(!atmosphere)line.setEnabled(false);}
+  setLayers(atmosphere:boolean,clouds:boolean) {this.giantCloudsVisible=clouds;this.terrainMaterial.setFloat('cloudShadow',clouds?1:0);this.waterMaterial.setFloat('cloudShadow',clouds?1:0);this.atmosphereVisible=atmosphere;this.sky.setVisible(atmosphere,clouds);this.weather.setVisible(clouds);for(const line of this.atmosphere)if(!atmosphere)line.setEnabled(false);if(this.environment.body?.lowerBoundary.kind==='deep-atmosphere')this.update(this.state,0,this.environment);}
   setClimate(layer:ClimateLayer,climate:WeatherClimate){this.climateState=climate;this.climateLayers.layer=layer;this.updateClimate();}
   private updateClimate(){if(!this.climateState)return;this.climateLayers.update(this.surfaceState,this.environment,this.climateState,this.heatPositions,this.heatPositions,this.surface.owners);this.sectionView.setClimateColors(this.climateLayers.layer==='none'?null:this.climateLayers.cellColors);}
-  setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionDirty=true;}
-  clearPrecipitation(){this.precipitationLayer.clear();this.sectionView.clearPrecipitation();this.sectionDirty=true;}
+  setPrecipitationLayer(visible:boolean){this.precipitationLayer.setVisible(visible);this.sectionView.showRain(visible);this.sectionView.updateReadings(this.surfaceState);}
+  clearPrecipitation(){this.precipitationLayer.clear();this.sectionView.clearPrecipitation();this.sectionView.updateReadings(this.surfaceState);}
   precipitationStats(){return this.precipitationLayer.stats();}
-  visualStats() {return {brush:this.cellBrush.stats(),animals:this.biosphere.animalStats(),climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:0,supplyPulse:{activeCells:this.supplyPulse.activeCells(),bytes:this.supplyPulse.pixels.byteLength,uploads:this.supplyUploads},grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
+  visualStats() {return {surfaceUpdates:{...this.surfaceUploads},brush:this.cellBrush.stats(),animals:this.biosphere.animalStats(),climate:this.climateLayers.stats(),section:{selection:this.sectionSelection,cellIds:this.sectionView.cellIds,enabled:this.sectionCamera.enabled,amount:this.sectionCamera.amount,normal:this.sectionCamera.normal.asArray(),angle:this.sectionAngle,tilt:this.sectionTilt,framing:this.sectionFraming,navigation:this.sectionNavigation,scale:this.sectionCamera.viewScale,range:this.sectionRange,flat:this.sectionProjection.amount,halfRange:this.sectionHalfRange,heightScale:this.sectionProjection.heightScale,stackDepth:this.sectionProjection.stackDepth,...this.sectionView.stats(),clip:sectionClipStats(this.scene)},precipitationLayer:this.precipitationLayer.stats(),renderTiles:this.surface.tileCount,...this.effects.stats(),...this.weather.stats(),...this.sky.stats(),supplyTraces:0,supplyPulse:{activeCells:this.supplyPulse.activeCells(),bytes:this.supplyPulse.pixels.byteLength,uploads:this.supplyUploads},grains:this.grains.length,grainsByMaterial:Object.fromEntries(SURFACE_MATERIALS.map(m=>[m,this.grains.filter(g=>g.material===m).length])),atmosphereRadii:[...this.atmosphereRadii]};}
   deposits() {return this.grains.map(g=>({index:g.index,material:g.material,amount:g.amount}));}
   supplySurface(cells:readonly SupplyCell[],material:SurfaceMaterial,amount:number,land:Grain['land']) {
     deliverSurfaceSupply(cells,amount,land);
@@ -807,14 +839,14 @@ export class PlanetView {
   }
   showEscape(cells:Float32Array) {
     if(this.systemScene.active)return;
-    for(let i=0;i<this.grid.count;i++)for(let k=0;k<GASES.length;k++) {
-      if(cells[i*4+k]<=0)continue;
+    for(let i=0;i<this.grid.count;i++)for(let k=0;k<ESCAPE_GASES.length;k++) {
+      if(cells[i*ESCAPE_GASES.length+k]<=0)continue;
       const dir=Vector3.FromArray(this.grid.directions,i*3),radius=this.renderRadii[i];
-      this.effects.escape(dir.scale(radius+.12),GASES[k].id,cells[i*4+k]);
+      this.effects.escape(dir.scale(radius+.12),ESCAPE_GASES[k].id,cells[i*ESCAPE_GASES.length+k]);
     }
   }
   showRain(precipitated:Float32Array,dt:number) {
-    this.sectionView.setPrecipitation(precipitated,dt);this.sectionDirty=true;
+    this.sectionView.setPrecipitation(precipitated,dt);this.sectionView.updateReadings(this.surfaceState);
     this.precipitationLayer.update(precipitated,dt);
     if(this.systemScene.active)return;
     for(let i=0;i<this.grid.count;i++) {
@@ -969,8 +1001,12 @@ export class PlanetView {
     this.selectionWindowRange=arc.halfRange;for(let t=0;t<whole.owners.length;t++)if(whole.owners[t]>=0)for(let k=0;k<3;k++){const p=Vector3.FromArray(whole.positions,t*9+k*3);this.selectionWindowRange=Math.max(this.selectionWindowRange,Math.abs(Math.atan2(Vector3.Dot(p,arc.u),Vector3.Dot(p,arc.v)))+1e-6);}
     this.sectionDirty=true;
   }
+  private selectionPreviewStamp:number[]=[];
   private updateSelectionPreview(){
     const arc=this.selectionArc,visible=this.selectionEditing&&!!arc&&!this.sectionCamera.active&&!this.systemScene.active;
+    const stamp=[Number(visible),this.surfaceRevision,this.sectionCamera.halfWidth,...this.selectionCells,...(arc?[...arc.a.asArray(),...arc.b.asArray(),arc.halfRange]:[])];
+    if(stamp.length===this.selectionPreviewStamp.length&&stamp.every((v,i)=>v===this.selectionPreviewStamp[i]))return;
+    this.selectionPreviewStamp=stamp;this.surfaceUploads.selection++;
     this.selectionBrush.select(visible?this.selectionCells:[],this.heatPositions,'cool');
     this.selectionLine.setEnabled(visible);if(!visible||!arc)return;
     const points=Array.from({length:65},(_,i)=>{const t=arc.halfRange*(i/32-1),d=arc.v.scale(Math.cos(t)).add(arc.u.scale(Math.sin(t))),cell=nearestCell(this.grid,d.x,d.y,d.z);return d.scale(this.renderRadii[cell]+.05);});
@@ -1024,7 +1060,7 @@ export class PlanetView {
     const unfolded=this.sectionProjection.amount>.999;
     for(const mesh of [this.terrain,this.water,this.hexBanks,this.heatSurface])mesh.isVisible=!unfolded;
     updateSectionClip(this.scene,this.root,normal,width);this.sectionMaterials.update();this.sectionView.setVisible(active);
-    if(active&&(this.sectionDirty||this.sectionWidth!==width||!this.sectionNormal.equalsWithEpsilon(normal,1e-7)||!this.sectionUp.equalsWithEpsilon(this.sectionCamera.v,1e-7))){const cap=this.sectionView.update(this.terrainData,this.waterData,this.surface.owners,this.surfaceState,normal,width,this.sectionSamples,this.sectionCamera.framing==='surface',this.selectionArc?{...this.selectionArc,cells:this.selectionCellSet,wholeCells:true}:undefined);this.sectionProjection.updateFoundation(cap);this.sectionProjection.stackDepth=Math.max(.001,this.sectionView.profileDepth(this.sectionProjection));this.sectionDirty=false;this.sectionWidth=width;this.sectionNormal.copyFrom(normal);this.sectionUp.copyFrom(this.sectionCamera.v);}
+    if(active&&(this.sectionDirty||this.sectionWidth!==width||!this.sectionNormal.equalsWithEpsilon(normal,1e-7)||!this.sectionUp.equalsWithEpsilon(this.sectionCamera.v,1e-7))){const cap=this.sectionView.update(this.terrainData,this.waterData,this.surface.owners,this.surfaceState,normal,width,this.sectionSamples,this.sectionCamera.framing==='surface',this.selectionArc?{...this.selectionArc,cells:this.selectionCellSet,wholeCells:true}:undefined);this.surfaceUploads.section++;this.sectionProjection.updateFoundation(cap);this.sectionProjection.stackDepth=Math.max(.001,this.sectionView.profileDepth(this.sectionProjection));this.sectionDirty=false;this.sectionWidth=width;this.sectionNormal.copyFrom(normal);this.sectionUp.copyFrom(this.sectionCamera.v);}
     if(!active&&this.selectionPending){this.selectionPending=false;this.beginSectionSelection(this.selectionPendingIndex);}
     if(active){
       if(this.sectionFitPending&&this.sectionCamera.amount>.999&&this.sectionProjection.stackDepth>.003){if(this.sectionMagnificationMode===0)this.sectionHeightTarget=Math.max(1,Math.min(64,this.sectionCamera.profileHalfHeight*.68/Math.max(.03,this.sectionProjection.stackDepth)));this.sectionFitPending=false;}

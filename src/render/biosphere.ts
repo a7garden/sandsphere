@@ -61,7 +61,8 @@ export class Biosphere {
   this.shadowMatrices=new Float32Array(this.treeMatrices.length);this.shadows.thinInstanceSetBuffer('matrix',this.shadowMatrices,16,false);this.shadows.thinInstanceCount=0;this.shadows.setEnabled(false);
   this.animals=new LandAnimals(scene,root,grid);
  }
- update(state:Float32Array,radii:Float32Array,time:number,cover:Float32Array=vegetationCover(this.grid,state)){
+ update(state:Float32Array,radii:Float32Array,time:number,cover:Float32Array=vegetationCover(this.grid,state),treesDirty=true){
+  if(treesDirty){
   let treeCount=0;
   for(let patch=0;patch<this.patches.length;patch++){
    const cells=this.patches[patch],land=cells.filter(i=>{const p=i*STRIDE;return woodlandDensity(cover[i])>0&&state[p+F.plant]>.045&&state[p+F.water]<=Math.max(.3,Math.min(1.2,state[p+F.soil]*.12)+.15)&&state[p+F.ice]<.15;});
@@ -85,6 +86,7 @@ export class Biosphere {
   this.shadows.thinInstanceCount=treeCount;this.shadows.setEnabled(treeCount>0);if(treeCount)this.shadows.thinInstanceBufferUpdated('matrix');
 
   this.trees.thinInstanceCount=treeCount;this.trees.setEnabled(treeCount>0);if(treeCount)this.trees.thinInstanceBufferUpdated('matrix');
+  }
   this.animals.update(state,radii);
  }
  animate(dt:number,speed=1){this.animals.animate(dt,speed);}

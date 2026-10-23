@@ -5,17 +5,22 @@ import {createSphere} from '../src/sim/sphere';
 import {PHYSICS_DT} from '../src/sim/clock';
 import {orbitalEnvironment} from '../src/sim/orbit';
 import {resultTransferBuffers,type SolverWorkerRequest,type SolverWorkerReply} from '../src/sim/solverWorkerProtocol';
+import {createCommandBatch} from '../src/sim/supply';
 
 class ControlledWorker {
  static latest:ControlledWorker;
  onmessage:((event:{data:SolverWorkerReply})=>void)|null=null;
  onerror:((event:{message:string;preventDefault:()=>void})=>void)|null=null;
  onmessageerror:(()=>void)|null=null;
- terminated=false;request:SolverWorkerRequest|null=null;
+ terminated=false;request:SolverWorkerRequest|null=null;initRequest:Extract<SolverWorkerRequest,{type:'init'}>|null=null;
  constructor(){ControlledWorker.latest=this;}
  postMessage(request:SolverWorkerRequest,transfer:Transferable[]=[]){
   const copy=structuredClone(request,{transfer});
-  if(copy.type==='init')queueMicrotask(()=>this.onmessage?.({data:{id:copy.id,type:'ready',backend:'CPU'}}));
+  if(copy.type==='init'){
+   this.initRequest=copy;
+   const acceleration=copy.spectralAcceleration===false?{backend:'js' as const,state:'disabled' as const,memoryBytes:0,tableBytes:0}:undefined;
+   queueMicrotask(()=>this.onmessage?.({data:{id:copy.id,type:'ready',backend:'CPU',...(acceleration?{acceleration}:{})}}));
+  }
   else this.request=copy;
  }
  async complete(){
@@ -33,6 +38,25 @@ afterEach(()=>vi.unstubAllGlobals());
 describe('simulation worker commits',()=>{
  const grid=createSphere(1),environment={...orbitalEnvironment(1),climate:true};
  const make=async()=>{vi.stubGlobal('Worker',ControlledWorker);return (await WorkerSolver.create(grid,seedPlanet(grid,'sand',22),true))!;};
+
+ it('forwards optional spectral control and reports the returned init diagnostic without changing the CPU backend',async()=>{
+  vi.stubGlobal('Worker',ControlledWorker);
+  const worker=(await WorkerSolver.create(grid,seedPlanet(grid,'sand',22),true,{spectralAcceleration:false}))!;
+  expect(ControlledWorker.latest.initRequest).toMatchObject({type:'init',forceCpu:true,spectralAcceleration:false});
+  expect(worker.backend).toBe('CPU');expect(worker.acceleration).toEqual({backend:'js',state:'disabled',memoryBytes:0,tableBytes:0});worker.dispose();
+  const compatible=await make();expect(ControlledWorker.latest.initRequest?.spectralAcceleration).toBeUndefined();expect(compatible.acceleration).toBeUndefined();compatible.dispose();
+ });
+
+ it('transfers Float64 tool queues without discarding small finite inputs',async()=>{
+  const worker=await make(),before=totalMass(worker.state,worker.climate),commands=createCommandBatch(grid.count);commands[1]=1000;
+  for(let n=0;n<10000;n++)commands[1]+=.00001;
+  const supplied=commands[1],step=worker.step(0,commands,environment),request=ControlledWorker.latest.request;
+  expect(request?.type).toBe('step');
+  if(request?.type==='step'){expect(request.commands).toBeInstanceOf(Float64Array);expect(request.commands[1]).toBe(supplied);}
+  expect(commands[1]).toBe(supplied);
+  await ControlledWorker.latest.complete();await step;
+  expect(totalMass(worker.state,worker.climate)-before).toBeCloseTo(1000.1,8);worker.dispose();
+ });
 
  it('keeps live buffers readable until a complete step and matches direct CPU computation exactly',async()=>{
   const worker=await make(),initial=worker.state,checkpoint=worker.climate.checkpoint(),commands=new Float32Array(grid.count*COMMAND_STRIDE);commands[1]=7;

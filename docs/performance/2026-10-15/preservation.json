@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-15T05:10:51.808840+00:00",
+  "baselineFileCount": 371,
+  "changedBaselineFiles": [],
+  "headUnchanged": true,
+  "existingGitStatusUnchanged": true,
+  "onlyExpectedReportAndEvidenceAdded": true,
+  "missingReportLinks": [],
+  "reportBytes": 31316,
+  "reportSha256": "4327c8cf4f3ec288d44b6dea4fd26211ce14c16d0f31b96f5c503b2bceae2f23",
+  "evidenceFiles": [
+    "build-harness.mjs",
+    "bundle-modules.json",
+    "cpu-harness.mjs",
+    "measurements.json",
+    "memory-harness.mjs",
+    "redirect-test-artifacts.cjs",
+    "reference-tests.json",
+    "save-limit-proof.mjs",
+    "source-baseline.json",
+    "wet.cpuprofile"
+  ]
+}

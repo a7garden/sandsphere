@@ -37,8 +37,7 @@ export function refineSurface(grid:SphereGrid,levels=1) {
 /** Extend the adjacent free surface below dry terrain. Interpolating nonnegative
  * stock alone paints almost every mixed triangle blue, producing sawtooth coasts.
  * This signed field is render-only; it never redistributes the stored water. */
-export function shorelineDepths(grid:SphereGrid,heights:Float32Array,water:Float32Array) {
-  const depth=new Float32Array(grid.count);
+export function shorelineDepths(grid:SphereGrid,heights:Float32Array,water:Float32Array,depth:Float32Array=new Float32Array(grid.count)) {
   for(let i=0;i<grid.count;i++) {
     if(water[i]>=.035){depth[i]=water[i];continue;}
     let head=0,weight=0;

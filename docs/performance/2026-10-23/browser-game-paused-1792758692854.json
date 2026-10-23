@@ -1,0 +1,37 @@
+{
+  "method": "actual application in same-origin iframe, test storage slot, WebGL + CPU Worker; guest; no cloud configuration",
+  "viewport": [
+    1280,
+    720
+  ],
+  "dpr": 2,
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "wallClock": "2026-10-23T12:31:32.854Z",
+  "elapsedMs": 15023.299999952316,
+  "start": {
+    "time": 1.1333333333333335,
+    "paused": true,
+    "planets": 1,
+    "backend": "CPU",
+    "renderer": "Engine"
+  },
+  "end": {
+    "time": 1.1333333333333335,
+    "paused": true,
+    "planets": 1,
+    "clockBacklog": 0.005233333428701574,
+    "lastSavedAt": 1792758690310
+  },
+  "actualGameSecondsPerWallSecond": 0,
+  "frames": {
+    "n": 550,
+    "meanMs": 27.28945454519443,
+    "p50Ms": 32.79999999998836,
+    "p95Ms": 34.100000000034925,
+    "p99Ms": 50.09999999997672,
+    "over50ms": 6
+  },
+  "longTasks": [],
+  "fpsText": "39 fps",
+  "rateText": "일시정지"
+}

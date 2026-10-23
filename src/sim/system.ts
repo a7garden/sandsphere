@@ -5,6 +5,8 @@ import {localSun,orbitalPeriod} from './orbit';
 import type {SphereGrid} from './sphere';
 import {physicsSteps} from './clock';
 import type {TelemetryArchive} from './telemetryPersistence';
+import {climateSnapshotFromCheckpoint} from './climateSnapshot';
+import type {ClimateCheckpoint} from './weatherClimate';
 
 export const PLANET_LIMIT=4;
 export interface PlanetRecord {id:string;name:string;snapshot:Snapshot;}
@@ -57,10 +59,10 @@ export function migrateWorld(snapshot:Snapshot,count:number):SystemSave {
  return {version:1,activeId:'planet-1',planets:[{id:'planet-1',name:'행성 01',snapshot:upgradeSnapshot(snapshot,count)}],stock:emptyStock(),savedAt:snapshot.savedAt??0};
 }
 
-export function advanceOrbit(snapshot:Snapshot,dt:number) {
+export function advanceOrbit(snapshot:Pick<Snapshot,'environment'|'spin'|'time'>,dt:number) {
  const e=snapshot.environment,spin=snapshot.spin;
- e.orbitAngle=((e.orbitAngle??0)+dt*Math.PI*2/orbitalPeriod(e.orbitDistance??1))%(Math.PI*2);
- if(spin?.locked){spin.angle=e.orbitAngle;spin.period=orbitalPeriod(e.orbitDistance??1);spin.tilt=0;spin.running=true;}
+ e.orbitAngle=((e.orbitAngle??0)+dt*Math.PI*2/orbitalPeriod(e.orbitDistance??1,e.body))%(Math.PI*2);
+ if(spin?.locked){spin.angle=e.orbitAngle;spin.period=orbitalPeriod(e.orbitDistance??1,e.body);spin.tilt=0;spin.running=true;}
  else if(spin?.running)spin.angle=(spin.angle+dt*Math.PI*2/(spin.period??120))%(Math.PI*2);
  e.sun=localSun(spin?.angle??0,spin?.tilt??0,e.orbitAngle);
  e.rotationRate=spin?.running?Math.PI*2/(spin.period??120):0;
@@ -73,38 +75,84 @@ export class BackgroundWorlds {
  private solvers=new Map<string,CpuSolver>();
  private asyncSolvers=new Map<string,Solver>();
  private empty:Float32Array;
+ private generation=new Map<string,number>();
+ private asyncQueue:Promise<void>=Promise.resolve();
+ private committed=new WeakMap<Snapshot,{state:Float32Array;climate:ClimateCheckpoint}>();
  constructor(private grid:SphereGrid,private createAsyncSolver?:(state:Float32Array)=>Promise<Solver>){this.empty=new Float32Array(grid.count*COMMAND_STRIDE);}
- invalidate(id:string){this.solvers.get(id)?.dispose();this.solvers.delete(id);this.asyncSolvers.get(id)?.dispose();this.asyncSolvers.delete(id);}
+ invalidate(id:string){this.generation.set(id,(this.generation.get(id)??0)+1);this.solvers.get(id)?.dispose();this.solvers.delete(id);this.asyncSolvers.get(id)?.dispose();this.asyncSolvers.delete(id);}
  step(planets:PlanetRecord[],activeId:string,dt:number,onStep?:(planet:PlanetRecord,solver:CpuSolver,dt:number)=>void){
   for(const planet of planets){
    const s=planet.snapshot;if(planet.id===activeId||s.paused)continue;
    let solver=this.solvers.get(planet.id);
    if(!solver){solver=new CpuSolver(this.grid,new Float32Array(s.state));solver.climate.restore(s.climate);this.solvers.set(planet.id,solver);}
-   for(const step of physicsSteps(dt)){advanceOrbit(s,step);solver.advance(step,this.empty,s.environment);s.escaped=(s.escaped??0)+solver.escapeCells.reduce((sum,v)=>sum+v,0);onStep?.(planet,solver,step);}
-   s.state=Array.from(solver.state);s.climate=solver.climate.snapshot();
-  }
- }
- /** Live application path. Offline science/tests retain synchronous advance. */
- async stepAsync(planets:PlanetRecord[],activeId:string,dt:number,onStep?:(planet:PlanetRecord,solver:Solver,dt:number)=>void){
-  if(!this.createAsyncSolver){this.step(planets,activeId,dt,onStep);return;}
-  for(const planet of planets){
-   const s=planet.snapshot;if(planet.id===activeId||s.paused)continue;
-   let solver=this.asyncSolvers.get(planet.id);
-   if(!solver){solver=await this.createAsyncSolver(new Float32Array(s.state));solver.climate.restore(s.climate);this.asyncSolvers.set(planet.id,solver);}
    for(const step of physicsSteps(dt)){
-    const next={...s,environment:{...s.environment},spin:s.spin?{...s.spin}:undefined};advanceOrbit(next,step);
-    try{await solver.step(step,this.empty,next.environment);}catch(error){
-     // Recreate from the last committed state, replaying this step once.
-     console.warn('Background planet compute stopped.',error);
-     const state=solver.state.slice(),climate=solver.climate.checkpoint(),lift=solver.climate.lift.slice();solver.dispose();
-     solver=await this.createAsyncSolver(state);solver.climate.restoreCheckpoint(climate);solver.climate.lift.set(lift);this.asyncSolvers.set(planet.id,solver);
-     await solver.step(step,this.empty,next.environment);
-    }
-    // Publish orbit, matter and climate together; saves may run during await.
-    s.time=next.time;s.environment=next.environment;s.spin=next.spin;
-    s.escaped=(s.escaped??0)+solver.escapeCells.reduce((sum,v)=>sum+v,0);
-    s.state=Array.from(solver.state);s.climate=solver.climate.snapshot();onStep?.(planet,solver,step);
+    const next={time:s.time,environment:{...s.environment},spin:s.spin?{...s.spin}:undefined};advanceOrbit(next,step);
+    solver.advance(step,this.empty,next.environment);
+    this.publish(s,solver);s.time=next.time;s.environment=next.environment;s.spin=next.spin;
+    s.escaped=(s.escaped??0)+solver.escapeCells.reduce((sum,v)=>sum+v,0);onStep?.(planet,solver,step);
    }
   }
+ }
+ /** Resolve ordinary arrays for persistence or a planet/mode transition.
+  * Public synchronous snapshot reads also resolve the current committed value. */
+ materialize(planets:PlanetRecord[]){for(const {snapshot:s} of planets){void s.state;void s.climate;}}
+ /** Transferable copies for off-thread save preparation, without forcing the
+  * public ordinary-array view. A resolved/possibly edited view uses its canonical path. */
+ capture(planet:PlanetRecord):{state:Float32Array;climate:ClimateCheckpoint}|undefined{
+  const s=planet.snapshot,typed=this.committed.get(s);
+  if(!typed||!Object.getOwnPropertyDescriptor(s,'state')?.get||!Object.getOwnPropertyDescriptor(s,'climate')?.get)return undefined;
+  return structuredClone(typed);
+ }
+ private publish(s:Snapshot,solver:Solver){
+  const state=solver.state.slice(),climate=solver.climate.checkpoint();this.committed.set(s,{state,climate});
+  const lazy=<K extends 'state'|'climate'>(key:K,read:()=>Snapshot[K])=>{
+   const write=(value:Snapshot[K])=>{Object.defineProperty(s,key,{value,writable:true,enumerable:true,configurable:true});if(!Object.getOwnPropertyDescriptor(s,'state')?.get&&!Object.getOwnPropertyDescriptor(s,'climate')?.get)this.committed.delete(s);};
+   Object.defineProperty(s,key,{enumerable:true,configurable:true,get(){const value=read();write(value);return value;},set:write});
+  };
+  lazy('state',()=>Array.from(state));lazy('climate',()=>climateSnapshotFromCheckpoint(climate));
+ }
+ /** Live application path. Independent worlds share a bounded compute queue;
+  * each world still receives every common integration step in exact order. */
+ stepAsync(planets:PlanetRecord[],activeId:string,dt:number,onStep?:(planet:PlanetRecord,solver:Solver,dt:number)=>void,onFailure?:(planet:PlanetRecord,error:unknown)=>void):Promise<void>{
+  const run=this.asyncQueue.then(()=>this.runAsync(planets,activeId,dt,onStep,onFailure));
+  this.asyncQueue=run.catch(()=>{});return run;
+ }
+ private async runAsync(planets:PlanetRecord[],activeId:string,dt:number,onStep?:((planet:PlanetRecord,solver:Solver,dt:number)=>void),onFailure?:((planet:PlanetRecord,error:unknown)=>void)){
+  if(!this.createAsyncSolver){this.step(planets,activeId,dt,onStep);return;}
+  const create=this.createAsyncSolver,work=planets.filter(p=>p.id!==activeId&&!p.snapshot.paused);let cursor=0;
+  const advance=async(planet:PlanetRecord)=>{
+   const s=planet.snapshot,generation=this.generation.get(planet.id)??0,current=()=>generation===(this.generation.get(planet.id)??0);
+   let solver=this.asyncSolvers.get(planet.id);
+   try{
+    if(!solver){solver=await create(new Float32Array(s.state));if(!current()){solver.dispose();return;}this.asyncSolvers.set(planet.id,solver);solver.climate.restore(s.climate);}
+    for(const step of physicsSteps(dt)){
+     if(!current())return;
+     const next={time:s.time,environment:{...s.environment},spin:s.spin?{...s.spin}:undefined};advanceOrbit(next,step);
+     try{await solver.step(step,this.empty,next.environment);}catch(error){
+      if(!current())return;
+      // Recreate from the last committed state, replaying this step once.
+      console.warn('Background planet compute stopped.',error);
+      const state=solver.state.slice(),climate=solver.climate.checkpoint(),lift=solver.climate.lift.slice();solver.dispose();
+      solver=await create(state);if(!current()){solver.dispose();return;}
+      solver.climate.restoreCheckpoint(climate);solver.climate.lift.set(lift);this.asyncSolvers.set(planet.id,solver);
+      await solver.step(step,this.empty,next.environment);
+     }
+     if(!current())return;
+     // Snapshot checkpoints are detached from the next in-flight computation.
+     // Orbit, inventories and climate become visible in one synchronous commit.
+     this.publish(s,solver);s.time=next.time;s.environment=next.environment;s.spin=next.spin;
+     s.escaped=(s.escaped??0)+solver.escapeCells.reduce((sum,v)=>sum+v,0);onStep?.(planet,solver,step);
+    }
+   }catch(error){
+    if(!current())return;
+    if(!onFailure)throw error;
+    s.paused=true;this.invalidate(planet.id);onFailure(planet,error);
+   }
+  };
+  const consume=async()=>{while(cursor<work.length)await advance(work[cursor++]);};
+  // Drain siblings even when one callback/factory rejects, so the next queued
+  // batch cannot overlap a still-running independent world.
+  const results=await Promise.allSettled(Array.from({length:Math.min(2,work.length)},consume));
+  for(const result of results)if(result.status==='rejected')throw result.reason;
  }
 }

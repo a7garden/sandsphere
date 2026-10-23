@@ -38,26 +38,13 @@ describe('surface contact and coast reconstruction',()=>{
  });
 });
 
-describe('GPU failure commits',()=>{
- it('leaves the last complete state intact so CPU replay applies supply exactly once',async()=>{
-  const grid=createSphere(0),state=new Float32Array(grid.count*STRIDE);
-  for(let i=0;i<grid.count;i++)state[i*STRIDE+F.temperature]=20;
-  state[F.sand]=10;
-  const commands=new Float32Array(grid.count*COMMAND_STRIDE);commands[1]=7;
-  const result=state.slice();result[F.sand]=17;
-  const mapped=new Float32Array(state.length+grid.count*12);mapped.set(result);
-  const gpu=Object.create(GpuSolver.prototype) as GpuSolver;
-  const unmap=vi.fn();
-  Object.assign(gpu,{climate:new WeatherClimate(grid),grid,state,loss:null,parity:0,buffers:Array(9).fill({}),pipelines:[],groups:[],
-   escapeCells:new Float32Array(grid.count*4),condensedCells:new Float32Array(grid.count),precipitatedCells:new Float32Array(grid.count*2),energyChanges:new Float32Array(grid.count*4),feedingCells:new Float32Array(grid.count*2),
-   staging:{mapAsync:async()=>{Object.assign(gpu,{loss:new Error('device lost')});},getMappedRange:()=>mapped.buffer,unmap},
-   device:{queue:{writeBuffer:vi.fn(),submit:vi.fn()},createCommandEncoder:()=>({copyBufferToBuffer:vi.fn(),finish:()=>({})})}});
-  vi.stubGlobal('GPUMapMode',{READ:1});
+describe('GPU compatibility probe',()=>{
+ it('uses the accurate CPU fallback without allocating an unused WebGPU device',async()=>{
+  const requestAdapter=vi.fn(()=>{throw new Error('must not allocate');});
+  vi.stubGlobal('navigator',{gpu:{requestAdapter}});
   try{
-   await expect(gpu.step(.05,commands,{ambient:20,sunlight:0,sun:[1,0,0]})).rejects.toThrow('device lost');
-   expect(gpu.state).toBe(state);expect(totalMass(gpu.state)).toBe(10);expect(unmap).toHaveBeenCalledOnce();
-   const cpu=new CpuSolver(grid,gpu.state);cpu.advance(0,commands,{ambient:20,sunlight:0,sun:[1,0,0]});
-   expect(totalMass(cpu.state)).toBe(17);
+   const grid=createSphere(0),state=new Float32Array(grid.count*STRIDE);
+   expect(await GpuSolver.create(grid,state)).toBeNull();expect(requestAdapter).not.toHaveBeenCalled();
   }finally{vi.unstubAllGlobals();}
  });
 });

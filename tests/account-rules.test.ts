@@ -7,7 +7,7 @@ import {ref,uploadBytes,getBytes,type FirebaseStorage} from 'firebase/storage';
 import type {Auth} from 'firebase/auth';
 import {FirebaseSaveStore,encodeSave} from '../src/account/firebase';
 import {createSphere} from '../src/sim/sphere';
-import {seedWorld} from '../src/sim/model';
+import {F,STRIDE,seedWorld} from '../src/sim/model';
 import {migrateWorld} from '../src/sim/system';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Firebase user isolation and atomic cloud saves',()=>{
@@ -51,7 +51,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Firebase user isolation a
   const uid='multipart-'+crypto.randomUUID(),ctx=env.authenticatedContext(uid),grid=createSphere(5);
   const db=(ctx.firestore() as unknown as {_delegate:Firestore})._delegate;
   const store=new FirebaseSaveStore({auth:{currentUser:{uid}} as Auth,db,storage:null},uid,grid.count);
-  const save=migrateWorld({version:4,preset:'coast',state:Array.from(seedWorld(grid),()=>Math.random()*10),time:0,discoveries:[],environment:{ambient:18,sunlight:1,sun:[0,1,0]},supplied:0,removed:0},grid.count);
+  // Randomize only independent nonnegative stocks and temperature. Velocity and
+  // signed energy fields have separate domains; a random value in every slot
+  // is not a valid simulation checkpoint. Full Float32 entropy keeps this a real
+  // multi-document transport test even with the lossless compact codec.
+  const state=seedWorld(grid);let rng=0x51a7;
+  for(let i=0;i<grid.count;i++){for(const field of [F.sand,F.clay,F.water,F.salt,F.rock,F.soil,F.iron,F.nitrogen,F.carbonDioxide,F.oxygen]){rng=(Math.imul(rng,1664525)+1013904223)>>>0;state[i*STRIDE+field]=rng/4294967296*10;}rng=(Math.imul(rng,1664525)+1013904223)>>>0;state[i*STRIDE+F.temperature]=rng/4294967296*40;}
+  const save=migrateWorld({version:4,preset:'coast',state:Array.from(state),time:0,discoveries:[],environment:{ambient:18,sunlight:1,sun:[0,1,0]},supplied:0,removed:0},grid.count);
+  save.planets=Array.from({length:4},(_,i)=>({id:'planet-'+i,name:'Cloud '+i,snapshot:structuredClone(save.planets[0].snapshot)}));save.activeId='planet-0';
   expect((await encodeSave(save)).size).toBeGreaterThan(1048576);
   const first=await store.write(save,null);
   expect((await store.read())?.system.planets).toEqual(save.planets);

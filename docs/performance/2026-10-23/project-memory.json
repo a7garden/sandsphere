@@ -1,0 +1,25 @@
+{
+  "summary": "2026-10-23 Sandsphere 0.7.0-alpha.18의 전체 성능 연구를 수행했다. 현재 미커밋 작업 트리에서 CPU, 브라우저 Worker/GPU, 실제 게임, 렌더 갱신, 저장, 메모리, 번들을 측정했다. docs/PERFORMANCE_RESEARCH_2026-10-23_KO.md 및 재현 하네스/JSON/프로파일을 추가했으며 최적화 구현이나 배포는 하지 않았다.",
+  "decisions": [
+    "사용자 요청 범위는 전체 성능 최적화 연구다. 최적화 패치, 저장 형식 변경, 릴리즈는 실행하지 않았다.",
+    "연구 제안 우선순위: 진행된 8행성 저장 한도 및 캡처 비용 → 복사 scratch/into API → 사용하지 않는 GPU 왕복 및 Worker transfer → 배경 typed 상태, 표면 dirty, 초기 import/boot. 공통 물리, Float64 잔차, 보존, 정확한 재개를 유지한다."
+  ],
+  "work": [
+    "CPU 6회 준비+24단계, 2562셀: wet 평균1074.80ms, dry326.56ms, Jupiter253.82ms. 별도 wet 계측1112.38ms 중 radiation658.05ms. 캐시 무효화 원인별 횟수는 미계측.",
+    "브라우저 wet CPU Worker 단계1095.50ms, UI 프레임16.72ms. GPU Worker1123.53ms로 처리량 이점이 확인되지 않았다. gpu.ts는 readback 결과를 사용하지 않고 Float64 호스트 물리를 실행한다. 고정 순서 단회 실험이라 2.6% 차이의 유의성은 미확정.",
+    "실제 앱 기본 암석 행성1개, 고정1280x720 DPR1: 목표1x 재생15초 rAF평균19.42ms, 처리율0.151x, Long Tasks206–219ms 3개. 5초 저장과 유사한 간격이나 인과 attribution은 미측정.",
+    "유효한 목성14단계 8행성 합성 system의 실제 encodeSave가20MiB 압축 한도를 거부했다. 브라우저8행성 IDB 동기 제출 평균236.50ms. 사용자 저장본이나 클라우드 업로드 시험은 아니다.",
+    "원본 증거는 docs/performance/2026-10-23의 cpu-measurements, browser-physics-wet, browser-surface-wet, browser-save-wet, save-limit-proof, bundle-modules, memory JSON과 wet.cpuprofile, 실제 게임 JSON/화면에 저장했다."
+  ],
+  "checks": [
+    "check:version, 프로젝트 및 연구 하네스 TypeScript, 환경 파일 없이 /tmp에 수행한 생산 설정 동등 Vite build 통과. 기존 큰 청크 경고 유지.",
+    "worker-solver, atmosphere-exchange18, giant-save-size, surface-buffers, browser-storage 집중검사27/27 통과. 전체 suite 미실행.",
+    "브라우저 wet30단계 후 main CPU/CPU Worker/GPU Worker의 surface, 전체 climate checkpoint, lift, 교환 배열은 Object.is 기준 일치. 한 시나리오의 단기 결과.",
+    "source-baseline/preservation으로 기존517파일 해시, HEAD, 초기git status 보존 확인. 연구 탭/서버 종료 및 viewport 복원. 제품 코드, 버전, CHANGELOG 변경 없음."
+  ],
+  "pending": [
+    "제안한 최적화는 미구현이다. 예상 개선율을 달성한 성과로 취급하면 안 된다.",
+    "실물 모바일, 장시간 열/메모리, GPU timestamp, 실제4행성 처리량, 클라우드/콜드부팅, 메인 작업 stack attribution 추가 측정 필요.",
+    "물리 비교/IDB는DPR2, 실제게임/독립표면은DPR1. 물리 하네스 smooth 표면과 실제 앱 hex는 다르다. 다른 사용자 머신 작업을 중단하지 않아 시스템 독점 실험이 아니다."
+  ]
+}

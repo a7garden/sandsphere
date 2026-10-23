@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "kind": "wet",
+    "cells": 2562,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 16,
+    "viewport": [
+      1280,
+      720
+    ],
+    "dpr": 2,
+    "drawingBuffer": [
+      1885,
+      1060
+    ],
+    "renderer": "Engine",
+    "drawCalls": 59097,
+    "activeIndices": 375932,
+    "meshCount": 41,
+    "quality": "production defaults; atmosphere/clouds enabled; spin stopped",
+    "wallClock": "2026-10-23T12:22:15.507Z"
+  },
+  "method": "stress test: refresh once per rendered frame, not application 15Hz coalescing",
+  "rows": [
+    {
+      "mode": "idle",
+      "samples": 150,
+      "warmupFrames": 30,
+      "refresh": {
+        "n": 0,
+        "meanMs": 0,
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null,
+        "over50ms": 0
+      },
+      "renderCpuSubmission": {
+        "n": 150,
+        "meanMs": 0.38600000540415447,
+        "p50Ms": 0.39999985694885254,
+        "p95Ms": 0.5999999046325684,
+        "p99Ms": 0.7000000476837158,
+        "over50ms": 0
+      },
+      "uiFrames": {
+        "n": 150,
+        "meanMs": 19.80933333237966,
+        "p50Ms": 18.5,
+        "p95Ms": 30.699999809265137,
+        "p99Ms": 32.299999952316284,
+        "over50ms": 0
+      }
+    },
+    {
+      "mode": "temperature",
+      "samples": 150,
+      "warmupFrames": 30,
+      "refresh": {
+        "n": 150,
+        "meanMs": 22.060000009536743,
+        "p50Ms": 19.90000009536743,
+        "p95Ms": 36.09999990463257,
+        "p99Ms": 39.89999985694885,
+        "over50ms": 0
+      },
+      "renderCpuSubmission": {
+        "n": 150,
+        "meanMs": 0.3839999977747599,
+        "p50Ms": 0.39999985694885254,
+        "p95Ms": 0.5,
+        "p99Ms": 0.6000001430511475,
+        "over50ms": 0
+      },
+      "uiFrames": {
+        "n": 150,
+        "meanMs": 22.935333333015443,
+        "p50Ms": 20.59999990463257,
+        "p95Ms": 36.60000014305115,
+        "p99Ms": 40.5,
+        "over50ms": 0
+      }
+    },
+    {
+      "mode": "pour",
+      "samples": 150,
+      "warmupFrames": 30,
+      "refresh": {
+        "n": 150,
+        "meanMs": 22.465333326657614,
+        "p50Ms": 21.09999990463257,
+        "p95Ms": 32.5,
+        "p99Ms": 38.60000014305115,
+        "over50ms": 0
+      },
+      "renderCpuSubmission": {
+        "n": 150,
+        "meanMs": 0.3626666752497355,
+        "p50Ms": 0.39999985694885254,
+        "p95Ms": 0.5,
+        "p99Ms": 0.6000001430511475,
+        "over50ms": 0
+      },
+      "uiFrames": {
+        "n": 150,
+        "meanMs": 23.420666666030883,
+        "p50Ms": 21.700000047683716,
+        "p95Ms": 36.799999952316284,
+        "p99Ms": 40.700000047683716,
+        "over50ms": 0
+      }
+    }
+  ]
+}

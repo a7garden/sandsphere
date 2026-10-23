@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "source": "scripts/spectral-optics.c",
+  "sourceSha256": "494bfe52a683db114021da68b321b0b4c73c845ba6bd233e29bd132ed25e234b",
+  "binary": "spectral-optics-simd.wasm",
+  "binarySha256": "aed6fdb6f5fba7ddb16f2dc1275a8f9330cc53b88553bf6576809e802f22fcc8",
+  "binaryBytes": 1388,
+  "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "linker": "LLD 22.1.8 (https://github.com/rust-lang/llvm-project.git 52ed14fcd56afc30f9cccd8ca8ce237c2eef7e04)",
+  "compileFlags": [
+    "--target=wasm32",
+    "-O3",
+    "-ffp-contract=off",
+    "-fno-fast-math",
+    "-fno-vectorize",
+    "-fno-slp-vectorize",
+    "-fno-builtin",
+    "-nostdlib",
+    "-msimd128",
+    "-DUSE_SIMD=1"
+  ],
+  "linkFlags": [
+    "--no-entry",
+    "--export=optics",
+    "--export=__heap_base",
+    "--export-memory",
+    "--stack-first",
+    "-z",
+    "stack-size=65536",
+    "--initial-memory=131072"
+  ],
+  "precision": "IEEE754 Float64, strict f64x2 SIMD; no relaxed SIMD/FMA/reassociation; gas accumulation j=0..7"
+}

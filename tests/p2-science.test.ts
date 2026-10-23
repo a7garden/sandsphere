@@ -5,7 +5,7 @@ import {PHYSICS_DT} from '../src/sim/clock';
 import {saturationPressure,waterActivity,boilingPoint,vaporPressure,REFERENCE_PRESSURE} from '../src/sim/waterPhysics';
 import {consumerHabitat} from '../src/sim/ecology';
 import {albedo,phaseLimitNotes} from '../src/sim/materialPhysics';
-import {cloudWind} from '../src/sim/clouds';
+import {cloudEdgeFraction} from '../src/sim/clouds';
 import {impactMeteor} from '../src/sim/meteor';
 import {buildSectionMesh} from '../src/render/sectionGeometry';
 import {depthProfile} from '../src/ui/depthProfile';
@@ -37,7 +37,7 @@ describe('P2 science and deliberately bounded game physics',()=>{
   expect(boilingPoint(REFERENCE_PRESSURE,a)).toBeGreaterThan(boilingPoint(REFERENCE_PRESSURE));
   const s=fresh(),e=env(20);expect(vaporCapacity(s,0,20,e,'water',a)).toBeLessThan(vaporCapacity(s,0,20,e));
  });
- it('melts upper cloud ice above 0°C and permits liquid cloud supercooling above -12°C',()=>{
+ it('melts cloud ice using actual reservoir temperature and keeps above-freezing clouds liquid',()=>{
   const warm=fresh(12.5);warm[F.cloudIce]=.09;warm[F.vapor]=vaporCapacity(warm,0,.5,env(12.5),'ice');const h=enthalpy(warm,0);
   react(warm,0,PHYSICS_DT,env(12.5),g);expect(warm[F.cloud]).toBeGreaterThan(0);expect(warm[F.cloudIce]).toBeLessThan(.09);expect(enthalpy(warm,0)).toBeCloseTo(h,3);
   const cool=fresh(1);cool[F.cloud]=.09;cool[F.vapor]=vaporCapacity(cool,0,-11,env(1));react(cool,0,PHYSICS_DT,env(1),g);expect(cool[F.cloudIce]).toBe(0);
@@ -47,10 +47,10 @@ describe('P2 science and deliberately bounded game physics',()=>{
   expect(s[F.ice]).toBeLessThan(10);expect(s[F.vapor]).toBeGreaterThan(0);expect(s[F.temperature]).toBeLessThan(-20);
   expect(totalMass(s)).toBeCloseTo(before,6);expect(enthalpy(s,0)).toBeCloseTo(h,2);
  });
- it('prevents consumer growth in fatal heat/cold and returns losses to the conserved soil stock',()=>{
+ it('prevents consumer growth in fatal heat/cold and returns losses to organic matter and finite decomposition gases',()=>{
   for(const t of [-100,1000]){const s=fresh(t);s[F.soil]=10;s[F.plant]=10;s[F.herbivore]=2;s[F.carnivore]=1;s[F.water]=.3;const before=totalMass(s);
    for(let n=0;n<30;n++)react(s,0,PHYSICS_DT,env(t),g);
-   expect(s[F.herbivore]).toBeLessThan(2);expect(s[F.carnivore]).toBeLessThan(1);expect(s[F.soil]).toBeGreaterThan(10);expect(totalMass(s)).toBeCloseTo(before,4);
+   expect(s[F.herbivore]).toBeLessThan(2);expect(s[F.carnivore]).toBeLessThan(1);expect(s[F.soil]*12/30+s[F.charcoal]+s[F.methane]*12/16+s[F.carbonMonoxide]*12/28+s[F.carbonDioxide]*12/44).toBeGreaterThan(10*12/30);expect(totalMass(s)).toBeCloseTo(before,4);
   }
   for(const args of [[22,0,0,0],[22,.3,.3,0],[1000,.3,0,0],[-100,.3,0,0]] as const)expect(consumerHabitat(args[0],args[1],args[2],args[3])).toBe(0);
  });
@@ -109,8 +109,9 @@ describe('P2 science and deliberately bounded game physics',()=>{
   const rates=results.map(r=>r.decay);expect(Math.max(...rates)/Math.min(...rates)).toBeLessThan(1.12);
   console.info('spatial diffusion convergence',JSON.stringify(results));
  });
- it('reverses the rotational component of cloud wind under retrograde rotation',()=>{
-  const forward=cloudWind(.8,.3,.52,[1,0,0],.05),reverse=cloudWind(.8,.3,.52,[1,0,0],-.05);
-  expect(forward).not.toEqual(reverse);expect(forward[1]).toBe(reverse[1]);
+ it('mixes legacy cloud tracers symmetrically without prescribing latitude winds',()=>{
+  for(let i=0;i<g.count;i++)for(let k=0;k<6;k++){const j=g.neighbors[i*6+k];if(j!==INVALID)expect(cloudEdgeFraction(g,i,j,PHYSICS_DT)).toBeCloseTo(cloudEdgeFraction(g,j,i,PHYSICS_DT),14);}
+  const state=fresh();state[F.cloud]=1;const forward=new CpuSolver(g,state.slice()),reverse=new CpuSolver(g,state.slice());
+  forward.advance(.2,empty,{...env(20),rotationRate:.05});reverse.advance(.2,empty,{...env(20),rotationRate:-.05});expect(reverse.state).toEqual(forward.state);
  });
 });

@@ -56,11 +56,11 @@ describe('R01/R02: conservative, reversible water/ice/salt equilibrium',()=>{
   let resumed:CpuSolver|undefined;
   for(let step=0;step<120;step++){
    solver.advance(PHYSICS_DT,commands,env);resumed?.advance(PHYSICS_DT,commands,env);
-   const captured=snapshotSurface(solver.state,commands,[]).state;
+   const capture=snapshotSurface(solver.state,commands,[],null,solver.climate,env),captured=capture.state;
    for(let p=0;p<captured.length;p+=STRIDE)for(const f of MASS_FIELDS)expect(captured[p+f]).toBeGreaterThanOrEqual(0);
-   const saved=prepareSystemSave(envelope(snapshot(captured)),grid.count),loaded=JSON.parse(JSON.stringify(saved));
+   const saved=prepareSystemSave(envelope({...snapshot(captured),climate:capture.climate}),grid.count),loaded=JSON.parse(JSON.stringify(saved));
    expect(validSystem(loaded,grid.count)).toBe(true);
-   if(step===59)resumed=new CpuSolver(grid,new Float32Array(upgradeSnapshot(loaded.planets[0].snapshot,grid.count).state));
+   if(step===59){const restored=upgradeSnapshot(loaded.planets[0].snapshot,grid.count);resumed=new CpuSolver(grid,new Float32Array(restored.state));resumed.climate.restore(restored.climate);}
   }
   expect(resumed!.state).toEqual(solver.state);
  });
@@ -82,13 +82,13 @@ describe('R01/R02: conservative, reversible water/ice/salt equilibrium',()=>{
  });
 });
 describe('R04: warehouse destination and persisted completion',()=>{
- it('requires the second-created planet rather than the first or third recipient',()=>{
+ it('requires another planet and preserves completion after inventory is removed',()=>{
   const system=envelope(snapshot(cold()));system.planets[0].snapshot.transferredIn=1;
   const p=freshProgress(),stock=emptyStock();expect(advanceProgress(p,system.planets,stock)).not.toContain('transfer');
   system.planets.push({id:'planet-second',name:'Second',snapshot:snapshot(cold())},{id:'planet-third',name:'Third',snapshot:{...snapshot(cold()),transferredIn:2}});
-  expect(advanceProgress(p,system.planets,stock)).not.toContain('transfer');
-  system.planets[1].snapshot.transferredIn=.1;expect(advanceProgress(p,system.planets,stock)).toContain('transfer');
-  const persisted=JSON.parse(JSON.stringify(p));system.planets[1].snapshot.transferredIn=0;
+  expect(advanceProgress(p,system.planets,stock)).toContain('transfer');
+  system.planets[1].snapshot.transferredIn=.1;expect(advanceProgress(p,system.planets,stock)).not.toContain('transfer');
+  const persisted=JSON.parse(JSON.stringify(p));system.planets[1].snapshot.transferredIn=0;system.planets[2].snapshot.transferredIn=0;
   expect(advanceProgress(persisted,system.planets,stock)).not.toContain('transfer');expect(persisted.completed).toContain('transfer');
  });
 });

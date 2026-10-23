@@ -1,5 +1,6 @@
 import {F,STRIDE,solidHeight,type SurfaceMaterial} from '../sim/model';
 import {RADIUS,HEIGHT_SCALE,type SphereGrid} from '../sim/sphere';
+import {COLUMN_KG} from '../sim/layeredAtmosphere';
 export const VISUAL_HEIGHT_SCALE=HEIGHT_SCALE*2.4;
 export const altitude=(height:number)=>Math.min(1.6,VISUAL_HEIGHT_SCALE*12*Math.log1p(Math.max(-11,height)/12));
 export function columnGeometry(state:Float32Array,i:number,grid:SphereGrid){
@@ -8,12 +9,14 @@ export function columnGeometry(state:Float32Array,i:number,grid:SphereGrid){
     physicalContact:RADIUS+(solid+water)*HEIGHT_SCALE,solidRadius:RADIUS+altitude(solid),waterRadius:RADIUS+altitude(solid+water)};
 }
 export const MATERIAL_COLORS={
-  soil:[.40,.33,.22],plant:[.24,.44,.19],herbivore:[.77,.61,.38],carnivore:[.48,.30,.20],iron:[.36,.40,.43],
+  charcoal:[.12,.11,.10],soil:[.40,.33,.22],plant:[.24,.44,.19],herbivore:[.77,.61,.38],carnivore:[.48,.30,.20],iron:[.36,.40,.43],
   rock:[.73,.75,.70],sand:[.94,.81,.57],clay:[.73,.46,.32],ceramic:[.79,.40,.23],glass:[.46,.73,.67],
-  ice:[.88,.96,.97],salt:[.99,.97,.91],water:[.24,.60,.73],molten:[1,.37,.12],
-} as const satisfies Record<SurfaceMaterial|'rock'|'molten',readonly number[]>;
+  ice:[.88,.96,.97],salt:[.99,.97,.91],water:[.24,.60,.73],molten:[1,.37,.12],carbonDioxideIce:[.96,.97,.95],surfaceDust:[.77,.48,.30],
+} as const satisfies Record<SurfaceMaterial|'rock'|'molten'|'carbonDioxideIce'|'surfaceDust'|'charcoal',readonly number[]>;
 export function columnColor(state:Float32Array,i:number,hideBedrock=false):readonly number[]{
   const p=i*STRIDE;let total=.05;const color=[.73*.05,.75*.05,.70*.05];
-  for(const name of ['rock','sand','clay','ceramic','glass','salt','molten','soil','iron','ice'] as const){const mass=hideBedrock&&name==='rock'?0:state[p+F[name]],rgb=MATERIAL_COLORS[name];total+=mass;for(let c=0;c<3;c++)color[c]+=rgb[c]*mass;}
-  return color.map(v=>v/total);
+  if(state[p+F.hydrogen]+state[p+F.helium]>0){const cloud=-Math.expm1(-COLUMN_KG*(state[p+F.ammoniaCloud]+state[p+F.ammoniaIce])*.7);return [.64+.30*cloud,.46+.44*cloud,.31+.51*cloud];}
+  for(const name of ['rock','sand','clay','ceramic','glass','salt','molten','soil','iron','ice','carbonDioxideIce','surfaceDust','charcoal'] as const){const mass=hideBedrock&&name==='rock'?0:state[p+F[name]],rgb=MATERIAL_COLORS[name];total+=mass;for(let c=0;c<3;c++)color[c]+=rgb[c]*mass;}
+  const frost=-Math.expm1(-state[p+F.carbonDioxideIce]*COLUMN_KG);
+  return color.map((v,k)=>(1-frost)*v/total+frost*MATERIAL_COLORS.carbonDioxideIce[k]);
 }

@@ -11,12 +11,12 @@ describe('climate connections and observations',()=>{
  it('distinguishes a weak measured flow from exactly motionless water in the inspector',()=>{
   expect(formatFlowSpeed(0)).toBe('0.00');expect(formatFlowSpeed(.00042)).toBe('0.0004');expect(formatFlowSpeed(.0000004)).toBe('<0.0001');expect(formatFlowSpeed(.25)).toBe('0.25');
  });
- it('thin-liquid current mobility fades continuously across the old ice/water threshold',()=>{
+ it('thin liquid keeps gravitational momentum while wind coupling fades continuously',()=>{
   const a=blank(),b=a.slice(),ca=new WeatherClimate(grid),cb=new WeatherClimate(grid);
   for(let i=0;i<grid.count;i++){a[i*STRIDE+F.water]=.1999;b[i*STRIDE+F.water]=.2001;ca.currents[i*3]=cb.currents[i*3]=.02;}
   ca.step(a,1/30,{...env,sunlight:0},new Float32Array(grid.count*4));cb.step(b,1/30,{...env,sunlight:0},new Float32Array(grid.count*4));
-  expect(ca.currents.every(v=>v===0)).toBe(true);expect(Math.max(...cb.currents.map(Math.abs))).toBeLessThan(1e-6);
-  expect(currentMobility(b,0)).toBeGreaterThan(0);b[F.water]=.5;expect(currentMobility(b,0)).toBeCloseTo(1);b[F.water]=.8;b[F.soil]=8;expect(currentMobility(b,0)).toBe(0);
+  const speed=Math.max(...ca.currents.map(Math.abs)),difference=Math.max(...ca.currents.map((v,i)=>Math.abs(v-cb.currents[i])));expect(speed).toBeGreaterThan(0);expect(difference).toBeLessThan(speed*.02+1e-12);
+  b[F.water]=.2001;expect(currentMobility(b,0)).toBeGreaterThan(0);b[F.water]=.5;expect(currentMobility(b,0)).toBeCloseTo(1);b[F.water]=.8;b[F.soil]=8;expect(currentMobility(b,0)).toBe(0);
  });
  it('reads prognostic layer temperature and humidity on resume without advancing',()=>{
   const s=blank(),c=new WeatherClimate(grid);for(let i=0;i<grid.count;i++)s[i*STRIDE+F.vapor]=.0018;c.prepareSurface(s,env);c.air.attach(s);

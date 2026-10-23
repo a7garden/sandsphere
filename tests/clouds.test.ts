@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {F,STRIDE,COMMAND_STRIDE,CpuSolver,react,saturation,totalMass,totals,capacity,ICE_LATENT,WATER_LATENT,type Snapshot} from '../src/sim/model';
 import {createSphere} from '../src/sim/sphere';
-import {cloudWind,CLOUD_COOLING} from '../src/sim/clouds';
+import {CLOUD_COOLING} from '../src/sim/clouds';
 import {atmosphereState} from '../src/sim/atmosphere';
 import {atmosphereOptics} from '../src/sim/optics';
 import {upgradeSnapshot,validSnapshot} from '../src/sim/storage';
@@ -59,17 +59,17 @@ describe('persistent cloud cycle',()=>{
     for(let i=0;i<grid.count;i++)for(const field of [F.water,F.ice,F.vapor,F.cloud,F.cloudIce])expect(solver.state[i*STRIDE+field]).toBeGreaterThanOrEqual(0);
     solver.replace(stateAt());expect(solver.precipitatedCells.every(v=>v===0)).toBe(true);
   });
-  it('changes upper-air transport with rotation and shades solar heating',()=>{
-    const slow=cloudWind(.8,.3,.52,[1,0,0],0),fast=cloudWind(.8,.3,.52,[1,0,0],Math.PI/10);
-    expect(fast).not.toEqual(slow);
+  it('shades solar heating using the actual cloud inventory',()=>{
     // Above the condensation range, excess vapor leaves cloud stock unchanged.
     // This isolates shading from evaporative cooling and phase-change heat.
     const clear=stateAt(220),cloudy=stateAt(220);cloudy[F.cloud]=.1;cloudy[F.vapor]=clear[F.vapor]=40;
     // Compensate thermal capacity so the difference is cloud shading, not added thermal inertia.
     clear[F.rock]=.1*4.18/.84;
-    const lit={...calm,sunlight:1,sun:[...grid.directions.slice(0,3)]};react(clear,0,.1,lit,grid);react(cloudy,0,.1,lit,grid);
+    const clearEnergy=new Float32Array(grid.count*4),cloudEnergy=new Float32Array(grid.count*4);
+    const lit={...calm,sunlight:1,sun:[...grid.directions.slice(0,3)]};react(clear,0,.1,lit,grid,undefined,undefined,undefined,clearEnergy);react(cloudy,0,.1,lit,grid,undefined,undefined,undefined,cloudEnergy);
     expect(cloudy[F.cloud]).toBeCloseTo(.1,6);expect(cloudy[F.vapor]).toBe(40);
-    expect(cloudy[F.temperature]).toBeLessThan(clear[F.temperature]);
+    // One physical solar increment can be below a hot Float32 cell ULP.
+    expect(cloudEnergy[0]).toBeLessThan(clearEnergy[0]);expect(cloudy[F.temperature]).toBeLessThanOrEqual(clear[F.temperature]);
   });
 });
 
@@ -91,7 +91,7 @@ describe('cloud save compatibility',()=>{
     const legacy:Snapshot={version:1,preset:'coast',state:Array(32).fill(0),time:123,environment:calm,supplied:5,removed:2,escaped:1,discoveries:[],spin:{angle:1,running:true,tilt:23.5,period:120}};
     for(let i=0;i<2;i++)for(let f=0;f<16;f++)legacy.state[i*16+f]=Math.fround(f===F.temperature?-5+i:f*.125+i);
     expect(validSnapshot(legacy,2)).toBe(true);const upgraded=upgradeSnapshot(legacy,2);
-    expect(upgraded.version).toBe(3);expect(upgraded.state.length).toBe(2*STRIDE);expect(upgraded.time).toBe(123);expect(upgraded.spin).toEqual(legacy.spin);
+    expect(upgraded.version).toBe(11);expect(upgraded.state.length).toBe(2*STRIDE);expect(upgraded.time).toBe(123);expect(upgraded.spin).toEqual(legacy.spin);
     for(let i=0;i<2;i++){expect(upgraded.state.slice(i*STRIDE,i*STRIDE+16)).toEqual(legacy.state.slice(i*16,i*16+16));expect(upgraded.state[i*STRIDE+F.cloud]+upgraded.state[i*STRIDE+F.cloudIce]).toBe(0);}
     upgraded.state[F.cloud]=.1;upgraded.state[F.cloudIce]=.2;expect(validSnapshot(upgraded,2)).toBe(true);expect(upgradeSnapshot(upgraded,2).state).toEqual(upgraded.state);
   });

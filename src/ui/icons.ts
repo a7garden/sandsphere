@@ -20,6 +20,7 @@ const paths:Record<string,string>={
   water:'<path d="M12 3s-7 8-7 12a7 7 0 0 0 14 0c0-4-7-12-7-12Z"/><path d="M9 16c0 1.7 1 2.5 2 2.7"/>',
   clay:'<path d="m4 8 8-4 8 4v9l-8 4-8-4V8Z"/><path d="m4 8 8 4 8-4M12 12v9"/>',
   salt:'<path d="m12 3 8 6-3 11H7L4 9l8-6Z"/><path d="m4 9 8 3 8-3M12 3v9l5 8M12 12 7 20"/>',
+  oxygen:'<circle cx="7" cy="12" r="4"/><circle cx="17" cy="12" r="4"/><path d="M11 11h2M11 13h2"/>',
   nitrogen:'<circle cx="7" cy="12" r="4"/><circle cx="17" cy="12" r="4"/><path d="M11 10h2M11 14h2"/>',
   methane:'<circle cx="12" cy="12" r="3"/><path d="m10 10-4-4m8 4 4-4m-8 8-4 4m8-4 4 4"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>',
   carbonDioxide:'<circle cx="4" cy="12" r="3"/><circle cx="12" cy="12" r="3"/><circle cx="20" cy="12" r="3"/><path d="M7 12h2M15 12h2"/>',

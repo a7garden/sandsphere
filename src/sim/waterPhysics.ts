@@ -27,12 +27,12 @@ export function boilingPoint(pressure:number,activity=1){
  * Solve that expression for saturated vapor mass. Stable root avoids cold cancellation.
  * .3 game kg of N2 at 1g is the declared 1-atm reference column.
  */
-export function saturationMass(temperature:number,phase:WaterPhase='water',nitrogen=.3,methane=0,co2=0,gravity=1,activity=1){
- const dry=nitrogen+methane+co2,moles=nitrogen/.028014+methane/.016043+co2/.04401;
+export function saturationMass(temperature:number,phase:WaterPhase='water',nitrogen=.3,methane=0,co2=0,gravity=1,activity=1,oxygen=0,carbonMonoxide=0){
+ const dry=nitrogen+methane+co2+oxygen+carbonMonoxide,moles=nitrogen/.028014+methane/.016043+co2/.04401+oxygen/.032+carbonMonoxide/.02801;
  const e=saturationPressure(temperature,phase)*activity,k=REFERENCE_PRESSURE*gravity/REFERENCE_GAS_MASS,b=k*dry-e,c=e*WATER_MOLAR_MASS*moles,root=Math.sqrt(b*b+4*k*c);
  return b>=0?2*c/Math.max(1e-30,root+b):(root-b)/(2*k);
 }
-export function vaporPressure(vapor:number,nitrogen:number,methane:number,co2:number,gravity=1){
- const n=vapor/WATER_MOLAR_MASS,total=n+nitrogen/.028014+methane/.016043+co2/.04401;
- return total>0?columnPressure(vapor+nitrogen+methane+co2,gravity)*n/total:0;
+export function vaporPressure(vapor:number,nitrogen:number,methane:number,co2:number,gravity=1,oxygen=0,carbonMonoxide=0){
+ const n=vapor/WATER_MOLAR_MASS,total=n+nitrogen/.028014+methane/.016043+co2/.04401+oxygen/.032+carbonMonoxide/.02801;
+ return total>0?columnPressure(vapor+nitrogen+methane+co2+oxygen+carbonMonoxide,gravity)*n/total:0;
 }

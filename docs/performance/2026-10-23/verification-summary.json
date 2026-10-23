@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-10-23T12:42:59.701691+00:00",
+  "scope": "research only; no product implementation or deployment",
+  "version": "0.7.0-alpha.18",
+  "checks": {
+    "checkVersion": "pass",
+    "projectTypeScript": "pass",
+    "researchTypeScript": "pass",
+    "equivalentProductionBuild": "pass, envDir false, ES2022 app/clouds inputs; output under /tmp; existing large-chunk warning",
+    "targetedTests": {
+      "passed": 27,
+      "failed": 0,
+      "pending": 0,
+      "success": true
+    },
+    "fullSuite": "not run in this research",
+    "gitDiffCheck": "pass",
+    "existingFilesUnchanged": true,
+    "initialStatusPreserved": true
+  },
+  "browserEvidence": {
+    "backendComparison": "browser-physics-wet.json",
+    "idb": "browser-save-wet.json",
+    "independentSurface": "browser-surface-wet.json",
+    "actualGamePaused": "browser-game-paused-1792759116435.json",
+    "actualGameRunning": "browser-game-running-1792759145821.json",
+    "exactBackendMatch": "surface, complete climate checkpoint, lift and exchange arrays Object.is equal after 30 wet steps; one scenario only"
+  },
+  "exploratoryExcluded": [
+    "browser-surface-wet-after-physics-exploratory.json: retained previous climate view; DPR 2",
+    "browser-game-paused-1792758692854.json: exploratory before fixed viewport",
+    "browser-game-running-1792758804883.json: uncontrolled viewport; excluded from final game table",
+    "surface attempt interrupted by adding research tsconfig and Vite reload; no completed record used"
+  ],
+  "metadataCorrections": [
+    "physics and initial save JSON quality label production defaults does not imply actual app hex surface; physics benchmark used PlanetView constructor smooth defaults",
+    "drawCalls is cumulative internal counter, not per-frame draw calls",
+    "render CPU submission is not GPU time"
+  ],
+  "measurementConditions": [
+    "Micro physics and IDB: 1280x720 DPR2, buffer1885x1060",
+    "Final actual game and standalone surface: fixed1280x720 DPR1, buffer1280x720",
+    "Own CPU/build/test/browser benchmarks were sequential; other user machine workloads were not stopped",
+    "Actual game: new local test guest world, no cloud configuration; iframe parent rAF and child Long Tasks, two 15s windows"
+  ],
+  "limitations": [
+    "No real mobile or sustained thermal test",
+    "No GPU timestamp or application stack attribution",
+    "No long-duration memory leak test or actual four-planet throughput",
+    "No network/cloud upload or cold-start timing",
+    "IDB research validates savedAt round-trip only; not exact serialization correctness"
+  ],
+  "cleanup": {
+    "researchTabClosed": true,
+    "viewportReset": true,
+    "researchServerStopped": true,
+    "productCodeChanged": false
+  }
+}

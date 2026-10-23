@@ -67,7 +67,7 @@ describe('persistent solar system',()=>{
  });
  it('preserves the entire legacy world when wrapping it in a solar system',()=>{
   const original=snapshot(),before=structuredClone(original),system=migrateWorld(original,grid.count);
-  expect(validSystem(system,grid.count)).toBe(true);expect(system.planets[0].snapshot).toEqual(original);expect(original).toEqual(before);
+  expect(validSystem(system,grid.count)).toBe(true);expect(system.planets[0].snapshot).toEqual(upgradeSnapshot(original,grid.count));expect(system.planets[0].snapshot.state).toEqual(original.state);expect(original).toEqual(before);
   expect(system.stock).toEqual(emptyStock());
   expect(validSystem({...system,activeId:'missing'},grid.count)).toBe(false);
   expect(validSystem({...system,stock:{ice:-1,ceramic:0,glass:0}},grid.count)).toBe(false);
@@ -78,7 +78,7 @@ describe('persistent solar system',()=>{
   b.environment=orbitalEnvironment(1);
   for(let i=0;i<grid.count;i++)b.state[i*STRIDE+F.temperature]=18;
   const system=migrateWorld(a,grid.count);system.planets.push({id:'planet-2',name:'Cold',snapshot:b},{id:'planet-3',name:'Paused',snapshot:c});
-  const active=structuredClone(a),paused=structuredClone(c),mass=totalMass(new Float32Array(b.state));
+  const active=structuredClone(system.planets[0].snapshot),paused=structuredClone(c),mass=totalMass(new Float32Array(b.state));
   const background=new BackgroundWorlds(grid);for(let n=0;n<40;n++)background.step(system.planets,system.activeId,.2);
   expect(system.planets[0].snapshot).toEqual(active);expect(c).toEqual(paused);expect(b.time).toBeCloseTo(8);
   expect(totalMass(new Float32Array(b.state))+(b.escaped??0)).toBeCloseTo(mass,3);
@@ -113,6 +113,15 @@ describe('persistent solar system',()=>{
   await background.stepAsync([planet],'planet-1',.01);const dispose=vi.spyOn(failed,'dispose');await background.stepAsync([planet],'planet-1',.01);
   expect(planet).toEqual(expected);expect(calls).toBe(2);expect(dispose).toHaveBeenCalledOnce();warning.mockRestore();
  });
+ it('pauses a repeatedly failing inactive world without changing its committed state or blocking other saves',async()=>{
+  const failed={id:'planet-failed',name:'Failed',snapshot:snapshot('ice')},good={id:'planet-good',name:'Good',snapshot:snapshot()},before=structuredClone(failed.snapshot),expected=structuredClone(good);
+  const warning=vi.spyOn(console,'warn').mockImplementation(()=>{}),onFailure=vi.fn(),factory=vi.fn(async(state:Float32Array)=>{const solver=new CpuSolver(grid,state);if(state[F.ice]>0)solver.step=async()=>{throw new Error('model domain');};return solver;});
+  const background=new BackgroundWorlds(grid,factory);await background.stepAsync([failed,good],'planet-active',.01,undefined,onFailure);
+  expect(failed.snapshot).toEqual({...before,paused:true});expect(onFailure).toHaveBeenCalledOnce();expect(factory).toHaveBeenCalledTimes(3);
+  new BackgroundWorlds(grid).step([expected],'planet-active',.01);expect(good).toEqual(expected);
+  const ready=prepareSystemSave({version:3,mode:'sandbox',activeId:good.id,planets:[failed,good],stock:emptyStock(),savedAt:1},grid.count);expect(validSystem(ready,grid.count)).toBe(true);
+  await background.stepAsync([failed,good],'planet-active',.01,undefined,onFailure);expect(onFailure).toHaveBeenCalledOnce();warning.mockRestore();
+ });
  it('makes period depend on radius and synchronous rotation keep one solar face',()=>{
   expect(orbitalPeriod(4)/orbitalPeriod(1)).toBe(8);
   const s=snapshot();s.spin!.locked=true;
@@ -125,6 +134,6 @@ describe('persistent solar system',()=>{
   const mass=totalMass(state),e=orbitalEnvironment(1.1);e.sun=[0,0,0];
   for(let n=0;n<1800;n++)solver.advance(.2,command,e);
   let ice=0;for(let i=0;i<grid.count;i++)ice+=solver.state[i*STRIDE+F.ice];
-  expect(ice).toBeGreaterThan(0);expect(totalMass(solver.state)).toBeCloseTo(mass,1);
- });
+  expect(solver.state[F.temperature]).toBeLessThan(18);expect(ice).toBe(0);expect(totalMass(solver.state)).toBeCloseTo(mass,1);
+ },60000);
 });

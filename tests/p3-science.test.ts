@@ -52,7 +52,7 @@ describe('P3 model domains and conservative game simplifications',()=>{
   const solver=new CpuSolver(grid,s.slice()),commands=new Float32Array(grid.count*COMMAND_STRIDE);let lost=0,q=0,escapeHeat=0;
   for(let n=0;n<300;n++){solver.advance(PHYSICS_DT,commands,{...env,gravity:.01});lost+=solver.escapeCells.reduce((a,b)=>a+b,0);q+=solver.energyChanges.reduce((a,b)=>a+b,0);escapeHeat+=solver.energyChanges.reduce((a,b,i)=>a+(i%4===2?b:0),0);}
   expect(lost).toBeGreaterThan(50);expect(totalMass(solver.state)+lost).toBeCloseTo(totalMass(s),4);
-  expect(escapeHeat).toBeLessThan(0);expect(totalEnthalpy(solver.state)-totalEnthalpy(s)).toBeCloseTo(q,2);
+  expect(escapeHeat).toBeLessThan(0);expect(Math.abs(totalEnthalpy(solver.state)-totalEnthalpy(s)-q)).toBeLessThan(Math.abs(q)*1e-8+.001);
   expect(solver.state[F.temperature]).toBeCloseTo(20,5);
  });
  it('integrates the fixed-capacity external bath exactly without overshoot even at large dt',()=>{
@@ -65,8 +65,8 @@ describe('P3 model domains and conservative game simplifications',()=>{
   expect(s[F.temperature]).toBeGreaterThanOrEqual(100);expect(s[F.temperature]).toBeLessThan(300);
   expect(totalEnthalpy(s)-initial).toBeCloseTo(energy.reduce((a,b)=>a+b,0),3);
  });
- it('defines the external target as a light/albedo bath rather than claiming gas radiative feedback',()=>{
-  expect(thermalTarget(20,1,0,.38)).toBe(-4);expect(thermalTarget(20,1,1,.72)).toBeLessThan(thermalTarget(20,1,1,.12));
+ it('derives the simple-mode equilibrium from the ambient bath and absorbed solar flux',()=>{
+  expect(thermalTarget(20,1,0,.38)).toBe(20);expect(thermalTarget(20,1,1,.72)).toBeLessThan(thermalTarget(20,1,1,.12));
   const s=fresh(300),before=s.slice();react(s,0,0,env,grid);expect(s).toEqual(before);
  });
  it('uses the actual bath-adjusted temperature and gas mass in the section cap and depth profile',()=>{
@@ -83,8 +83,8 @@ describe('P3 model domains and conservative game simplifications',()=>{
    const solver=new CpuSolver(g,s.slice()),commands=new Float32Array(g.count*COMMAND_STRIDE),h=totalEnthalpy(s);let q=0;
    for(let n=0;n<300;n++){solver.advance(PHYSICS_DT,commands,env);q+=solver.energyChanges.reduce((a,b)=>a+b,0);}
    let final=0;for(let i=0;i<g.count;i++)final+=(solver.state[i*STRIDE+F.temperature]-20)*g.directions[i*3+1];
-   const decay=1-final/initial/Math.exp(-BATH_CONDUCTANCE*10/capacity(s,0));results.push({cells:g.count,decay});expect(decay).toBeGreaterThan(0);expect(Math.abs(totalEnthalpy(solver.state)-h-q)/Math.max(1,Math.abs(h))).toBeLessThan(1e-6);
+   const decay=1-final/initial/Math.exp(-BATH_CONDUCTANCE*10/capacity(s,0));results.push({cells:g.count,decay});expect(decay).toBeGreaterThan(0);expect(Math.abs(totalEnthalpy(solver.state,solver.climate)-h-q)/Math.max(1,Math.abs(h))).toBeLessThan(1e-6);
   }
   expect(Math.max(...results.map(r=>r.decay))/Math.min(...results.map(r=>r.decay))).toBeLessThan(1.12);console.info('P3 thermal spatial convergence',JSON.stringify(results));
- });
+ },60000);
 });

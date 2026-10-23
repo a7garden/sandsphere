@@ -19,10 +19,10 @@ function sectionHits(points:readonly Vector3[],normal:Vector3,offset:number){
   return hits.length===2?hits:[];
 }
 export function triangleSection(points:readonly Vector3[],normal:Vector3,offset:number){return sectionHits(points,normal,offset).map(hit=>hit.point);}
-export interface SectionMeshData {positions:number[];normals:number[];colors:number[];data:number[];snowFractions:number[];powders:number[];indices:number[];owners:number[];}
+export interface SectionMeshData {positions:number[];normals:number[];colors:number[];data:number[];snowFractions:number[];powders:number[];indices:number[];owners:number[];temperatureSamples:number[];}
 export interface SectionSamples {cellOwners:Uint32Array;baseHeights:Float32Array;solidRadii:Float32Array;mobileWater:Float32Array;triangleVertices?:Uint32Array;bedrockHeights?:Float32Array;terrainVertices?:Float32Array;waterVertices?:Float32Array;waterDepths?:Float32Array;}
 export function buildSectionMesh(terrain:Float32Array,water:Float32Array,owners:Uint32Array,state:Float32Array,grid:SphereGrid,normal:Vector3,halfWidth:number,precipitation?:Float32Array,precipDt=1/30,samples?:SectionSamples,hideBedrock=false,window?:SectionWindow,rounded=false){
-  const output:SectionMeshData={positions:[],normals:[],colors:[],data:[],snowFractions:[],powders:[],indices:[],owners:[]};
+  const output:SectionMeshData={positions:[],normals:[],colors:[],data:[],snowFractions:[],powders:[],indices:[],owners:[],temperatureSamples:[]};
   // A selected great-circle plane has height-invariant cell membership.
   // Only the displayed cap is moved to the front of the observation slab.
   const offset=window?0:-halfWidth+.0001,center=normal.scale(offset),facing=normal.scale(-1);
@@ -34,7 +34,7 @@ export function buildSectionMesh(terrain:Float32Array,water:Float32Array,owners:
     const sampleRain=owner>=0&&precipitation?precipitationSample(precipitation[owner*2],precipitation[owner*2+1],precipDt):{intensity:0,snowFraction:0};
     const fractions=owner>=0&&kind===1?powderFractions(state,sample):Array(12).fill(0);
     for(const p of points){output.positions.push(...p.asArray());output.normals.push(...facing.asArray());output.colors.push(...color,1);output.data.push(temperature,owner,kind,sampleRain.intensity);output.snowFractions.push(sampleRain.snowFraction);output.powders.push(...fractions);}
-    output.indices.push(start,start+1,start+2);output.owners.push(owner);
+    output.indices.push(start,start+1,start+2);output.owners.push(owner);output.temperatureSamples.push(owner>=0?sample:-1);
   };
   const tri=(points:Vector3[],owner:number,kind:number,color:readonly number[],sample=owner)=>{
     if(owner>=0&&window?.cells&&!window.cells.has(owner))return;

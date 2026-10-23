@@ -36,6 +36,7 @@ export function formatPlanetElapsed(simulationSeconds:number) {
 
 export function formatPlanetDuration(simulationSeconds:number) {
  const minutes=Math.round(simulationSeconds);
+ if(minutes>=1440)return currentLocale()==='en'?`${(minutes/1440).toFixed(1)} planet days`:`${(minutes/1440).toFixed(1)}일`;
  if(currentLocale()==='en')return minutes<60?`${minutes} planet min`:`${Math.floor(minutes/60)} planet hr${minutes%60?` ${minutes%60} min`:''}`;
  return minutes<60?`${minutes}분`:`${Math.floor(minutes/60)}시간${minutes%60?` ${minutes%60}분`:''}`;
 }

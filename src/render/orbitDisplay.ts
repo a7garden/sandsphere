@@ -13,7 +13,7 @@ export class OrbitDisplay {
   if(changed){this.time=snapshot.time;this.age=0;}else this.age=Math.min(.25,this.age+dt);
   if(snapshot.paused){if(changed){this.angle=snapshot.environment.orbitAngle??0;this.spin=snapshot.spin?.angle??0;}return;}
   const elapsed=snapshot.paused?0:this.age*speed,spin=snapshot.spin;
-  const orbitRate=Math.PI*2/orbitalPeriod(snapshot.environment.orbitDistance??1),spinRate=spin?.running?Math.PI*2/(spin.period??120):0;
+  const orbitRate=Math.PI*2/orbitalPeriod(snapshot.environment.orbitDistance??1,snapshot.environment.body),spinRate=spin?.running?Math.PI*2/(spin.period??120):0;
   const angle=(snapshot.environment.orbitAngle??0)+elapsed*orbitRate;
   const rotation=(spin?.angle??0)+elapsed*spinRate;
   // Integrate every frame, then correct phase. Position-only easing slows down

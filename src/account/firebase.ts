@@ -1,3 +1,5 @@
+import {SAVE_COMPRESSED_LIMIT} from '../sim/saveCodec';
+import {encodeStoredSave,decodeStoredSave} from '../sim/saveCodecClient';
 import {initializeApp} from 'firebase/app';
 import {getAuth,connectAuthEmulator,type Auth} from 'firebase/auth';
 import {getFirestore,connectFirestoreEmulator,doc,getDocFromServer,runTransaction,writeBatch,Bytes,type Firestore} from 'firebase/firestore';
@@ -21,23 +23,11 @@ export function firebaseServices(){
   }
   return services;
 }
-const RAW_LIMIT=64*1024*1024,COMPRESSED_LIMIT=20*1024*1024;
-export async function encodeSave(system:SystemSave){
-  const bytes=new TextEncoder().encode(JSON.stringify(system));
-  if(bytes.length>RAW_LIMIT)throw new Error('저장 데이터가 최대 크기(64MB)를 넘었습니다.');
-  const blob=await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
-  if(blob.size>COMPRESSED_LIMIT)throw new Error('압축한 저장 데이터가 최대 크기(20MB)를 넘었습니다.');
-  return blob;
-}
+const COMPRESSED_LIMIT=SAVE_COMPRESSED_LIMIT;
+export async function encodeSave(system:SystemSave){return new Blob([await encodeStoredSave(system)]);}
 export async function decodeSave(bytes:ArrayBuffer,count:number):Promise<SystemSave>{
-  if(bytes.byteLength>COMPRESSED_LIMIT)throw new Error('클라우드 저장본이 너무 큽니다.');
-  const reader=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
-  const chunks:Uint8Array<ArrayBuffer>[]=[];let size=0;
-  try{while(true){const next=await reader.read();if(next.done)break;size+=next.value.length;if(size>RAW_LIMIT){await reader.cancel();throw new Error('클라우드 저장본이 너무 큽니다.');}chunks.push(new Uint8Array(next.value));}}
-  finally{reader.releaseLock();}
-  const value:unknown=JSON.parse(await new Blob(chunks).text());
-  if(!validSystem(value,count)||value.telemetry?.baseSavedAt!==undefined)throw new Error('클라우드 저장본의 형식이 맞지 않습니다.');
-  return value;
+ const value=await decodeStoredSave(new Uint8Array(bytes));
+ if(!validSystem(value,count)||value.telemetry?.baseSavedAt!==undefined)throw new Error('클라우드 저장본의 형식이 맞지 않습니다.');return value;
 }
 const PART_SIZE=512*1024,PARTS_PER_BATCH=8;
 interface RevisionInfo {revision:string;parts:number;bytes:number;}
@@ -98,7 +88,12 @@ export class FirebaseSaveStore {
   }
   async write(system:SystemSave,expectedRevision:string|null):Promise<string>{
     this.assertOwner();if(!validSystem(system,this.count)||system.telemetry?.baseSavedAt!==undefined)throw new Error('완전한 저장본만 업로드할 수 있습니다.');
-    const revision=crypto.randomUUID(),bytes=new Uint8Array(await (await encodeSave(system)).arrayBuffer());this.assertOwner();
+    return this.writeEncoded(new Uint8Array(await (await encodeSave(system)).arrayBuffer()),system.savedAt,expectedRevision);
+  }
+  /** Bytes produced by the validated persistence preparation worker. */
+  async writeEncoded(bytes:Uint8Array<ArrayBuffer>,savedAt:number,expectedRevision:string|null):Promise<string>{
+    this.assertOwner();if(!bytes.length||bytes.length>COMPRESSED_LIMIT||!Number.isFinite(savedAt)||savedAt<0)throw new Error('저장본의 형식이 맞지 않습니다.');
+    const revision=crypto.randomUUID();
     const info:RevisionInfo={revision,parts:Math.ceil(bytes.length/PART_SIZE),bytes:bytes.length};
     let prune:RevisionInfo|null=null;
     try{
@@ -111,7 +106,7 @@ export class FirebaseSaveStore {
         this.assertOwner();const current=await tx.get(this.manifest()),data=current.data();
         if((current.exists()?data?.revision:null)!==expectedRevision)throw new SaveConflict();
         const previous=validRevision(data)?{revision:data.revision,parts:data.parts,bytes:data.bytes}:null;
-        tx.set(this.manifest(),{...info,format:2,savedAt:system.savedAt,previous});
+        tx.set(this.manifest(),{...info,format:2,savedAt,previous});
         return validRevision(data?.previous)?data.previous:null;
       });
     }catch(error){

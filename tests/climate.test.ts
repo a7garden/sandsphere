@@ -40,7 +40,7 @@ describe('game climate',()=>{
  expect(totalMass(s)).toBeCloseTo(initialMass,4);
  expect(totalEnthalpy(s,c)-initialHeat-energy.reduce((a,v)=>a+v,0)).toBeCloseTo(0,2);
  expect(s[F.cloud]).toBeLessThan(.2);expect(s.slice(STRIDE).some((v,i)=>i%STRIDE===F.nitrogen&&v>.3)).toBe(true);
- expect(c.currents.some(v=>Math.abs(v)>1e-6)).toBe(true);expect(s.every(Number.isFinite)).toBe(true);expect(before+h).toBeGreaterThan(0);
+ expect(c.ocean.kineticEnergy()>0).toBe(true);expect(s.every(Number.isFinite)).toBe(true);expect(before+h).toBeGreaterThan(0);
  });
  it('has no spontaneous abiogenesis; existing seeds establish on moist sand without organic soil',()=>{
  const sterile=state(),living=state(),c=new WeatherClimate(grid),d=new WeatherClimate(grid),q=new Float32Array(grid.count*4);d.seedLife(living);

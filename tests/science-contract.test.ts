@@ -70,11 +70,11 @@ describe('scientific game contract',()=>{
    const h=enthalpy(s,0);react(s,0,PHYSICS_DT,calm(t),grid);expect(enthalpy(s,0)).toBeCloseTo(h,1);
   }
  });
- it('accounts for tool, environment, escape and clamped energy',()=>{
+ it('accounts for tool, environment, escape and rounding without discarding heat',()=>{
   const s=fresh(20);s[F.nitrogen]=100;const solver=new CpuSolver(grid,s),commands=empty.slice();commands[4]=1000000;commands[12]=2;
   const before=totalEnthalpy(solver.state);solver.advance(PHYSICS_DT,commands,{...calm(20),gravity:.03});
   expect(totalEnthalpy(solver.state)-before).toBeCloseTo(solver.energyChanges.reduce((a,b)=>a+b,0),0);
-  expect(solver.energyChanges[3]).toBeLessThan(0);
+  expect(Math.abs(solver.energyChanges[3])/commands[4]).toBeLessThan(1e-6);expect(solver.state[F.temperature]).toBeGreaterThan(2500);
  });
  it('produces identical trajectories when the same elapsed time is batched',()=>{
   const s=fresh(20);s[F.water]=1000;const one=new CpuSolver(grid,s.slice()),batch=new CpuSolver(grid,s.slice());
@@ -98,10 +98,10 @@ describe('scientific game contract',()=>{
   const dose=(v:Float32Array)=>{let sum=0;for(let i=0;i<grid.count;i++)sum+=v[i*STRIDE+F.clay]*v[i*STRIDE+F.firing];return sum;};
   expect(dose(impactMeteor(s,grid,[...grid.directions.slice(0,3)],0))).toBeCloseTo(dose(s),3);
  });
- it('accounts for meteor heat and reports the energy removed by the temperature limit',()=>{
+ it('retains all meteor heat above the former temperature ceiling',()=>{
   const s=fresh(20),ledger=new Float64Array(4),after=impactMeteor(s,grid,[...grid.directions.slice(0,3)],50000,ledger);
-  expect(ledger[1]).toBe(50000*1800);expect(ledger[3]).toBeLessThan(0);
+  expect(ledger[1]).toBe(50000*1800);expect(Math.abs(ledger[3])/ledger[1]).toBeLessThan(1e-6);
   expect(totalEnthalpy(after)-totalEnthalpy(s)).toBeCloseTo(ledger[1]+ledger[3],5);
-  expect(after.filter((_,i)=>i%STRIDE===F.temperature).every(t=>t<=2500)).toBe(true);
+  expect(after.filter((_,i)=>i%STRIDE===F.temperature).some(t=>t>2500)).toBe(true);
  });
 });

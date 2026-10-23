@@ -1,0 +1,12 @@
+{
+  "cells": 2562,
+  "planets": 8,
+  "steps": 14,
+  "gameSeconds": 0.4666666666666667,
+  "validSystem": true,
+  "rawBytes": 55087126,
+  "limitBytes": 20971520,
+  "encodedBytes": null,
+  "encodingError": "압축한 저장 데이터가 최대 크기(20MB)를 넘었습니다.",
+  "telemetryIncluded": false
+}

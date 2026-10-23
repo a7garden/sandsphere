@@ -1,4 +1,4 @@
-import {METRICS,type PlanetTelemetry,type TelemetryPoint,type TelemetryGap} from './telemetry';
+import {METRICS,SMOKE_METRICS,COMBUSTION_METRICS,CHEMISTRY_METRICS,GIANT_CLOUD_METRICS,type PlanetTelemetry,type TelemetryPoint,type TelemetryGap} from './telemetry';
 import {pointValid,compact} from './telemetryPersistence';
 
 const cumulative=['energy0','energy1','energy2','energy3','rainTotal','snowTotal'];
@@ -9,7 +9,11 @@ export function parseTelemetryCsv(text:string){
  const baselineTime=Number(baselineText),rows=lines.filter(l=>!l.startsWith('#'));
  const header=rows.shift(),current=['simulation_s',...METRICS.map(m=>`${m.key} [${m.unit}]`)];
  // Earlier exports did not observe seeds. Preserve them as unknown, never invent zero mass.
- const metrics=header===current.join(',')?METRICS:METRICS.filter(m=>m.key!=='seed');
+ const marsKeys=['carbonDioxideIce','surfaceDust','airborneDust'];
+ const giantKeys=['hydrogen','helium','mole_hydrogen','mole_helium'];
+ const layouts=[[],GIANT_CLOUD_METRICS,[...GIANT_CLOUD_METRICS,...giantKeys],[...GIANT_CLOUD_METRICS,...giantKeys,...marsKeys],giantKeys,[...giantKeys,...marsKeys]].flatMap(skip=>[METRICS.filter(m=>!skip.includes(m.key)),METRICS.filter(m=>m.key!=='seed'&&!skip.includes(m.key))]);
+ const compatibleLayouts=layouts.flatMap(layout=>[layout,layout.filter(m=>!SMOKE_METRICS.includes(m.key))]).flatMap(layout=>[layout,layout.filter(m=>!COMBUSTION_METRICS.includes(m.key))]).flatMap(layout=>[layout,layout.filter(m=>!CHEMISTRY_METRICS.includes(m.key)),layout.filter(m=>m.key!=='chemicalEnergy'),layout.filter(m=>m.key!=='chemicalEnergy'&&!CHEMISTRY_METRICS.includes(m.key))]);
+ const metrics=compatibleLayouts.find(layout=>header===['simulation_s',...layout.map(m=>`${m.key} [${m.unit}]`)].join(','))??METRICS;
  const headers=['simulation_s',...metrics.map(m=>`${m.key} [${m.unit}]`)];
  if(!baselineText||!Number.isFinite(baselineTime)||baselineTime<0||header!==headers.join(',')||!rows.length||rows.length>2048)throw new Error('Sandsphere에서 내보낸 시계열 CSV를 선택하세요.');
  const points:TelemetryPoint[]=rows.map((line,i)=>{
@@ -17,6 +21,7 @@ export function parseTelemetryCsv(text:string){
   if(cells.length!==headers.length)throw new Error(`CSV ${i+1}번째 관측값의 열 수가 맞지 않습니다.`);
   metrics.forEach((m,k)=>values[m.key]=cells[k+1]===''?null:/^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(cells[k+1])?Number(cells[k+1]):NaN);
   if(!('seed' in values))values.seed=null;
+  for(const key of [...SMOKE_METRICS,...COMBUSTION_METRICS,...CHEMISTRY_METRICS,'chemicalEnergy',...marsKeys,...giantKeys,...GIANT_CLOUD_METRICS])if(!(key in values))values[key]=null;
   const point:TelemetryPoint={time:cells[0].trim()?Number(cells[0]):NaN,values,histogram:[],bins:[],profileValid:false,detailsUnavailable:true};
   if(!pointValid(point)||point.time<baselineTime||i&&point.time<=Number(rows[i-1].split(',')[0])||cumulative.slice(4).some(k=>values[k]!<0))throw new Error(`CSV ${i+1}번째 관측값을 읽을 수 없습니다.`);
   return point;

@@ -1,13 +1,20 @@
 import {describe,it,expect} from 'vitest';
 import preservedCsv from './fixtures/dashboard-before-persistence.csv?raw';
 import {F,STRIDE} from '../src/sim/model';
-import {TelemetryStore,telemetryCsv,type TelemetryInput} from '../src/sim/telemetry';
+import {TelemetryStore,telemetryCsv,METRICS,GIANT_CLOUD_METRICS,type TelemetryInput} from '../src/sim/telemetry';
 import {parseTelemetryCsv,prependTelemetryCsv} from '../src/sim/telemetryCsvImport';
 import {archiveTelemetry,restoreTelemetry,fullTelemetryArchive} from '../src/sim/telemetryPersistence';
 
 function input(time:number):TelemetryInput{const state=new Float32Array(STRIDE);state[F.rock]=10;state[F.temperature]=20;return {time,state,environment:{ambient:18,sunlight:1,sun:[1,0,0]},supplied:0,removed:0,escaped:0,transferredIn:0,transferredOut:0};}
 function session(start:number,end:number){const store=new TelemetryStore();for(let t=start;t<=end;t++){if(t>start)store.step('p',1,[1,2,3,4],[.2,.3]);store.sample('p','P',input(t));}return store;}
 describe('older CSV observation sessions',()=>{
+ it('reads the previous giant dashboard and CSV without inventing ammonia or jet observations',()=>{
+  const store=session(0,3),csv=telemetryCsv(store.planets.get('p')!),keep=[0,...METRICS.flatMap((m,i)=>GIANT_CLOUD_METRICS.includes(m.key)?[]:[i+1])];
+  const previous=csv.split('\n').map(line=>line.startsWith('#')||!line?line:keep.map(i=>line.split(',')[i]).join(',')).join('\n');
+  const parsed=parseTelemetryCsv(previous);for(const key of GIANT_CLOUD_METRICS)expect(parsed.baseline.values[key]).toBeNull();
+  const archive=archiveTelemetry(store,[{id:'p',name:'P',input:input(3)}]);for(const r of archive.planets)for(const p of [r.baseline,...r.points])for(const key of GIANT_CLOUD_METRICS)delete p.values[key];
+  expect(fullTelemetryArchive(archive)).toBe(true);const restored=new TelemetryStore();expect(restoreTelemetry(restored,archive,[{id:'p',name:'P',time:3}])).toEqual({restored:1,rejected:0});for(const key of GIANT_CLOUD_METRICS)expect(restored.planets.get('p')!.baseline.values[key]).toBeNull();
+ });
  it('prepends observations and rebases cumulative channels without changing physical measurements or the original records',()=>{
   const older=session(0,3).planets.get('p')!,current=session(10,12).planets.get('p')!,merged=prependTelemetryCsv(current,telemetryCsv(older));
   expect(merged.points.map(p=>p.time)).toEqual([0,1,2,3,10,11,12]);expect(merged.baseline.time).toBe(0);expect(merged.gaps).toEqual([{start:3,end:10}]);
@@ -38,5 +45,6 @@ describe('older CSV observation sessions',()=>{
   expect(parsed.points.length).toBe(1571);expect(parsed.baseline.time).toBe(19871.899999879122);expect(parsed.points.at(-1)!.time).toBeGreaterThan(22465);
   expect(parsed.baseline.values.tempMean).toBe(5.876178543428869);expect(parsed.baseline.values.rainRate).toBeNull();
   expect(parsed.baseline.values.seed).toBeNull();
+  expect(parsed.baseline.values.carbonDioxideIce).toBeNull();expect(parsed.baseline.values.surfaceDust).toBeNull();expect(parsed.baseline.values.airborneDust).toBeNull();
  });
 });

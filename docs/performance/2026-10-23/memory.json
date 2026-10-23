@@ -1,0 +1,28 @@
+{
+  "cells": 2562,
+  "climateTypedBytes": 22905160,
+  "airTypedBytes": 15239512,
+  "deepTypedBytes": 7634832,
+  "checkpointBytes": 7573320,
+  "transferListBytes": 5974608,
+  "unlistedAir": [
+    {
+      "name": "boundaryImpulse",
+      "bytes": 24
+    },
+    {
+      "name": "gasRadiationCache",
+      "bytes": 1352736
+    },
+    {
+      "name": "sootRadiationCache",
+      "bytes": 225456
+    },
+    {
+      "name": "sootLiftCarry",
+      "bytes": 20496
+    }
+  ],
+  "stateBytes": 409920,
+  "commandsBytes": 204960
+}

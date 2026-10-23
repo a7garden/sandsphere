@@ -1,3 +1,4 @@
+import {AIR_SPECIES} from '../src/sim/layeredAtmosphere';
 import {describe,it,expect,vi} from 'vitest';
 import {createSphere} from '../src/sim/sphere';
 import {F,STRIDE,COMMAND_STRIDE,CpuSolver,seedPlanet,totalMass,totalEnthalpy} from '../src/sim/model';
@@ -8,6 +9,7 @@ import {heatForTarget} from '../src/sim/toolHeat';
 import {impactMeteor} from '../src/sim/meteor';
 import {validSnapshot} from '../src/sim/storage';
 import {snapshotSurface} from '../src/sim/session';
+import {createCommandBatch} from '../src/sim/supply';
 import {CloudEnvelopeField,cloudComponents} from '../src/render/cloudEnvelope';
 import {COLUMN_KG,CLOUD_VISIBLE_MASS,cloudTransmission} from '../src/sim/layeredAtmosphere';
 
@@ -60,10 +62,10 @@ describe('layered moist atmosphere',()=>{
  });
  it('triggers saturated moist instability that would be stable under a dry-parcel test',()=>{
   const s=world(),c=new WeatherClimate(g);c.prepareSurface(s,env);c.air.attach(s);
-  for(let q=0;q<c.air.temperature.length;q++){c.air.mass[q*6]=0;c.air.mass[q*6+4]=0;c.air.mass[q*6+5]=0;}
+  for(let q=0;q<c.air.temperature.length;q++){c.air.mass[q*AIR_SPECIES]=0;c.air.mass[q*AIR_SPECIES+4]=0;c.air.mass[q*AIR_SPECIES+5]=0;}
   for(let i=0;i<g.count;i++){
    const q=i*AIR_LAYERS;c.air.temperature[q]=25;c.air.temperature[q+1]=20;
-   const moles=c.air.mass[q*6+1]/.028014;c.air.mass[q*6]=saturatedVapor(c.air.mass[q*6+1],moles,25,c.air.pressure(i,0));
+   const moles=c.air.mass[q*AIR_SPECIES+1]/.028014;c.air.mass[q*AIR_SPECIES]=saturatedVapor(c.air.mass[q*AIR_SPECIES+1],moles,25,c.air.pressure(i,0));
   }
   c.air.attach(s);expect(liftedTemperature(25,1000,9.81,1040)).toBeLessThan(20);
   c.air.advance(s,1/60,{...env,sunlight:0},new Float32Array(g.count*4));
@@ -100,11 +102,11 @@ describe('layered moist atmosphere',()=>{
   expect(totalEnthalpy(solver.state,solver.climate)-h-solver.energyChanges.reduce((a,b)=>a+b,0)).toBeCloseTo(0,3);expect(totalMass(solver.state)+solver.escapeCells.reduce((a,b)=>a+b,0)).toBeCloseTo(mass,4);
  });
  it('saves queued supply/erasure with layer mirrors consistent and rejects mismatched inventories',()=>{
-  const a=new CpuSolver(g,world());a.advance(1/30,empty,env);const live=a.state.slice(),old=a.climate.snapshot(),commands=empty.slice();commands[8]=.1;commands[5]=.25;
+  const a=new CpuSolver(g,world());a.advance(1/30,empty,env);const live=a.state.slice(),old=a.climate.snapshot(),commands=createCommandBatch(g.count);commands[8]=.1;commands[5]=.25;
   const saved=snapshotSurface(a.state,commands,[{index:1,material:'water',amount:.1}],null,a.climate,env),record={version:4 as const,preset:'coast' as const,time:1,state:[...saved.state],climate:saved.climate,environment:env,supplied:0,removed:0,discoveries:[]};
   expect(validSnapshot(record,g.count)).toBe(true);expect(a.state).toEqual(live);expect(a.climate.snapshot()).toEqual(old);
   const corrupt=structuredClone(record);corrupt.climate!.atmosphere!.mass[1]+=.1;expect(validSnapshot(corrupt,g.count)).toBe(false);
-  a.advance(0,commands,env);const landing=empty.slice();landing[COMMAND_STRIDE]=.1;a.advance(0,landing,env);expect(a.state).toEqual(saved.state);expect(a.climate.snapshot()).toEqual(saved.climate);
+  a.advance(0,commands,env);const landing=createCommandBatch(g.count);landing[COMMAND_STRIDE]=.1;a.advance(0,landing,env);expect(a.state).toEqual(saved.state);expect(a.climate.snapshot()).toEqual(saved.climate);
  });
  it('leaves an unopened paused atmosphere exactly inert',()=>{
   const solver=new CpuSolver(g,world()),before=solver.state.slice(),air=solver.climate.snapshot();solver.advance(0,empty,env);expect(solver.state).toEqual(before);expect(solver.climate.snapshot()).toEqual(air);
@@ -121,7 +123,7 @@ describe('layered moist atmosphere',()=>{
   expect(a.climate.air.temperature).toEqual(temperatures);expect(totalEnthalpy(impacted,a.climate)-h-budget.reduce((x,y)=>x+y,0)).toBeCloseTo(0,6);
  });
  it('migrates legacy tangent winds into layer momentum with a closed energy budget',()=>{
-  const s=world(),h=totalEnthalpy(s),c=new WeatherClimate(g);c.wind[2]=.003;const old=c.snapshot();old.version=1;delete old.atmosphere;c.restore(old);
+  const s=world(),h=totalEnthalpy(s),c=new WeatherClimate(g);c.wind[2]=.003;const old=c.snapshot();old.version=1;delete old.surfaceMassCarry;delete old.atmosphere;delete old.ocean;delete old.surfaceHeatCarry;c.restore(old);
   c.prepareSurface(s,env);c.air.attach(s);expect(c.air.velocity[2]).toBeCloseTo(50,5);expect(c.air.velocity[14]).toBeCloseTo(50,5);expect(totalEnthalpy(s,c)).toBeCloseTo(h,3);
  });
  it('renders a physical 0.1 kg/m² cloud over any surface and attenuates sunlight with that inventory',()=>{

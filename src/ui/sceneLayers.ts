@@ -1,6 +1,8 @@
 import {CLIMATE_LAYERS,type ClimateLayer} from '../sim/weatherClimate';
 import {icon} from './icons';
 import {currentLocale} from './i18n';
+import {physicalRadius,isDeepAtmosphere,type PlanetDefinition} from '../sim/planetDefinition';
+import {translatePhrase} from './i18n';
 
 /** Reserve the live legend's height when opening the planet settings overlay. */
 export function keepSceneLayersVisible(){
@@ -54,11 +56,14 @@ export function updateSceneLayerLegend(state:{
  node('paused-key-state').hidden=!state.precipitation.paused||rain+snow===0;
 }
 
-export function updateClimateLegend(layer:ClimateLayer,count=2562){
+export function updateClimateLegend(layer:ClimateLayer,count=2562,body?:PlanetDefinition){
+ const deep=isDeepAtmosphere(body);const name=deep&&layer==='temperature'?'대기층 온도':deep&&layer==='pressure'?'아래 경계 기압':CLIMATE_LAYERS[layer].name;
+ document.getElementById('climate-map-name')!.textContent=translatePhrase(name);
+ for(const id of ['temperature','pressure'] as const){const option=document.querySelector<HTMLElement>('[data-climate-option="'+id+'"]');if(option)option.textContent=translatePhrase(deep?(id==='temperature'?'대기층 온도':'아래 경계 기압'):CLIMATE_LAYERS[id].name);}
  const legend=document.getElementById('climate-layer-legend')!;document.querySelector('.climate-map-controls')!.setAttribute('data-layer',layer);document.getElementById('climate-legend-toggle')!.setAttribute('aria-expanded','false');document.querySelector('.view')!.setAttribute('data-climate-layer',layer);document.querySelector('.view')!.classList.remove('climate-legend-open');legend.hidden=layer==='none';legend.replaceChildren();
  legend.dataset.categorical=String(layer==='airmass');
  if(layer==='airmass')for(const [label,color] of [['차고 건조','#8c6bd4'],['차고 습함','#29a1d1'],['따뜻하고 건조','#eb9130'],['따뜻하고 습함','#33b861']]){const key=document.createElement('span'),chip=document.createElement('i');chip.style.background=color;key.append(chip,label);legend.append(key);}
- else {const ramp=document.createElement('i');ramp.className='climate-map-ramp';ramp.setAttribute('aria-hidden','true');const note=document.createElement('span');note.textContent=layer==='wind'||layer==='currents'?(currentLocale()==='en'?`Color: speed · arrows: direction · 0 → ${((layer==='wind'?.12:.035)/Math.sqrt(4*Math.PI/count)).toFixed(2)} cells/planet minute`:`색: 속도 · 화살표: 방향 · 0 → ${((layer==='wind'?.12:.035)/Math.sqrt(4*Math.PI/count)).toFixed(2)} 셀/행성분`):CLIMATE_LAYERS[layer].legend;legend.append(ramp,note);}
+ else {const ramp=document.createElement('i');ramp.className='climate-map-ramp';ramp.setAttribute('aria-hidden','true');const note=document.createElement('span');note.textContent=layer==='wind'||layer==='currents'?(currentLocale()==='en'?`Color: speed · arrows: direction · 0 → ${((layer==='wind'?100*60/physicalRadius(body):.035)/Math.sqrt(4*Math.PI/count)).toFixed(2)} cells/planet minute`:`색: 속도 · 화살표: 방향 · 0 → ${((layer==='wind'?100*60/physicalRadius(body):.035)/Math.sqrt(4*Math.PI/count)).toFixed(2)} 셀/행성분`):deep&&layer==='clouds'?translatePhrase('암모니아 + 물 구름 · 0 → 50 kg/m²'):deep&&layer==='temperature'?translatePhrase('관측 대기층 · −200 → −50°C'):deep&&layer==='pressure'?translatePhrase('아래 경계 기압 · 초기 압력의 0.9 → 1.1배'):body?.preset==='mars'&&layer==='temperature'?(currentLocale()==='en'?'Surface temperature · −150 → 30°C':'지표 온도 · −150 → 30°C'):body?.preset==='mars'&&layer==='pressure'?(currentLocale()==='en'?'Column pressure · 0 → 1,200 Pa':'기체 기둥 무게 · 0 → 1,200 Pa'):CLIMATE_LAYERS[layer].legend;legend.append(ramp,note);}
 }
 
 
