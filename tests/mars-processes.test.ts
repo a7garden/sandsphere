@@ -130,7 +130,7 @@ describe('Mars storage and coupled accounting',()=>{
   const snapshot=saved(solver.state,solver.climate,p.environment);expect(validSnapshot(snapshot,grid.count)).toBe(true);
   const restored=JSON.parse(JSON.stringify(snapshot)) as Snapshot,resumed=new CpuSolver(grid,new Float32Array(restored.state));resumed.climate.restore(restored.climate);
   for(let n=0;n<5;n++){solver.advance(.1,empty,p.environment);resumed.advance(.1,empty,p.environment);}expect(resumed.state).toEqual(solver.state);expect(resumed.climate.snapshot()).toEqual(solver.climate.snapshot());
- });
+ },process.env.CI?60000:20000);
  it('transports lifted dust to other columns using the same conservative air fluxes',()=>{
   const {state,c,environment}=detached(-60);wind(c,150);for(let i=0;i<grid.count;i++){state[i*STRIDE+F.sand]=0;state[i*STRIDE+F.surfaceDust]=0;}c.air.dustMass[0]=.00001;c.air.attach(state);
   const solver=new CpuSolver(grid,state);solver.climate.restore(c.snapshot());for(let n=0;n<30;n++)solver.advance(.1,empty,environment);

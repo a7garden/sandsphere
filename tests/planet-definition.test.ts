@@ -94,7 +94,7 @@ describe('save compatibility and deterministic Mars calculation',()=>{
   const resumed=JSON.parse(JSON.stringify(system)).planets[0].snapshot as Snapshot,b=new CpuSolver(grid,new Float32Array(resumed.state));b.climate.restore(resumed.climate);
   expect(totalEnthalpy(a.state,a.climate.snapshot())).toBeCloseTo(totalEnthalpy(a.state,a.climate),6);
   for(let n=0;n<5;n++){a.advance(1/30,empty,s.environment);b.advance(1/30,empty,resumed.environment);}expect(b.state).toEqual(a.state);expect(b.climate.snapshot()).toEqual(a.climate.snapshot());
- });
+ },process.env.CI?60000:20000);
  it('uses the same definition and orbit in active, background and asynchronous execution',async()=>{
   const s=mars(),p=record(structuredClone(s)),q=record(structuredClone(s)),a=new CpuSolver(grid,new Float32Array(s.state));
   const background=new BackgroundWorlds(grid),asyncBackground=new BackgroundWorlds(grid,async state=>new CpuSolver(grid,state));

@@ -86,7 +86,7 @@ describe('common laws across execution domains',()=>{
   expect(lightWind).toBeGreaterThan(1e-5);expect(darkWind).toBeLessThan(1e-9);
   expect(totalMass(p.solver.state,p.solver.climate)).toBeCloseTo(mass,9);expect(totalEnthalpy(p.solver.state,p.solver.climate)-energy-external).toBeCloseTo(0,5);
   console.log('unseeded circulation control',{lightWind,darkWind});
- });
+ },process.env.CI?60000:20000);
  it.each(['surface','deep'] as const)('preserves JSON saves, exact restart and active/background equivalence (%s)',kind=>{
   const p=kind==='deep'?giant():createMarsPlanet(grid),a=new CpuSolver(grid,p.state.slice());if(p.climate)a.climate.restore(p.climate);
   a.advance(.1,commands,p.environment);

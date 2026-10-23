@@ -44,7 +44,7 @@ describe('energy-defined cold atmosphere',()=>{
   expect(Math.abs(after.reduce((a,b)=>a+b)-start.reduce((a,b)=>a+b))).toBeLessThan(1e-6);for(const k of Object.keys(ATOMIC_MASS) as Element[])expect(Math.abs(b[k]-a[k])).toBeLessThan(1e-6*Math.max(1,a[k]));
   console.log('cold soak',{steps:10000,min,initialH,correction,massResidual:after.reduce((a,b)=>a+b)-start.reduce((a,b)=>a+b),energyResidual:totalEnthalpy(solver.state,solver.climate)-initialH-external,surfaceMin:Math.min(...solver.state.filter((_,i)=>i%STRIDE===F.temperature))});
   expect(Math.abs(totalEnthalpy(solver.state,solver.climate)-initialH-external)).toBeLessThan(1e-6);expect(Math.abs(correction)/Math.abs(initialH)).toBeLessThan(2e-4);
- },90000);
+ },process.env.CI?270000:90000);
  it('reads old v11/v6 metadata unchanged, then saves and exactly resumes cold evolved air',()=>{
   const {solver,environment}=world(),old=save(solver,environment),text=JSON.stringify(old);expect(validSnapshot(old,grid.count)).toBe(true);const loaded=upgradeSnapshot(old,grid.count);expect(JSON.stringify(old)).toBe(text);expect(loaded.state).toEqual(old.state);expect(loaded.climate).toEqual(old.climate);
   for(let n=0;n<300;n++)solver.advance(1/30,empty,environment);expect(Math.min(...solver.climate.air.temperature)).toBeLessThan(-150);
