@@ -23,4 +23,4 @@ it('runs a moist five-layer world at the production 2562-cell resolution with cl
  for(let k=0;k<30;k++){a.advance(1/30,empty,{...env,sunlight:1});q+=a.energyChanges.reduce((x,y)=>x+y,0);escaped+=a.escapeCells.reduce((x,y)=>x+y,0);}
  const result={cells:g.count,steps:30,elapsedMs:performance.now()-start,massResidual:totalMass(a.state)+escaped-mass,energyResidual:totalEnthalpy(a.state,a.climate)-heat-q};console.log('production layered run',result);
  expect(a.state.every(Number.isFinite)).toBe(true);expect(a.climate.air.mass.every(m=>m>=0)).toBe(true);expect(Math.abs(result.massResidual)).toBeLessThan(.005);expect(Math.abs(result.energyResidual)).toBeLessThan(.02);
-},30000);
+},120000);

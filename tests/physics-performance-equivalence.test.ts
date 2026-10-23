@@ -8,31 +8,77 @@ import {AIR_LAYERS,AIR_SPECIES,AIR_GAS_INDICES,type LayeredAtmosphere} from '../
 import {createJupiterPlanet} from '../src/sim/planetCreation';
 import {radiativeFluxes} from '../src/sim/climatePhysics';
 import {initializeSpectralAcceleration,setSpectralAccelerationEnabled} from '../src/sim/spectralRadiation';
+import {WeatherClimate as OriginalWeatherClimate} from './helpers/preOptimizationAtmosphere/weatherClimate';
+import {seedPlanet as originalSeedPlanet} from './helpers/preOptimizationAtmosphere/model';
+import referenceManifest from './helpers/preOptimizationAtmosphere/manifest.json';
+import sourceBaseline from '../docs/performance/2026-10-23/source-baseline.json';
 
 const grid=createSphere(0),environment:Environment={ambient:20,sunlight:.8,sun:[1,.2,.1],gravity:1,rotationRate:.02,climate:true};
 const digest=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 type AirInternals={dynamics(dt:number,e:Environment):void;radiation(s:PhysicalState,i:number,dt:number,e:Environment,energy:Float32Array):void};
-const internals=(air:LayeredAtmosphere)=>air as unknown as AirInternals;
+const internals=(air:unknown)=>air as AirInternals;
+
+function exactReference(actual:unknown,expected:unknown,path='reference'):void {
+ if(Object.is(actual,expected))return;
+ if(!actual||!expected||typeof actual!=='object'||typeof expected!=='object')throw new Error(`${path}: exact mismatch (${String(actual)} vs ${String(expected)})`);
+ if(ArrayBuffer.isView(actual)||ArrayBuffer.isView(expected)){
+  if(!ArrayBuffer.isView(actual)||!ArrayBuffer.isView(expected)||actual.constructor.name!==expected.constructor.name||actual.byteLength!==expected.byteLength)throw new Error(`${path}: typed-array shape differs`);
+  if(!('length' in actual)||!('length' in expected))throw new Error(`${path}: unsupported view needs an explicit exact comparator`);
+  const a=actual as unknown as ArrayLike<number>,b=expected as unknown as ArrayLike<number>;
+  for(let i=0;i<a.length;i++)if(!Object.is(a[i],b[i]))throw new Error(`${path}[${i}]: exact mismatch (${a[i]} vs ${b[i]})`);return;
+ }
+ if(Array.isArray(actual)!==Array.isArray(expected))throw new Error(`${path}: array/object shape differs`);
+ const a=actual as Record<string,unknown>,b=expected as Record<string,unknown>,keys=Object.keys(a);
+ if(keys.length!==Object.keys(b).length||keys.some(key=>!Object.hasOwn(b,key)))throw new Error(`${path}: object keys differ`);
+ for(const key of keys)exactReference(a[key],b[key],`${path}.${key}`);
+}
+
+it('pins the independent original modules and shared math dependencies to the pre-optimization source receipt',()=>{
+ const recorded=sourceBaseline.files as Record<string,string>;
+ for(const [file,entry]of Object.entries(referenceManifest.frozen)){
+  expect(entry.originalSha256,entry.originalPath).toBe(recorded[entry.originalPath]);
+  const fixture=readFileSync('tests/helpers/preOptimizationAtmosphere/'+file,'utf8');expect(fixture.startsWith(referenceManifest.header)).toBe(true);
+  const original=fixture.slice(referenceManifest.header.length).replaceAll("from '../../../src/sim/","from './");
+  expect(createHash('sha256').update(original).digest('hex'),entry.originalPath).toBe(entry.originalSha256);
+ }
+ for(const [file,sha]of Object.entries(referenceManifest.shared)){expect(sha,file).toBe(recorded[file]);expect(createHash('sha256').update(readFileSync(file)).digest('hex'),file).toBe(sha);}
+});
+
+it('compares signed zero and the lowest differing Float64 bit without an epsilon',()=>{
+ expect(()=>exactReference(new Float64Array([0]),new Float64Array([-0]))).toThrow('exact mismatch');
+ expect(()=>exactReference(new Float64Array([1]),new Float64Array([1+Number.EPSILON]))).toThrow('exact mismatch');
+});
+
+function layeredScenario(temperature:number,Climate:typeof WeatherClimate|typeof OriginalWeatherClimate,seed:typeof seedPlanet){
+ const e={...environment,ambient:temperature},s=new Float64Array(seed(grid,'sand',temperature)),climate=new Climate(grid);
+ for(let i=0;i<grid.count;i++){s[i*STRIDE+F.water]=temperature>0?.5:0;s[i*STRIDE+F.nitrogen]=.3;}
+ climate.prepareSurface(s,e);const air=climate.air,energy=new Float32Array(grid.count*4),prepared={air:air.checkpoint(),surface:s.slice()};
+ for(let i=0;i<grid.count;i++)for(let k=0;k<AIR_LAYERS;k++){
+  const q=i*AIR_LAYERS+k,p=q*AIR_SPECIES;air.mass[p]+=1e-7*(i+1);air.mass[p+3]+=1e-6*(k+1);air.mass[p+4]=temperature>0?2e-7*(k%3):0;
+  air.temperature[q]=temperature+(i%3)*.1;const x=grid.directions[i*3],z=grid.directions[i*3+2];air.velocity[q*3]=z*3;air.velocity[q*3+2]=-x*3;
+ }
+ const columns=[radiativeFluxes(air.radiationColumn(s,0,e)),radiativeFluxes(air.radiationColumn(s,1,e))],stages=[];
+ for(let step=0;step<3;step++){for(let i=0;i<grid.count;i++)internals(air).radiation(s,i,.1,e,energy);internals(air).dynamics(.1,e);stages.push({air:air.checkpoint(),surface:s.slice(),energy:energy.slice()});}
+ return {prepared,stages,golden:{columns,air:air.checkpoint(),surface:[...s],energy:[...energy]}};
+}
 
 // Recorded from the pre-optimization alpha.18 working tree on 2026-10-23.
-// These cover exact arithmetic order, not an accuracy tolerance or performance target.
+// The exact original-vs-current oracle runs on EVERY platform. Transcendental
+// Math results are runtime-dependent, so the historical hash is an additional
+// guard only in its recorded Darwin ARM64 / Node / V8 environment.
 it.each([[20,false],[20,true],[-240,false],[-240,true]] as const)('retains exact layered transport and spectral radiation at %s C (SIMD %s)',async(temperature,accelerated)=>{
  setSpectralAccelerationEnabled(accelerated);
  if(accelerated){
   const status=await initializeSpectralAcceleration({load:async()=>new Uint8Array(readFileSync('src/sim/data/spectral-optics-simd.wasm'))});
   expect(status.backend).toBe('wasm-simd');
  }
- const e={...environment,ambient:temperature},s=new Float64Array(seedPlanet(grid,'sand',temperature)),climate=new WeatherClimate(grid);
- for(let i=0;i<grid.count;i++){s[i*STRIDE+F.water]=temperature>0?.5:0;s[i*STRIDE+F.nitrogen]=.3;}
- climate.prepareSurface(s,e);const air=climate.air,energy=new Float32Array(grid.count*4);
- for(let i=0;i<grid.count;i++)for(let k=0;k<AIR_LAYERS;k++){
-  const q=i*AIR_LAYERS+k,p=q*AIR_SPECIES;air.mass[p]+=1e-7*(i+1);air.mass[p+3]+=1e-6*(k+1);air.mass[p+4]=temperature>0?2e-7*(k%3):0;
-  air.temperature[q]=temperature+(i%3)*.1;const x=grid.directions[i*3],z=grid.directions[i*3+2];air.velocity[q*3]=z*3;air.velocity[q*3+2]=-x*3;
+ const original=layeredScenario(temperature,OriginalWeatherClimate,originalSeedPlanet),actual=layeredScenario(temperature,WeatherClimate,seedPlanet);
+ exactReference(actual,original);
+ if(process.platform==='darwin'&&process.arch==='arm64'&&process.version==='v24.20.0'&&process.versions.v8==='13.6.233.17-node.53'){
+  const captured=temperature===20?'0824ddf3a5ed38235e458931efba658e04999b2f08429d9ee4c76dc6b96c294f':'c1663464af2461e1b6fb21c7baa33434f8404b8bc8acc5acb4d579722dc5f7e2';
+  expect(digest(original.golden)).toBe(captured);expect(digest(actual.golden)).toBe(captured);
  }
- const columns=[radiativeFluxes(air.radiationColumn(s,0,e)),radiativeFluxes(air.radiationColumn(s,1,e))];
- for(let step=0;step<3;step++){for(let i=0;i<grid.count;i++)internals(air).radiation(s,i,.1,e,energy);internals(air).dynamics(.1,e);}
- const actual=digest({columns,air:air.checkpoint(),surface:[...s],energy:[...energy]});
- expect(actual).toBe(temperature===20?'0824ddf3a5ed38235e458931efba658e04999b2f08429d9ee4c76dc6b96c294f':'c1663464af2461e1b6fb21c7baa33434f8404b8bc8acc5acb4d579722dc5f7e2');
+ if(process.env.PHYSICS_ORACLE_DIAGNOSTICS==='1')console.log('independent original atmosphere oracle',{temperature,accelerated,platform:process.platform,arch:process.arch,node:process.version,v8:process.versions.v8,original:digest(original.golden),actual:digest(actual.golden)});
 });
 
 it('retains exact deep atmosphere transport through repeated stages',()=>{

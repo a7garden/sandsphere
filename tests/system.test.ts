@@ -135,5 +135,5 @@ describe('persistent solar system',()=>{
   for(let n=0;n<1800;n++)solver.advance(.2,command,e);
   let ice=0;for(let i=0;i<grid.count;i++)ice+=solver.state[i*STRIDE+F.ice];
   expect(solver.state[F.temperature]).toBeLessThan(18);expect(ice).toBe(0);expect(totalMass(solver.state)).toBeCloseTo(mass,1);
- },60000);
+ },120000);
 });

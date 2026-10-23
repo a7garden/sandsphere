@@ -8,7 +8,8 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The full conservation/resume suite exceeds 15 minutes on hosted Linux.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,5 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run check:version
       - run: npm test
+        env:
+          PHYSICS_ORACLE_DIAGNOSTICS: '1'
       - run: npm run test:rules
       - run: npm run build

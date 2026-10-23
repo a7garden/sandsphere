@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "source": "docs/performance/2026-10-23/source-baseline.json",
+  "baselineHead": "02d53d7bb7111ed2a858599dd296489db9246417",
+  "capturedDate": "2026-10-23",
+  "header": "// @ts-nocheck -- immutable pre-optimization fixture; production nominal types may evolve.\n// Only import paths differ; normalize them to verify the original captured source SHA-256.\n",
+  "frozen": {
+    "layeredAtmosphere.ts": {
+      "originalPath": "src/sim/layeredAtmosphere.ts",
+      "originalSha256": "8dd111eb7c48985d1d57bdf817157e1f8590eb2c414c497b3700d30ba5a71e1c"
+    },
+    "spectralRadiation.ts": {
+      "originalPath": "src/sim/spectralRadiation.ts",
+      "originalSha256": "525885d6d1f6234b33d65111551238d4ba95b5bdb95c92ea59970a9b24053e48"
+    },
+    "model.ts": {
+      "originalPath": "src/sim/model.ts",
+      "originalSha256": "dcfd0c70cca3e46fb3eec8967b6de274f05eadc1377b912a7531648502df2788"
+    },
+    "weatherClimate.ts": {
+      "originalPath": "src/sim/weatherClimate.ts",
+      "originalSha256": "ad47987649e63781dba87e846ecdff4049a923992c79b63b92d41a72b31aca49"
+    },
+    "deepAtmosphere.ts": {
+      "originalPath": "src/sim/deepAtmosphere.ts",
+      "originalSha256": "b19e72f3620ffb9890f7dcd526d9d996408edc04827d40b77d605948ded48e1f"
+    }
+  },
+  "shared": {
+    "src/sim/physicalState.ts": "cf3eea689ee4912f525915125ffc9139a920d2b5d2557acef81d920ef685b7a7",
+    "src/sim/mechanicalBoundary.ts": "6ab3f2745112d93728a1cbd3300e4c88624cb42adc9e5fac73277e8608271ecb",
+    "src/sim/aerosolPhysics.ts": "c742db4c93b27cceed3a872f388b0e3d3679bf279991797ef208ade105b694bd",
+    "src/sim/buoyancy.ts": "87df4c788bef3026474044bf423fd89ff832a10a96914df6ba736a65e9a3e1ff",
+    "src/sim/ecology.ts": "2858bba1336d7e605e1da28fb56fac80575852cd306e6b0a89079c4ef8457077",
+    "src/sim/materialReaction.ts": "8bfa75341ee558dbc051b3368e4e86a46adf3246d374fefe870b8032cfa38e0c",
+    "src/sim/phaseEquilibrium.ts": "4e95c95d0262cfb7dbf934fb86ddecc06c70daee45796133be6e597b706fc5a9",
+    "src/sim/climateUnits.ts": "d279c36a6a51a130800e2aeb8da8b37df76b394fb5740d4ec32193e0157a652b",
+    "src/sim/thermodynamics.ts": "fdca9e84632d561128af000fd034316ec2e30d68cb9f1d9cd2c48f0242384065",
+    "src/sim/conservativeTransport.ts": "940f1528e061f2d7fb8628d5fe746adb8b09f182442a70088dbb2cf46b6fb648",
+    "src/sim/gases.ts": "484cf693541820f8bb7505537c3af4ebd976802039808b6213fb37276d98c22a",
+    "src/sim/waterPhysics.ts": "46b4e18cdae51a93279fac041b2f5592c5c276b4db08586aa426f9907847b045",
+    "src/sim/materialPhysics.ts": "489f67936fbbe59973ae603916bed15ec29ff9007a27c2ee62e8a5fe97cfd57e",
+    "src/sim/sphere.ts": "c6174ea8075cf5b78da625666816cd46b7efdc93c3ac0c9bc52a59e0d7e84319",
+    "src/sim/climatePhysics.ts": "4955737221d69c5a10d090d697ff955dec97bb71b2a4f3344eaebdc921954bdb",
+    "src/sim/cloudMicrophysics.ts": "0ef88c84d8a89bcf73b96ad500ce242265b5b420019d335bd926ba630705661f",
+    "src/sim/co2Ice.ts": "232e7c9dc34bd16502f3c61ccb8a41ecb33000ba36aca965e87adb72f9a16454",
+    "src/sim/dustPhysics.ts": "34c7032b5968b9e1ac3501fbab7bf962599dd347dafd9b3c7d7dbeca2f7cde11",
+    "src/sim/planetDefinition.ts": "23a6938fd3277f14332470b5ae1f1971ea10bbbfb6403e3c048c84f858729bfd",
+    "src/sim/data/ecckd-32.json": "87c30c18d1483b2844fffa1ee99fbcdd7b8d8525722ad30e72a877a2c6578d0f",
+    "src/sim/oceanDynamics.ts": "e2c9a5ffbe3113f89957548e8c23efad83fcd6069e4ddd833d1a53a31af18088",
+    "src/sim/solidMechanics.ts": "a53c5585f6c385251723fc391b8e1b4b87374d6375f647f3f0e9a8c76698f261",
+    "src/sim/climate.ts": "f6a258ae15a14afb8907e9e0404e03f2b8f11a349111dcecd4a3b5030a448b6d",
+    "src/sim/animalNavigation.ts": "675f5521cdf0a0199bf053250245a772e33a7b23d4536882205d4a3362d794c0",
+    "src/sim/clouds.ts": "4ae9873c896225dc734aa86b16f86d0efc4e2f2f3f1228e257ae4b46d20fa092",
+    "src/sim/clock.ts": "2b5e79aa95975a1d1237b40fd251d97e5e80f3a893dc34081a40863c0faa9a03",
+    "src/sim/giantCloudPhysics.ts": "43b6cd30af58f8abda41145660afbf95a7b7d78b944e20079e4c8c0b54a64f23",
+    "src/sim/deepAtmosphereProfile.ts": "2c4316fdd979f4af36d6901ccf6fd384e95946f509c6bc522f03934155a2af03"
+  }
+}
