@@ -9,4 +9,5 @@ it('couples climate and ecology across a complete rotating year with finite cons
  expect(result.maxWind).toBeGreaterThan(0);expect(result.maxCurrent).toBeGreaterThan(0);
  expect(result.condensation).toBeGreaterThan(0);expect(result.stocks.plant).toBeGreaterThan(0);
  expect(result.massRelative).toBeLessThan(1e-4);
-},180000);
+// The complete 7,200-step year can exceed three minutes on a shared CI runner.
+},360000);
