@@ -4,7 +4,7 @@ import {expect,it} from 'vitest';
 import {createSphere} from '../src/sim/sphere';
 import {F,STRIDE,seedPlanet,type Environment,type PhysicalState} from '../src/sim/model';
 import {WeatherClimate} from '../src/sim/weatherClimate';
-import {AIR_LAYERS,AIR_SPECIES,AIR_GAS_INDICES,type LayeredAtmosphere} from '../src/sim/layeredAtmosphere';
+import {AIR_LAYERS,AIR_SPECIES,AIR_GAS_INDICES,radiationGasMassFloors,type LayeredAtmosphere} from '../src/sim/layeredAtmosphere';
 import {createJupiterPlanet} from '../src/sim/planetCreation';
 import {radiativeFluxes} from '../src/sim/climatePhysics';
 import {initializeSpectralAcceleration,setSpectralAccelerationEnabled} from '../src/sim/spectralRadiation';
@@ -15,7 +15,7 @@ import sourceBaseline from '../docs/performance/2026-10-23/source-baseline.json'
 
 const grid=createSphere(0),environment:Environment={ambient:20,sunlight:.8,sun:[1,.2,.1],gravity:1,rotationRate:.02,climate:true};
 const digest=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
-type AirInternals={dynamics(dt:number,e:Environment):void;radiation(s:PhysicalState,i:number,dt:number,e:Environment,energy:Float32Array):void};
+type AirInternals={advance(s:PhysicalState,dt:number,e:Environment,energy:Float32Array):void;dynamics(dt:number,e:Environment):void;radiation(s:PhysicalState,i:number,dt:number,e:Environment,energy:Float32Array,boundary?:undefined,allowance?:Uint8Array):void;rebuildAllowance(s:PhysicalState,step:number):Uint8Array|undefined};
 const internals=(air:unknown)=>air as AirInternals;
 
 function exactReference(actual:unknown,expected:unknown,path='reference'):void {
@@ -102,13 +102,43 @@ it('keeps spectral diagnostic columns independent while the solver reuses its co
 
 it('reports all simultaneous invalidation reasons without changing physics or save state',()=>{
  const s=new Float64Array(seedPlanet(grid,'sand',20)),climate=new WeatherClimate(grid);climate.prepareSurface(s,environment);const air=climate.air,energy=new Float32Array(grid.count*4);
+ const floors=radiationGasMassFloors();
  air.setRadiationDiagnostics();internals(air).radiation(s,0,0,environment,energy);internals(air).radiation(s,0,0,environment,energy);
- air.mass[0]+=1e-5;air.mass[3]+=1e-5;air.temperature[0]+=2;internals(air).radiation(s,0,0,environment,energy);
+ // Sub-tolerance drift reuses the coefficients; the same species crossing its
+ // floor invalidates alongside the thermal bound.
+ air.mass[0]+=floors[0]*.5;internals(air).radiation(s,0,0,environment,energy);
+ const cached=air.radiationDiagnostics()!;
+ expect(cached.calls).toBe(3);expect(cached.initial).toBe(1);expect(cached.rebuilds).toBe(1);expect(cached.hits).toBe(2);
+ air.mass[0]+=floors[0]*2;air.mass[3]+=floors[3]*2;air.temperature[0]+=2;internals(air).radiation(s,0,0,environment,energy);
  const counters=air.radiationDiagnostics()!;
- expect(counters.calls).toBe(3);expect(counters.initial).toBe(1);expect(counters.rebuilds).toBe(2);expect(counters.hits).toBe(1);expect(counters.temperature).toBe(1);
+ expect(counters.calls).toBe(4);expect(counters.rebuilds).toBe(2);expect(counters.hits).toBe(2);expect(counters.temperature).toBe(1);
  expect(counters.gas[AIR_GAS_INDICES.indexOf(0)]).toBe(1);expect(counters.gas[AIR_GAS_INDICES.indexOf(3)]).toBe(1);
  const saved=air.checkpoint();counters.gas.fill(999);expect(air.radiationDiagnostics()!.gas).not.toEqual(counters.gas);
  air.setRadiationDiagnostics(false);expect(air.radiationDiagnostics()).toBeUndefined();expect(air.checkpoint()).toEqual(saved);
+});
+
+it('defers saturated rebuilds inside the declared envelope, oldest first, and resumes identically',()=>{
+ const s=new Float64Array(seedPlanet(grid,'sand',20)),climate=new WeatherClimate(grid);climate.prepareSurface(s,environment);const air=climate.air,energy=new Float32Array(grid.count*4),stride=8+AIR_LAYERS*5;
+ internals(air).advance(s,1/60,environment,energy);
+ for(let q=0;q<air.temperature.length;q++)air.temperature[q]+=5;
+ air.setRadiationDiagnostics();
+ const mask=internals(air).rebuildAllowance(s,1)!;
+ expect(mask).toBeDefined();
+ let rebuilt=0,deferred=0;for(const value of mask){if(value===1)rebuilt++;if(value===2)deferred++;}
+ expect(rebuilt).toBe(1);expect(deferred).toBe(grid.count-1);
+ for(let i=0;i<grid.count;i++)internals(air).radiation(s,i,1,environment,energy,undefined,mask);
+ const cached=air.radiationDiagnostics()!;
+ expect(cached.calls).toBe(grid.count);expect(cached.rebuilds).toBe(1);expect(cached.deferred).toBe(grid.count-1);
+ const after=air.checkpoint().radiationCache;
+ expect(after[0]).toBe(1);for(let i=1;i<grid.count;i++)expect(after[i*stride]).toBe(2);
+ const next=internals(air).rebuildAllowance(s,1)!;
+ expect(next[0]).toBe(0);expect(next[1]).toBe(1);
+ // Deferral is a pure function of the serialized cache: a mid-backlog resume
+ // runs in lockstep with the uninterrupted solver.
+ const resumedSurface=new Float64Array(s),resumedClimate=new WeatherClimate(grid);
+ resumedClimate.restore(JSON.parse(JSON.stringify(climate.snapshot())));
+ for(let n=0;n<3;n++){internals(air).advance(s,1/60,environment,energy);internals(resumedClimate.air).advance(resumedSurface,1/60,environment,energy);}
+ expect(resumedSurface).toEqual(s);expect(resumedClimate.snapshot()).toEqual(climate.snapshot());
 });
 
 it('allocates deep state on demand and can release and restore an exact checkpoint',()=>{

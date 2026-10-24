@@ -36,7 +36,7 @@ function spectralColumnScratch(){
  return {column,pressure:new Float64Array(n),interfaces:new Float64Array(n+1),interfaceTemperature:new Float64Array(n+1),sources:Array.from({length:n+1},()=>new Float64Array(32)),surface:new Float64Array(32),gas:{longwave:new Float64Array(32),shortwave:new Float64Array(32),rayleigh:new Float64Array(32)},amounts:new Float64Array(8),gasLayer:{pressure:0,temperature:0,dryMoles:0,waterMoles:0,carbonDioxideMoles:0,methaneMoles:0} as SpectralGasLayer};
 }
 export interface RadiationCacheDiagnostics {
- calls:number;hits:number;rebuilds:number;initial:number;age:number;surfaceTemperature:number;albedo:number;mode:number;
+ calls:number;hits:number;rebuilds:number;deferred:number;initial:number;age:number;surfaceTemperature:number;albedo:number;mode:number;
  temperature:number;mass:number;cloud:number;dust:number;soot:number;gas:number[];
 }
 export const AIR_GAS_INDICES=[0,1,2,3,6,7] as const;
@@ -69,6 +69,46 @@ const latent=AIR_FIELDS.map(f=>MATERIAL_ENERGY[f]);
 const molar=[.018015,.028014,.016043,.04401,0,0,.032,.02801,0];
 const escapeMolar=AIR_FIELDS.map(field=>GASES.find(g=>g.field===field)?.molarMass??0);
 const escapeIndex=AIR_FIELDS.map(field=>GASES.findIndex(g=>g.field===field));
+/** Declared solver tolerance, not physics: the band-weighted optical-depth
+ * change per layer below which cached radiation coefficients stay in use.
+ * Calibrated to the existing 1 K layer-temperature bound, whose flux error
+ * 4σT³ΔT ≈ 5 W/m² at 288 K corresponds to Δτ ≈ 5/390 ≈ 0.013; rounded down.
+ * A peer of the 1 K, 2% and 300 s reuse bounds; validated against climate
+ * soak and radiative-convective statistics rather than bit equality. */
+export const RADIATION_OPTICAL_DEPTH_TOLERANCE=.01;
+let radiationGasFloorCache:Float64Array|undefined;
+/** Absolute per-species drift (mass units of one layer) below which the
+ * band-weighted optical-depth change cannot exceed the reuse tolerance.
+ * Derived once by differencing the exact gas-optics call a rebuild runs, at
+ * three pressure/temperature states, so the floor inherits reference-mole
+ * subtraction and the water-vapor continuum instead of restating units.
+ * Equal-mass substitution between species of different optical weight still
+ * crosses the floor; an optically equivalent one cannot move the solve. */
+export function radiationGasMassFloors():Float64Array{
+ if(radiationGasFloorCache)return radiationGasFloorCache;
+ const gasInput=[1,0,3,2,1,1] as const,inputKeys=['dryMoles','waterMoles','carbonDioxideMoles','methaneMoles'] as const,
+  states:[number,number][]=[[9e4,288],[9e3,255],[900,230]],
+  gas={longwave:new Float64Array(32),shortwave:new Float64Array(32),rayleigh:new Float64Array(32)},
+  moved={longwave:new Float64Array(32),shortwave:new Float64Array(32),rayleigh:new Float64Array(32)},amounts=new Float64Array(8);
+ const sensitivity=new Float64Array(inputKeys.length);
+ for(const [pressure,temperature] of states){
+  const layer={pressure,temperature,dryMoles:3e4,waterMoles:300,carbonDioxideMoles:12,methaneMoles:.06,ozone:undefined,n2o:320e-9} as SpectralGasLayer;
+  for(let f=0;f<inputKeys.length;f++){
+   spectralGasOpticsInto(layer,gas,amounts);
+   const key=inputKeys[f],original=layer[key],probe=original*1.01;
+   layer[key]=probe;
+   spectralGasOpticsInto(layer,moved,amounts);
+   layer[key]=original;
+   let weighted=0;
+   for(let g=0;g<32;g++)weighted+=spectralWeights.longwave[g]*(moved.longwave[g]-gas.longwave[g])+spectralWeights.shortwave[g]*(moved.shortwave[g]-gas.shortwave[g])+spectralWeights.shortwave[g]*(moved.rayleigh[g]-gas.rayleigh[g]);
+   sensitivity[f]+=weighted/(probe-original);
+  }
+ }
+ const floors=new Float64Array(AIR_GAS_INDICES.length);
+ for(let f=0;f<AIR_GAS_INDICES.length;f++)floors[f]=RADIATION_OPTICAL_DEPTH_TOLERANCE*molar[AIR_GAS_INDICES[f]]*states.length/(sensitivity[gasInput[f]]*COLUMN_KG);
+ radiationGasFloorCache=floors;
+ return floors;
+}
 // Product liquid water occupies the cloud-liquid reservoir in an air layer.
 const airReactionField=(f:number)=>AIR_FIELDS.indexOf((f===4?16:f) as typeof AIR_FIELDS[number]);
 const gasCombustion=COMBUSTION_REACTIONS.filter(def=>AIR_FIELDS.includes(def.field as typeof AIR_FIELDS[number])).map(def=>{
@@ -138,10 +178,10 @@ export class LayeredAtmosphere {
  private radiationCounters?:RadiationCacheDiagnostics;
  /** Opt-in inspector counters. Reasons are non-exclusive per column call;
   * enabling them never changes the physical cache or serialized state. */
- setRadiationDiagnostics(enabled=true){this.radiationCounters=enabled?{calls:0,hits:0,rebuilds:0,initial:0,age:0,surfaceTemperature:0,albedo:0,mode:0,temperature:0,mass:0,cloud:0,dust:0,soot:0,gas:AIR_GAS_INDICES.map(()=>0)}:undefined;}
+ setRadiationDiagnostics(enabled=true){this.radiationCounters=enabled?{calls:0,hits:0,rebuilds:0,deferred:0,initial:0,age:0,surfaceTemperature:0,albedo:0,mode:0,temperature:0,mass:0,cloud:0,dust:0,soot:0,gas:AIR_GAS_INDICES.map(()=>0)}:undefined;}
  radiationDiagnostics(){const c=this.radiationCounters;return c?{...c,gas:[...c.gas]}:undefined;}
- private countRadiation(s:PhysicalState,i:number,albedo:number,mode:number,update:boolean){
-  const d=this.radiationCounters!;d.calls++;if(update)d.rebuilds++;else d.hits++;
+ private countRadiation(s:PhysicalState,i:number,albedo:number,mode:number,update:boolean,deferred:boolean){
+  const d=this.radiationCounters!;d.calls++;if(update)d.rebuilds++;else if(deferred)d.deferred++;else d.hits++;
   const r=i*RAD_STRIDE,c=this.radiationCache;
   if(c[r]<0){d.initial++;return;}if(c[r]>=300)d.age++;if(Math.abs(c[r+5]-this.surfaceTemperature(s,i))>1)d.surfaceTemperature++;if(Math.abs(c[r+6]-albedo)>.01)d.albedo++;if(c[r+7]!==mode)d.mode++;
   let temperature=false,mass=false,cloud=false,dust=false,soot=false;
@@ -151,7 +191,8 @@ export class LayeredAtmosphere {
    dust ||= Math.abs(this.dustMass[q]-this.dustRadiationCache[q])>Math.max(1e-15,.01*this.dustMass[q]);soot ||= Math.abs(this.mass[q*AIR_SPECIES+8]-this.sootRadiationCache[q])>Math.max(1e-15,.01*this.mass[q*AIR_SPECIES+8]);
   }
   if(temperature)d.temperature++;if(mass)d.mass++;if(cloud)d.cloud++;if(dust)d.dust++;if(soot)d.soot++;
-  for(let f=0;f<AIR_GAS_INDICES.length;f++)for(let k=0;k<AIR_LAYERS;k++){const q=i*AIR_LAYERS+k,m=this.mass[q*AIR_SPECIES+AIR_GAS_INDICES[f]],old=this.gasRadiationCache[q*AIR_GAS_INDICES.length+f];if(Math.abs(m-old)>.01*Math.max(m,old)){d.gas[f]++;break;}}
+  const floors=radiationGasMassFloors();
+  for(let f=0;f<AIR_GAS_INDICES.length;f++)for(let k=0;k<AIR_LAYERS;k++){const q=i*AIR_LAYERS+k,m=this.mass[q*AIR_SPECIES+AIR_GAS_INDICES[f]],old=this.gasRadiationCache[q*AIR_GAS_INDICES.length+f];if(Math.abs(m-old)>Math.max(.01*Math.max(m,old),floors[f])){d.gas[f]++;break;}}
  }
  private gradients:Float64Array;private radiationCache:Float64Array;private gasRadiationCache:Float64Array;
  private acceleration:Float64Array;private rt:Float64Array;private virtualTemperature:Float64Array;private logPressure:Float64Array;private edgeSpeeds:Float64Array;private carried:Float64Array;
@@ -639,21 +680,60 @@ export class LayeredAtmosphere {
  }
  settleDust(s:PhysicalState,i:number,dt:number){this.settleParticle(s,i,dt,false);}
  settleSoot(s:PhysicalState,i:number,dt:number){this.settleParticle(s,i,dt,true);}
+ /** Cache-hit test: true when the stored coefficients no longer represent
+  * this column within the declared reuse bounds (age, thermal, aerosol and
+  * optically significant inventory drift). */
+ private radiationStale(s:PhysicalState,i:number,alb:number,mode:number){
+  const r=i*RAD_STRIDE,c=this.radiationCache;
+  let update=c[r]<0||c[r]>=300||Math.abs(c[r+5]-this.surfaceTemperature(s,i))>1||Math.abs(c[r+6]-alb)>.01||c[r+7]!==mode;
+  for(let k=0;k<AIR_LAYERS&&!update;k++){const q=i*AIR_LAYERS+k,a=r+8+k*5,m=this.layerMass(q),cloud=(this.mass[q*AIR_SPECIES+4]+this.mass[q*AIR_SPECIES+5])*COLUMN_KG;update=Math.abs(this.dustMass[q]-this.dustRadiationCache[q])>Math.max(1e-15,.01*this.dustMass[q])||Math.abs(this.mass[q*AIR_SPECIES+8]-this.sootRadiationCache[q])>Math.max(1e-15,.01*this.mass[q*AIR_SPECIES+8])||Math.abs(c[a]-this.temperature[q])>1||Math.abs(m-c[a+1])>.02*Math.max(1e-15,m)||Math.abs(cloud-c[a+2])>.01;}
+  // Optical-significance rule: the 1% relative bound stands for grown
+  // inventories; the band-weighted floor replaces it where that bound
+  // degenerates toward zero (near-empty species, spin-up), so only drift
+  // that can move optical depth forces a rebuild. Match aerosol cache
+  // accuracy per constituent: equal-mass substitution between differently
+  // absorbing species and the arrival of a previously absent absorber
+  // still invalidate.
+  if(!update){const floors=radiationGasMassFloors();
+   for(let k=0;k<AIR_LAYERS&&!update;k++)for(let f=0;f<AIR_GAS_INDICES.length;f++){
+    const q=i*AIR_LAYERS+k,m=this.mass[q*AIR_SPECIES+AIR_GAS_INDICES[f]],old=this.gasRadiationCache[q*AIR_GAS_INDICES.length+f];
+    if(Math.abs(m-old)>Math.max(.01*Math.max(m,old),floors[f])){update=true;break;}
+   }
+  }
+  return update;
+ }
+ /** Deterministic rebuild budget: under saturation (spin-up, tool edits,
+  * impacts) at most one full spectral solve per column per 300 s of physical
+  * time, oldest stored coefficients first. Selection is a pure function of
+  * the serialized cache, so save/resume continuity is unchanged. Mask values:
+  * 1 rebuild now, 2 triggered but deferred, 0 fresh (initial builds stay
+  * unmasked and always run). */
+ private rebuildAllowance(s:PhysicalState,step:number,boundary?:PrescribedClimateBoundary){
+  const count=this.grid.count,budget=Math.max(1,Math.ceil(count*step/300)),pending:number[]=[];
+  for(let i=0;i<count;i++){
+   const alb=boundary?.albedo??climateSurfaceAlbedo(s,i),mode=boundary?.ozone==='rcemip'?1:0;
+   if(!this.radiationStale(s,i,alb,mode)||this.radiationCache[i*RAD_STRIDE]<0)continue;
+   pending.push(i);
+  }
+  if(pending.length<=budget)return undefined;
+  pending.sort((a,b)=>this.radiationCache[b*RAD_STRIDE]-this.radiationCache[a*RAD_STRIDE]||a-b);
+  const allowance=this.radiationAllowance??(this.radiationAllowance=new Uint8Array(count));
+  allowance.fill(0);
+  for(let n=0;n<budget;n++)allowance[pending[n]]=1;
+  for(let n=budget;n<pending.length;n++)allowance[pending[n]]=2;
+  return allowance;
+ }
+ private radiationAllowance?:Uint8Array;
  /** Radiation coefficients sampled at most every 300 s. Solar transport
   * is linear in incident flux, so changing day/night rescales it exactly.
   * Rapid thermal, mass or cloud changes invalidate the cached coefficients.
   * Cache state is serialized to preserve bit-identical save/resume. */
- private radiation(s:PhysicalState,i:number,dt:number,e:Environment,energy:Float32Array,boundary?:PrescribedClimateBoundary){
+ private radiation(s:PhysicalState,i:number,dt:number,e:Environment,energy:Float32Array,boundary?:PrescribedClimateBoundary,allowance?:Uint8Array){
   const p=i*STRIDE,r=i*RAD_STRIDE,c=this.radiationCache,alb=boundary?.albedo??climateSurfaceAlbedo(s,i),mode=boundary?.ozone==='rcemip'?1:0;
-  let update=c[r]<0||c[r]>=300||Math.abs(c[r+5]-this.surfaceTemperature(s,i))>1||Math.abs(c[r+6]-alb)>.01||c[r+7]!==mode;
-  for(let k=0;k<AIR_LAYERS&&!update;k++){const q=i*AIR_LAYERS+k,a=r+8+k*5,m=this.layerMass(q),cloud=(this.mass[q*AIR_SPECIES+4]+this.mass[q*AIR_SPECIES+5])*COLUMN_KG;update=Math.abs(this.dustMass[q]-this.dustRadiationCache[q])>Math.max(1e-15,.01*this.dustMass[q])||Math.abs(this.mass[q*AIR_SPECIES+8]-this.sootRadiationCache[q])>Math.max(1e-15,.01*this.mass[q*AIR_SPECIES+8])||Math.abs(c[a]-this.temperature[q])>1||Math.abs(m-c[a+1])>.02*Math.max(1e-15,m)||Math.abs(cloud-c[a+2])>.01;}
-  // Match aerosol cache accuracy per constituent, so equal-mass gas
-  // substitution and the arrival of a previously absent absorber invalidate.
-  for(let k=0;k<AIR_LAYERS&&!update;k++)for(let f=0;f<AIR_GAS_INDICES.length;f++){
-   const q=i*AIR_LAYERS+k,m=this.mass[q*AIR_SPECIES+AIR_GAS_INDICES[f]],old=this.gasRadiationCache[q*AIR_GAS_INDICES.length+f];
-   if(Math.abs(m-old)>.01*Math.max(m,old)){update=true;break;}
-  }
-  if(this.radiationCounters)this.countRadiation(s,i,alb,mode,update);
+  let stale:boolean,update:boolean,deferred:boolean;
+  if(allowance){const value=allowance[i];stale=value>0||c[r]<0;update=value===1||c[r]<0;deferred=value===2;}
+  else{stale=this.radiationStale(s,i,alb,mode);update=stale;deferred=false;}
+  if(this.radiationCounters)this.countRadiation(s,i,alb,mode,update,deferred);
   if(update){
    for(let k=0;k<AIR_LAYERS;k++)for(let f=0;f<AIR_GAS_INDICES.length;f++){const q=i*AIR_LAYERS+k;this.gasRadiationCache[q*AIR_GAS_INDICES.length+f]=this.mass[q*AIR_SPECIES+AIR_GAS_INDICES[f]];}
    const flux=radiativeFluxes(this.fillRadiationColumn(s,i,e,1,alb,boundary?.ozone,this.spectralScratch));c[r]=0;c[r+1]=flux.down[0]-flux.up[0];c[r+2]=flux.surfaceSolar;c[r+3]=-flux.olr;c[r+4]=1-flux.reflectedSolar;c[r+5]=this.surfaceTemperature(s,i);c[r+6]=alb;c[r+7]=mode;
@@ -826,9 +906,10 @@ export class LayeredAtmosphere {
    }
    for(const edge of this.edges)for(let k=0;k<AIR_LAYERS;k++){const a=edge.i*AIR_LAYERS+k,b=edge.j*AIR_LAYERS+k;step=Math.min(step,.12*edge.distance*this.radiusMeters/Math.max(1,Math.sqrt(this.speed2(a)),Math.sqrt(this.speed2(b))));}
    this.combustionStep(s,step/AIR_SECONDS/2);
+   const allowance=this.rebuildAllowance(s,step,boundary);
    for(let i=0;i<this.grid.count;i++){
     this.surfaceBoundaryStep(s,i,step,seconds=>{this.surfaceExchange(s,i,seconds,boundary);this.co2SurfaceExchange(s,i,seconds);this.liftDust(s,i,seconds);this.liftSoot(s,i,seconds);});
-    this.radiation(s,i,step,e,energy,boundary);
+    this.radiation(s,i,step,e,energy,boundary,allowance);
    }
    this.dynamics(step,e);
    this.combustionStep(s,step/AIR_SECONDS/2);
