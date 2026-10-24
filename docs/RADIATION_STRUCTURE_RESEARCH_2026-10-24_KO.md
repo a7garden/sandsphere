@@ -267,6 +267,8 @@ node --expose-gc docs/performance/2026-10-23/optimization-cpu-harness.mjs
 ```
 
 장기 젖은 재구축율은 `tests/climate-soak-browser.ts` 랩에 카운터 출력을
-추가해 측정한다. 모든 대안은 적용 전후 카운터·스텝 시간·기후 통계를
-같은 장비·같은 조건에서 비교한다. 0.7.0 때와 같이 다른 계산을 겹치지
-않는다.
+추가해 측정한다. `results/radiation-structure-baseline.json`은 `deferred`
+카운터 추가 이전 하니스·진단 버전으로 기록되어 이 필드가 없고, 창 행을
+합칠 때 누락 키를 처리해야 한다. 모든 대안은 적용 전후 카운터·스텝 시간·
+기후 통계를 같은 장비·같은 조건에서 비교한다. 0.7.0 때와 같이 다른 계산을
+겹치지 않는다.

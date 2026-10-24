@@ -1,11 +1,15 @@
-import {createServer} from '/Users/garden/Workspace/Projects/sandsphere/node_modules/vite/dist/node/index.js';
+import {createServer} from 'vite';
 import {writeFileSync,mkdirSync} from 'node:fs';
-const root=process.env.SANDSPHERE_PERF_ROOT??'/Users/garden/Workspace/Projects/sandsphere';
-const out=process.env.SANDSPHERE_RSH_OUT??new URL('./results/',import.meta.url).pathname;
+import {fileURLToPath} from 'node:url';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+const root=process.env.SANDSPHERE_PERF_ROOT??fileURLToPath(new URL('../../..',import.meta.url));
+const out=process.env.SANDSPHERE_RSH_OUT??fileURLToPath(new URL('./results/',import.meta.url));
 const label=process.env.SANDSPHERE_RSH_LABEL??'baseline';
 const totalSteps=Number(process.env.SANDSPHERE_RSH_STEPS??300);
+if(!Number.isFinite(totalSteps)||totalSteps<=100)throw new Error(`SANDSPHERE_RSH_STEPS must be a number above 100 (measurement windows are fixed), got: ${process.env.SANDSPHERE_RSH_STEPS}`);
 mkdirSync(out,{recursive:true});
-const server=await createServer({configFile:false,envDir:false,root,cacheDir:out+'/vite-cache',server:{middlewareMode:true,ws:false,watch:null},optimizeDeps:{noDiscovery:true,include:[]}});
+const server=await createServer({configFile:false,envDir:false,root,cacheDir:join(tmpdir(),'sandsphere-rsh-vite-cache'),server:{middlewareMode:true,ws:false,watch:null},optimizeDeps:{noDiscovery:true,include:[]}});
 const result={date:new Date().toISOString(),label,runtime:process.version,arch:process.arch,method:'Vite SSR production sources; wet coast level 4; timing pass without counters, counters pass on an identically seeded solver; windows in advance() steps (dt=1/30 game s, AIR_SECONDS=60)',steps:totalSteps,windows:[],stepMs:[]};
 try{
  const model=await server.ssrLoadModule('/src/sim/model.ts'),sphere=await server.ssrLoadModule('/src/sim/sphere.ts'),orbit=await server.ssrLoadModule('/src/sim/orbit.ts');
@@ -16,7 +20,9 @@ try{
   const {state,env}=seed();const solver=new model.CpuSolver(grid,state),commands=new Float32Array(grid.count*model.COMMAND_STRIDE);
   solver.advance(dt,commands,env);
   for(let n=0;n<totalSteps;n++){const t=performance.now();solver.advance(dt,commands,env);result.stepMs.push(performance.now()-t);}
-  solver.dispose();global.gc?.();
+  solver.dispose();
+  if(typeof global.gc!=='function')console.warn('global.gc unavailable: rerun with `node --expose-gc` for comparable heap state between passes');
+  global.gc?.();
  }
  // Counters pass: identical seed, diagnostics enabled per window.
  const windows=[[1,3],[3,30],[30,100],[100,totalSteps]];

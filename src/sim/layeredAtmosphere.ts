@@ -86,7 +86,11 @@ let radiationGasFloorCache:Float64Array|undefined;
  * crosses the floor; an optically equivalent one cannot move the solve. */
 export function radiationGasMassFloors():Float64Array{
  if(radiationGasFloorCache)return radiationGasFloorCache;
- const gasInput=[1,0,3,2,1,1] as const,inputKeys=['dryMoles','waterMoles','carbonDioxideMoles','methaneMoles'] as const,
+ // AIR_GAS_INDICES order → the SpectralGasLayer lever each species reaches
+ // the solve through (fillRadiationColumn): vapor/water, nitrogen/dry,
+ // methane, CO2, O2/dry, CO/dry. O2 and CO have no dedicated input; like
+ // nitrogen they move dτ only through the dry composite.
+ const gasInput=[1,0,3,2,0,0] as const,inputKeys=['dryMoles','waterMoles','carbonDioxideMoles','methaneMoles'] as const,
   states:[number,number][]=[[9e4,288],[9e3,255],[900,230]],
   gas={longwave:new Float64Array(32),shortwave:new Float64Array(32),rayleigh:new Float64Array(32)},
   moved={longwave:new Float64Array(32),shortwave:new Float64Array(32),rayleigh:new Float64Array(32)},amounts=new Float64Array(8);
@@ -105,7 +109,14 @@ export function radiationGasMassFloors():Float64Array{
   }
  }
  const floors=new Float64Array(AIR_GAS_INDICES.length);
- for(let f=0;f<AIR_GAS_INDICES.length;f++)floors[f]=RADIATION_OPTICAL_DEPTH_TOLERANCE*molar[AIR_GAS_INDICES[f]]*states.length/(sensitivity[gasInput[f]]*COLUMN_KG);
+ for(let f=0;f<AIR_GAS_INDICES.length;f++){
+  const response=sensitivity[gasInput[f]];
+  // A zero-response probe would make the floor +Infinity and silently
+  // disable drift invalidation for the cached session; fall back to the
+  // pure relative rule instead, which is the conservative pre-change
+  // behavior.
+  floors[f]=response>0?RADIATION_OPTICAL_DEPTH_TOLERANCE*molar[AIR_GAS_INDICES[f]]*states.length/(response*COLUMN_KG):0;
+ }
  radiationGasFloorCache=floors;
  return floors;
 }
@@ -692,8 +703,8 @@ export class LayeredAtmosphere {
   // degenerates toward zero (near-empty species, spin-up), so only drift
   // that can move optical depth forces a rebuild. Match aerosol cache
   // accuracy per constituent: equal-mass substitution between differently
-  // absorbing species and the arrival of a previously absent absorber
-  // still invalidate.
+  // absorbing species still invalidates; an arrival below the floor is
+  // optically negligible by construction and stays cached.
   if(!update){const floors=radiationGasMassFloors();
    for(let k=0;k<AIR_LAYERS&&!update;k++)for(let f=0;f<AIR_GAS_INDICES.length;f++){
     const q=i*AIR_LAYERS+k,m=this.mass[q*AIR_SPECIES+AIR_GAS_INDICES[f]],old=this.gasRadiationCache[q*AIR_GAS_INDICES.length+f];
@@ -707,7 +718,11 @@ export class LayeredAtmosphere {
   * time, oldest stored coefficients first. Selection is a pure function of
   * the serialized cache, so save/resume continuity is unchanged. Mask values:
   * 1 rebuild now, 2 triggered but deferred, 0 fresh (initial builds stay
-  * unmasked and always run). */
+  * unmasked and always run). Unsaturated steps return undefined on purpose:
+  * every column then re-tests at its own turn in the loop, after its surface
+  * exchange, exactly at the pre-budget decision point — reusing a mask that
+  * was computed before surfaceBoundaryStep would delay a fresh trigger by a
+  * substep and change dry bit results. */
  private rebuildAllowance(s:PhysicalState,step:number,boundary?:PrescribedClimateBoundary){
   const count=this.grid.count,budget=Math.max(1,Math.ceil(count*step/300)),pending:number[]=[];
   for(let i=0;i<count;i++){
