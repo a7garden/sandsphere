@@ -53,7 +53,7 @@ export function atmosphereState(state:PhysicalState,e:Environment,climate?:Clima
       const mass=Math.max(0,stock(p+GASES[k].field));masses[k]+=mass;localMoles+=mass/GASES[k].molarMass;
       if(mass>0)minimumBinding=Math.min(minimumBinding,bindingParameter(state[p+F.temperature],gravityMultiplier(e),GASES[k].molarMass,radius));
     }
-    moles+=localMoles;thermalMoles+=localMoles*Math.max(1,state[p+F.temperature]+273.15);
+    moles+=localMoles;thermalMoles+=localMoles*(state[p+F.temperature]+273.15);
   }
   const air=climate&&'air' in climate?(climate.air.ready?climate.air:undefined):climate?.atmosphere;
   if(air){
@@ -63,7 +63,7 @@ export function atmosphereState(state:PhysicalState,e:Environment,climate?:Clima
     for(let q=0;q<air.temperature.length;q++)for(let k=0;k<AIR_GAS_INDICES.length;k++){
       const gas=GASES[k],mass=AIR_GAS_INDICES[k]<width?air.mass[q*width+AIR_GAS_INDICES[k]]:0,n=mass/gas.molarMass;
       masses[k]+=mass;moles+=n;
-      thermalMoles+=n*Math.max(1,air.temperature[q]+273.15);
+      thermalMoles+=n*(air.temperature[q]+273.15);
       if(mass>0)minimumBinding=Math.min(minimumBinding,bindingParameter(air.temperature[q],gravityMultiplier(e),gas.molarMass,radius));
     }
   }

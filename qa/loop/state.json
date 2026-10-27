@@ -1,0 +1,29 @@
+{
+  "criteria_sha256": "2cb22280017444bc9170a0749fb555b03e56e9da89c291b9df0a4f217133bf64",
+  "frozen_at": "2026-10-28T00:32:43+09:00",
+  "iteration": 1,
+  "max_iterations": 8,
+  "max_fixes_per_iteration": 3,
+  "criteria_status": {
+    "C1": "pass",
+    "C2": "pass",
+    "C3": "fail",
+    "C4": "fail",
+    "C5": "pass",
+    "C6": "fail"
+  },
+  "iterations": [
+    {
+      "n": 1,
+      "started": "2026-10-28T00:32:43+09:00"
+    }
+  ],
+  "criteria_evidence": {
+    "C6": "2026-10-28: production runner Wrangler OAuth expired; local OAuth lacks Workers write; public release.json remains v0.6.1.",
+    "C5": "In-app desktop actual game; headless Chrome 320x568,390x844,667x375 touch and captures, 31 checks, physical device not tested.",
+    "C4": "Earlier isolated 2562-cell wet 405.3ms/step vs 33.3ms target; current concurrent measurement invalid.",
+    "C2": "In-app create/paint/pause/section and headless touch camera and isolated test-slot reload: artifacts/mobile/audit-2026-10-28-headless-screen-split/browser-results.json.",
+    "C3": "A2 cold wet-vapor vertical CFL reproducible; constrained liquid branch passes focused checks; trace-vapor and triple-point under repair.",
+    "C1": "Final candidate npm test 869 passed, 70 skipped; npm run check:version and build:production pass; test:rules five passed with Java21."
+  }
+}

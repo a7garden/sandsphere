@@ -547,7 +547,13 @@ export class LayeredAtmosphere {
   const h=this.layerEnergy(q),d=this.dry(q),p=this.pressure(i,k);if(this.mass[q*AIR_SPECIES+4]+this.mass[q*AIR_SPECIES+5]<=1e-18&&statisticalCloud(total,saturatedVapor(d.mass,d.moles,this.temperature[q],p,this.temperature[q]<0)).condensate===0)return;
   let dryCapacity=this.dustMass[q]*DUST_CP+this.mass[q*AIR_SPECIES+8]*cp[8];for(const f of DRY_GAS_INDICES)dryCapacity+=this.mass[q*AIR_SPECIES+f]*cp[f];const potential=this.layerMass(q)*(9.81*this.gravity*this.height(k)+this.speed2(q)*.5)/1000;
   const a=q*AIR_SPECIES,old=this.mass[a],liquid=this.mass[a+4],ice=this.mass[a+5],temperature=this.temperature[q],capacity=this.layerCapacity(q),mass=this.layerMass(q),minimum=Math.fround(MIN_THERMODYNAMIC_TEMPERATURE);
-  const r=waterEquilibrium(dryCapacity,d.moles,total,h-this.dryChemicalEnergy(q),p,potential,minimum,Infinity,(total,sat)=>statisticalCloud(total,sat).condensate);
+  const closure=(total:number,sat:number)=>statisticalCloud(total,sat).condensate,
+   lower=waterStateAtTemperature(dryCapacity,d.moles,total,p,potential,minimum,true,closure),target=h-this.dryChemicalEnergy(q);
+  // Constant capacities extrapolated far below freezing can make conversion
+  // of supercooled liquid to ice endothermic. If full equilibrium needs more
+  // energy than this valid reservoir owns, admit only the attainable extent
+  // toward the boundary composition below; retain the rest as liquid.
+  const r=target<lower.energy?lower:waterEquilibrium(dryCapacity,d.moles,total,target,p,potential,minimum,Infinity,closure);
   if(r.vapor===old&&r.liquid===liquid&&r.ice===ice)return;
   const dv=r.vapor-old,dl=r.liquid-liquid,di=r.ice-ice,mechanical=(9.81*this.gravity*this.height(k)+this.speed2(q)*.5)/1000,available=capacity*(temperature-minimum);
   const cost=(dv*cp[0]+dl*cp[4]+di*cp[5])*minimum+dv*latent[0]+dl*latent[4]+di*latent[5]+(dv+dl+di)*mechanical;
@@ -902,6 +908,20 @@ export class LayeredAtmosphere {
   }
  }
 
+ private escape(gameDt:number,e:Environment,energy:Float32Array,escaped?:Float32Array){
+  for(let i=0;i<this.grid.count;i++)for(let k=0;k<AIR_LAYERS;k++)for(const f of AIR_GAS_INDICES){
+   const q=i*AIR_LAYERS+k,index=q*AIR_SPECIES+f,before=this.mass[index];if(before<=0)continue;
+   const after=before-before*thermalEscapeFraction(this.temperature[q],e.gravity??1,escapeMolar[f],gameDt,this.radiusMeters),amount=before-after;if(amount===0)continue;
+   const h=this.layerEnergy(q),carried=amount*(cp[f]*this.temperature[q]+latent[f]+(9.81*this.gravity*this.height(k)+this.speed2(q)*.5)/1000);
+   // Escaping material shares the layer's temperature and velocity. Removing
+   // its own capacity, phase and mechanical energy leaves both unchanged;
+   // an enthalpy inversion would introduce cancellation near absolute zero.
+   this.mass[index]=after;
+   this.roundoff[i]+=this.layerEnergy(q)-h+carried;
+   if(escaped)escaped[i*GASES.length+escapeIndex[f]]+=amount;energy[i*4+2]-=carried;
+  }
+ }
+
  advance(s:PhysicalState,gameDt:number,e:Environment,energy:Float32Array,condensed?:Float32Array,precipitated?:Float32Array,escaped?:Float32Array,boundary?:PrescribedClimateBoundary){
   if(s instanceof Float32Array){const actual=this.physicalSurface(s);this.advance(actual,gameDt,e,energy,condensed,precipitated,escaped,boundary);s.set(this.publishSurface(actual));return;}
   this.absorbedSolar.fill(0);
@@ -935,12 +955,7 @@ export class LayeredAtmosphere {
    prescribe();
    remaining-=step;
   }
-  for(let i=0;i<this.grid.count;i++)for(let k=0;k<AIR_LAYERS;k++)for(const f of AIR_GAS_INDICES){
-   const q=i*AIR_LAYERS+k,before=this.mass[q*AIR_SPECIES+f];if(before<=0)continue;
-   const amount=before*thermalEscapeFraction(this.temperature[q],e.gravity??1,escapeMolar[f],gameDt,this.radiusMeters);if(amount===0)continue;
-   const h=this.layerEnergy(q),carried=amount*(cp[f]*this.temperature[q]+latent[f]+(9.81*this.gravity*this.height(k)+this.speed2(q)*.5)/1000);
-   this.mass[q*AIR_SPECIES+f]-=amount;this.setEnergy(q,h-carried);if(escaped)escaped[i*GASES.length+escapeIndex[f]]+=amount;energy[i*4+2]-=carried;
-  }
+  this.escape(gameDt,e,energy,escaped);
   for(const t of this.temperature)if(!validThermodynamicTemperature(t))throw new Error('대기 온도가 모델 범위를 벗어났습니다.');
   this.attach(s);for(let i=0;i<this.grid.count;i++)energy[i*4+3]+=this.roundoff[i];this.roundoff.fill(0);
  }

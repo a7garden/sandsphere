@@ -7,12 +7,30 @@ export const REFERENCE_PRESSURE=101325;
 export const REFERENCE_GAS_MASS=.3;
 export const WATER_MOLAR_MASS=.018015;
 export type WaterPhase='water'|'ice';
-export function saturationPressure(temperature:number,phase:WaterPhase='water'){
- const t=Math.max(123,Math.min(647.096,temperature+273.15));
- if(phase==='ice'&&t<=273.16)return Math.exp(9.550426-5723.265/t+3.53068*Math.log(t)-.00728332*t);
+function iceSaturationPressure(t:number){return Math.exp(9.550426-5723.265/t+3.53068*Math.log(t)-.00728332*t);}
+function liquidSaturationPressure(t:number){
  if(t<273.16){const x=.0415*(t-218.8),tanh=(Math.exp(2*x)-1)/(Math.exp(2*x)+1);return Math.exp(54.842763-6763.22/t-4.210*Math.log(t)+.000367*t+tanh*(53.878-1331.22/t-9.44523*Math.log(t)+.014025*t));}
  const v=1-t/647.096;
  return 22064000*Math.exp(647.096/t*(-7.85951783*v+1.84408259*v**1.5-11.7866497*v**3+22.6807411*v**3.5-15.9618719*v**4+1.80122502*v**7.5));
+}
+const tripleFitOffset=Math.log(liquidSaturationPressure(273.16)/iceSaturationPressure(273.16));
+/** The material model melts at 0°C, while the physical triple point is
+ * 0.01°C. Join the liquid fit to the unchanged ice fit over -0.01…0°C,
+ * then use their common curve up to the IAPWS triple-point value. This local
+ * model approximation changes liquid pressure by at most 0.011%; ice at
+ * T<=0°C and both fits outside the join retain their original values.
+ * It makes the 0°C latent plateau continuous without adding water or heat.
+ */
+export function saturationPressure(temperature:number,phase:WaterPhase='water'){
+ const t=Math.max(123,Math.min(647.096,temperature+273.15));
+ if(phase==='ice'&&t<=273.15)return iceSaturationPressure(t);
+ if(t<=273.14)return liquidSaturationPressure(t);
+ if(t<273.15){
+  const x=(t-273.14)/.01,w=x*x*(3-2*x),liquid=liquidSaturationPressure(t);
+  return liquid*Math.exp(w*Math.log(iceSaturationPressure(t)/liquid));
+ }
+ if(t<273.16)return iceSaturationPressure(t)*Math.exp((t-273.15)/.01*tripleFitOffset);
+ return liquidSaturationPressure(t);
 }
 /** Dilute ideal dissociated NaCl approximation, explicitly not a concentrated-brine EOS. */
 export function waterActivity(water:number,salt:number){return water>1e-8?1/(1+2*WATER_MOLAR_MASS/.05844*Math.max(0,salt)/water):1;}

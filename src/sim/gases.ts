@@ -20,7 +20,9 @@ export type EscapeRegime='weak-binding'|'transition'|'jeans-shaped';
 /** Surface binding diagnostic on the declared 1000 km game reference radius.
  * This is neither an exobase temperature nor a real planet mass estimate. */
 export function bindingParameter(temperature:number,gravity:number,molarMass:number,radiusMeters=ESCAPE_MODEL_RADIUS){
- return Math.max(0,gravity)*EARTH_GRAVITY*radiusMeters*molarMass/(GAS_CONSTANT*Math.max(1,temperature+273.15));
+ const kelvin=temperature+273.15;
+ if(!Number.isFinite(kelvin)||kelvin<=0)throw new RangeError('Gas binding requires a finite positive Kelvin temperature.');
+ return Math.max(0,gravity)*EARTH_GRAVITY*radiusMeters*molarMass/(GAS_CONSTANT*kelvin);
 }
 export function escapeRegime(lambda:number):EscapeRegime{
  return lambda<3?'weak-binding':lambda<6?'transition':'jeans-shaped';

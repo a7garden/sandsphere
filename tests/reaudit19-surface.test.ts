@@ -17,7 +17,7 @@ import {statisticalCloud} from '../src/sim/climatePhysics';
 
 // This audit intentionally changes no production code or previous tolerances.
 // Run: REAUDIT19_SURFACE=1 npx vitest run tests/reaudit19-surface.test.ts --maxWorkers=1 --disableConsoleIntercept
-const directory='artifacts/reaudit19/surface';
+const directory=`artifacts/reaudit19/reruns/${Date.now()}-${process.pid}/surface`;
 const sourceFiles=['src/sim/model.ts','src/sim/materialReaction.ts','src/sim/ecology.ts','src/sim/materialPhysics.ts','src/sim/waterPhysics.ts','src/sim/oceanDynamics.ts','src/sim/solidMechanics.ts','src/sim/thermodynamics.ts','src/sim/weatherClimate.ts','src/sim/layeredAtmosphere.ts','src/sim/mechanicalBoundary.ts','src/sim/animalNavigation.ts','src/sim/physicalState.ts','src/sim/phaseEquilibrium.ts','src/sim/climatePhysics.ts','src/sim/buoyancy.ts'];
 const hashes=()=>Object.fromEntries(sourceFiles.map(file=>[file,createHash('sha256').update(readFileSync(file)).digest('hex')]));
 const write=(name:string,value:unknown)=>{mkdirSync(directory,{recursive:true});writeFileSync(`${directory}/${name}.json`,JSON.stringify(value,null,2)+'\n');};

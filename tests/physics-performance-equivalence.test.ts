@@ -1,5 +1,7 @@
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
+import {posix} from 'node:path';
+import {parseSync} from 'vite';
 import {expect,it} from 'vitest';
 import {createSphere} from '../src/sim/sphere';
 import {F,STRIDE,seedPlanet,type Environment,type PhysicalState} from '../src/sim/model';
@@ -10,6 +12,8 @@ import {radiativeFluxes} from '../src/sim/climatePhysics';
 import {initializeSpectralAcceleration,setSpectralAccelerationEnabled} from '../src/sim/spectralRadiation';
 import {WeatherClimate as OriginalWeatherClimate} from './helpers/preOptimizationAtmosphere/weatherClimate';
 import {seedPlanet as originalSeedPlanet} from './helpers/preOptimizationAtmosphere/model';
+import {createSphere as originalCreateSphere} from './helpers/preOptimizationAtmosphere/sphere';
+import {radiativeFluxes as originalRadiativeFluxes} from './helpers/preOptimizationAtmosphere/climatePhysics';
 import referenceManifest from './helpers/preOptimizationAtmosphere/manifest.json';
 import sourceBaseline from '../docs/performance/2026-10-23/source-baseline.json';
 
@@ -33,15 +37,37 @@ function exactReference(actual:unknown,expected:unknown,path='reference'):void {
  for(const key of keys)exactReference(a[key],b[key],`${path}.${key}`);
 }
 
-it('pins the independent original modules and shared math dependencies to the pre-optimization source receipt',()=>{
+const referenceRoot='tests/helpers/preOptimizationAtmosphere/';
+const referenceFiles={...Object.fromEntries(Object.entries(referenceManifest.frozen).map(([file,entry])=>[file,entry.originalSha256])),
+ ...Object.fromEntries(Object.entries({...referenceManifest.shared,...referenceManifest.additionalShared}).map(([file,sha])=>[file.replace(/^src\/sim\//,''),sha]))};
+
+it('pins the independent original modules and all historical dependencies to the pre-optimization source receipt',()=>{
  const recorded=sourceBaseline.files as Record<string,string>;
- for(const [file,entry]of Object.entries(referenceManifest.frozen)){
-  expect(entry.originalSha256,entry.originalPath).toBe(recorded[entry.originalPath]);
-  const fixture=readFileSync('tests/helpers/preOptimizationAtmosphere/'+file,'utf8');expect(fixture.startsWith(referenceManifest.header)).toBe(true);
-  const original=fixture.slice(referenceManifest.header.length).replaceAll("from '../../../src/sim/","from './");
-  expect(createHash('sha256').update(original).digest('hex'),entry.originalPath).toBe(entry.originalSha256);
+ for(const [file,sha]of Object.entries(referenceFiles)){
+  expect(sha,file).toBe(recorded['src/sim/'+file]);
+  const fixture=readFileSync(referenceRoot+file);
+  let original:Uint8Array|string=fixture;
+  if(file.endsWith('.ts')){const text=fixture.toString('utf8');expect(text.startsWith(referenceManifest.header),file).toBe(true);original=text.slice(referenceManifest.header.length);}
+  expect(createHash('sha256').update(original).digest('hex'),file).toBe(sha);
  }
- for(const [file,sha]of Object.entries(referenceManifest.shared)){expect(sha,file).toBe(recorded[file]);expect(createHash('sha256').update(readFileSync(file)).digest('hex'),file).toBe(sha);}
+});
+
+it('keeps every historical import inside the source-pinned fixture graph',()=>{
+ const pending=Object.keys(referenceManifest.frozen),visited=new Set<string>();
+ while(pending.length){
+  const file=pending.pop()!;if(visited.has(file))continue;visited.add(file);
+  expect(Object.hasOwn(referenceFiles,file),file).toBe(true);
+  if(!file.endsWith('.ts'))continue;
+  const parsed=parseSync(file,readFileSync(referenceRoot+file,'utf8'));
+  expect(parsed.errors,file).toEqual([]);expect(parsed.module.dynamicImports,file).toEqual([]);expect(parsed.module.importMetas,file).toEqual([]);
+  const imports=[...parsed.module.staticImports.map(entry=>entry.moduleRequest.value),...parsed.module.staticExports.flatMap(entry=>entry.entries.flatMap(e=>e.moduleRequest?[e.moduleRequest.value]:[]))];
+  for(const specifier of imports){
+   expect(specifier.startsWith('./')||specifier.startsWith('../'),`${file}: external import ${specifier}`).toBe(true);
+   const path=posix.normalize(posix.join(posix.dirname(file),specifier)),target=posix.extname(path)?path:path+'.ts';
+   expect(Object.hasOwn(referenceFiles,target),`${file}: unpinned import ${specifier}`).toBe(true);pending.push(target);
+  }
+ }
+ expect([...visited].sort()).toEqual(Object.keys(referenceFiles).sort());
 });
 
 it('compares signed zero and the lowest differing Float64 bit without an epsilon',()=>{
@@ -49,7 +75,8 @@ it('compares signed zero and the lowest differing Float64 bit without an epsilon
  expect(()=>exactReference(new Float64Array([1]),new Float64Array([1+Number.EPSILON]))).toThrow('exact mismatch');
 });
 
-function layeredScenario(temperature:number,Climate:typeof WeatherClimate|typeof OriginalWeatherClimate,seed:typeof seedPlanet){
+function layeredScenario(temperature:number,Climate:typeof WeatherClimate|typeof OriginalWeatherClimate,seed:typeof seedPlanet,transfer=radiativeFluxes,scenarioGrid=grid){
+ const grid=scenarioGrid;
  const e={...environment,ambient:temperature},s=new Float64Array(seed(grid,'sand',temperature)),climate=new Climate(grid);
  for(let i=0;i<grid.count;i++){s[i*STRIDE+F.water]=temperature>0?.5:0;s[i*STRIDE+F.nitrogen]=.3;}
  climate.prepareSurface(s,e);const air=climate.air,energy=new Float32Array(grid.count*4),prepared={air:air.checkpoint(),surface:s.slice()};
@@ -57,7 +84,7 @@ function layeredScenario(temperature:number,Climate:typeof WeatherClimate|typeof
   const q=i*AIR_LAYERS+k,p=q*AIR_SPECIES;air.mass[p]+=1e-7*(i+1);air.mass[p+3]+=1e-6*(k+1);air.mass[p+4]=temperature>0?2e-7*(k%3):0;
   air.temperature[q]=temperature+(i%3)*.1;const x=grid.directions[i*3],z=grid.directions[i*3+2];air.velocity[q*3]=z*3;air.velocity[q*3+2]=-x*3;
  }
- const columns=[radiativeFluxes(air.radiationColumn(s,0,e)),radiativeFluxes(air.radiationColumn(s,1,e))],stages=[];
+ const columns=[transfer(air.radiationColumn(s,0,e)),transfer(air.radiationColumn(s,1,e))],stages=[];
  for(let step=0;step<3;step++){for(let i=0;i<grid.count;i++)internals(air).radiation(s,i,.1,e,energy);internals(air).dynamics(.1,e);stages.push({air:air.checkpoint(),surface:s.slice(),energy:energy.slice()});}
  return {prepared,stages,golden:{columns,air:air.checkpoint(),surface:[...s],energy:[...energy]}};
 }
@@ -72,7 +99,7 @@ it.each([[20,false],[20,true],[-240,false],[-240,true]] as const)('retains exact
   const status=await initializeSpectralAcceleration({load:async()=>new Uint8Array(readFileSync('src/sim/data/spectral-optics-simd.wasm'))});
   expect(status.backend).toBe('wasm-simd');
  }
- const original=layeredScenario(temperature,OriginalWeatherClimate,originalSeedPlanet),actual=layeredScenario(temperature,WeatherClimate,seedPlanet);
+ const original=layeredScenario(temperature,OriginalWeatherClimate,originalSeedPlanet,originalRadiativeFluxes,originalCreateSphere(0)),actual=layeredScenario(temperature,WeatherClimate,seedPlanet);
  exactReference(actual,original);
  if(process.platform==='darwin'&&process.arch==='arm64'&&process.version==='v24.20.0'&&process.versions.v8==='13.6.233.17-node.53'){
   const captured=temperature===20?'0824ddf3a5ed38235e458931efba658e04999b2f08429d9ee4c76dc6b96c294f':'c1663464af2461e1b6fb21c7baa33434f8404b8bc8acc5acb4d579722dc5f7e2';
@@ -82,9 +109,10 @@ it.each([[20,false],[20,true],[-240,false],[-240,true]] as const)('retains exact
 });
 
 it('retains exact deep atmosphere transport through repeated stages',()=>{
- const p=createJupiterPlanet(grid),climate=new WeatherClimate(grid);climate.restore(p.climate);const giant=climate.giant;
- for(let step=0;step<3;step++)giant.dynamics(3,p.environment);
+ const p=createJupiterPlanet(grid),climate=new WeatherClimate(grid),original=new OriginalWeatherClimate(originalCreateSphere(0));climate.restore(p.climate);original.restore(p.climate);const giant=climate.giant;
+ for(let step=0;step<3;step++){giant.dynamics(3,p.environment);original.giant.dynamics(3,p.environment);exactReference(giant.checkpoint(),original.giant.checkpoint());}
  expect(digest(giant.checkpoint())).toBe('7d2d5454d0a3faae5a0ff8464fb36b86621604731489c6802c9d06a84b948043');
+ expect(digest(original.giant.checkpoint())).toBe('7d2d5454d0a3faae5a0ff8464fb36b86621604731489c6802c9d06a84b948043');
 });
 
 it('keeps spectral diagnostic columns independent while the solver reuses its column',()=>{

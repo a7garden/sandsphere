@@ -22,6 +22,10 @@ export const PLANET_SPECIES:Record<PlanetSpecies,{molarMass:number}>={
  hydrogen:{molarMass:.002016},helium:{molarMass:.004003},ammonia:{molarMass:.017031},
 };
 export const PHYSICAL_SECONDS_PER_TICK=60;
+/** Definition bounds also govern persisted physical orbit and spin inputs.
+ * The narrower UI slider range is an editing convenience, not model support. */
+export const PLANET_DISTANCE_AU={min:.05,max:100} as const;
+export const PLANET_PERIOD_SECONDS={min:1,max:1e12} as const;
 export const LEGACY_RADIUS_METERS=1e6;
 export const MARS_DEFINITION:PlanetDefinition={
  version:1,preset:'mars',kind:'rocky',radiusMeters:3389500,surfaceGravity:3.71,timing:'physical',
@@ -49,8 +53,8 @@ export function validPlanetDefinition(value:unknown):value is PlanetDefinition {
  const d=value as PlanetDefinition,a=d.atmosphere,b=d.lowerBoundary;
  if(d.version!==1||!['sandbox','mars','jupiter','saturn','custom'].includes(d.preset)||!['rocky','gas-giant','ice-giant'].includes(d.kind)||!['sandbox','physical'].includes(d.timing)
   ||!bounded(d.radiusMeters,1e3,2e8)||!bounded(d.surfaceGravity,.0981,29.43)
-  ||!d.orbit||!bounded(d.orbit.distanceAu,.05,100)||!bounded(d.orbit.periodSeconds,1,1e12)
-  ||!d.rotation||!bounded(d.rotation.periodSeconds,1,1e12)||!bounded(d.rotation.tiltDegrees,0,180)
+  ||!d.orbit||!bounded(d.orbit.distanceAu,PLANET_DISTANCE_AU.min,PLANET_DISTANCE_AU.max)||!bounded(d.orbit.periodSeconds,PLANET_PERIOD_SECONDS.min,PLANET_PERIOD_SECONDS.max)
+  ||!d.rotation||!bounded(d.rotation.periodSeconds,PLANET_PERIOD_SECONDS.min,PLANET_PERIOD_SECONDS.max)||!bounded(d.rotation.tiltDegrees,0,180)
   ||!a||!bounded(a.pressurePa,0,1e12)||!['earth-spectral','thin-co2-grey','hydrogen-helium'].includes(a.radiation)||!Array.isArray(a.composition)||a.composition.length>7)return false;
  const species=new Set<string>();let fraction=0;
  for(const c of a.composition){if(!c||!Object.hasOwn(PLANET_SPECIES,c.species)||species.has(c.species)||!bounded(c.moleFraction,0,1))return false;species.add(c.species);fraction+=c.moleFraction;}

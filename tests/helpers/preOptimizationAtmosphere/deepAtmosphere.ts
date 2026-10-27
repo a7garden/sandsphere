@@ -1,17 +1,17 @@
 // @ts-nocheck -- immutable pre-optimization fixture; production nominal types may evolve.
 // Only import paths differ; normalize them to verify the original captured source SHA-256.
-import type {SphereGrid} from '../../../src/sim/sphere';
+import type {SphereGrid} from './sphere';
 import {F,STRIDE,MASS_FIELDS,type Environment,type PhysicalState} from './model';
-import {SPECIFIC_HEAT,MATERIAL_ENERGY,mechanicalEnergy,temperatureFromEnergy} from '../../../src/sim/thermodynamics';
-import {queueSpecies,carryVelocity,queueEnergyMomentum,commitMomentum,outgoingScale} from '../../../src/sim/conservativeTransport';
-import {DEEP_FIELDS,DEEP_SPECIES,DEEP_CP as CP,DEEP_PHASE,DEEP_MOLAR as MOLAR,CONDENSATES,CLOUD_SCATTER,CLOUD_LONGWAVE,equilibrateCloudParcel,parcelThermalEnergy,saturationPressure} from '../../../src/sim/giantCloudPhysics';
-export {DEEP_FIELDS,DEEP_SPECIES} from '../../../src/sim/giantCloudPhysics';
+import {SPECIFIC_HEAT,MATERIAL_ENERGY,mechanicalEnergy,temperatureFromEnergy} from './thermodynamics';
+import {queueSpecies,carryVelocity,queueEnergyMomentum,commitMomentum,outgoingScale} from './conservativeTransport';
+import {DEEP_FIELDS,DEEP_SPECIES,DEEP_CP as CP,DEEP_PHASE,DEEP_MOLAR as MOLAR,CONDENSATES,CLOUD_SCATTER,CLOUD_LONGWAVE,equilibrateCloudParcel,parcelThermalEnergy,saturationPressure} from './giantCloudPhysics';
+export {DEEP_FIELDS,DEEP_SPECIES} from './giantCloudPhysics';
 import {COLUMN_KG,AIR_SECONDS,type AirEdge} from './layeredAtmosphere';
-import {radiativeFluxes,type RadiationColumn} from '../../../src/sim/climatePhysics';
-import {assertPlanetSupport,planetSupport,isDeepAtmosphere} from '../../../src/sim/planetDefinition';
-import {validInventoryAmount,assertInventoryAmount} from '../../../src/sim/physicalState';
-import {DEEP_LAYERS,deepInitialProfile,validDeepHeight,type DeepInitialConditions} from '../../../src/sim/deepAtmosphereProfile';
-export {DEEP_LAYERS,type DeepInitialConditions} from '../../../src/sim/deepAtmosphereProfile';
+import {radiativeFluxes,type RadiationColumn} from './climatePhysics';
+import {assertPlanetSupport,planetSupport,isDeepAtmosphere} from './planetDefinition';
+import {validInventoryAmount,assertInventoryAmount} from './physicalState';
+import {DEEP_LAYERS,deepInitialProfile,validDeepHeight,type DeepInitialConditions} from './deepAtmosphereProfile';
+export {DEEP_LAYERS,type DeepInitialConditions} from './deepAtmosphereProfile';
 
 export function hasDeepGas(state:Float32Array){for(let p=0;p<state.length;p+=STRIDE)if([28,29,30,31,32].some(f=>state[p+f]>0))return true;return false;}
 const R=8.314462618;

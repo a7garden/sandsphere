@@ -1,27 +1,27 @@
 // @ts-nocheck -- immutable pre-optimization fixture; production nominal types may evolve.
 // Only import paths differ; normalize them to verify the original captured source SHA-256.
-import {assertInventoryAmount,validInventoryAmount,type PhysicalState} from '../../../src/sim/physicalState';
-import {admitLocalChange,type LocalMechanics} from '../../../src/sim/mechanicalBoundary';
-import {SOOT,particleLiftFlux,particleSettlingSpeed,aerosolOptics} from '../../../src/sim/aerosolPhysics';
-import {buoyancyAcceleration,surfaceExchangeSpeed} from '../../../src/sim/buoyancy';
-import {COMBUSTION_REACTIONS,oxidationRoutes,combust} from '../../../src/sim/ecology';
-import {materialReaction,reactInventory,thermalReactionLimit} from '../../../src/sim/materialReaction';
-import {waterEquilibrium,waterStateAtTemperature} from '../../../src/sim/phaseEquilibrium';
-import {AIR_SECONDS,COLUMN_KG,radiationEnergy} from '../../../src/sim/climateUnits';
-export {AIR_SECONDS,COLUMN_KG} from '../../../src/sim/climateUnits';
+import {assertInventoryAmount,validInventoryAmount,type PhysicalState} from './physicalState';
+import {admitLocalChange,type LocalMechanics} from './mechanicalBoundary';
+import {SOOT,particleLiftFlux,particleSettlingSpeed,aerosolOptics} from './aerosolPhysics';
+import {buoyancyAcceleration,surfaceExchangeSpeed} from './buoyancy';
+import {COMBUSTION_REACTIONS,oxidationRoutes,combust} from './ecology';
+import {materialReaction,reactInventory,thermalReactionLimit} from './materialReaction';
+import {waterEquilibrium,waterStateAtTemperature} from './phaseEquilibrium';
+import {AIR_SECONDS,COLUMN_KG,radiationEnergy} from './climateUnits';
+export {AIR_SECONDS,COLUMN_KG} from './climateUnits';
 import {F,STRIDE,MASS_FIELDS,capacity,enthalpy,phaseEnergy,equilibrateWater,type Environment} from './model';
-import {BASE_CAPACITY,SPECIFIC_HEAT,MATERIAL_ENERGY,MIN_THERMODYNAMIC_TEMPERATURE,validThermodynamicTemperature,thermalTransferLimit,specificEnthalpy,mechanicalEnergy,temperatureFromEnergy,conductiveExchange,writeFloat32ThermalEnergy} from '../../../src/sim/thermodynamics';
-import {queueSpecies,carryVelocity,queueEnergyMomentum,commitMomentum} from '../../../src/sim/conservativeTransport';
-import {GASES,thermalEscapeFraction} from '../../../src/sim/gases';
-import {saturationPressure,waterActivity,REFERENCE_PRESSURE} from '../../../src/sim/waterPhysics';
-import {albedo} from '../../../src/sim/materialPhysics';
-import type {SphereGrid} from '../../../src/sim/sphere';
-import {parcelEquilibrium,radiativeFluxes,surfaceSolarDown,PLUME_ENTRAINMENT,statisticalCloud,maximumRandomCloudArea,type RadiationColumn} from '../../../src/sim/climatePhysics';
-import {diagnosticRainMixingRatio,kesslerAccretedFraction,warmAutoFraction,iceAggregation} from '../../../src/sim/cloudMicrophysics';
+import {BASE_CAPACITY,SPECIFIC_HEAT,MATERIAL_ENERGY,MIN_THERMODYNAMIC_TEMPERATURE,validThermodynamicTemperature,thermalTransferLimit,specificEnthalpy,mechanicalEnergy,temperatureFromEnergy,conductiveExchange,writeFloat32ThermalEnergy} from './thermodynamics';
+import {queueSpecies,carryVelocity,queueEnergyMomentum,commitMomentum} from './conservativeTransport';
+import {GASES,thermalEscapeFraction} from './gases';
+import {saturationPressure,waterActivity,REFERENCE_PRESSURE} from './waterPhysics';
+import {albedo} from './materialPhysics';
+import type {SphereGrid} from './sphere';
+import {parcelEquilibrium,radiativeFluxes,surfaceSolarDown,PLUME_ENTRAINMENT,statisticalCloud,maximumRandomCloudArea,type RadiationColumn} from './climatePhysics';
+import {diagnosticRainMixingRatio,kesslerAccretedFraction,warmAutoFraction,iceAggregation} from './cloudMicrophysics';
 import {spectralGasOptics,spectralSource,spectralWeights,spectralCloudOptics} from './spectralRadiation';
-import {carbonDioxideSaturationPressure,CO2_TRIPLE_PRESSURE,CO2_EXCHANGE_SECONDS,roundedSurfaceStock} from '../../../src/sim/co2Ice';
-import {DUST,DUST_CP,DUST_SHORTWAVE_EXTINCTION,DUST_LONGWAVE_ABSORPTION,DUST_SINGLE_SCATTER_ALBEDO,DUST_ASYMMETRY} from '../../../src/sim/dustPhysics';
-import {assertPlanetSupport,physicalRadius,temperatureLimits,type RadiationModel} from '../../../src/sim/planetDefinition';
+import {carbonDioxideSaturationPressure,CO2_TRIPLE_PRESSURE,CO2_EXCHANGE_SECONDS,roundedSurfaceStock} from './co2Ice';
+import {DUST,DUST_CP,DUST_SHORTWAVE_EXTINCTION,DUST_LONGWAVE_ABSORPTION,DUST_SINGLE_SCATTER_ALBEDO,DUST_ASYMMETRY} from './dustPhysics';
+import {assertPlanetSupport,physicalRadius,temperatureLimits,type RadiationModel} from './planetDefinition';
 
 /** SI dynamics, with an explicit conversion from the existing column inventory.
  * Surface inventory is retained; .3 inventory kg represents an Earth 1-atm

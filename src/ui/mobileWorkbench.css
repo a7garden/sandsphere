@@ -38,6 +38,11 @@
     overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin;
   }
   .app[data-mobile-view='true'] .view-transport-dock .camera-bar { display: block; }
+  .app[data-mobile-view='true']:has(.section-selection-controls:not([hidden])) .view-transport-dock { padding-top: 0; }
+  .app[data-mobile-view='true']:has(.section-selection-controls:not([hidden])) .view-transport-dock .camera-bar {
+    position: relative; top: auto; right: auto; bottom: auto; left: auto; transform: none;
+    width: calc(100% - 104px); max-width: calc(100% - 104px); margin-inline: 52px;
+  }
   .app .view-transport-dock .simulation-bar { order: 0; width: auto; border: 0; background: transparent; backdrop-filter: none; }
   #app .app #mobile-view-toggle { display: grid; place-items: center; order: 1; flex-shrink: 0; border: 1px solid var(--color-glass-edge); background: var(--color-glass); border-radius: var(--radius-control); }
   #app .app #mobile-view-toggle[aria-expanded='true'] { background: var(--color-glass-selection); }

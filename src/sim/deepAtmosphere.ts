@@ -137,7 +137,11 @@ export class DeepAtmosphere {
   const bottom=(i*DEEP_LAYERS+DEEP_LAYERS-1),b=bottom*DEEP_SPECIES,factor=.05+.95*(.5+.5*Math.tanh(this.zonalWind(i)/35));
   for(let k=0;k<DEEP_LAYERS-1;k++){const q=i*DEEP_LAYERS+k,o=q*DEEP_SPECIES,p=this.pressure(i,k);if(p>1e6)continue;const before=this.layerEnergy(q),below=this.layerEnergy(bottom);let moved=0;
    for(const base of [2,5]){if(base===2&&p>this.referencePressure)continue;for(let f=base;f<base+3;f++){const move=this.mass[o+f]*(1-factor);this.mass[o+f]-=move;this.mass[b+f]+=move;moved+=move;}}
-   const dry=this.mass[b]+this.mass[b+1];if(moved>dry)throw new Error('띠 초기화에 필요한 심부 기체가 부족합니다.');const hydrogen=moved*this.mass[b]/dry,helium=moved-hydrogen;
+   const dry=this.mass[b]+this.mass[b+1];if(moved>dry)throw new Error('띠 초기화에 필요한 심부 기체가 부족합니다.');
+   // Divide before multiplying: (moved * hydrogen) / dry can exceed moved
+   // through roundoff even for pure hydrogen, making absent helium negative.
+   // Bound each finite donor stock; only floating-point split roundoff remains.
+   const hydrogen=Math.min(this.mass[b],moved*(this.mass[b]/dry)),helium=Math.min(this.mass[b+1],moved-hydrogen);
    this.mass[b]-=hydrogen;this.mass[b+1]-=helium;this.mass[o]+=hydrogen;this.mass[o+1]+=helium;this.setEnergy(q,before);this.setEnergy(bottom,below);
   }
  }}

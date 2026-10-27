@@ -1,18 +1,18 @@
 // @ts-nocheck -- immutable pre-optimization fixture; production nominal types may evolve.
 // Only import paths differ; normalize them to verify the original captured source SHA-256.
-import type {PhysicalState} from '../../../src/sim/physicalState';
-import {OceanDynamics,validOcean,type OceanSnapshot,type OceanCheckpoint} from '../../../src/sim/oceanDynamics';
-export {currentMobility} from '../../../src/sim/oceanDynamics';
+import type {PhysicalState} from './physicalState';
+import {OceanDynamics,validOcean,type OceanSnapshot,type OceanCheckpoint} from './oceanDynamics';
+export {currentMobility} from './oceanDynamics';
 import {F,STRIDE,MASS_FIELDS,enthalpy,phaseEnergy,solidHeight,equilibrateWater,type Environment} from './model';
-import {NEIGHBORS,INVALID,HEIGHT_SCALE,RADIUS,type SphereGrid} from '../../../src/sim/sphere';
-import {MATERIAL_ENERGY,assertThermodynamicTemperature} from '../../../src/sim/thermodynamics';
-import {columnPressure,saturationMass} from '../../../src/sim/waterPhysics';
-import {reactEcosystem} from '../../../src/sim/ecology';
-import {outgoingScale} from '../../../src/sim/conservativeTransport';
-import {dustOpticalDepth} from '../../../src/sim/dustPhysics';
+import {NEIGHBORS,INVALID,HEIGHT_SCALE,RADIUS,type SphereGrid} from './sphere';
+import {MATERIAL_ENERGY,assertThermodynamicTemperature} from './thermodynamics';
+import {columnPressure,saturationMass} from './waterPhysics';
+import {reactEcosystem} from './ecology';
+import {outgoingScale} from './conservativeTransport';
+import {dustOpticalDepth} from './dustPhysics';
 import {LayeredAtmosphere,COLUMN_KG,AIR_SECONDS,validLayered,surfaceCapacity,surfaceEnthalpy,ATMOSPHERE_MIRRORS,type LayeredSnapshot,type LayeredCheckpoint} from './layeredAtmosphere';
 import {DeepAtmosphere,DEEP_LAYERS,validDeep,type DeepSnapshot,type DeepCheckpoint} from './deepAtmosphere';
-import {isDeepAtmosphere} from '../../../src/sim/planetDefinition';
+import {isDeepAtmosphere} from './planetDefinition';
 
 export interface ClimateSnapshot {version:1|2|3|4|5|6|7;surfaceMassCarry?:number[];surfaceHeatCarry?:number[];ocean?:OceanSnapshot;wind:number[];currents:number[];seeds:number[];atmosphere?:LayeredSnapshot;giant?:DeepSnapshot;}
 export interface ClimateCheckpoint {surfaceMassCarry:Float64Array;ocean:OceanCheckpoint;wind:Float32Array;currents:Float32Array;seeds:Float32Array;air:LayeredCheckpoint;giant?:DeepCheckpoint;}

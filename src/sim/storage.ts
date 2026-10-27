@@ -4,7 +4,7 @@ import {airMassWidth,AIR_FIELDS,AIR_LAYERS,LEGACY_AIR_LAYERS,ATMOSPHERE_MIRRORS}
 import { F,STRIDE,MASS_FIELDS,type Snapshot } from './model';
 import { RESEARCH } from '../ui/content';
 import {BASE_CAPACITY,SPECIFIC_HEAT,MATERIAL_ENERGY,validThermodynamicTemperature,assertThermodynamicTemperature,validThermalRemainder} from './thermodynamics';
-import {validPlanetDefinition,planetSupport,sandboxDefinition,temperatureLimits,physicalRadius,maxSpinPeriod,isDeepAtmosphere,PLANET_SPECIES,type PlanetDefinition} from './planetDefinition';
+import {validPlanetDefinition,planetSupport,sandboxDefinition,temperatureLimits,physicalRadius,maxSpinPeriod,isDeepAtmosphere,PLANET_SPECIES,PLANET_DISTANCE_AU,PLANET_PERIOD_SECONDS,PHYSICAL_SECONDS_PER_TICK,type PlanetDefinition} from './planetDefinition';
 import {DEEP_LAYERS,DEEP_FIELDS,deepMassWidth,upgradeDeepSnapshot} from './deepAtmosphere';
 import {loadRecord} from './browserStorage';
 import {validStateScalar,validInventoryAmount} from './physicalState';
@@ -110,18 +110,21 @@ export function validSnapshot(value:unknown,count:number):value is Snapshot {
     ||(s.spin.azimuth!==undefined&&(!Number.isFinite(s.spin.azimuth)||s.spin.azimuth<0||s.spin.azimuth>360))
     ||(s.spin.elevation!==undefined&&(!Number.isFinite(s.spin.elevation)||s.spin.elevation< -30||s.spin.elevation>85))
     ||(s.spin.tilt!==undefined&&(!Number.isFinite(s.spin.tilt)||s.spin.tilt<0||s.spin.tilt>180))
-    ||(s.spin.period!==undefined&&(!Number.isFinite(s.spin.period)||s.spin.period<20||s.spin.period>maxSpinPeriod(body)))))return false;
+    ||(s.spin.period!==undefined&&(!Number.isFinite(s.spin.period)||s.spin.period<(body?PLANET_PERIOD_SECONDS.min/PHYSICAL_SECONDS_PER_TICK:20)||s.spin.period>(body?PLANET_PERIOD_SECONDS.max/PHYSICAL_SECONDS_PER_TICK:maxSpinPeriod(body))))))return false;
   const weather=s.weather;
   if(weather&&(!['rain','cold','warm'].includes(weather.kind)||!Number.isFinite(weather.remaining)||weather.remaining<0
     ||!Number.isFinite(weather.duration)||weather.duration<=0||weather.duration>600||weather.remaining>weather.duration
     ||!Number.isFinite(weather.ambient)||weather.ambient< -100||weather.ambient>100||!Number.isFinite(weather.sunlight)||weather.sunlight<0||weather.sunlight>2.5
     ||!Array.isArray(weather.direction)||weather.direction.length!==3||weather.direction.some(v=>!Number.isFinite(v)||Math.abs(v)>1)))return false;
   const e=s.environment;
-  return !!e&&(e.climate===undefined||typeof e.climate==='boolean')&&Number.isFinite(e.ambient)&&e.ambient>=temperatureLimits(body).surfaceMin&&e.ambient<=100&&Number.isFinite(e.sunlight)&&e.sunlight>=0&&e.sunlight<=2.5
+  // Body-backed inputs use the same physical domain as creation. Bodyless
+  // legacy records retain their original metadata bounds; no input is clipped.
+  const validAmbient=body?(isDeepAtmosphere(body)?Number.isFinite(e?.ambient)&&e.ambient>=-250&&e.ambient<=2500:validThermodynamicTemperature(e?.ambient)):Number.isFinite(e?.ambient)&&e.ambient>=temperatureLimits().surfaceMin&&e.ambient<=100;
+  return !!e&&(e.climate===undefined||typeof e.climate==='boolean')&&validAmbient&&Number.isFinite(e.sunlight)&&e.sunlight>=0&&e.sunlight<=(body?1/PLANET_DISTANCE_AU.min**2:2.5)
     &&(e.gravity===undefined||(Number.isFinite(e.gravity)&&e.gravity>=.01&&e.gravity<=3))
     &&(e.orbitAngle===undefined||(Number.isFinite(e.orbitAngle)&&e.orbitAngle>=0&&e.orbitAngle<Math.PI*2+.001))
-    &&(e.rotationRate===undefined||(Number.isFinite(e.rotationRate)&&Math.abs(e.rotationRate)<=Math.PI/10+.001))
-    &&(e.orbitDistance===undefined||(Number.isFinite(e.orbitDistance)&&e.orbitDistance>=(body?.timing==='physical'?.05:.65)&&e.orbitDistance<=(body?.timing==='physical'?100:2.4)))
+    &&(e.rotationRate===undefined||(Number.isFinite(e.rotationRate)&&Math.abs(e.rotationRate)<=(body?Math.PI*2*PHYSICAL_SECONDS_PER_TICK/PLANET_PERIOD_SECONDS.min*(1+4*Number.EPSILON):Math.PI/10+.001)))
+    &&(e.orbitDistance===undefined||(Number.isFinite(e.orbitDistance)&&e.orbitDistance>=(body?PLANET_DISTANCE_AU.min:.65)&&e.orbitDistance<=(body?PLANET_DISTANCE_AU.max:2.4)))
     &&Array.isArray(e.sun)&&e.sun.length===3&&e.sun.every(v=>Number.isFinite(v)&&Math.abs(v)<=1);
 }
 

@@ -10,6 +10,7 @@ import {type SphereGrid} from '../src/sim/sphere';
 
 const grid:SphereGrid={count:1,directions:new Float32Array([1,0,0]),indices:new Uint32Array(),geometry:new Float32Array([1,0,0,0]),neighbors:new Uint32Array(),distances:new Float32Array()};
 const months=[31,28.25,31,30,31,30,31,31,30,31,30,31];
+const receiptDir=`artifacts/climate-reference/reruns/${Date.now()}-${process.pid}`;
 function metric(samples:{observed:number;model:number;weight:number}[]){
  const weight=samples.reduce((a,b)=>a+b.weight,0),mean=(key:'observed'|'model')=>samples.reduce((a,b)=>a+b[key]*b.weight,0)/weight,obs=mean('observed'),model=mean('model');
  let covariance=0,vo=0,vm=0,bias=0,square=0;
@@ -44,8 +45,8 @@ it('compares the actual radiation kernel with monthly NASA retrievals and report
   return {lapseKPerKm:lapse,clearSkyDownwardLongwaveWm2:metric(lw),conditionalSurfaceRadiativeBalanceC:metric(temperature),samples:{longwave:lw,conditionalTemperature:temperature}};
  });
  expect(sensitivity.every(s=>Number.isFinite(s.clearSkyDownwardLongwaveWm2.rmse))).toBe(true);
- mkdirSync('artifacts/climate-reference',{recursive:true});
- writeFileSync('artifacts/climate-reference/radiation-observations.json',JSON.stringify({period:reference.period,points:24,monthlySamples:288,sensitivity,status:'diagnostic-only',assumptions:['synthetic constant-RH sounding','surface balance uses observed solar irradiance and albedo 0.15','no sensible/latent/ocean flux in conditional temperature','not a coupled climate prediction','24 sampled points do not form a global map']},null,2));
+ mkdirSync(receiptDir,{recursive:true});
+ writeFileSync(`${receiptDir}/radiation-observations.json`,JSON.stringify({period:reference.period,points:24,monthlySamples:288,sensitivity,status:'diagnostic-only',assumptions:['synthetic constant-RH sounding','surface balance uses observed solar irradiance and albedo 0.15','no sensible/latent/ocean flux in conditional temperature','not a coupled climate prediction','24 sampled points do not form a global map']},null,2));
  console.log('NASA monthly radiation comparison',sensitivity.map(({samples,...metrics})=>metrics));
 });
 
@@ -70,6 +71,6 @@ it('audits one-day production column temperature, precipitation and cloud occurr
  }
  const comparison={temperatureC:metric(rows.map(r=>({...r.temperature,weight:r.weight}))),precipitationMmDay:metric(rows.map(r=>({...r.precipitation,weight:r.weight}))),cloudFractionPercent:metric(rows.map(r=>({...r.cloud,weight:r.weight})))};
  const result={status:'not-validated',durationSeconds:duration,elapsedSeconds:(performance.now()-start)/1000,comparison,rows,climateAcceptance:{passed:false,reasons:['Only one transient day, initialized with reference means; no spin-up or climatological averaging','Independent wet columns omit horizontal dynamics and real land/ocean boundary conditions','Statistical subgrid cloud area now matches the comparison variable, but cloud closure is not independently validated','500-m air layer cannot validate 2-m temperature','The browser core has not undergone Held–Suarez; benchmarks of a separate Julia reference solver do not validate this core']},targets:{description:'Provisional project targets, not published benchmark tolerances',surfaceTemperatureRmseC:3,precipitationRmseMmDay:1,cloudFractionRmsePercentagePoints:15}};
- mkdirSync('artifacts/climate-reference',{recursive:true});writeFileSync('artifacts/climate-reference/column-observations.json',JSON.stringify(result,null,2));
+ mkdirSync(receiptDir,{recursive:true});writeFileSync(`${receiptDir}/column-observations.json`,JSON.stringify(result,null,2));
  console.log('NASA one-day column audit',comparison,`(${result.elapsedSeconds.toFixed(1)}s)`);
 },process.env.CI?900000:300000);

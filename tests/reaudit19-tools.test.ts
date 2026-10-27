@@ -12,7 +12,8 @@ import {bindingParameter,thermalEscapeFraction,GAS_CONSTANT} from '../src/sim/ga
 import {validClimate} from '../src/sim/weatherClimate';
 const enabled=process.env.REAUDIT19==='1';
 const paths=['src/sim/phaseEquilibrium.ts','src/sim/gases.ts','src/sim/meteor.ts','src/sim/layeredAtmosphere.ts','src/sim/model.ts'];
-function receipt(name:string,data:unknown){mkdirSync('artifacts/reaudit19/tools',{recursive:true});writeFileSync(`artifacts/reaudit19/tools/${name}.json`,JSON.stringify({sources:Object.fromEntries(paths.map(p=>[p,createHash('sha256').update(readFileSync(p)).digest('hex')])),data},null,2)+'\n');}
+const receiptDir=`artifacts/reaudit19/reruns/${Date.now()}-${process.pid}/tools`;
+function receipt(name:string,data:unknown){mkdirSync(receiptDir,{recursive:true});writeFileSync(`${receiptDir}/${name}.json`,JSON.stringify({sources:Object.fromEntries(paths.map(p=>[p,createHash('sha256').update(readFileSync(p)).digest('hex')])),data},null,2)+'\n');}
 describe.skipIf(!enabled)('alpha18 audit of tool external budgets',()=>{
  it('checks that pure steam phase allocation solves its supplied energy',()=>{
   const target=36,result=waterEquilibrium(0,0,.03,target,50000,0),residual=result.energy-target;

@@ -26,7 +26,7 @@ type Internals={phase(q:number,i:number,k:number):void;dynamics(dt:number,e:Envi
 const local=(air:LayeredAtmosphere)=>air as unknown as Internals;
 function world(){const s=new Float64Array(seedPlanet(grid,'sand',20));const c=new WeatherClimate(grid);c.prepareSurface(s,environment);return {s,c,air:c.air};}
 function save(s:CpuSolver,e:Environment):Snapshot{return {version:11,preset:'coast',time:0,state:[...s.state],environment:e,climate:s.climate.snapshot(),planet:{primary:'rock'},supplied:0,removed:0,discoveries:[]};}
-afterAll(()=>{if(!enabled)return;mkdirSync('artifacts/reaudit19/air',{recursive:true});writeFileSync('artifacts/reaudit19/air/probes.json',JSON.stringify({createdAt:new Date().toISOString(),command:'REAUDIT19_AIR=1 npx vitest run tests/reaudit19-air.test.ts --maxWorkers=1 --disableConsoleIntercept',startHashes,endHashes:hashes(),reports},null,2)+'\n');});
+afterAll(()=>{if(!enabled)return;const dir=`artifacts/reaudit19/reruns/${Date.now()}-${process.pid}/air`;mkdirSync(dir,{recursive:true});writeFileSync(`${dir}/probes.json`,JSON.stringify({createdAt:new Date().toISOString(),command:'REAUDIT19_AIR=1 npx vitest run tests/reaudit19-air.test.ts --maxWorkers=1 --disableConsoleIntercept',startHashes,endHashes:hashes(),reports},null,2)+'\n');});
 describe.skipIf(!enabled)('alpha.19 air reaudit',()=>{
  it('preserves target enthalpy through pure-steam production phase equilibrium',()=>{
   const water=.03,enthalpy=water*1200,pressure=5e4,r=waterEquilibrium(0,0,water,enthalpy,pressure,0);
@@ -50,7 +50,7 @@ describe.skipIf(!enabled)('alpha.19 air reaudit',()=>{
   const solver=new CpuSolver(grid,s);solver.climate.prepareSurface(solver.state,environment);solver.climate.air.attach(solver.state);
   const input=save(solver,environment),initialValid=validSnapshot(input,grid.count),before=solver.climate.air.snapshot();
   solver.advance(1/3600,new Float32Array(grid.count*COMMAND_STRIDE),environment);
-  const air=solver.climate.air,states=Array.from({length:AIR_LAYERS},(_,q)=>({temperature:air.temperature[q],vapor:air.mass[q*AIR_SPECIES],liquid:air.mass[q*AIR_SPECIES+4],ice:air.mass[q*AIR_SPECIES+5],pressure:air.pressure(0,q),saturation:saturationPressure(air.temperature[q])}));
+  const air=solver.climate.air,states=Array.from({length:AIR_LAYERS},(_,q)=>({temperature:air.temperature[q],vapor:air.mass[q*AIR_SPECIES],liquid:air.mass[q*AIR_SPECIES+4],ice:air.mass[q*AIR_SPECIES+5],pressure:air.pressure(0,q),saturation:saturationPressure(air.temperature[q],air.temperature[q]<0?'ice':'water')}));
   const invalid=states.filter(r=>r.liquid+r.ice>1e-10&&r.saturation>r.pressure*1.01);
   reports.push({id:'pure-steam-full-cpu',input,initialValid,finalValid:validClimate(solver.climate.snapshot(),grid.count),before,states,invalid,ledger:[...solver.energyChanges]});
   expect(initialValid).toBe(true);expect(invalid).toEqual([]);

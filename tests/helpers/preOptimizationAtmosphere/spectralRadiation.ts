@@ -7,7 +7,7 @@
  * spectral shape is retained while bolometric emission falls as T⁴; this is
  * a declared cold-source approximation, not resolved cryogenic spectroscopy.
  * Warm source extrapolation retains the existing ecRad linear approximation. */
-import data from '../../../src/sim/data/ecckd-32.json';
+import data from './data/ecckd-32.json';
 type Field={shape:number[];data:string};
 const decode=(f:Field)=>{const raw=atob(f.data),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0)),view=new DataView(bytes.buffer),values=new Float64Array(bytes.length/4);for(let i=0;i<values.length;i++)values[i]=view.getFloat32(i*4,true);return values;};
 const fields=Object.fromEntries(Object.entries(data.fields).map(([k,f])=>[k,decode(f)]));

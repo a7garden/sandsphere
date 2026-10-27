@@ -17,7 +17,7 @@ import {snapshotSurface} from '../src/sim/session';
 
 // Opt-in audit receipts: assertions deliberately document observed limitations,
 // rather than turning these confirmed defects into acceptance claims.
-const root='artifacts/reaudit19/execution',grid=createSphere(0);
+const root=`artifacts/reaudit19/reruns/${Date.now()}-${process.pid}/execution`,grid=createSphere(0);
 const paths=['src/main.ts','src/sim/model.ts','src/sim/system.ts','src/sim/session.ts','src/sim/storage.ts','src/sim/frameExecution.ts','src/sim/atmosphere.ts','src/sim/workerSolver.ts','src/sim/solver.worker.ts','src/sim/solverWorkerProtocol.ts','src/sim/weatherClimate.ts','src/sim/layeredAtmosphere.ts','src/sim/oceanDynamics.ts'];
 const hashes=()=>Object.fromEntries(paths.map(path=>[path,createHash('sha256').update(readFileSync(path)).digest('hex')]));
 const startHashes=hashes();

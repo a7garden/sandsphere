@@ -55,5 +55,8 @@
     "src/sim/clock.ts": "2b5e79aa95975a1d1237b40fd251d97e5e80f3a893dc34081a40863c0faa9a03",
     "src/sim/giantCloudPhysics.ts": "43b6cd30af58f8abda41145660afbf95a7b7d78b944e20079e4c8c0b54a64f23",
     "src/sim/deepAtmosphereProfile.ts": "2c4316fdd979f4af36d6901ccf6fd384e95946f509c6bc522f03934155a2af03"
+  },
+  "additionalShared": {
+    "src/sim/chemistry.ts": "c1fb4d8b0ab5a3de484b7e8942075904e877fae5a58296368522e9d20a18b54a"
   }
 }
