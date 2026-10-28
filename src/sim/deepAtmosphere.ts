@@ -63,7 +63,7 @@ export class DeepAtmosphere {
  checkpoint():DeepCheckpoint|undefined{return this.ready?{version:2,...this.metadata(),mass:this.mass.slice(),temperature:this.temperature.slice(),velocity:this.velocity.slice(),height:this.height.slice()}:undefined;}
  restore(d?:DeepSnapshot|DeepCheckpoint){this.ready=!!d;this.allocate(!!d);this.mass.fill(0);this.temperature.fill(0);this.velocity.fill(0);this.height.fill(0);if(d){if(d.version===1)d=upgradeDeepSnapshot(d);Object.assign(this,{radiusMeters:d.radiusMeters,gravity:d.gravity,referencePressure:d.referencePressure,initialBottomPressure:d.initialBottomPressure,intrinsicFlux:d.intrinsicFlux});this.mass.set(d.mass);this.temperature.set(d.temperature);this.velocity.set(d.velocity);this.height.set(d.height);}}
  layerMass(q:number){const p=q*DEEP_SPECIES,m=this.mass;return m[p]+m[p+1]+m[p+2]+m[p+3]+m[p+4]+m[p+5]+m[p+6]+m[p+7];}
- layerCapacity(q:number){let c=0;for(let f=0;f<DEEP_SPECIES;f++)c+=this.mass[q*DEEP_SPECIES+f]*CP[f];return c;}
+ layerCapacity(q:number){const p=q*DEEP_SPECIES,m=this.mass;let c=0;c+=m[p]*CP[0];c+=m[p+1]*CP[1];c+=m[p+2]*CP[2];c+=m[p+3]*CP[3];c+=m[p+4]*CP[4];c+=m[p+5]*CP[5];c+=m[p+6]*CP[6];c+=m[p+7]*CP[7];return c;}
  private phaseEnergy(q:number){const p=q*DEEP_SPECIES,m=this.mass;return m[p+2]*DEEP_PHASE[2]+m[p+4]*DEEP_PHASE[4]+m[p+5]*DEEP_PHASE[5]+m[p+7]*DEEP_PHASE[7];}
  private speed2(q:number){const v=q*3;return this.velocity[v]**2+this.velocity[v+1]**2+this.velocity[v+2]**2;}
  layerEnergy(q:number){return parcelThermalEnergy(this.mass,q*DEEP_SPECIES,this.temperature[q])+mechanicalEnergy(this.layerMass(q),9.81*this.gravity,this.height[q%DEEP_LAYERS],this.speed2(q));}

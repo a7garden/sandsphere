@@ -6,11 +6,12 @@ export const SOLID_VOLUMES:readonly (readonly [number,number])[]=[
  [0,1],[1,1],[2,1],[3,1],[5,1.09],[6,.5],[11,1],[12,1],
  [18,.6],[22,.3],[24,.64],[25,1],[34,.8],
 ];
+const SOLID_FIELDS=SOLID_VOLUMES.map(([field])=>field),SOLID_VOLUME=SOLID_VOLUMES.map(([,volume])=>volume);
 export function solidInventory(s:ArrayLike<number>,p:number){
- let mass=0,thickness=0;for(const [field,volume] of SOLID_VOLUMES){mass+=s[p+field];thickness+=s[p+field]*volume;}
+ let mass=0,thickness=0;for(let n=0;n<SOLID_FIELDS.length;n++){const value=s[p+SOLID_FIELDS[n]];mass+=value;thickness+=value*SOLID_VOLUME[n];}
  return {mass,thickness};
 }
-export function solidThickness(s:ArrayLike<number>,p:number){let height=0;for(const [field,volume] of SOLID_VOLUMES)height+=s[p+field]*volume;return height;}
+export function solidThickness(s:ArrayLike<number>,p:number){let height=0;for(let n=0;n<SOLID_FIELDS.length;n++)height+=s[p+SOLID_FIELDS[n]]*SOLID_VOLUME[n];return height;}
 /** The unresolved solid bed is uniformly mixed through its occupied thickness.
  * Its gravitational energy uses that layer's centre of mass. Water loads the
  * bed from above. No elastic energy or solid momentum is represented. */

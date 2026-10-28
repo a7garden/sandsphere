@@ -43,6 +43,17 @@ export const AIR_GAS_INDICES=[0,1,2,3,6,7] as const;
 const DRY_GAS_INDICES=[1,2,3,6,7] as const;
 export const airMassWidth=(s:LayeredSnapshot)=>s.version>=6?AIR_SPECIES:s.version===5?8:s.version===4?7:6;
 export const ATMOSPHERE_MIRRORS=[...AIR_FIELDS,26] as const;
+/** Field lists for the surface energy sums, in the original summation order. */
+const HEAT_FIELDS=SPECIFIC_HEAT.map((_,f)=>f),SURFACE_HEAT_FIELDS=HEAT_FIELDS.filter(f=>!(ATMOSPHERE_MIRRORS as readonly number[]).includes(f));
+let surfaceMassFieldList:number[]|undefined;
+/** Built on first use: model.ts and this module import each other. */
+const surfaceMassFields=()=>surfaceMassFieldList??=MASS_FIELDS.filter(f=>!(ATMOSPHERE_MIRRORS as readonly number[]).includes(f));
+let massFieldFlagList:Uint8Array|undefined;
+const massFieldFlags=()=>{
+ if(massFieldFlagList)return massFieldFlagList;
+ if(MASS_FIELDS.some(f=>f>=HEAT_FIELDS.length))throw new Error('지표 에너지 합산 필드가 열용량 표와 맞지 않습니다.');
+ massFieldFlagList=new Uint8Array(HEAT_FIELDS.length);for(const f of MASS_FIELDS)massFieldFlagList[f]=1;return massFieldFlagList;
+};
 export const AIR_RADIUS=1e6;
 /** Extinction per liquid-water-equivalent mass, for 10 μm droplets. */
 export const CLOUD_OPTICAL_PER_KG=150;
@@ -169,6 +180,7 @@ export class LayeredAtmosphere {
  readonly absorbedSolar:Float64Array;
  readonly mass:Float64Array;readonly temperature:Float64Array;readonly velocity:Float64Array;readonly updraft:Float64Array;
  private evaporationCarry:Float64Array;private roundoff:Float64Array;private dustDelta:Float64Array;private dustRadiationCache:Float64Array;private sootRadiationCache:Float64Array;private dustLiftCarry:Float64Array;private sootLiftCarry:Float64Array;
+ private partCapacity=0;private partPhase=0;
  private initialized=false;private detached=false;private gravity=1;private mechanics?:LocalMechanics;
  radiusMeters=AIR_RADIUS;
  /** Initial finite-volume mesh scale. A legacy reservoir may lack the heat
@@ -252,12 +264,27 @@ export class LayeredAtmosphere {
   return projected;
  }
  /** Surface energy always excludes aggregate atmosphere mirrors. */
- surfaceCapacity(s:PhysicalState,i:number){const p=i*STRIDE;let c=BASE_CAPACITY;for(let f=0;f<SPECIFIC_HEAT.length;f++)if(!this.initialized||!(ATMOSPHERE_MIRRORS as readonly number[]).includes(f))c+=this.surfaceStock(s,p+f)*SPECIFIC_HEAT[f];return c;}
- surfacePhaseEnergy(s:PhysicalState,i:number){const p=i*STRIDE;let h=s[p+F.photonEnergy];for(const f of MASS_FIELDS)if(!this.initialized||!(ATMOSPHERE_MIRRORS as readonly number[]).includes(f))h+=this.surfaceStock(s,p+f)*MATERIAL_ENERGY[f];return h;}
- surfaceEnergy(s:PhysicalState,i:number){return this.surfaceCapacity(s,i)*s[i*STRIDE+F.temperature]+this.surfacePhaseEnergy(s,i)+this.surfaceHeatCarry[i];}
+ surfaceCapacity(s:PhysicalState,i:number){
+  const p=i*STRIDE,fields=this.initialized?SURFACE_HEAT_FIELDS:HEAT_FIELDS,carry=s instanceof Float32Array?this.surfaceMassCarry:undefined,mirror=this.surfaceMassMirror;let c=BASE_CAPACITY;
+  for(let n=0;n<fields.length;n++){const f=fields[n],index=p+f,value=s[index];c+=(value+(carry&&(!mirror||mirror[index]===value)?carry[index]:0))*SPECIFIC_HEAT[f];}
+  return c;
+ }
+ surfacePhaseEnergy(s:PhysicalState,i:number){
+  const p=i*STRIDE,fields=this.initialized?surfaceMassFields():MASS_FIELDS,carry=s instanceof Float32Array?this.surfaceMassCarry:undefined,mirror=this.surfaceMassMirror;let h=s[p+F.photonEnergy];
+  for(let n=0;n<fields.length;n++){const f=fields[n],index=p+f,value=s[index];h+=(value+(carry&&(!mirror||mirror[index]===value)?carry[index]:0))*MATERIAL_ENERGY[f];}
+  return h;
+ }
+ /** Both surface sums in one pass. Each keeps its own field order, so the
+  * results equal surfaceCapacity() and surfacePhaseEnergy() exactly. */
+ private surfaceParts(s:PhysicalState,i:number){
+  const p=i*STRIDE,fields=this.initialized?SURFACE_HEAT_FIELDS:HEAT_FIELDS,mass=massFieldFlags(),carry=s instanceof Float32Array?this.surfaceMassCarry:undefined,mirror=this.surfaceMassMirror;let c=BASE_CAPACITY,h=s[p+F.photonEnergy];
+  for(let n=0;n<fields.length;n++){const f=fields[n],index=p+f,value=s[index],stock=value+(carry&&(!mirror||mirror[index]===value)?carry[index]:0);c+=stock*SPECIFIC_HEAT[f];if(mass[f])h+=stock*MATERIAL_ENERGY[f];}
+  this.partCapacity=c;this.partPhase=h;
+ }
+ surfaceEnergy(s:PhysicalState,i:number){this.surfaceParts(s,i);return this.partCapacity*s[i*STRIDE+F.temperature]+this.partPhase+this.surfaceHeatCarry[i];}
  surfaceTemperature(s:PhysicalState,i:number){return s[i*STRIDE+F.temperature]+this.surfaceHeatCarry[i]/this.surfaceCapacity(s,i);}
  setSurfaceEnergy(s:PhysicalState,i:number,target:number){
-  this.surfaceHeatCarry[i]=writeFloat32ThermalEnergy(s,i*STRIDE+F.temperature,target,this.surfaceCapacity(s,i),this.surfacePhaseEnergy(s,i));
+  this.surfaceParts(s,i);this.surfaceHeatCarry[i]=writeFloat32ThermalEnergy(s,i*STRIDE+F.temperature,target,this.partCapacity,this.partPhase);
  }
  addSurfaceHeat(s:PhysicalState,i:number,heat:number){this.setSurfaceEnergy(s,i,this.surfaceEnergy(s,i)+heat);}
  /** Phase allocation owns the same complete thermal + mechanical budget. */
@@ -369,7 +396,7 @@ export class LayeredAtmosphere {
  pressure(i:number,k:number){let above=0;for(let l=k+1;l<AIR_LAYERS;l++)above+=this.layerMass(i*AIR_LAYERS+l);return Math.max(.01,(above+this.layerMass(i*AIR_LAYERS+k)*.5)*COLUMN_KG*9.81*this.gravity);}
  private dry(q:number){let mass=0,moles=0;for(const f of DRY_GAS_INDICES){mass+=this.mass[q*AIR_SPECIES+f];moles+=this.mass[q*AIR_SPECIES+f]/molar[f];}return {mass,moles};}
  private gasConstant(q:number){let mass=0,moles=0;for(const f of AIR_GAS_INDICES){mass+=this.mass[q*AIR_SPECIES+f];moles+=this.mass[q*AIR_SPECIES+f]/molar[f];}return mass>0?8.314462618*moles/mass:287;}
- private virtual(q:number,t=this.temperature[q]){const m=this.layerMass(q),gas=AIR_GAS_INDICES.reduce<number>((m,f)=>m+this.mass[q*AIR_SPECIES+f],0);return (t+273.15)*this.gasConstant(q)/287*gas/Math.max(1e-30,m);}
+ private virtual(q:number,t=this.temperature[q]){const m=this.layerMass(q);let gas=0;for(let n=0;n<AIR_GAS_INDICES.length;n++)gas+=this.mass[q*AIR_SPECIES+AIR_GAS_INDICES[n]];return (t+273.15)*this.gasConstant(q)/287*gas/Math.max(1e-30,m);}
  conditions(s:PhysicalState,i:number){
   if(!this.initialized)return {temperature:s[i*STRIDE+F.temperature],humidity:0,pressure:0,saturation:0,excess:0,lift:0,height:0,layer:0};
   let k=0,largest=-1;for(let l=0;l<AIR_LAYERS;l++){const q=i*AIR_LAYERS+l,m=this.mass[q*AIR_SPECIES+4]+this.mass[q*AIR_SPECIES+5];if(m>largest){largest=m;k=l;}}
@@ -438,7 +465,9 @@ export class LayeredAtmosphere {
  }
  private queue(d:number,r:number,fraction:number){
   const mass=this.fluxMass[d];if(fraction<=0||mass<1e-18||mass*fraction===0)return;
-  for(let f=0;f<AIR_SPECIES;f++)queueSpecies(this.mass,this.delta,AIR_SPECIES,d,r,f,fraction);
+  // queueSpecies() for every species, unrolled over one donor/receiver pair.
+  const species=this.mass,delta=this.delta,from=d*AIR_SPECIES,to=r*AIR_SPECIES;
+  for(let f=0;f<AIR_SPECIES;f++){const amount=species[from+f]*fraction;delta[from+f]-=amount;delta[to+f]+=amount;}
   queueSpecies(this.dustMass,this.dustDelta,1,d,r,0,fraction);
   carryVelocity(this.velocity,d,this.grid.directions,Math.floor(d/AIR_LAYERS),Math.floor(r/AIR_LAYERS),this.carried);
   queueEnergyMomentum(d,r,mass*fraction,this.fluxEnergy[d]*fraction,this.velocity,this.carried,this.heat,this.momentum);
@@ -936,7 +965,7 @@ export class LayeredAtmosphere {
     const a=i*AIR_LAYERS+k,b=a+1,dz=this.height(k+1)-this.height(k),w=this.updraft[i*(AIR_LAYERS-1)+k];
     // A lifted moist parcel cannot be warmer than its starting virtual
     // temperature. Bound its acceleration before selecting the CFL step.
-    const bound=9.81*this.gravity*Math.max(0,this.virtual(a)-this.virtual(b))/Math.max(1,this.virtual(b));
+    const upper=this.virtual(b),bound=9.81*this.gravity*Math.max(0,this.virtual(a)-upper)/Math.max(1,upper);
     const speed=w+bound*step;if(speed>0)step=Math.min(step,.12*dz/speed);
    }
    for(const edge of this.edges)for(let k=0;k<AIR_LAYERS;k++){const a=edge.i*AIR_LAYERS+k,b=edge.j*AIR_LAYERS+k;step=Math.min(step,.12*edge.distance*this.radiusMeters/Math.max(1,Math.sqrt(this.speed2(a)),Math.sqrt(this.speed2(b))));}

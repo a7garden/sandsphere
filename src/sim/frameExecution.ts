@@ -15,7 +15,13 @@ export function takeFrameSteps(clock:SimulationClock,realDt:number,speed:number,
  clock.add(realDt,speed);
  return activity.busy?0:clock.take(limit);
 }
-/** Once taken from the clock, every step advances the background worlds too. */
+/** Once taken from the clock, every step advances the background worlds too.
+ * Worlds share no physical state and run in their own solvers, so the active
+ * and background steps overlap. Both finish before the next step starts. */
 export async function runFrameSteps(count:number,stepActive:()=>Promise<void>,stepBackground:()=>Promise<void>){
- for(let n=0;n<count;n++){await stepActive();await stepBackground();}
+ for(let n=0;n<count;n++){
+  const [active,background]=await Promise.allSettled([stepActive(),stepBackground()]);
+  if(active.status==='rejected')throw active.reason;
+  if(background.status==='rejected')throw background.reason;
+ }
 }
